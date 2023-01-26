@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.theoplayer.android.ui.UIController xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ui_controller"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.theoplayer.android.ui.THEOSpinner
+        android:id="@+id/theo_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true" />
+
+    <com.theoplayer.android.ui.THEOError
+        android:id="@+id/theo_error_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:id="@+id/theo_ui_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/theoHalfBlack"
+        android:padding="8dp">
+
+        <com.theoplayer.android.ui.THEOTitle
+            android:id="@+id/theo_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true" />
+
+        <com.theoplayer.android.ui.THEOJumpBackButton
+            android:id="@+id/theo_jumpback"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            android:layout_toLeftOf="@id/theo_playpause" />
+
+        <com.theoplayer.android.ui.THEOPlayPauseButton
+            android:id="@+id/theo_playpause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp" />
+
+        <com.theoplayer.android.ui.THEOJumpForwardButton
+            android:id="@+id/theo_jumpforward"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_margin="10dp"
+            android:layout_toRightOf="@id/theo_playpause" />
+
+        <com.theoplayer.android.ui.THEOCurrentTime
+            android:id="@+id/theo_currentTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/theo_seekbar"
+            android:layout_alignParentStart="true" />
+
+        <com.theoplayer.android.ui.THEODuration
+            android:id="@+id/theo_duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/theo_seekbar"
+            android:layout_alignParentEnd="true" />
+
+        <com.theoplayer.android.ui.THEOThumbnail
+            android:id="@+id/theo_thumbnail"
+            android:layout_width="80dp"
+            android:layout_height="45dp"
+            android:layout_above="@id/theo_seekbar"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="20dp"
+            android:backgroundTint="@color/theoYellow" />
+
+        <com.theoplayer.android.ui.THEOSeekbar
+            android:id="@+id/theo_seekbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/theo_buttons_container"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp" />
+
+        <LinearLayout
+            android:id="@+id/theo_buttons_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/theo_left_buttons_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.theoplayer.android.ui.THEOLiveButton
+                    android:id="@+id/theo_live"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/theo_right_buttons_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.theoplayer.android.ui.THEOLanguageButton
+                    android:id="@+id/theo_language"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp" />
+
+                <com.theoplayer.android.ui.THEOPiPButton
+                    android:id="@+id/theo_pip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp" />
+
+                <com.theoplayer.android.ui.THEOFullscreenButton
+                    android:id="@+id/theo_fullscreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="2dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <include layout="@layout/theo_languageview" />
+
+
+</com.theoplayer.android.ui.UIController>

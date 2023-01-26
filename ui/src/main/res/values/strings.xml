@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="theo_audio_list_title">Audio</string>
+    <string name="theo_audio_list_empty">No audio tracks</string>
+    <string name="theo_subtitle_list_title">Subtitles</string>
+    <string name="theo_subtitle_list_empty">No subtitles</string>
+    <string name="theo_casting">Player is currently casting</string>
+</resources>

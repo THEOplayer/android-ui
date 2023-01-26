@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.theoplayer.android.ui.THEOLanguageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/theo_language_view"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <com.theoplayer.android.ui.THEOLanguageExit
+        android:id="@+id/theo_language_exit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp" />
+
+    <LinearLayout
+        android:id="@+id/theo_audio_section"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="32dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/theoGray"
+            android:padding="5dp"
+            android:text="@string/theo_audio_list_title"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/theo_empty_audio_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:text="@string/theo_audio_list_empty" />
+
+        <com.theoplayer.android.ui.THEOTrackListView
+            android:id="@+id/theo_audio_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/theo_subtitle_section"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="32dp"
+        android:layout_toRightOf="@id/theo_audio_section"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/theoGray"
+            android:padding="5dp"
+            android:text="@string/theo_subtitle_list_title"
+            android:textAlignment="center" />
+
+        <TextView
+            android:id="@+id/theo_empty_subtitle_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:text="@string/theo_subtitle_list_empty" />
+
+        <com.theoplayer.android.ui.THEOTrackListView
+            android:id="@+id/theo_subtitle_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+</com.theoplayer.android.ui.THEOLanguageView>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="THEOplayerDefaultTheme" >
+        <item name="colorPrimary">@color/theoYellow</item>
+        <item name="colorPrimaryDark">@color/theoYellowDark</item>
+        <item name="colorAccent">@color/theoWhite</item>
+    </style>
+
+    <style name="THEOImageButton" parent="Widget.AppCompat.ImageButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:tint">@color/theoYellow</item>
+    </style>
+
+    <style name="THEOPlayPauseButton" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_play</item>
+    </style>
+
+    <style name="THEOJumpForwardButton" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_jumpforward</item>
+    </style>
+
+    <style name="THEOJumpBackButton" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_jumpback</item>
+    </style>
+
+    <style name="THEOCurrentTime" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/theoYellow</item>
+    </style>
+
+    <style name="THEODuration" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/theoYellow</item>
+    </style>
+
+    <style name="THEOSeekbar" parent="Widget.AppCompat.SeekBar">
+        <item name="android:paddingStart">0dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:backgroundTint">@android:color/white</item>
+        <item name="android:progressTint">@color/theoYellow</item>
+        <item name="android:thumbTint">@color/theoYellow</item>
+    </style>
+
+    <style name="THEOTitle" parent="Widget.AppCompat.TextView">
+        <item name="android:textColor">@color/theoYellow</item>
+    </style>
+
+    <style name="THEOSpinner" parent="Widget.AppCompat.ProgressBar">
+        <item name="android:indeterminateTint">@color/theoYellow</item>
+        <item name="android:width">@dimen/icon_size</item>
+        <item name="android:height">@dimen/icon_size</item>
+    </style>
+
+    <style name="THEOError" parent="Widget.AppCompat.TextView">
+        <item name="android:background">@android:color/black</item>
+        <item name="android:textColor">@color/theoYellow</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="THEOFullscreenButton" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_fullscreen_enter</item>
+    </style>
+
+    <style name="THEOThumbnail" >
+        <item name="android:background">@color/theoYellow</item>
+        <item name="android:padding">2dp</item>
+        <item name="android:src">@drawable/thumbnail_placeholder</item>
+    </style>
+
+    <style name="THEOPiPButton" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_pip_enter</item>
+    </style>
+
+    <style name="THEOCastButton" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_cast_disconnected</item>
+    </style>
+
+    <style name="THEOChromecastMessage" parent="Widget.AppCompat.TextView">
+        <item name="android:background">@android:color/black</item>
+        <item name="android:textColor">@color/theoYellow</item>
+        <item name="android:gravity">center</item>
+    </style>
+
+    <style name="THEOLanguageButton" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_language</item>
+    </style>
+
+    <style name="THEOLanguageView">
+        <item name="android:background">#CC000000</item>
+    </style>
+
+    <style name="THEOLanguageExit" parent="THEOImageButton">
+        <item name="android:src">@drawable/ic_close</item>
+    </style>
+
+    <style name="THEOTrackListView" >
+        <item name="android:textColor">@color/theoYellow</item>
+        <item name="android:divider">@color/theoGray</item>
+        <item name="android:dividerHeight">1dp</item>
+        <item name="android:layout_marginRight">10dp</item>
+        <item name="android:layout_marginLeft">10dp</item>
+    </style>
+
+    <style name="THEOLiveButton" parent="Widget.AppCompat.Button">
+        <item name="android:minWidth">0dp</item>
+        <item name="android:minHeight">0dp</item>
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:text">Live </item>
+        <item name="android:textColor">@color/theoWhite</item>
+        <item name="android:drawableEnd">@drawable/ic_live</item>
+<!--        <item name="android:drawablePadding">0dp</item>-->
+    </style>
+
+</resources>
