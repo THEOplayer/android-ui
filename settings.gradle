@@ -1,8 +1,12 @@
-pluginManagement {
+buildscript {
     repositories {
         gradlePluginPortal()
         google()
         mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.4.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.21"
     }
 }
 
@@ -16,5 +20,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "THEOplayer Android UI"
-include ':app'
 include ':ui'

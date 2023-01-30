@@ -1,10 +1,3 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
-plugins {
-    id 'com.android.application' version '7.4.0' apply false
-    id 'com.android.library' version '7.4.0' apply false
-    id 'org.jetbrains.kotlin.android' version '1.7.21' apply false
-}
-
 task updateVersion() {
     def sdkVersion = project.ext.sdkVersion
     ant.replaceregexp(file: 'gradle.properties', match: 'sdkVersion=.*', replace: "sdkVersion=$sdkVersion", flags: 'g', byline: true)

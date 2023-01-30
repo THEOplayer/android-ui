@@ -10,6 +10,7 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 33
+        missingDimensionStrategy 'api', 'unifiedAndroid'
 
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -32,8 +33,13 @@ android {
 }
 
 dependencies {
-    compileOnly "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
 
-    compileOnly "com.theoplayer.theoplayer-sdk-android:unified:$sdkVersion"
-    compileOnly "com.theoplayer.theoplayer-sdk-android:unified-cast:$sdkVersion"
+    // Depending on how THEOplayer is fetched, use only one of the blocks below to import THEOplayer SDKs
+    // Through Jitpack
+    implementation "com.theoplayer.theoplayer-sdk-android:unified:$sdkVersion"
+    implementation "com.theoplayer.theoplayer-sdk-android:unified-cast:$sdkVersion"
+    // Through local module
+//     implementation project(":theoplayer-android")
+//     implementation project(":cast")
 }
