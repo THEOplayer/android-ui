@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -42,4 +43,17 @@ dependencies {
     // Through local module
 //     implementation project(":theoplayer-android")
 //     implementation project(":cast")
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                groupId "com.theoplayer.android-ui"
+                artifactId "android-ui"
+                version project.ext.sdkVersion
+                from components.release
+            }
+        }
+    }
 }
