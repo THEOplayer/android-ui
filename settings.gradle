@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "THEOplayer Android UI"
 include ':ui'
+include ':demo'
