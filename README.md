@@ -94,6 +94,8 @@ Then, DefaultUI can be accessed by querying the view using the `id`.
 val defaultUI = findViewById<DefaultUI>(R.id.theoplayer_default_ui)
 ```
 
+See [activity_main.xml](demo/src/main/res/layout/activity_main.xml) in the demo app for a complete example.
+
 <br/>
 
 #### Initializing programmatically
