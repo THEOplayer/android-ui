@@ -9,6 +9,7 @@ import com.theoplayer.android.api.THEOplayerConfig
 @Composable
 fun DefaultUI(config: THEOplayerConfig) {
     UIController(config) {
+        SeekBar()
         Row {
             PlayButton()
             CurrentTimeDisplay(color = Color.White, showDuration = true)
