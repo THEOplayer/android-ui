@@ -4,6 +4,8 @@ import androidx.compose.material.Slider
 import androidx.compose.material.SliderColors
 import androidx.compose.material.SliderDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -21,14 +23,22 @@ fun SeekBar(
         val end = seekable.ranges.last().second
         start.toFloat().rangeTo(end.toFloat())
     }
+
+    val seekTime = remember { mutableStateOf<Float?>(null) }
+
     Slider(modifier = modifier,
         colors = colors,
-        value = currentTime,
+        value = seekTime.value ?: currentTime,
         valueRange = valueRange,
         enabled = seekable.ranges.isNotEmpty(),
-        onValueChange = { seekTime ->
+        onValueChange = { time ->
+            seekTime.value = time
             state?.player?.let {
-                it.currentTime = seekTime.toDouble()
+                it.currentTime = time.toDouble()
             }
-        })
+        },
+        onValueChangeFinished = {
+            seekTime.value = null
+        }
+    )
 }
