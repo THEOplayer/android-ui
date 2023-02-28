@@ -1,4 +1,4 @@
-package com.theoplayer.android.ui
+package com.theoplayer.android.ui.demo
 
 import org.junit.Test
 

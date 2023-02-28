@@ -1,4 +1,4 @@
-package com.theoplayer.android.ui.ui.theme
+package com.theoplayer.android.ui.demo.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

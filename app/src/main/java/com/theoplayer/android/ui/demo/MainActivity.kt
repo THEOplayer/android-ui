@@ -1,4 +1,4 @@
-package com.theoplayer.android.ui
+package com.theoplayer.android.ui.demo
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,7 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.theoplayer.android.api.THEOplayerConfig
-import com.theoplayer.android.ui.ui.theme.THEOplayerAndroidUITheme
+import com.theoplayer.android.ui.DefaultUI
+import com.theoplayer.android.ui.demo.ui.theme.THEOplayerAndroidUITheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

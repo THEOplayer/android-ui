@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.theoplayer.android.ui'
+    namespace 'com.theoplayer.android.ui.demo'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.theoplayer.android.ui"
+        applicationId "com.theoplayer.android.ui.demo"
         minSdk 24
         targetSdk 33
         versionCode 1
