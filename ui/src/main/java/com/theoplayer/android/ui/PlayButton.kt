@@ -7,7 +7,8 @@ import androidx.compose.runtime.Composable
 @Composable
 fun PlayButton(
     play: @Composable () -> Unit = { Text("Play") },
-    pause: @Composable () -> Unit = { Text("Pause") }
+    pause: @Composable () -> Unit = { Text("Pause") },
+    replay: @Composable () -> Unit = { Text("Replay") }
 ) {
     val state = LocalTHEOplayer.current
     Button(onClick = {
@@ -19,10 +20,14 @@ fun PlayButton(
             }
         }
     }) {
-        if (state == null || state.paused.value) {
+        if (state == null) {
             play()
-        } else {
+        } else if (!state.paused.value) {
             pause()
+        } else if (state.ended.value) {
+            replay()
+        } else {
+            play()
         }
     }
 }
