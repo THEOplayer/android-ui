@@ -1,5 +1,5 @@
 plugins {
-    id 'com.android.application'
+    id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
 }
 
@@ -8,7 +8,6 @@ android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.theoplayer.android.ui"
         minSdk 24
         targetSdk 33
         versionCode 1
@@ -61,6 +60,5 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
-    implementation project(':ui')
     implementation "com.theoplayer.theoplayer-sdk-android:unified:$theoplayer_version"
 }
