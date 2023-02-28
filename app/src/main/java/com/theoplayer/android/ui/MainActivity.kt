@@ -3,6 +3,8 @@ package com.theoplayer.android.ui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +15,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.theoplayer.android.api.THEOplayerConfig
@@ -49,18 +52,26 @@ fun UIController(
 ) {
     val theoplayerView = remember { mutableStateOf<THEOplayerView?>(null) }
 
-    AndroidView(
-        modifier = Modifier.fillMaxSize(),
-        factory = { context ->
-            THEOplayerView(context, config).also {
-                it.settings.isFullScreenOrientationCoupled = true
-                it.player.source = SourceDescription.Builder(
-                    TypedSource.Builder("https://amssamples.streaming.mediaservices.windows.net/7ceb010f-d9a3-467a-915e-5728acced7e3/ElephantsDreamMultiAudio.ism/manifest(format=mpd-time-csf)")
-                        .build()
-                ).build()
-                theoplayerView.value = it
-            }
-        })
+    if (LocalInspectionMode.current) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        )
+    } else {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                THEOplayerView(context, config).also {
+                    it.settings.isFullScreenOrientationCoupled = true
+                    it.player.source = SourceDescription.Builder(
+                        TypedSource.Builder("https://amssamples.streaming.mediaservices.windows.net/7ceb010f-d9a3-467a-915e-5728acced7e3/ElephantsDreamMultiAudio.ism/manifest(format=mpd-time-csf)")
+                            .build()
+                    ).build()
+                    theoplayerView.value = it
+                }
+            })
+    }
 
     CompositionLocalProvider(LocalTHEOplayer provides theoplayerView.value?.player) {
         Column(modifier = Modifier.fillMaxSize()) {
