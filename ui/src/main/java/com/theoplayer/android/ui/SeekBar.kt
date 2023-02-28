@@ -25,6 +25,7 @@ fun SeekBar(
     }
 
     val seekTime = remember { mutableStateOf<Float?>(null) }
+    val wasPlayingBeforeSeek = remember { mutableStateOf(false) }
 
     Slider(modifier = modifier,
         colors = colors,
@@ -34,11 +35,19 @@ fun SeekBar(
         onValueChange = { time ->
             seekTime.value = time
             state?.player?.let {
+                if (!it.isPaused) {
+                    wasPlayingBeforeSeek.value = true
+                    it.pause()
+                }
                 it.currentTime = time.toDouble()
             }
         },
         onValueChangeFinished = {
             seekTime.value = null
+            if (wasPlayingBeforeSeek.value) {
+                state?.player?.play()
+                wasPlayingBeforeSeek.value = false
+            }
         }
     )
 }
