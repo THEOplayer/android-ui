@@ -22,6 +22,7 @@ fun UIController(
     config: THEOplayerConfig, bottomControlBar: @Composable () -> Unit
 ) {
     val theoplayerView = remember { mutableStateOf<THEOplayerView?>(null) }
+    val state = rememberPlayerState(theoplayerView.value?.player)
 
     if (LocalInspectionMode.current) {
         Box(
@@ -44,7 +45,7 @@ fun UIController(
             })
     }
 
-    CompositionLocalProvider(LocalTHEOplayer provides theoplayerView.value?.player) {
+    CompositionLocalProvider(LocalTHEOplayer provides state) {
         Column(modifier = Modifier.fillMaxSize()) {
             bottomControlBar()
         }
