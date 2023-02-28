@@ -12,14 +12,14 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.player.PauseEvent
-import com.theoplayer.android.api.event.player.PlayEvent
-import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.event.player.*
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
@@ -75,6 +75,7 @@ fun DefaultUI(config: THEOplayerConfig) {
         Row {
             PlayButton()
         }
+        ErrorDisplay()
     }
 }
 
@@ -113,6 +114,28 @@ fun PlayButton(
         } else {
             pause()
         }
+    }
+}
+
+@Composable
+fun ErrorDisplay() {
+    val player = LocalTHEOplayer.current
+    val error by produceState<THEOplayerException?>(initialValue = null, player) {
+        val sourceChangeListener = EventListener<SourceChangeEvent> { value = null }
+        val errorListener = EventListener<ErrorEvent> { event -> value = event.errorObject }
+        player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
+        player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
+        awaitDispose {
+            player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
+            player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
+        }
+    }
+
+    error?.let {
+        Text(
+            color = Color.Red,
+            text = "${it.message}"
+        )
     }
 }
 
