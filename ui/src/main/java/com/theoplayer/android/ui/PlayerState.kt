@@ -1,9 +1,11 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.*
+import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.*
+import com.theoplayer.android.api.fullscreen.FullScreenChangeListener
 import com.theoplayer.android.api.player.Player
 
 interface PlayerState {
@@ -16,11 +18,12 @@ interface PlayerState {
     val ended: Boolean
     val seeking: Boolean
     val error: THEOplayerException?
+    var fullscreen: Boolean
 }
 
 @Composable
-fun rememberPlayerState(player: Player?): PlayerState {
-    val state = remember(player) { PlayerStateImpl(player) }
+fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
+    val state = remember(theoplayerView) { PlayerStateImpl(theoplayerView) }
     DisposableEffect(state) {
         onDispose {
             state.dispose()
@@ -29,7 +32,8 @@ fun rememberPlayerState(player: Player?): PlayerState {
     return state
 }
 
-private class PlayerStateImpl(override val player: Player?) : PlayerState {
+private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : PlayerState {
+    override val player = theoplayerView?.player
     override var currentTime by mutableStateOf(0.0)
     override var duration by mutableStateOf(Double.NaN)
     override var seekable by mutableStateOf(TimeRanges(listOf()))
@@ -70,6 +74,27 @@ private class PlayerStateImpl(override val player: Player?) : PlayerState {
         updateDuration()
     }
 
+    private var _fullscreen by mutableStateOf(false)
+    override var fullscreen: Boolean
+        get() = _fullscreen
+        set(value) {
+            _fullscreen = value
+            if (value) {
+                theoplayerView?.fullScreenManager?.requestFullScreen()
+            } else {
+                theoplayerView?.fullScreenManager?.exitFullScreen()
+            }
+        }
+    val fullscreenListener = object : FullScreenChangeListener {
+        override fun onEnterFullScreen() {
+            _fullscreen = true
+        }
+
+        override fun onExitFullScreen() {
+            _fullscreen = false
+        }
+    }
+
     init {
         updateCurrentTimeAndPlaybackState()
         updateDuration()
@@ -82,6 +107,7 @@ private class PlayerStateImpl(override val player: Player?) : PlayerState {
         player?.addEventListener(PlayerEventTypes.SEEKED, seekedListener)
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
+        theoplayerView?.fullScreenManager?.addFullScreenChangeListener(fullscreenListener)
     }
 
     fun dispose() {
@@ -94,5 +120,6 @@ private class PlayerStateImpl(override val player: Player?) : PlayerState {
         player?.removeEventListener(PlayerEventTypes.SEEKED, seekedListener)
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
+        theoplayerView?.fullScreenManager?.removeFullScreenChangeListener(fullscreenListener)
     }
 }

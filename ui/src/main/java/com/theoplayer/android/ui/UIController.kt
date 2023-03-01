@@ -26,7 +26,7 @@ fun UIController(
     bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     val theoplayerView = rememberTHEOplayerView(config)
-    val state = rememberPlayerState(theoplayerView.player)
+    val state = rememberPlayerState(theoplayerView)
 
     if (LocalInspectionMode.current) {
         Box(
