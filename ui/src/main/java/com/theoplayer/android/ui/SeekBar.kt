@@ -14,8 +14,8 @@ fun SeekBar(
     colors: SliderColors = SliderDefaults.colors()
 ) {
     val state = LocalTHEOplayer.current
-    val currentTime = state?.currentTime?.value?.toFloat() ?: 0.0f
-    val seekable = state?.seekable?.value ?: TimeRanges(listOf())
+    val currentTime = state?.currentTime?.toFloat() ?: 0.0f
+    val seekable = state?.seekable ?: TimeRanges(listOf())
     val valueRange = if (seekable.ranges.isEmpty()) {
         0f.rangeTo(0f)
     } else {
@@ -27,7 +27,8 @@ fun SeekBar(
     val seekTime = remember { mutableStateOf<Float?>(null) }
     val wasPlayingBeforeSeek = remember { mutableStateOf(false) }
 
-    Slider(modifier = modifier,
+    Slider(
+        modifier = modifier,
         colors = colors,
         value = seekTime.value ?: currentTime,
         valueRange = valueRange,

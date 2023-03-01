@@ -12,8 +12,8 @@ fun CurrentTimeDisplay(
     showDuration: Boolean = false,
 ) {
     val state = LocalTHEOplayer.current
-    val currentTime = state?.currentTime?.value ?: 0.0
-    val duration = state?.duration?.value ?: Double.NaN
+    val currentTime = state?.currentTime ?: 0.0
+    val duration = state?.duration ?: Double.NaN
 
     val text = StringBuilder()
     text.append(formatTime(currentTime, duration))

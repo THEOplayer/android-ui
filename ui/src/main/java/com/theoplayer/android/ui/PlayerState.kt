@@ -9,13 +9,13 @@ import com.theoplayer.android.api.player.Player
 interface PlayerState {
     val player: Player?
 
-    val currentTime: State<Double>
-    val duration: State<Double>
-    val seekable: State<TimeRanges>
-    val paused: State<Boolean>
-    val ended: State<Boolean>
-    val seeking: State<Boolean>
-    val error: State<THEOplayerException?>
+    val currentTime: Double
+    val duration: Double
+    val seekable: TimeRanges
+    val paused: Boolean
+    val ended: Boolean
+    val seeking: Boolean
+    val error: THEOplayerException?
 }
 
 @Composable
@@ -30,26 +30,26 @@ fun rememberPlayerState(player: Player?): PlayerState {
 }
 
 private class PlayerStateImpl(override val player: Player?) : PlayerState {
-    override val currentTime = mutableStateOf(0.0)
-    override val duration = mutableStateOf(Double.NaN)
-    override val seekable = mutableStateOf(TimeRanges(listOf()))
-    override val paused = mutableStateOf(true)
-    override val ended = mutableStateOf(false)
-    override val seeking = mutableStateOf(false)
-    override val error = mutableStateOf<THEOplayerException?>(null)
+    override var currentTime by mutableStateOf(0.0)
+    override var duration by mutableStateOf(Double.NaN)
+    override var seekable by mutableStateOf(TimeRanges(listOf()))
+    override var paused by mutableStateOf(true)
+    override var ended by mutableStateOf(false)
+    override var seeking by mutableStateOf(false)
+    override var error by mutableStateOf<THEOplayerException?>(null)
 
     val updateCurrentTime = {
-        currentTime.value = player?.currentTime ?: 0.0
-        seekable.value = player?.seekable?.let { toTimeRanges(it) } ?: TimeRanges(listOf())
+        currentTime = player?.currentTime ?: 0.0
+        seekable = player?.seekable?.let { toTimeRanges(it) } ?: TimeRanges(listOf())
     }
     val updateDuration = {
-        duration.value = player?.duration ?: Double.NaN
+        duration = player?.duration ?: Double.NaN
     }
     val updateCurrentTimeAndPlaybackState = {
         updateCurrentTime()
-        paused.value = player?.isPaused ?: true
-        ended.value = player?.isEnded ?: false
-        seeking.value = player?.isSeeking ?: false
+        paused = player?.isPaused ?: true
+        ended = player?.isEnded ?: false
+        seeking = player?.isSeeking ?: false
     }
     val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
     val pauseListener = EventListener<PauseEvent> { updateCurrentTimeAndPlaybackState() }
@@ -60,12 +60,12 @@ private class PlayerStateImpl(override val player: Player?) : PlayerState {
         EventListener<SeekingEvent> { updateCurrentTimeAndPlaybackState() }
     val seekedListener = EventListener<SeekedEvent> { updateCurrentTimeAndPlaybackState() }
     val sourceChangeListener = EventListener<SourceChangeEvent> {
-        error.value = null
+        error = null
         updateCurrentTimeAndPlaybackState()
         updateDuration()
     }
     val errorListener = EventListener<ErrorEvent> { event ->
-        error.value = event.errorObject
+        error = event.errorObject
         updateCurrentTimeAndPlaybackState()
         updateDuration()
     }

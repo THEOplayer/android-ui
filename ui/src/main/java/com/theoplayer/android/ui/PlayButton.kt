@@ -40,7 +40,7 @@ fun PlayButton(
         modifier = modifier,
         onClick = {
             state?.let {
-                if (it.paused.value) {
+                if (it.paused) {
                     it.player?.play()
                 } else {
                     it.player?.pause()
@@ -49,9 +49,9 @@ fun PlayButton(
         }) {
         if (state == null) {
             play()
-        } else if (!state.paused.value) {
+        } else if (!state.paused) {
             pause()
-        } else if (state.ended.value) {
+        } else if (state.ended) {
             replay()
         } else {
             play()

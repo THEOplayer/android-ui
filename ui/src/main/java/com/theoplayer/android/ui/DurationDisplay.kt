@@ -11,7 +11,7 @@ fun DurationDisplay(
     color: Color = Color.Unspecified
 ) {
     val state = LocalTHEOplayer.current
-    val duration = state?.duration?.value ?: Double.NaN
+    val duration = state?.duration ?: Double.NaN
 
     Text(modifier = modifier, color = color, text = formatTime(duration))
 }

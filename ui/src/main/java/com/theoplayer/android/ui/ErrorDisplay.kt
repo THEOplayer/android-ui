@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ErrorDisplay() {
-    val error = LocalTHEOplayer.current?.error?.value
+    val error = LocalTHEOplayer.current?.error
 
     error?.let {
         Text(
