@@ -17,6 +17,8 @@ interface PlayerState {
     val paused: Boolean
     val ended: Boolean
     val seeking: Boolean
+    var volume: Double
+    var muted: Boolean
     val error: THEOplayerException?
     var fullscreen: Boolean
 }
@@ -74,6 +76,26 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         updateDuration()
     }
 
+    private var _volume by mutableStateOf(1.0)
+    private var _muted by mutableStateOf(false)
+    override var volume: Double
+        get() = _volume
+        set(value) {
+            _volume = value
+            player?.volume = value
+        }
+    override var muted: Boolean
+        get() = _muted
+        set(value) {
+            _muted = value
+            player?.isMuted = value
+        }
+    val updateVolumeAndMuted = {
+        _volume = player?.volume ?: 1.0
+        _muted = player?.isMuted ?: false
+    }
+    val volumeChangeListener = EventListener<VolumeChangeEvent> { updateVolumeAndMuted() }
+
     private var _fullscreen by mutableStateOf(false)
     override var fullscreen: Boolean
         get() = _fullscreen
@@ -98,6 +120,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     init {
         updateCurrentTimeAndPlaybackState()
         updateDuration()
+        updateVolumeAndMuted()
         player?.addEventListener(PlayerEventTypes.PLAY, playListener)
         player?.addEventListener(PlayerEventTypes.PAUSE, pauseListener)
         player?.addEventListener(PlayerEventTypes.ENDED, endedListener)
@@ -105,6 +128,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.addEventListener(PlayerEventTypes.DURATIONCHANGE, durationChangeListener)
         player?.addEventListener(PlayerEventTypes.SEEKING, seekingListener)
         player?.addEventListener(PlayerEventTypes.SEEKED, seekedListener)
+        player?.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
         theoplayerView?.fullScreenManager?.addFullScreenChangeListener(fullscreenListener)
@@ -118,6 +142,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.removeEventListener(PlayerEventTypes.DURATIONCHANGE, durationChangeListener)
         player?.removeEventListener(PlayerEventTypes.SEEKING, seekingListener)
         player?.removeEventListener(PlayerEventTypes.SEEKED, seekedListener)
+        player?.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
         theoplayerView?.fullScreenManager?.removeFullScreenChangeListener(fullscreenListener)

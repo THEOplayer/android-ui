@@ -20,6 +20,7 @@ fun DefaultUI(config: THEOplayerConfig) {
             SeekBar()
             Row {
                 PlayButton(modifier = Modifier.align(Alignment.CenterVertically))
+                MuteButton(modifier = Modifier.align(Alignment.CenterVertically))
                 CurrentTimeDisplay(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     color = Color.White,
