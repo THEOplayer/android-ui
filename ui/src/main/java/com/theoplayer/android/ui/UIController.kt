@@ -25,16 +25,18 @@ fun UIController(
     topChrome: (@Composable ColumnScope.() -> Unit)? = null,
     bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
 ) {
-    val theoplayerView = rememberTHEOplayerView(config)
-    val state = rememberPlayerState(theoplayerView)
+    val state: PlayerState?
 
     if (LocalInspectionMode.current) {
+        state = null
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
         )
     } else {
+        val theoplayerView = rememberTHEOplayerView(config)
+        state = rememberPlayerState(theoplayerView)
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { theoplayerView })
