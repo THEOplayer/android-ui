@@ -7,6 +7,7 @@ import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.*
 import com.theoplayer.android.api.fullscreen.FullScreenChangeListener
 import com.theoplayer.android.api.player.Player
+import com.theoplayer.android.api.player.ReadyState
 
 interface PlayerState {
     val player: Player?
@@ -17,10 +18,12 @@ interface PlayerState {
     val paused: Boolean
     val ended: Boolean
     val seeking: Boolean
+    val readyState: ReadyState
     var volume: Double
     var muted: Boolean
     val error: THEOplayerException?
     var fullscreen: Boolean
+    val loading: Boolean
 }
 
 @Composable
@@ -42,6 +45,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     override var paused by mutableStateOf(true)
     override var ended by mutableStateOf(false)
     override var seeking by mutableStateOf(false)
+    override var readyState by mutableStateOf(ReadyState.HAVE_NOTHING)
     override var error by mutableStateOf<THEOplayerException?>(null)
 
     val updateCurrentTime = {
@@ -56,6 +60,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         paused = player?.isPaused ?: true
         ended = player?.isEnded ?: false
         seeking = player?.isSeeking ?: false
+        readyState = player?.readyState ?: ReadyState.HAVE_NOTHING
     }
     val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
     val pauseListener = EventListener<PauseEvent> { updateCurrentTimeAndPlaybackState() }
@@ -65,6 +70,8 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     val seekingListener =
         EventListener<SeekingEvent> { updateCurrentTimeAndPlaybackState() }
     val seekedListener = EventListener<SeekedEvent> { updateCurrentTimeAndPlaybackState() }
+    val readyStateChangeListener =
+        EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
     val sourceChangeListener = EventListener<SourceChangeEvent> {
         error = null
         updateCurrentTimeAndPlaybackState()
@@ -117,6 +124,10 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         }
     }
 
+    override val loading by derivedStateOf {
+        !paused && !ended && (seeking || readyState.ordinal < ReadyState.HAVE_FUTURE_DATA.ordinal)
+    }
+
     init {
         updateCurrentTimeAndPlaybackState()
         updateDuration()
@@ -128,6 +139,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.addEventListener(PlayerEventTypes.DURATIONCHANGE, durationChangeListener)
         player?.addEventListener(PlayerEventTypes.SEEKING, seekingListener)
         player?.addEventListener(PlayerEventTypes.SEEKED, seekedListener)
+        player?.addEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeListener)
         player?.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
@@ -142,6 +154,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.removeEventListener(PlayerEventTypes.DURATIONCHANGE, durationChangeListener)
         player?.removeEventListener(PlayerEventTypes.SEEKING, seekingListener)
         player?.removeEventListener(PlayerEventTypes.SEEKED, seekedListener)
+        player?.removeEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeListener)
         player?.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)

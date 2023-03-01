@@ -13,6 +13,9 @@ import com.theoplayer.android.api.THEOplayerConfig
 fun DefaultUI(config: THEOplayerConfig) {
     UIController(
         config = config,
+        centerOverlay = {
+            LoadingSpinner()
+        },
         topChrome = {
             ErrorDisplay()
         },

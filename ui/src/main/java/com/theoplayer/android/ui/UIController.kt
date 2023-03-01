@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -22,6 +23,7 @@ import com.theoplayer.android.api.source.TypedSource
 @Composable
 fun UIController(
     config: THEOplayerConfig,
+    centerOverlay: (@Composable ColumnScope.() -> Unit)? = null,
     topChrome: (@Composable ColumnScope.() -> Unit)? = null,
     bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
 ) {
@@ -43,6 +45,14 @@ fun UIController(
     }
 
     CompositionLocalProvider(LocalTHEOplayer provides state) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            centerOverlay?.let { it() }
+        }
         Column(modifier = Modifier.fillMaxSize()) {
             topChrome?.let { it() }
             Spacer(modifier = Modifier.weight(1f))
