@@ -1,9 +1,7 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateOf
@@ -19,7 +17,9 @@ import com.theoplayer.android.api.source.TypedSource
 
 @Composable
 fun UIController(
-    config: THEOplayerConfig, bottomControlBar: @Composable () -> Unit
+    config: THEOplayerConfig,
+    topChrome: (@Composable ColumnScope.() -> Unit)? = null,
+    bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     val theoplayerView = remember { mutableStateOf<THEOplayerView?>(null) }
     val state = rememberPlayerState(theoplayerView.value?.player)
@@ -47,7 +47,9 @@ fun UIController(
 
     CompositionLocalProvider(LocalTHEOplayer provides state) {
         Column(modifier = Modifier.fillMaxSize()) {
-            bottomControlBar()
+            topChrome?.let { it() }
+            Spacer(modifier = Modifier.weight(1f))
+            bottomChrome?.let { it() }
         }
     }
 }

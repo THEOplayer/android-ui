@@ -8,14 +8,18 @@ import com.theoplayer.android.api.THEOplayerConfig
 
 @Composable
 fun DefaultUI(config: THEOplayerConfig) {
-    UIController(config) {
-        SeekBar()
-        Row {
-            PlayButton()
-            CurrentTimeDisplay(color = Color.White, showDuration = true)
-        }
-        ErrorDisplay()
-    }
+    UIController(
+        config = config,
+        topChrome = {
+            ErrorDisplay()
+        },
+        bottomChrome = {
+            SeekBar()
+            Row {
+                PlayButton()
+                CurrentTimeDisplay(color = Color.White, showDuration = true)
+            }
+        })
 }
 
 @Preview(showBackground = true)
