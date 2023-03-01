@@ -1,35 +1,42 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun PlayButton(
     modifier: Modifier = Modifier,
-    play: @Composable RowScope.() -> Unit = {
-        Text(
-            modifier = Modifier.alignByBaseline(),
-            text = "Play"
+    play: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.PlayArrow,
+            tint = Color.White,
+            contentDescription = "Play"
         )
     },
-    pause: @Composable RowScope.() -> Unit = {
-        Text(
-            modifier = Modifier.alignByBaseline(),
-            text = "Pause"
+    pause: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.Pause,
+            tint = Color.White,
+            contentDescription = "Pause"
         )
     },
-    replay: @Composable RowScope.() -> Unit = {
-        Text(
-            modifier = Modifier.alignByBaseline(),
-            text = "Replay"
+    replay: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.Replay,
+            tint = Color.White,
+            contentDescription = "Replay"
         )
     }
 ) {
     val state = LocalTHEOplayer.current
-    Button(
+    IconButton(
         modifier = modifier,
         onClick = {
             state?.let {

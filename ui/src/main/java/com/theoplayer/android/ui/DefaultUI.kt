@@ -2,6 +2,7 @@ package com.theoplayer.android.ui
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -17,9 +18,9 @@ fun DefaultUI(config: THEOplayerConfig) {
         bottomChrome = {
             SeekBar()
             Row {
-                PlayButton(modifier = Modifier.alignByBaseline())
+                PlayButton(modifier = Modifier.align(Alignment.CenterVertically))
                 CurrentTimeDisplay(
-                    modifier = Modifier.alignByBaseline(),
+                    modifier = Modifier.align(Alignment.CenterVertically),
                     color = Color.White,
                     showDuration = true
                 )
