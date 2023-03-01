@@ -22,7 +22,10 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
                 ) {
-                    DefaultUI(THEOplayerConfig.Builder().build())
+                    DefaultUI(
+                        config = THEOplayerConfig.Builder().build(),
+                        title = "Elephant's Dream"
+                    )
                 }
             }
         }
