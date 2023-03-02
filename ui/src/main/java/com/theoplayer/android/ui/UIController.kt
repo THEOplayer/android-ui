@@ -31,23 +31,23 @@ fun UIController(
     val state = rememberPlayerState(theoplayerView)
 
     val ui = remember {
-    movableContentOf {
-    CompositionLocalProvider(LocalTHEOplayer provides state) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            centerOverlay?.let { it() }
+        movableContentOf {
+            CompositionLocalProvider(LocalTHEOplayer provides state) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    centerOverlay?.let { it() }
+                }
+                Column(modifier = Modifier.fillMaxSize()) {
+                    topChrome?.let { it() }
+                    Spacer(modifier = Modifier.weight(1f))
+                    bottomChrome?.let { it() }
+                }
+            }
         }
-        Column(modifier = Modifier.fillMaxSize()) {
-            topChrome?.let { it() }
-            Spacer(modifier = Modifier.weight(1f))
-            bottomChrome?.let { it() }
-        }
-    }
-    }
     }
 
     if (theoplayerView == null) {
