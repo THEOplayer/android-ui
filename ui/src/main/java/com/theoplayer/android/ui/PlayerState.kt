@@ -114,14 +114,14 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
                 theoplayerView?.fullScreenManager?.exitFullScreen()
             }
         }
-    val fullscreenListener = object : FullScreenChangeListener {
-        override fun onEnterFullScreen() {
-            _fullscreen = true
-        }
 
-        override fun onExitFullScreen() {
-            _fullscreen = false
-        }
+    fun updateFullscreen() {
+        _fullscreen = theoplayerView?.fullScreenManager?.isFullScreen ?: false
+    }
+
+    val fullscreenListener = object : FullScreenChangeListener {
+        override fun onEnterFullScreen() = updateFullscreen()
+        override fun onExitFullScreen() = updateFullscreen()
     }
 
     override val loading by derivedStateOf {
@@ -132,6 +132,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         updateCurrentTimeAndPlaybackState()
         updateDuration()
         updateVolumeAndMuted()
+        updateFullscreen()
         player?.addEventListener(PlayerEventTypes.PLAY, playListener)
         player?.addEventListener(PlayerEventTypes.PAUSE, pauseListener)
         player?.addEventListener(PlayerEventTypes.ENDED, endedListener)
