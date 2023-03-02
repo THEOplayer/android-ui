@@ -48,27 +48,29 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     override var readyState by mutableStateOf(ReadyState.HAVE_NOTHING)
     override var error by mutableStateOf<THEOplayerException?>(null)
 
-    val updateCurrentTime = {
+    private fun updateCurrentTime() {
         currentTime = player?.currentTime ?: 0.0
         seekable = player?.seekable?.let { toTimeRanges(it) } ?: TimeRanges(listOf())
     }
-    val updateDuration = {
+
+    private fun updateDuration() {
         duration = player?.duration ?: Double.NaN
     }
-    val updateCurrentTimeAndPlaybackState = {
+
+    private fun updateCurrentTimeAndPlaybackState() {
         updateCurrentTime()
         paused = player?.isPaused ?: true
         ended = player?.isEnded ?: false
         seeking = player?.isSeeking ?: false
         readyState = player?.readyState ?: ReadyState.HAVE_NOTHING
     }
+
     val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
     val pauseListener = EventListener<PauseEvent> { updateCurrentTimeAndPlaybackState() }
     val endedListener = EventListener<EndedEvent> { updateCurrentTimeAndPlaybackState() }
     val timeUpdateListener = EventListener<TimeUpdateEvent> { updateCurrentTime() }
     val durationChangeListener = EventListener<DurationChangeEvent> { updateDuration() }
-    val seekingListener =
-        EventListener<SeekingEvent> { updateCurrentTimeAndPlaybackState() }
+    val seekingListener = EventListener<SeekingEvent> { updateCurrentTimeAndPlaybackState() }
     val seekedListener = EventListener<SeekedEvent> { updateCurrentTimeAndPlaybackState() }
     val readyStateChangeListener =
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
@@ -97,10 +99,12 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
             _muted = value
             player?.isMuted = value
         }
-    val updateVolumeAndMuted = {
+
+    private fun updateVolumeAndMuted() {
         _volume = player?.volume ?: 1.0
         _muted = player?.isMuted ?: false
     }
+
     val volumeChangeListener = EventListener<VolumeChangeEvent> { updateVolumeAndMuted() }
 
     private var _fullscreen by mutableStateOf(false)
@@ -115,7 +119,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
             }
         }
 
-    fun updateFullscreen() {
+    private fun updateFullscreen() {
         _fullscreen = theoplayerView?.fullScreenManager?.isFullScreen ?: false
     }
 
