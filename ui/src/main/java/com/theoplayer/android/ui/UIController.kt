@@ -1,17 +1,13 @@
 package com.theoplayer.android.ui
 
+import android.view.ViewGroup
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.platform.*
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -27,23 +23,15 @@ fun UIController(
     topChrome: (@Composable ColumnScope.() -> Unit)? = null,
     bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
 ) {
-    val state: PlayerState?
-
-    if (LocalInspectionMode.current) {
-        state = null
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-        )
+    val theoplayerView = if (LocalInspectionMode.current) {
+        null
     } else {
-        val theoplayerView = rememberTHEOplayerView(config)
-        state = rememberPlayerState(theoplayerView)
-        AndroidView(
-            modifier = Modifier.fillMaxSize(),
-            factory = { theoplayerView })
+        rememberTHEOplayerView(config)
     }
+    val state = rememberPlayerState(theoplayerView)
 
+    val ui = remember {
+    movableContentOf {
     CompositionLocalProvider(LocalTHEOplayer provides state) {
         Column(
             modifier = Modifier
@@ -58,6 +46,37 @@ fun UIController(
             Spacer(modifier = Modifier.weight(1f))
             bottomChrome?.let { it() }
         }
+    }
+    }
+    }
+
+    if (theoplayerView == null) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            ui()
+        }
+    } else {
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { context ->
+                // Install inside THEOplayerView's UI container,
+                // so THEOplayer can move it to a separate window when it goes fullscreen
+                val uiContainer =
+                    theoplayerView.findViewById<ViewGroup>(com.theoplayer.android.R.id.theo_ui_container)
+                uiContainer.addView(ComposeView(context).apply {
+                    // Re-create composition when this view moves between windows
+                    setViewCompositionStrategy(
+                        ViewCompositionStrategy.DisposeOnDetachedFromWindow
+                    )
+                    setContent {
+                        ui()
+                    }
+                })
+                theoplayerView
+            })
     }
 }
 
