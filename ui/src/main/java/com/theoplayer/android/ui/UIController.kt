@@ -91,7 +91,6 @@ fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember {
         THEOplayerView(context, config).apply {
-            settings.isFullScreenOrientationCoupled = true
             player.source = SourceDescription.Builder(
                 TypedSource.Builder("https://amssamples.streaming.mediaservices.windows.net/7ceb010f-d9a3-467a-915e-5728acced7e3/ElephantsDreamMultiAudio.ism/manifest(format=mpd-time-csf)")
                     .build()
