@@ -43,6 +43,7 @@ fun DefaultUI(
             Row {
                 PlayButton(modifier = Modifier.align(Alignment.CenterVertically))
                 MuteButton(modifier = Modifier.align(Alignment.CenterVertically))
+                LiveButton(modifier = Modifier.align(Alignment.CenterVertically))
                 CurrentTimeDisplay(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     color = Color.White,

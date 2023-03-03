@@ -24,6 +24,13 @@ interface PlayerState {
     val error: THEOplayerException?
     var fullscreen: Boolean
     val loading: Boolean
+    val streamType: StreamType
+}
+
+enum class StreamType {
+    Vod,
+    Live,
+    Dvr
 }
 
 @Composable
@@ -131,6 +138,20 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
 
     override val loading by derivedStateOf {
         !paused && !ended && (seeking || readyState.ordinal < ReadyState.HAVE_FUTURE_DATA.ordinal)
+    }
+
+    override val streamType by derivedStateOf {
+        if (duration.isInfinite()) {
+            val slidingWindow = (seekable.lastEnd ?: 0.0) - (seekable.firstStart ?: 0.0)
+            // TODO Make DVR threshold configurable?
+            if (slidingWindow >= 60) {
+                StreamType.Dvr
+            } else {
+                StreamType.Live
+            }
+        } else {
+            StreamType.Vod
+        }
     }
 
     init {
