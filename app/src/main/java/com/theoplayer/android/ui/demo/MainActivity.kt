@@ -4,8 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -22,9 +22,19 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background
                 ) {
-                    DefaultUI(
-                        config = THEOplayerConfig.Builder().build(),
-                        title = "Elephant's Dream"
+                    Scaffold(
+                        topBar = {
+                            TopAppBar(title = {
+                                Text(text = "Demo")
+                            })
+                        },
+                        content = { padding ->
+                            DefaultUI(
+                                modifier = Modifier.padding(padding),
+                                config = THEOplayerConfig.Builder().build(),
+                                title = "Elephant's Dream"
+                            )
+                        }
                     )
                 }
             }
