@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,10 +14,12 @@ import com.theoplayer.android.api.THEOplayerConfig
 
 @Composable
 fun DefaultUI(
+    modifier: Modifier = Modifier,
     config: THEOplayerConfig,
     title: String? = null
 ) {
     UIController(
+        modifier = modifier,
         config = config,
         centerOverlay = {
             LoadingSpinner()

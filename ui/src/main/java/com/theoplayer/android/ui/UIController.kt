@@ -19,6 +19,7 @@ import com.theoplayer.android.api.source.TypedSource
 @Composable
 fun UIController(
     config: THEOplayerConfig,
+    modifier: Modifier = Modifier,
     centerOverlay: (@Composable ColumnScope.() -> Unit)? = null,
     topChrome: (@Composable ColumnScope.() -> Unit)? = null,
     bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
@@ -52,7 +53,7 @@ fun UIController(
 
     if (theoplayerView == null) {
         Box(
-            modifier = Modifier
+            modifier = modifier
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
@@ -60,7 +61,7 @@ fun UIController(
         }
     } else {
         AndroidView(
-            modifier = Modifier.fillMaxSize(),
+            modifier = modifier.fillMaxSize(),
             factory = { context ->
                 // Install inside THEOplayerView's UI container,
                 // so THEOplayer can move it to a separate window when it goes fullscreen

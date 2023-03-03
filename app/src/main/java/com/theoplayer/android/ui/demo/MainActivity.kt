@@ -36,6 +36,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     THEOplayerAndroidUITheme {
-        DefaultUI(THEOplayerConfig.Builder().build())
+        DefaultUI(config = THEOplayerConfig.Builder().build())
     }
 }
