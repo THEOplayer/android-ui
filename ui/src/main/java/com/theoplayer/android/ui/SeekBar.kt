@@ -16,13 +16,7 @@ fun SeekBar(
     val state = LocalTHEOplayer.current
     val currentTime = state?.currentTime?.toFloat() ?: 0.0f
     val seekable = state?.seekable ?: TimeRanges(listOf())
-    val valueRange = if (seekable.ranges.isEmpty()) {
-        0f.rangeTo(0f)
-    } else {
-        val start = seekable.ranges.first().first
-        val end = seekable.ranges.last().second
-        start.toFloat().rangeTo(end.toFloat())
-    }
+    val valueRange = (seekable.firstStart ?: 0).toFloat().rangeTo((seekable.lastEnd ?: 0).toFloat())
 
     val seekTime = remember { mutableStateOf<Float?>(null) }
     val wasPlayingBeforeSeek = remember { mutableStateOf(false) }

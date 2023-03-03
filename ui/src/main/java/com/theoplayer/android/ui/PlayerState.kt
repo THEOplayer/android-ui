@@ -50,7 +50,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
 
     private fun updateCurrentTime() {
         currentTime = player?.currentTime ?: 0.0
-        seekable = player?.seekable?.let { toTimeRanges(it) } ?: TimeRanges(listOf())
+        seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges(listOf())
     }
 
     private fun updateDuration() {
