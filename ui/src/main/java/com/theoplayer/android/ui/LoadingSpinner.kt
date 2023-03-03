@@ -1,7 +1,7 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun LoadingSpinner(
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.primary,
+    color: Color = MaterialTheme.colorScheme.primary,
 ) {
     val state = LocalTHEOplayer.current
     if (state?.loading == true) {
