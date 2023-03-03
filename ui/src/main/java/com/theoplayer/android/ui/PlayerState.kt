@@ -1,11 +1,11 @@
 package com.theoplayer.android.ui
 
+import android.view.View
 import androidx.compose.runtime.*
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.*
-import com.theoplayer.android.api.fullscreen.FullScreenChangeListener
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.ReadyState
 
@@ -107,26 +107,27 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
 
     val volumeChangeListener = EventListener<VolumeChangeEvent> { updateVolumeAndMuted() }
 
+    private val fullscreenHandler: FullscreenHandler? =
+        theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
+            ?.let { FullscreenHandlerImpl(it) }
     private var _fullscreen by mutableStateOf(false)
     override var fullscreen: Boolean
         get() = _fullscreen
         set(value) {
             _fullscreen = value
             if (value) {
-                theoplayerView?.fullScreenManager?.requestFullScreen()
+                fullscreenHandler?.requestFullscreen()
             } else {
-                theoplayerView?.fullScreenManager?.exitFullScreen()
+                fullscreenHandler?.exitFullscreen()
             }
         }
 
     private fun updateFullscreen() {
-        _fullscreen = theoplayerView?.fullScreenManager?.isFullScreen ?: false
+        _fullscreen = fullscreenHandler?.fullscreen ?: false
     }
 
-    val fullscreenListener = object : FullScreenChangeListener {
-        override fun onEnterFullScreen() = updateFullscreen()
-        override fun onExitFullScreen() = updateFullscreen()
-    }
+    val fullscreenListener =
+        FullscreenHandler.OnFullscreenChangeListener { updateFullscreen() }
 
     override val loading by derivedStateOf {
         !paused && !ended && (seeking || readyState.ordinal < ReadyState.HAVE_FUTURE_DATA.ordinal)
@@ -148,7 +149,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
-        theoplayerView?.fullScreenManager?.addFullScreenChangeListener(fullscreenListener)
+        fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
     }
 
     fun dispose() {
@@ -163,6 +164,6 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
-        theoplayerView?.fullScreenManager?.removeFullScreenChangeListener(fullscreenListener)
+        fullscreenHandler?.onFullscreenChangeListener = null
     }
 }

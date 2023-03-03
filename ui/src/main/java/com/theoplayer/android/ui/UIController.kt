@@ -60,17 +60,22 @@ fun UIController(
             ui()
         }
     } else {
+        val lifecycle = LocalLifecycleOwner.current.lifecycle
         AndroidView(
             modifier = modifier.fillMaxSize(),
             factory = { context ->
-                // Install inside THEOplayerView's UI container,
-                // so THEOplayer can move it to a separate window when it goes fullscreen
+                // Install inside THEOplayerView's UI container
                 val uiContainer =
                     theoplayerView.findViewById<ViewGroup>(com.theoplayer.android.R.id.theo_ui_container)
                 uiContainer.addView(ComposeView(context).apply {
-                    // Re-create composition when this view moves between windows
+                    // When entering fullscreen, we remove the view from its original location
+                    // and add it to the activity's root view.
+                    // When it is temporarily removed (and detached from the window),
+                    // we do *not* want to lose the composition. Therefore, don't use the default
+                    // DisposeOnDetachedFromWindow or DisposeOnDetachedFromWindowOrReleasedFromPool
+                    // strategies!
                     setViewCompositionStrategy(
-                        ViewCompositionStrategy.DisposeOnDetachedFromWindow
+                        ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle)
                     )
                     setContent {
                         ui()
