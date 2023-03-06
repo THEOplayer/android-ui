@@ -25,12 +25,10 @@ fun DefaultUI(
             LoadingSpinner()
         },
         topChrome = {
-            Row {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 title?.let {
                     Text(
-                        modifier = Modifier
-                            .align(Alignment.CenterVertically)
-                            .padding(8.dp),
+                        modifier = Modifier.padding(8.dp),
                         color = Color.White,
                         text = it
                     )
@@ -40,17 +38,16 @@ fun DefaultUI(
         },
         bottomChrome = {
             SeekBar()
-            Row {
-                PlayButton(modifier = Modifier.align(Alignment.CenterVertically))
-                MuteButton(modifier = Modifier.align(Alignment.CenterVertically))
-                LiveButton(modifier = Modifier.align(Alignment.CenterVertically))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                PlayButton()
+                MuteButton()
+                LiveButton()
                 CurrentTimeDisplay(
-                    modifier = Modifier.align(Alignment.CenterVertically),
                     color = Color.White,
                     showDuration = true
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                FullscreenButton(modifier = Modifier.align(Alignment.CenterVertically))
+                FullscreenButton()
             }
         })
 }
