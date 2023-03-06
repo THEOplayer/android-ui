@@ -1,12 +1,20 @@
 package com.theoplayer.android.ui
 
 import android.view.ViewGroup
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -15,6 +23,9 @@ import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
 
 @Composable
 fun UIController(
@@ -32,9 +43,22 @@ fun UIController(
     }
     val state = rememberPlayerState(theoplayerView)
 
+    var lastTap by remember { mutableStateOf(0L) }
+    val isTappedRecently by produceState(initialValue = true, key1 = lastTap) {
+        value = true
+        if (value) {
+            delay(2.seconds)
+            value = false
+        }
+    }
+    val isUserActive by remember {
+        derivedStateOf { isTappedRecently || state.paused }
+    }
+
     val ui = remember {
         movableContentOf {
             CompositionLocalProvider(LocalTHEOplayer provides state) {
+            Box(modifier = Modifier.anyPointerInput(onInput = { lastTap = it })) {
                 centerOverlay?.let {
                     Row(
                         modifier = Modifier
@@ -45,6 +69,16 @@ fun UIController(
                         it()
                     }
                 }
+                AnimatedVisibility(
+                    visible = isUserActive,
+                    enter = EnterTransition.None,
+                    exit = fadeOut(
+                        animationSpec = tween(
+                            easing = LinearEasing,
+                            durationMillis = 1.seconds.toInt(DurationUnit.MILLISECONDS)
+                        )
+                    )
+                ) {
                 centerChrome?.let {
                     Row(
                         modifier = Modifier
@@ -60,6 +94,8 @@ fun UIController(
                     Spacer(modifier = Modifier.weight(1f))
                     bottomChrome?.let { it() }
                 }
+                }
+            }
             }
         }
     }
@@ -128,4 +164,17 @@ fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     }
 
     return theoplayerView
+}
+
+internal fun Modifier.anyPointerInput(onInput: (time: Long) -> Unit): Modifier {
+    return this.pointerInput(Unit) {
+        forEachGesture {
+            awaitPointerEventScope {
+                val event = awaitPointerEvent(pass = PointerEventPass.Initial)
+                event.changes.lastOrNull()?.let {
+                    onInput(it.uptimeMillis)
+                }
+            }
+        }
+    }
 }
