@@ -2,17 +2,9 @@ package com.theoplayer.android.ui
 
 data class TimeRanges(val ranges: List<Pair<Double, Double>>) {
     val firstStart: Double?
-        get() = if (ranges.isEmpty()) {
-            null
-        } else {
-            ranges.first().first
-        }
+        get() = ranges.firstOrNull()?.first
     val lastEnd: Double?
-        get() = if (ranges.isEmpty()) {
-            null
-        } else {
-            ranges.last().second
-        }
+        get() = ranges.lastOrNull()?.second
 
     companion object {
         @JvmStatic
