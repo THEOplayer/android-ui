@@ -57,12 +57,11 @@ fun UIController(
 
     @Composable
     fun ui() {
-            CompositionLocalProvider(LocalTHEOplayer provides state) {
+        CompositionLocalProvider(LocalTHEOplayer provides state) {
             Box(modifier = Modifier.anyPointerInput(onInput = { lastTap = it })) {
                 centerOverlay?.let {
                     Row(
-                        modifier = Modifier
-                            .fillMaxSize(),
+                        modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -79,24 +78,23 @@ fun UIController(
                         )
                     )
                 ) {
-                centerChrome?.let {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        it()
+                    centerChrome?.let {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            it()
+                        }
+                    }
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        topChrome?.let { it() }
+                        Spacer(modifier = Modifier.weight(1f))
+                        bottomChrome?.let { it() }
                     }
                 }
-                Column(modifier = Modifier.fillMaxSize()) {
-                    topChrome?.let { it() }
-                    Spacer(modifier = Modifier.weight(1f))
-                    bottomChrome?.let { it() }
-                }
-                }
             }
-            }
+        }
     }
 
     if (theoplayerView == null) {
