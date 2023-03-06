@@ -20,8 +20,9 @@ import com.theoplayer.android.api.source.TypedSource
 fun UIController(
     config: THEOplayerConfig,
     modifier: Modifier = Modifier,
-    centerOverlay: (@Composable ColumnScope.() -> Unit)? = null,
+    centerOverlay: (@Composable RowScope.() -> Unit)? = null,
     topChrome: (@Composable ColumnScope.() -> Unit)? = null,
+    centerChrome: (@Composable RowScope.() -> Unit)? = null,
     bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
 ) {
     val theoplayerView = if (LocalInspectionMode.current) {
@@ -34,13 +35,25 @@ fun UIController(
     val ui = remember {
         movableContentOf {
             CompositionLocalProvider(LocalTHEOplayer provides state) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    centerOverlay?.let { it() }
+                centerOverlay?.let {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        it()
+                    }
+                }
+                centerChrome?.let {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        it()
+                    }
                 }
                 Column(modifier = Modifier.fillMaxSize()) {
                     topChrome?.let { it() }

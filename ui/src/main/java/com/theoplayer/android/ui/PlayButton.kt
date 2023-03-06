@@ -13,9 +13,11 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun PlayButton(
     modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
     play: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.PlayArrow,
+            modifier = iconModifier,
             tint = Color.White,
             contentDescription = "Play"
         )
@@ -23,6 +25,7 @@ fun PlayButton(
     pause: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Pause,
+            modifier = iconModifier,
             tint = Color.White,
             contentDescription = "Pause"
         )
@@ -30,6 +33,7 @@ fun PlayButton(
     replay: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Replay,
+            modifier = iconModifier,
             tint = Color.White,
             contentDescription = "Replay"
         )
