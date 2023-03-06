@@ -55,8 +55,7 @@ fun UIController(
         derivedStateOf { isTappedRecently || state.paused }
     }
 
-    @Composable
-    fun ui() {
+    PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
         CompositionLocalProvider(LocalTHEOplayer provides state) {
             Box(modifier = Modifier.anyPointerInput(onInput = { lastTap = it })) {
                 centerOverlay?.let {
@@ -96,7 +95,14 @@ fun UIController(
             }
         }
     }
+}
 
+@Composable
+internal fun PlayerContainer(
+    modifier: Modifier = Modifier,
+    theoplayerView: THEOplayerView? = null,
+    ui: @Composable () -> Unit
+) {
     if (theoplayerView == null) {
         Box(
             modifier = modifier
