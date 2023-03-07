@@ -23,7 +23,10 @@ fun DefaultUI(
         modifier = modifier,
         config = config,
         centerOverlay = {
-            LoadingSpinner()
+            val state = LocalTHEOplayer.current
+            if (state?.firstPlay == true) {
+                LoadingSpinner()
+            }
         },
         topChrome = {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -41,16 +44,19 @@ fun DefaultUI(
             PlayButton(iconModifier = Modifier.size(96.dp))
         },
         bottomChrome = {
-            SeekBar()
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                MuteButton()
-                LiveButton()
-                CurrentTimeDisplay(
-                    color = Color.White,
-                    showDuration = true
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                FullscreenButton()
+            val state = LocalTHEOplayer.current
+            if (state?.firstPlay == true) {
+                SeekBar()
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    MuteButton()
+                    LiveButton()
+                    CurrentTimeDisplay(
+                        color = Color.White,
+                        showDuration = true
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    FullscreenButton()
+                }
             }
         })
 }
