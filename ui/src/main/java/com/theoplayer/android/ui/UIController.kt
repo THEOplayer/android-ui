@@ -57,7 +57,15 @@ fun UIController(
     val isPressed by interactionSource.collectIsPressedAsState()
     var forceControlsHidden by remember { mutableStateOf(false) }
     val controlsVisible = remember {
-        derivedStateOf { !forceControlsHidden && (isRecentlyTapped || isPressed || state.paused) }
+        derivedStateOf {
+            if (!state.firstPlay) {
+                true
+            } else if (forceControlsHidden) {
+                false
+            } else {
+                isRecentlyTapped || isPressed || state.paused
+            }
+        }
     }
 
     PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {

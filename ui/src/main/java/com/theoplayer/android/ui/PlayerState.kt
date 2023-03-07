@@ -21,6 +21,7 @@ interface PlayerState {
     val readyState: ReadyState
     var volume: Double
     var muted: Boolean
+    val firstPlay: Boolean
     val error: THEOplayerException?
     var fullscreen: Boolean
     val loading: Boolean
@@ -53,6 +54,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     override var ended by mutableStateOf(false)
     override var seeking by mutableStateOf(false)
     override var readyState by mutableStateOf(ReadyState.HAVE_NOTHING)
+    override var firstPlay by mutableStateOf(false)
     override var error by mutableStateOf<THEOplayerException?>(null)
 
     private fun updateCurrentTime() {
@@ -70,6 +72,9 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         ended = player?.isEnded ?: false
         seeking = player?.isSeeking ?: false
         readyState = player?.readyState ?: ReadyState.HAVE_NOTHING
+        if (!paused) {
+            firstPlay = true
+        }
     }
 
     val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
@@ -83,6 +88,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
     val sourceChangeListener = EventListener<SourceChangeEvent> {
         error = null
+        firstPlay = false
         updateCurrentTimeAndPlaybackState()
         updateDuration()
     }
