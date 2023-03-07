@@ -7,13 +7,16 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.forEachGesture
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.viewinterop.AndroidView
@@ -23,7 +26,7 @@ import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
@@ -31,6 +34,7 @@ import kotlin.time.DurationUnit
 fun UIController(
     config: THEOplayerConfig,
     modifier: Modifier = Modifier,
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     centerOverlay: (@Composable RowScope.() -> Unit)? = null,
     topChrome: (@Composable ColumnScope.() -> Unit)? = null,
     centerChrome: (@Composable RowScope.() -> Unit)? = null,
@@ -43,21 +47,35 @@ fun UIController(
     }
     val state = rememberPlayerState(theoplayerView)
 
-    var lastTap by remember { mutableStateOf(0L) }
-    val isTappedRecently by produceState(initialValue = true, key1 = lastTap) {
-        value = true
-        if (value) {
-            delay(2.seconds)
-            value = false
-        }
+    var tapCount by remember { mutableStateOf(0) }
+    var isRecentlyTapped by remember { mutableStateOf(true) }
+    LaunchedEffect(key1 = tapCount) {
+        isRecentlyTapped = true
+        delay(2.seconds)
+        isRecentlyTapped = false
     }
-    val isUserActive by remember {
-        derivedStateOf { isTappedRecently || state.paused }
+    val isPressed by interactionSource.collectIsPressedAsState()
+    var forceControlsHidden by remember { mutableStateOf(false) }
+    val controlsVisible = remember {
+        derivedStateOf { !forceControlsHidden && (isRecentlyTapped || isPressed || state.paused) }
     }
 
     PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
         CompositionLocalProvider(LocalTHEOplayer provides state) {
-            Box(modifier = Modifier.anyPointerInput(onInput = { lastTap = it })) {
+            Box(
+                modifier = Modifier
+                    .pressable(interactionSource = interactionSource, requireUnconsumed = false)
+                    .toggleControlsOnTap(
+                        controlsVisible = controlsVisible,
+                        showControlsTemporarily = {
+                            forceControlsHidden = false
+                            tapCount++
+                        },
+                        hideControls = {
+                            forceControlsHidden = true
+                            tapCount++
+                        })
+            ) {
                 centerOverlay?.let {
                     Row(
                         modifier = Modifier.fillMaxSize(),
@@ -68,7 +86,7 @@ fun UIController(
                     }
                 }
                 AnimatedVisibility(
-                    visible = isUserActive,
+                    visible = controlsVisible.value,
                     enter = EnterTransition.None,
                     exit = fadeOut(
                         animationSpec = tween(
@@ -169,15 +187,50 @@ fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     return theoplayerView
 }
 
-internal fun Modifier.anyPointerInput(onInput: (time: Long) -> Unit): Modifier {
+internal fun Modifier.toggleControlsOnTap(
+    controlsVisible: State<Boolean>,
+    showControlsTemporarily: () -> Unit,
+    hideControls: () -> Unit
+): Modifier {
     return this.pointerInput(Unit) {
-        forEachGesture {
-            awaitPointerEventScope {
-                val event = awaitPointerEvent(pass = PointerEventPass.Initial)
-                event.changes.lastOrNull()?.let {
-                    onInput(it.uptimeMillis)
+        coroutineScope {
+            var didHideControls = false
+            launch {
+                detectTapGestures(onPress = {
+                    didHideControls = false
+                    // Hide controls immediately when pressed while visible
+                    val controlsWereVisible = controlsVisible.value
+                    awaitRelease()
+                    if (controlsWereVisible) {
+                        didHideControls = true
+                        hideControls()
+                    }
+                })
+            }
+            launch {
+                detectAnyPointerEvent(pass = PointerEventPass.Final) {
+                    // Show controls temporarily when pressing, moving or releasing a pointer
+                    // - except if we just hid the controls by pressing
+                    if (didHideControls) {
+                        didHideControls = false
+                    } else {
+                        showControlsTemporarily()
+                    }
                 }
             }
+        }
+    }
+}
+
+internal suspend fun PointerInputScope.detectAnyPointerEvent(
+    pass: PointerEventPass = PointerEventPass.Main,
+    onPointer: () -> Unit
+) {
+    val currentContext = currentCoroutineContext()
+    awaitPointerEventScope {
+        while (currentContext.isActive) {
+            awaitPointerEvent(pass = pass)
+            onPointer()
         }
     }
 }
