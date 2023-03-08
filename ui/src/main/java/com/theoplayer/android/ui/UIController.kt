@@ -13,6 +13,8 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,6 +35,8 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
 val controlsExitDuration = 1.seconds
+
+typealias MenuContent = @Composable (onClose: () -> Unit) -> Unit;
 
 @Composable
 fun UIController(
@@ -72,7 +76,10 @@ fun UIController(
         }
     }
 
-    val backgroundVisible by remember { derivedStateOf { controlsVisible.value } }
+    val menuStack = remember { mutableStateListOf<MenuContent>() }
+    val closeCurrentMenu = { menuStack.removeLastOrNull() }
+
+    val backgroundVisible by remember { derivedStateOf { controlsVisible.value || menuStack.isNotEmpty() } }
     val background by animateColorAsState(
         targetValue = Color.Black.copy(alpha = if (backgroundVisible) 0.5f else 0f),
         animationSpec = if (backgroundVisible) snap(0) else tween(
@@ -109,6 +116,10 @@ fun UIController(
                         it()
                     }
                 }
+                val currentMenu = menuStack.lastOrNull()
+                if (currentMenu != null) {
+                    currentMenu(onClose = closeCurrentMenu)
+                } else {
                 AnimatedVisibility(
                     visible = controlsVisible.value,
                     enter = EnterTransition.None,
@@ -131,8 +142,16 @@ fun UIController(
                     Column(modifier = Modifier.fillMaxSize()) {
                         topChrome?.let { it() }
                         Spacer(modifier = Modifier.weight(1f))
+                        Row {
+                            Button(onClick = {
+                                menuStack.add { onClose -> SettingsMenu(onClose = onClose) }
+                            }) {
+                                Text(text = "Settings")
+                            }
+                        }
                         bottomChrome?.let { it() }
                     }
+                }
                 }
             }
         }
