@@ -104,19 +104,19 @@ fun UIController(
                             tapCount++
                         })
             ) {
-                centerOverlay?.let {
-                    Row(
-                        modifier = Modifier.fillMaxSize(),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        scope.it()
-                    }
-                }
                 val currentMenu = menuStack.lastOrNull()
                 if (currentMenu != null) {
                     scope.currentMenu()
                 } else {
+                    centerOverlay?.let {
+                        Row(
+                            modifier = Modifier.fillMaxSize(),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            scope.it()
+                        }
+                    }
                     AnimatedVisibility(
                         visible = controlsVisible.value,
                         enter = EnterTransition.None,
