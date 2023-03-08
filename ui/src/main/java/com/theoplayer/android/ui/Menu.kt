@@ -13,9 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+typealias MenuContent = @Composable MenuScope.() -> Unit;
+
 @Composable
-fun Menu(
-    onClose: () -> Unit,
+fun MenuScope.Menu(
     title: @Composable () -> Unit,
     content: @Composable () -> Unit,
 ) {
@@ -23,7 +24,7 @@ fun Menu(
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton(
                 shape = IconButtonDefaults.filledShape,
-                onClick = onClose
+                onClick = { closeCurrentMenu() }
             ) {
                 Icon(
                     Icons.Rounded.ArrowBack,
@@ -35,4 +36,10 @@ fun Menu(
         }
         content()
     }
+}
+
+interface MenuScope {
+    fun openMenu(menu: MenuContent)
+
+    fun closeCurrentMenu()
 }

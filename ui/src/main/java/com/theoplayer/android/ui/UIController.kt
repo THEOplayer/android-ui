@@ -35,8 +35,6 @@ import kotlin.time.DurationUnit
 
 val controlsExitDuration = 500.milliseconds
 
-typealias MenuContent = @Composable (onClose: () -> Unit) -> Unit;
-
 @Composable
 fun UIController(
     config: THEOplayerConfig,
@@ -117,7 +115,7 @@ fun UIController(
                 }
                 val currentMenu = menuStack.lastOrNull()
                 if (currentMenu != null) {
-                    currentMenu(onClose = { scope.closeCurrentMenu() })
+                    scope.currentMenu()
                 } else {
                     AnimatedVisibility(
                         visible = controlsVisible.value,
@@ -150,10 +148,7 @@ fun UIController(
     }
 }
 
-interface UIControllerScope {
-    fun openMenu(menu: MenuContent)
-
-    fun closeCurrentMenu()
+interface UIControllerScope : MenuScope {
 }
 
 internal class UIControllerScopeImpl(private var menuStack: MutableList<MenuContent>) : UIControllerScope {

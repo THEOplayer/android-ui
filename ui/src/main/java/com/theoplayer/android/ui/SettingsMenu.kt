@@ -5,11 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun SettingsMenu(
-    onClose: () -> Unit
-) {
+fun MenuScope.SettingsMenu() {
     Menu(
-        onClose = onClose,
         title = {
             Text(color = Color.White, text = "Settings")
         }

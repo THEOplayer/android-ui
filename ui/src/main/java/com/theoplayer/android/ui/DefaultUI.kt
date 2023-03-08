@@ -56,9 +56,7 @@ fun DefaultUI(
                         showDuration = true
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    TextButton(onClick = {
-                        openMenu { onClose -> SettingsMenu(onClose = onClose) }
-                    }) {
+                    TextButton(onClick = { openMenu { SettingsMenu() } }) {
                         Text(text = "Settings")
                     }
                     FullscreenButton()
