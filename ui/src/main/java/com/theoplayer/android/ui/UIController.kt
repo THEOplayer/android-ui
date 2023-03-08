@@ -121,38 +121,38 @@ fun UIController(
                 if (currentMenu != null) {
                     currentMenu(onClose = closeCurrentMenu)
                 } else {
-                AnimatedVisibility(
-                    visible = controlsVisible.value,
-                    enter = EnterTransition.None,
-                    exit = fadeOut(
-                        animationSpec = tween(
-                            easing = LinearEasing,
-                            durationMillis = controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
+                    AnimatedVisibility(
+                        visible = controlsVisible.value,
+                        enter = EnterTransition.None,
+                        exit = fadeOut(
+                            animationSpec = tween(
+                                easing = LinearEasing,
+                                durationMillis = controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
+                            )
                         )
-                    )
-                ) {
-                    centerChrome?.let {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            it()
-                        }
-                    }
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        topChrome?.let { it() }
-                        Spacer(modifier = Modifier.weight(1f))
-                        Row {
-                            Button(onClick = {
-                                menuStack.add { onClose -> SettingsMenu(onClose = onClose) }
-                            }) {
-                                Text(text = "Settings")
+                    ) {
+                        centerChrome?.let {
+                            Row(
+                                modifier = Modifier.fillMaxSize(),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                it()
                             }
                         }
-                        bottomChrome?.let { it() }
+                        Column(modifier = Modifier.fillMaxSize()) {
+                            topChrome?.let { it() }
+                            Spacer(modifier = Modifier.weight(1f))
+                            Row {
+                                Button(onClick = {
+                                    menuStack.add { onClose -> SettingsMenu(onClose = onClose) }
+                                }) {
+                                    Text(text = "Settings")
+                                }
+                            }
+                            bottomChrome?.let { it() }
+                        }
                     }
-                }
                 }
             }
         }
