@@ -31,10 +31,11 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
 import kotlinx.coroutines.*
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
-val controlsExitDuration = 1.seconds
+val controlsExitDuration = 500.milliseconds
 
 typealias MenuContent = @Composable (onClose: () -> Unit) -> Unit;
 
