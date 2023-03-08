@@ -3,7 +3,9 @@ package com.theoplayer.android.ui
 import android.view.ViewGroup
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -29,6 +31,8 @@ import com.theoplayer.android.api.source.TypedSource
 import kotlinx.coroutines.*
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
+
+val controlsExitDuration = 1.seconds
 
 @Composable
 fun UIController(
@@ -68,10 +72,22 @@ fun UIController(
         }
     }
 
+    val backgroundVisible by remember { derivedStateOf { controlsVisible.value } }
+    val background by animateColorAsState(
+        targetValue = Color.Black.copy(alpha = if (backgroundVisible) 0.5f else 0f),
+        animationSpec = if (backgroundVisible) snap(0) else tween(
+            easing = LinearEasing,
+            durationMillis = controlsExitDuration.toInt(
+                DurationUnit.MILLISECONDS
+            )
+        )
+    )
+
     PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
         CompositionLocalProvider(LocalTHEOplayer provides state) {
             Box(
                 modifier = Modifier
+                    .background(background)
                     .pressable(interactionSource = interactionSource, requireUnconsumed = false)
                     .toggleControlsOnTap(
                         controlsVisible = controlsVisible,
@@ -99,7 +115,7 @@ fun UIController(
                     exit = fadeOut(
                         animationSpec = tween(
                             easing = LinearEasing,
-                            durationMillis = 1.seconds.toInt(DurationUnit.MILLISECONDS)
+                            durationMillis = controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
                         )
                     )
                 ) {
