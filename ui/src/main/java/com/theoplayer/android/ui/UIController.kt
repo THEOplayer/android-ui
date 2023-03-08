@@ -13,8 +13,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,10 +42,10 @@ fun UIController(
     config: THEOplayerConfig,
     modifier: Modifier = Modifier,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    centerOverlay: (@Composable RowScope.() -> Unit)? = null,
-    topChrome: (@Composable ColumnScope.() -> Unit)? = null,
-    centerChrome: (@Composable RowScope.() -> Unit)? = null,
-    bottomChrome: (@Composable ColumnScope.() -> Unit)? = null
+    centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
     val theoplayerView = if (LocalInspectionMode.current) {
         null
@@ -78,7 +76,7 @@ fun UIController(
     }
 
     val menuStack = remember { mutableStateListOf<MenuContent>() }
-    val closeCurrentMenu = { menuStack.removeLastOrNull() }
+    val scope = remember { UIControllerScopeImpl(menuStack) }
 
     val backgroundVisible by remember { derivedStateOf { controlsVisible.value || menuStack.isNotEmpty() } }
     val background by animateColorAsState(
@@ -114,12 +112,12 @@ fun UIController(
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        it()
+                        scope.it()
                     }
                 }
                 val currentMenu = menuStack.lastOrNull()
                 if (currentMenu != null) {
-                    currentMenu(onClose = closeCurrentMenu)
+                    currentMenu(onClose = { scope.closeCurrentMenu() })
                 } else {
                     AnimatedVisibility(
                         visible = controlsVisible.value,
@@ -137,25 +135,34 @@ fun UIController(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                it()
+                                scope.it()
                             }
                         }
                         Column(modifier = Modifier.fillMaxSize()) {
-                            topChrome?.let { it() }
+                            topChrome?.let { scope.it() }
                             Spacer(modifier = Modifier.weight(1f))
-                            Row {
-                                Button(onClick = {
-                                    menuStack.add { onClose -> SettingsMenu(onClose = onClose) }
-                                }) {
-                                    Text(text = "Settings")
-                                }
-                            }
-                            bottomChrome?.let { it() }
+                            bottomChrome?.let { scope.it() }
                         }
                     }
                 }
             }
         }
+    }
+}
+
+interface UIControllerScope {
+    fun openMenu(menu: MenuContent)
+
+    fun closeCurrentMenu()
+}
+
+internal class UIControllerScopeImpl(private var menuStack: MutableList<MenuContent>) : UIControllerScope {
+    override fun openMenu(menu: MenuContent) {
+        menuStack.add(menu)
+    }
+
+    override fun closeCurrentMenu() {
+        menuStack.removeLastOrNull()
     }
 }
 
