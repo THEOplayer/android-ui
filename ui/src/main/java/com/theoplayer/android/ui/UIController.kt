@@ -86,7 +86,7 @@ fun UIController(
 
     PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
         CompositionLocalProvider(LocalTHEOplayer provides state) {
-            Box(
+            AnimatedContent(
                 modifier = Modifier
                     .background(background)
                     .pressable(interactionSource = interactionSource, requireUnconsumed = false)
@@ -99,9 +99,7 @@ fun UIController(
                         hideControls = {
                             forceControlsHidden = true
                             tapCount++
-                        })
-            ) {
-                AnimatedContent(
+                    }),
                     targetState = scope.currentMenu,
                     transitionSpec = {
                         if (initialState == null) {
@@ -132,7 +130,6 @@ fun UIController(
                     } else {
                         scope.menu()
                     }
-                }
             }
         }
     }
