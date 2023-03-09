@@ -103,40 +103,13 @@ fun UIController(
             ) {
                 val currentMenu = scope.currentMenu
                 if (currentMenu == null) {
-                    centerOverlay?.let {
-                        Row(
-                            modifier = Modifier.fillMaxSize(),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            scope.it()
-                        }
-                    }
-                    AnimatedVisibility(
-                        visible = controlsVisible.value,
-                        enter = EnterTransition.None,
-                        exit = fadeOut(
-                            animationSpec = tween(
-                                easing = LinearEasing,
-                                durationMillis = controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
-                            )
-                        )
-                    ) {
-                        centerChrome?.let {
-                            Row(
-                                modifier = Modifier.fillMaxSize(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                scope.it()
-                            }
-                        }
-                        Column(modifier = Modifier.fillMaxSize()) {
-                            topChrome?.let { scope.it() }
-                            Spacer(modifier = Modifier.weight(1f))
-                            bottomChrome?.let { scope.it() }
-                        }
-                    }
+                    scope.PlayerControls(
+                        controlsVisible = controlsVisible.value,
+                        centerOverlay = centerOverlay,
+                        topChrome = topChrome,
+                        centerChrome = centerChrome,
+                        bottomChrome = bottomChrome
+                    )
                 }
                 AnimatedContent(
                     targetState = currentMenu,
@@ -227,6 +200,50 @@ internal fun PlayerContainer(
                 })
                 theoplayerView
             })
+    }
+}
+
+@Composable
+internal fun UIControllerScope.PlayerControls(
+    controlsVisible: Boolean,
+    centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+) {
+    centerOverlay?.let {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            it()
+        }
+    }
+    AnimatedVisibility(
+        visible = controlsVisible,
+        enter = EnterTransition.None,
+        exit = fadeOut(
+            animationSpec = tween(
+                easing = LinearEasing,
+                durationMillis = controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
+            )
+        )
+    ) {
+        centerChrome?.let {
+            Row(
+                modifier = Modifier.fillMaxSize(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                it()
+            }
+        }
+        Column(modifier = Modifier.fillMaxSize()) {
+            topChrome?.let { it() }
+            Spacer(modifier = Modifier.weight(1f))
+            bottomChrome?.let { it() }
+        }
     }
 }
 
