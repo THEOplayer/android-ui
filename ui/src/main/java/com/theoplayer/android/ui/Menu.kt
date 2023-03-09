@@ -18,6 +18,13 @@ typealias MenuContent = @Composable MenuScope.() -> Unit;
 @Composable
 fun MenuScope.Menu(
     title: @Composable () -> Unit,
+    backIcon: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.ArrowBack,
+            tint = Color.White,
+            contentDescription = "Back"
+        )
+    },
     content: @Composable () -> Unit,
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -25,13 +32,7 @@ fun MenuScope.Menu(
             TextButton(
                 shape = IconButtonDefaults.filledShape,
                 onClick = { closeCurrentMenu() }
-            ) {
-                Icon(
-                    Icons.Rounded.ArrowBack,
-                    tint = Color.White,
-                    contentDescription = "Back"
-                )
-            }
+            ) { backIcon() }
             title()
         }
         content()

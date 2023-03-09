@@ -1,5 +1,8 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -10,7 +13,14 @@ fun MenuScope.SettingsMenu() {
     Menu(
         title = {
             Text(color = Color.White, text = "Settings")
-        }
+        },
+        backIcon = {
+            Icon(
+                Icons.Rounded.Close,
+                tint = Color.White,
+                contentDescription = "Close"
+            )
+        },
     ) {
         val state = LocalTHEOplayer.current
         TextButton(onClick = { openMenu { QualityMenu() } }) {
