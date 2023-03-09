@@ -102,28 +102,6 @@ fun UIController(
                         })
             ) {
                 val currentMenu = scope.currentMenu
-                AnimatedContent(
-                    targetState = currentMenu,
-                    transitionSpec = {
-                        if (initialState == null) {
-                            // Open first menu from the bottom
-                            slideInVertically { it / 4 } + fadeIn() with ExitTransition.None
-                        } else if (targetState == null) {
-                            // Close last menu towards the bottom
-                            EnterTransition.None with slideOutVertically { it / 4 } + fadeOut()
-                        } else if (scope.lastWasClosed) {
-                            // Close menu towards the right
-                            slideInHorizontally { -it } with
-                                    slideOutHorizontally { it }
-                        } else {
-                            // Open new menu towards the left
-                            slideInHorizontally(initialOffsetX = { it }) with
-                                    slideOutHorizontally(targetOffsetX = { -it })
-                        }
-                    }
-                ) { menu ->
-                    menu?.let { scope.it() }
-                }
                 if (currentMenu == null) {
                     centerOverlay?.let {
                         Row(
@@ -159,6 +137,28 @@ fun UIController(
                             bottomChrome?.let { scope.it() }
                         }
                     }
+                }
+                AnimatedContent(
+                    targetState = currentMenu,
+                    transitionSpec = {
+                        if (initialState == null) {
+                            // Open first menu from the bottom
+                            slideInVertically { it / 4 } + fadeIn() with ExitTransition.None
+                        } else if (targetState == null) {
+                            // Close last menu towards the bottom
+                            EnterTransition.None with slideOutVertically { it / 4 } + fadeOut()
+                        } else if (scope.lastWasClosed) {
+                            // Close menu towards the right
+                            slideInHorizontally { -it } with
+                                    slideOutHorizontally { it }
+                        } else {
+                            // Open new menu towards the left
+                            slideInHorizontally(initialOffsetX = { it }) with
+                                    slideOutHorizontally(targetOffsetX = { -it })
+                        }
+                    }
+                ) { menu ->
+                    menu?.let { scope.it() }
                 }
             }
         }
