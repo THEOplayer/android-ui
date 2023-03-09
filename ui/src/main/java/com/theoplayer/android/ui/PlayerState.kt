@@ -6,8 +6,17 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.*
+import com.theoplayer.android.api.event.track.mediatrack.AbstractTargetQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes
+import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.ReadyState
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
+import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 
 interface PlayerState {
     val player: Player?
@@ -24,8 +33,13 @@ interface PlayerState {
     val firstPlay: Boolean
     val error: THEOplayerException?
     var fullscreen: Boolean
+
     val loading: Boolean
     val streamType: StreamType
+
+    val activeVideoQuality: VideoQuality?
+    var targetVideoQuality: VideoQuality?
+    val videoQualities: List<VideoQuality>
 }
 
 enum class StreamType {
@@ -91,11 +105,13 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         firstPlay = false
         updateCurrentTimeAndPlaybackState()
         updateDuration()
+        updateActiveVideoTrack()
     }
     val errorListener = EventListener<ErrorEvent> { event ->
         error = event.errorObject
         updateCurrentTimeAndPlaybackState()
         updateDuration()
+        updateActiveVideoTrack()
     }
 
     private var _volume by mutableStateOf(1.0)
@@ -160,11 +176,73 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         }
     }
 
+    private var activeVideoTrack: MediaTrack<VideoQuality>? = null
+    override val videoQualities = mutableStateListOf<VideoQuality>()
+    override var activeVideoQuality by mutableStateOf<VideoQuality?>(null)
+        private set
+    private var _targetVideoQuality by mutableStateOf<VideoQuality?>(null)
+    override var targetVideoQuality: VideoQuality?
+        get() = _targetVideoQuality
+        set(value) {
+            _targetVideoQuality = value
+            activeVideoTrack?.targetQuality = value
+        }
+
+    private fun updateActiveVideoTrack() {
+        setActiveVideoTrack(player?.videoTracks?.find { it.isEnabled })
+    }
+
+    private fun setActiveVideoTrack(videoTrack: MediaTrack<VideoQuality>?) {
+        val oldActiveVideoTrack = activeVideoTrack
+        if (oldActiveVideoTrack == videoTrack) {
+            return
+        }
+        oldActiveVideoTrack?.removeEventListener(
+            VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT,
+            videoActiveQualityChangeListener
+        )
+        oldActiveVideoTrack?.removeEventListener(
+            VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT,
+            videoTargetQualityChangeListener
+        )
+        activeVideoTrack = videoTrack
+        videoQualities.clear()
+        videoTrack?.qualities?.let { videoQualities.addAll(it) }
+        updateActiveVideoQuality()
+        updateTargetVideoQuality()
+        videoTrack?.addEventListener(
+            VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT,
+            videoActiveQualityChangeListener
+        )
+        videoTrack?.addEventListener(
+            VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT,
+            videoTargetQualityChangeListener
+        )
+    }
+
+    private fun updateActiveVideoQuality() {
+        activeVideoQuality = activeVideoTrack?.activeQuality
+    }
+
+    private fun updateTargetVideoQuality() {
+        _targetVideoQuality = activeVideoTrack?.targetQuality
+    }
+
+    val videoAddTrackListener = EventListener<AddTrackEvent> { updateActiveVideoTrack() }
+    val videoRemoveTrackListener = EventListener<RemoveTrackEvent> { updateActiveVideoTrack() }
+    val videoTrackListChangeListener =
+        EventListener<TrackListChangeEvent> { updateActiveVideoTrack() }
+    val videoActiveQualityChangeListener =
+        EventListener<ActiveQualityChangedEvent> { updateActiveVideoQuality() }
+    val videoTargetQualityChangeListener =
+        EventListener<AbstractTargetQualityChangedEvent<VideoQuality>> { updateTargetVideoQuality() }
+
     init {
         updateCurrentTimeAndPlaybackState()
         updateDuration()
         updateVolumeAndMuted()
         updateFullscreen()
+        updateActiveVideoTrack()
         player?.addEventListener(PlayerEventTypes.PLAY, playListener)
         player?.addEventListener(PlayerEventTypes.PAUSE, pauseListener)
         player?.addEventListener(PlayerEventTypes.ENDED, endedListener)
@@ -176,10 +254,23 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
+        player?.videoTracks?.addEventListener(
+            VideoTrackListEventTypes.ADDTRACK,
+            videoAddTrackListener
+        )
+        player?.videoTracks?.addEventListener(
+            VideoTrackListEventTypes.REMOVETRACK,
+            videoRemoveTrackListener
+        )
+        player?.videoTracks?.addEventListener(
+            VideoTrackListEventTypes.TRACKLISTCHANGE,
+            videoTrackListChangeListener
+        )
         fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
     }
 
     fun dispose() {
+        setActiveVideoTrack(null)
         player?.removeEventListener(PlayerEventTypes.PLAY, playListener)
         player?.removeEventListener(PlayerEventTypes.PAUSE, pauseListener)
         player?.removeEventListener(PlayerEventTypes.ENDED, endedListener)
@@ -191,6 +282,18 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
+        player?.videoTracks?.removeEventListener(
+            VideoTrackListEventTypes.ADDTRACK,
+            videoAddTrackListener
+        )
+        player?.videoTracks?.removeEventListener(
+            VideoTrackListEventTypes.REMOVETRACK,
+            videoRemoveTrackListener
+        )
+        player?.videoTracks?.removeEventListener(
+            VideoTrackListEventTypes.TRACKLISTCHANGE,
+            videoTrackListChangeListener
+        )
         fullscreenHandler?.onFullscreenChangeListener = null
     }
 }
