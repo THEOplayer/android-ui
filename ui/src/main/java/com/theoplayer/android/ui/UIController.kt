@@ -101,18 +101,8 @@ fun UIController(
                             tapCount++
                         })
             ) {
-                val currentMenu = scope.currentMenu
-                if (currentMenu == null) {
-                    scope.PlayerControls(
-                        controlsVisible = controlsVisible.value,
-                        centerOverlay = centerOverlay,
-                        topChrome = topChrome,
-                        centerChrome = centerChrome,
-                        bottomChrome = bottomChrome
-                    )
-                }
                 AnimatedContent(
-                    targetState = currentMenu,
+                    targetState = scope.currentMenu,
                     transitionSpec = {
                         if (initialState == null) {
                             // Open first menu from the bottom
@@ -131,7 +121,17 @@ fun UIController(
                         }
                     }
                 ) { menu ->
-                    menu?.let { scope.it() }
+                    if (menu == null) {
+                        scope.PlayerControls(
+                            controlsVisible = controlsVisible.value,
+                            centerOverlay = centerOverlay,
+                            topChrome = topChrome,
+                            centerChrome = centerChrome,
+                            bottomChrome = bottomChrome
+                        )
+                    } else {
+                        scope.menu()
+                    }
                 }
             }
         }
