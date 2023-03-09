@@ -29,13 +29,16 @@ fun DefaultUI(
             }
         },
         topChrome = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                title?.let {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        color = Color.White,
-                        text = it
-                    )
+            val state = LocalTHEOplayer.current
+            if (state?.firstPlay == true) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    title?.let {
+                        Text(
+                            modifier = Modifier.padding(8.dp),
+                            color = Color.White,
+                            text = it
+                        )
+                    }
                 }
             }
             ErrorDisplay()
