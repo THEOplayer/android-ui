@@ -104,10 +104,10 @@ fun UIController(
                 transitionSpec = {
                     if (initialState == null) {
                         // Open first menu from the bottom
-                        slideInVertically { it / 4 } + fadeIn() with ExitTransition.None
+                        slideInVertically { it / 4 } + fadeIn() with fadeOut()
                     } else if (targetState == null) {
                         // Close last menu towards the bottom
-                        EnterTransition.None with slideOutVertically { it / 4 } + fadeOut()
+                        fadeIn() with slideOutVertically { it / 4 } + fadeOut()
                     } else if (scope.lastWasClosed) {
                         // Close menu towards the right
                         slideInHorizontally { -it } with
