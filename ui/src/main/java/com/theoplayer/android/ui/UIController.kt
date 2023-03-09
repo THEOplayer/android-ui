@@ -1,13 +1,10 @@
 package com.theoplayer.android.ui
 
 import android.view.ViewGroup
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.EnterTransition
-import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -35,6 +32,7 @@ import kotlin.time.DurationUnit
 
 val controlsExitDuration = 500.milliseconds
 
+@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun UIController(
     config: THEOplayerConfig,
@@ -73,10 +71,9 @@ fun UIController(
         }
     }
 
-    val menuStack = remember { mutableStateListOf<MenuContent>() }
-    val scope = remember { UIControllerScopeImpl(menuStack) }
+    val scope = remember { UIControllerScopeImpl() }
 
-    val backgroundVisible by remember { derivedStateOf { controlsVisible.value || menuStack.isNotEmpty() } }
+    val backgroundVisible by remember { derivedStateOf { controlsVisible.value || scope.currentMenu != null } }
     val background by animateColorAsState(
         targetValue = Color.Black.copy(alpha = if (backgroundVisible) 0.5f else 0f),
         animationSpec = if (backgroundVisible) snap(0) else tween(
@@ -104,10 +101,30 @@ fun UIController(
                             tapCount++
                         })
             ) {
-                val currentMenu = menuStack.lastOrNull()
-                if (currentMenu != null) {
-                    scope.currentMenu()
-                } else {
+                val currentMenu = scope.currentMenu
+                AnimatedContent(
+                    targetState = currentMenu,
+                    transitionSpec = {
+                        if (initialState == null) {
+                            // Open first menu from the bottom
+                            slideInVertically { it / 4 } + fadeIn() with ExitTransition.None
+                        } else if (targetState == null) {
+                            // Close last menu towards the bottom
+                            EnterTransition.None with slideOutVertically { it / 4 } + fadeOut()
+                        } else if (scope.lastWasClosed) {
+                            // Close menu towards the right
+                            slideInHorizontally { -it } with
+                                    slideOutHorizontally { it }
+                        } else {
+                            // Open new menu towards the left
+                            slideInHorizontally(initialOffsetX = { it }) with
+                                    slideOutHorizontally(targetOffsetX = { -it })
+                        }
+                    }
+                ) { menu ->
+                    menu?.let { scope.it() }
+                }
+                if (currentMenu == null) {
                     centerOverlay?.let {
                         Row(
                             modifier = Modifier.fillMaxSize(),
@@ -151,13 +168,24 @@ fun UIController(
 interface UIControllerScope : MenuScope {
 }
 
-internal class UIControllerScopeImpl(private var menuStack: MutableList<MenuContent>) : UIControllerScope {
+internal class UIControllerScopeImpl() :
+    UIControllerScope {
+    private var menuStack = mutableStateListOf<MenuContent>()
+
+    val currentMenu: MenuContent?
+        get() = menuStack.lastOrNull()
+    var lastWasClosed: Boolean = false
+        private set
+
     override fun openMenu(menu: MenuContent) {
         menuStack.add(menu)
+        lastWasClosed = false
     }
 
     override fun closeCurrentMenu() {
-        menuStack.removeLastOrNull()
+        menuStack.removeLastOrNull()?.also {
+            lastWasClosed = true
+        }
     }
 }
 
