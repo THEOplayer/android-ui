@@ -19,6 +19,12 @@ fun MenuScope.SettingsMenu() {
                 text = "Active quality: ${state?.activeVideoQuality?.height?.let { "${it}p" } ?: "none"}"
             )
         }
+        TextButton(onClick = { openMenu { PlaybackRateMenu() } }) {
+            Text(
+                color = Color.White,
+                text = "Playback speed: ${formatPlaybackRate(state?.playbackRate ?: 1.0)}"
+            )
+        }
     }
 }
 
@@ -30,5 +36,16 @@ fun MenuScope.QualityMenu() {
         }
     ) {
         QualityList(onClick = { closeCurrentMenu() })
+    }
+}
+
+@Composable
+fun MenuScope.PlaybackRateMenu() {
+    Menu(
+        title = {
+            Text(color = Color.White, text = "Playback speed")
+        }
+    ) {
+        PlaybackRateList(onClick = { closeCurrentMenu() })
     }
 }

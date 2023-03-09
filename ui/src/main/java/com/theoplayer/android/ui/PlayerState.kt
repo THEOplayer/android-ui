@@ -30,6 +30,7 @@ interface PlayerState {
     val readyState: ReadyState
     var volume: Double
     var muted: Boolean
+    var playbackRate: Double
     val firstPlay: Boolean
     val error: THEOplayerException?
     var fullscreen: Boolean
@@ -136,6 +137,20 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
 
     val volumeChangeListener = EventListener<VolumeChangeEvent> { updateVolumeAndMuted() }
 
+    private var _playbackRate by mutableStateOf(1.0)
+    override var playbackRate: Double
+        get() = _playbackRate
+        set(value) {
+            _playbackRate = value
+            player?.playbackRate = value
+        }
+
+    private fun updatePlaybackRate() {
+        _playbackRate = player?.playbackRate ?: 1.0
+    }
+
+    val rateChangeListener = EventListener<RateChangeEvent> { updatePlaybackRate() }
+
     private val fullscreenHandler: FullscreenHandler? =
         theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
             ?.let { FullscreenHandlerImpl(it) }
@@ -241,6 +256,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         updateCurrentTimeAndPlaybackState()
         updateDuration()
         updateVolumeAndMuted()
+        updatePlaybackRate()
         updateFullscreen()
         updateActiveVideoTrack()
         player?.addEventListener(PlayerEventTypes.PLAY, playListener)
@@ -252,6 +268,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.addEventListener(PlayerEventTypes.SEEKED, seekedListener)
         player?.addEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeListener)
         player?.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
+        player?.addEventListener(PlayerEventTypes.RATECHANGE, rateChangeListener)
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
         player?.videoTracks?.addEventListener(
@@ -280,6 +297,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         player?.removeEventListener(PlayerEventTypes.SEEKED, seekedListener)
         player?.removeEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeListener)
         player?.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
+        player?.removeEventListener(PlayerEventTypes.RATECHANGE, rateChangeListener)
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
         player?.videoTracks?.removeEventListener(
