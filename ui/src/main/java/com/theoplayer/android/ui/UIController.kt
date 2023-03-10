@@ -38,6 +38,7 @@ fun UIController(
     config: THEOplayerConfig,
     source: SourceDescription? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -75,7 +76,7 @@ fun UIController(
 
     val backgroundVisible by remember { derivedStateOf { controlsVisible.value || scope.currentMenu != null } }
     val background by animateColorAsState(
-        targetValue = Color.Black.copy(alpha = if (backgroundVisible) 0.5f else 0f),
+        targetValue = color.copy(alpha = if (backgroundVisible) 0.5f else 0f),
         animationSpec = if (backgroundVisible) snap(0) else tween(
             easing = LinearEasing,
             durationMillis = controlsExitDuration.toInt(
