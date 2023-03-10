@@ -12,16 +12,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
+import com.theoplayer.android.api.source.SourceDescription
 
 @Composable
 fun DefaultUI(
     modifier: Modifier = Modifier,
     config: THEOplayerConfig,
+    source: SourceDescription? = null,
     title: String? = null
 ) {
     UIController(
         modifier = modifier,
         config = config,
+        source = source,
         centerOverlay = {
             val state = LocalTHEOplayer.current
             if (state?.firstPlay == true) {

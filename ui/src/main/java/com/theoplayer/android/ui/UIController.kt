@@ -24,7 +24,6 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
-import com.theoplayer.android.api.source.TypedSource
 import kotlinx.coroutines.*
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -35,8 +34,9 @@ val controlsExitDuration = 500.milliseconds
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun UIController(
-    config: THEOplayerConfig,
     modifier: Modifier = Modifier,
+    config: THEOplayerConfig,
+    source: SourceDescription? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -132,6 +132,10 @@ fun UIController(
                 }
             }
         }
+    }
+
+    LaunchedEffect(key1 = source) {
+        state.player?.source = source
     }
 }
 
@@ -247,14 +251,7 @@ internal fun UIControllerScope.PlayerControls(
 @Composable
 fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     val context = LocalContext.current
-    val theoplayerView = remember {
-        THEOplayerView(context, config).apply {
-            player.source = SourceDescription.Builder(
-                TypedSource.Builder("https://amssamples.streaming.mediaservices.windows.net/7ceb010f-d9a3-467a-915e-5728acced7e3/ElephantsDreamMultiAudio.ism/manifest(format=mpd-time-csf)")
-                    .build()
-            ).build()
-        }
-    }
+    val theoplayerView = remember { THEOplayerView(context, config) }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(key1 = lifecycle, key2 = theoplayerView) {
