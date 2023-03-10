@@ -18,9 +18,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MenuScope.LanguageMenu() {
     Menu(
-        title = {
-            Text(color = Color.White, text = "Language")
-        },
+        title = { Text(text = "Language") },
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
@@ -61,7 +59,6 @@ fun MenuScope.LanguageMenuCompact() {
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    color = Color.White,
                     text = "Audio"
                 )
                 TextButton(
@@ -71,7 +68,6 @@ fun MenuScope.LanguageMenuCompact() {
                     onClick = { openMenu { AudioTrackMenu() } }
                 ) {
                     Text(
-                        color = Color.White,
                         text = state?.activeAudioTrack?.let { formatTrackLabel(it) } ?: "None"
                     )
                 }
@@ -83,7 +79,6 @@ fun MenuScope.LanguageMenuCompact() {
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    color = Color.White,
                     text = "Subtitles"
                 )
                 TextButton(
@@ -93,7 +88,6 @@ fun MenuScope.LanguageMenuCompact() {
                     onClick = { openMenu { SubtitleMenu() } }
                 ) {
                     Text(
-                        color = Color.White,
                         text = state?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: "Off"
                     )
                 }
@@ -110,7 +104,6 @@ fun MenuScope.LanguageMenuExpanded() {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = Color.White,
                     text = "Audio"
                 )
                 AudioTrackList(modifier = Modifier.weight(1f))
@@ -120,7 +113,6 @@ fun MenuScope.LanguageMenuExpanded() {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = Color.White,
                     text = "Subtitles"
                 )
                 SubtitleTrackList(modifier = Modifier.weight(1f))
@@ -132,9 +124,7 @@ fun MenuScope.LanguageMenuExpanded() {
 @Composable
 fun MenuScope.AudioTrackMenu() {
     Menu(
-        title = {
-            Text(color = Color.White, text = "Audio")
-        }
+        title = { Text(text = "Audio") }
     ) {
         AudioTrackList(onClick = { closeCurrentMenu() })
     }
@@ -143,9 +133,7 @@ fun MenuScope.AudioTrackMenu() {
 @Composable
 fun MenuScope.SubtitleMenu() {
     Menu(
-        title = {
-            Text(color = Color.White, text = "Subtitles")
-        }
+        title = { Text(text = "Subtitles") }
     ) {
         SubtitleTrackList(onClick = { closeCurrentMenu() })
     }

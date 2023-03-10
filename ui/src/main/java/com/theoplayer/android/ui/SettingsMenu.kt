@@ -16,9 +16,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MenuScope.SettingsMenu() {
     Menu(
-        title = {
-            Text(color = Color.White, text = "Settings")
-        },
+        title = { Text(text = "Settings") },
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
@@ -31,32 +29,36 @@ fun MenuScope.SettingsMenu() {
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Row {
                 Text(
-                    modifier = Modifier.weight(1f).alignByBaseline(),
-                    color = Color.White,
+                    modifier = Modifier
+                        .weight(1f)
+                        .alignByBaseline(),
                     text = "Quality"
                 )
                 TextButton(
-                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .alignByBaseline(),
                     onClick = { openMenu { QualityMenu() } }
                 ) {
                     Text(
-                        color = Color.White,
                         text = state?.activeVideoQuality?.height?.let { "${it}p" } ?: "Automatic"
                     )
                 }
             }
             Row {
                 Text(
-                    modifier = Modifier.weight(1f).alignByBaseline(),
-                    color = Color.White,
+                    modifier = Modifier
+                        .weight(1f)
+                        .alignByBaseline(),
                     text = "Playback speed"
                 )
                 TextButton(
-                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    modifier = Modifier
+                        .weight(1f)
+                        .alignByBaseline(),
                     onClick = { openMenu { PlaybackRateMenu() } }
                 ) {
                     Text(
-                        color = Color.White,
                         text = formatPlaybackRate(state?.playbackRate ?: 1.0)
                     )
                 }
@@ -68,9 +70,7 @@ fun MenuScope.SettingsMenu() {
 @Composable
 fun MenuScope.QualityMenu() {
     Menu(
-        title = {
-            Text(color = Color.White, text = "Quality")
-        }
+        title = { Text(text = "Quality") }
     ) {
         QualityList(onClick = { closeCurrentMenu() })
     }
@@ -79,9 +79,7 @@ fun MenuScope.QualityMenu() {
 @Composable
 fun MenuScope.PlaybackRateMenu() {
     Menu(
-        title = {
-            Text(color = Color.White, text = "Playback speed")
-        }
+        title = { Text(text = "Playback speed") }
     ) {
         PlaybackRateList(onClick = { closeCurrentMenu() })
     }

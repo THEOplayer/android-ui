@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LiveButton(
     modifier: Modifier = Modifier,
-    colors: ButtonColors = ButtonDefaults.textButtonColors(contentColor = Color.White),
+    colors: ButtonColors = ButtonDefaults.textButtonColors(),
     live: @Composable RowScope.() -> Unit = {
         Icon(
             Icons.Rounded.Circle,
