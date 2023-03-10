@@ -13,6 +13,7 @@ import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
 import com.theoplayer.android.ui.DefaultUI
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -25,7 +26,7 @@ class MainActivity : ComponentActivity() {
         ).build()
 
         setContent {
-            MaterialTheme {
+            THEOplayerTheme(useDarkTheme = true) {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
