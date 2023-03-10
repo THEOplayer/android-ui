@@ -7,16 +7,28 @@ import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.*
 import com.theoplayer.android.api.event.track.mediatrack.AbstractTargetQualityChangedEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes
 import com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes
-import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent
 import com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes
+import com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.ReadyState
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
+import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
+import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
+import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent as VideoActiveQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent as VideoAddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent as VideoRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent as VideoTrackListChangeEvent
+import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as TextAddTrackEvent
+import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
+import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 
 interface PlayerState {
     val player: Player?
@@ -41,6 +53,12 @@ interface PlayerState {
     val activeVideoQuality: VideoQuality?
     var targetVideoQuality: VideoQuality?
     val videoQualities: List<VideoQuality>
+
+    val audioTracks: List<MediaTrack<AudioQuality>>
+    var activeAudioTrack: MediaTrack<AudioQuality>?
+
+    val subtitleTracks: List<TextTrack>
+    var activeSubtitleTrack: TextTrack?
 }
 
 enum class StreamType {
@@ -243,14 +261,80 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         _targetVideoQuality = activeVideoTrack?.targetQuality
     }
 
-    val videoAddTrackListener = EventListener<AddTrackEvent> { updateActiveVideoTrack() }
-    val videoRemoveTrackListener = EventListener<RemoveTrackEvent> { updateActiveVideoTrack() }
+    val videoAddTrackListener = EventListener<VideoAddTrackEvent> { updateActiveVideoTrack() }
+    val videoRemoveTrackListener = EventListener<VideoRemoveTrackEvent> { updateActiveVideoTrack() }
     val videoTrackListChangeListener =
-        EventListener<TrackListChangeEvent> { updateActiveVideoTrack() }
+        EventListener<VideoTrackListChangeEvent> { updateActiveVideoTrack() }
     val videoActiveQualityChangeListener =
-        EventListener<ActiveQualityChangedEvent> { updateActiveVideoQuality() }
+        EventListener<VideoActiveQualityChangedEvent> { updateActiveVideoQuality() }
     val videoTargetQualityChangeListener =
         EventListener<AbstractTargetQualityChangedEvent<VideoQuality>> { updateTargetVideoQuality() }
+
+    override var audioTracks = mutableStateListOf<MediaTrack<AudioQuality>>()
+        private set
+    private var _activeAudioTrack by mutableStateOf<MediaTrack<AudioQuality>?>(null)
+    override var activeAudioTrack: MediaTrack<AudioQuality>?
+        get() = _activeAudioTrack
+        set(value) {
+            _activeAudioTrack = value
+            if (value != null) {
+                value.isEnabled = true
+            } else {
+                player?.audioTracks?.forEach { it.isEnabled = false }
+            }
+        }
+
+    private fun updateAudioTracks() {
+        val newAudioTracks = player?.audioTracks?.toList() ?: listOf()
+        if (audioTracks == newAudioTracks) {
+            return
+        }
+        audioTracks.clear()
+        audioTracks.addAll(newAudioTracks)
+        updateActiveAudioTrack()
+    }
+
+    private fun updateActiveAudioTrack() {
+        _activeAudioTrack = audioTracks.find { it.isEnabled }
+    }
+
+    val audioAddTrackListener = EventListener<AudioAddTrackEvent> { updateAudioTracks() }
+    val audioRemoveTrackListener = EventListener<AudioRemoveTrackEvent> { updateAudioTracks() }
+    val audioTrackListChangeListener =
+        EventListener<AudioTrackListChangeEvent> { updateActiveAudioTrack() }
+
+    override var subtitleTracks = mutableStateListOf<TextTrack>()
+        private set
+    private var _activeSubtitleTrack by mutableStateOf<TextTrack?>(null)
+    override var activeSubtitleTrack: TextTrack?
+        get() = _activeSubtitleTrack
+        set(value) {
+            _activeSubtitleTrack = value
+            player?.textTracks?.forEach {
+                if (isSubtitleTrack(it)) {
+                    it.mode = if (it == value) TextTrackMode.SHOWING else TextTrackMode.DISABLED
+                }
+            }
+        }
+
+    private fun updateSubtitleTracks() {
+        val newSubtitleTracks = player?.textTracks?.filter { isSubtitleTrack(it) } ?: listOf()
+        if (subtitleTracks == newSubtitleTracks) {
+            return
+        }
+        subtitleTracks.clear()
+        subtitleTracks.addAll(newSubtitleTracks)
+        updateActiveSubtitleTrack()
+    }
+
+    private fun updateActiveSubtitleTrack() {
+        _activeSubtitleTrack = subtitleTracks.find { it.mode == TextTrackMode.SHOWING }
+    }
+
+    val textAddTrackListener = EventListener<TextAddTrackEvent> { updateSubtitleTracks() }
+    val textRemoveTrackListener = EventListener<TextRemoveTrackEvent> { updateSubtitleTracks() }
+    val textTrackListChangeListener =
+        EventListener<TextTrackListChangeEvent> { updateActiveSubtitleTrack() }
 
     init {
         updateCurrentTimeAndPlaybackState()
@@ -259,6 +343,8 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         updatePlaybackRate()
         updateFullscreen()
         updateActiveVideoTrack()
+        updateAudioTracks()
+        updateSubtitleTracks()
         player?.addEventListener(PlayerEventTypes.PLAY, playListener)
         player?.addEventListener(PlayerEventTypes.PAUSE, pauseListener)
         player?.addEventListener(PlayerEventTypes.ENDED, endedListener)
@@ -283,11 +369,39 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
             VideoTrackListEventTypes.TRACKLISTCHANGE,
             videoTrackListChangeListener
         )
+        player?.audioTracks?.addEventListener(
+            AudioTrackListEventTypes.ADDTRACK,
+            audioAddTrackListener
+        )
+        player?.audioTracks?.addEventListener(
+            AudioTrackListEventTypes.REMOVETRACK,
+            audioRemoveTrackListener
+        )
+        player?.audioTracks?.addEventListener(
+            AudioTrackListEventTypes.TRACKLISTCHANGE,
+            audioTrackListChangeListener
+        )
+        player?.textTracks?.addEventListener(
+            TextTrackListEventTypes.ADDTRACK,
+            textAddTrackListener
+        )
+        player?.textTracks?.addEventListener(
+            TextTrackListEventTypes.REMOVETRACK,
+            textRemoveTrackListener
+        )
+        player?.textTracks?.addEventListener(
+            TextTrackListEventTypes.TRACKLISTCHANGE,
+            textTrackListChangeListener
+        )
         fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
     }
 
     fun dispose() {
         setActiveVideoTrack(null)
+        audioTracks.clear()
+        subtitleTracks.clear()
+        _activeAudioTrack = null
+        _activeSubtitleTrack = null
         player?.removeEventListener(PlayerEventTypes.PLAY, playListener)
         player?.removeEventListener(PlayerEventTypes.PAUSE, pauseListener)
         player?.removeEventListener(PlayerEventTypes.ENDED, endedListener)
@@ -312,6 +426,38 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
             VideoTrackListEventTypes.TRACKLISTCHANGE,
             videoTrackListChangeListener
         )
+        player?.audioTracks?.removeEventListener(
+            AudioTrackListEventTypes.ADDTRACK,
+            audioAddTrackListener
+        )
+        player?.audioTracks?.removeEventListener(
+            AudioTrackListEventTypes.REMOVETRACK,
+            audioRemoveTrackListener
+        )
+        player?.audioTracks?.removeEventListener(
+            AudioTrackListEventTypes.TRACKLISTCHANGE,
+            audioTrackListChangeListener
+        )
+        player?.textTracks?.removeEventListener(
+            TextTrackListEventTypes.ADDTRACK,
+            textAddTrackListener
+        )
+        player?.textTracks?.removeEventListener(
+            TextTrackListEventTypes.REMOVETRACK,
+            textRemoveTrackListener
+        )
+        player?.textTracks?.removeEventListener(
+            TextTrackListEventTypes.TRACKLISTCHANGE,
+            textTrackListChangeListener
+        )
         fullscreenHandler?.onFullscreenChangeListener = null
+    }
+}
+
+fun isSubtitleTrack(track: TextTrack): Boolean {
+    return when (track.kind) {
+        TextTrackKind.SUBTITLES.type -> true
+        TextTrackKind.CAPTIONS.type -> true
+        else -> false
     }
 }
