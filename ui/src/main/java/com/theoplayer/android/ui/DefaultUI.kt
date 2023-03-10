@@ -58,6 +58,7 @@ fun DefaultUI(
                         showDuration = true
                     )
                     Spacer(modifier = Modifier.weight(1f))
+                    LanguageMenuButton()
                     SettingsMenuButton()
                     FullscreenButton()
                 }
