@@ -1,12 +1,17 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun MenuScope.SettingsMenu() {
@@ -23,17 +28,39 @@ fun MenuScope.SettingsMenu() {
         },
     ) {
         val state = LocalTHEOplayer.current
-        TextButton(onClick = { openMenu { QualityMenu() } }) {
-            Text(
-                color = Color.White,
-                text = "Active quality: ${state?.activeVideoQuality?.height?.let { "${it}p" } ?: "none"}"
-            )
-        }
-        TextButton(onClick = { openMenu { PlaybackRateMenu() } }) {
-            Text(
-                color = Color.White,
-                text = "Playback speed: ${formatPlaybackRate(state?.playbackRate ?: 1.0)}"
-            )
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+            Row {
+                Text(
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    color = Color.White,
+                    text = "Quality"
+                )
+                TextButton(
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    onClick = { openMenu { QualityMenu() } }
+                ) {
+                    Text(
+                        color = Color.White,
+                        text = state?.activeVideoQuality?.height?.let { "${it}p" } ?: "Automatic"
+                    )
+                }
+            }
+            Row {
+                Text(
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    color = Color.White,
+                    text = "Playback speed"
+                )
+                TextButton(
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    onClick = { openMenu { PlaybackRateMenu() } }
+                ) {
+                    Text(
+                        color = Color.White,
+                        text = formatPlaybackRate(state?.playbackRate ?: 1.0)
+                    )
+                }
+            }
         }
     }
 }
