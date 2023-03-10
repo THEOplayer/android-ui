@@ -5,7 +5,6 @@ import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -43,7 +42,6 @@ fun PlayButton(
     val state = LocalTHEOplayer.current
     TextButton(
         modifier = modifier,
-        shape = IconButtonDefaults.filledShape,
         onClick = {
             state?.let {
                 if (it.paused) {
