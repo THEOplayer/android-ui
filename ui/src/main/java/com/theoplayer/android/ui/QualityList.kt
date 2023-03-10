@@ -12,11 +12,14 @@ import java.text.DecimalFormat
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun QualityList(onClick: (() -> Unit)? = null) {
+fun QualityList(
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
     val state = LocalTHEOplayer.current
     val videoQualities = state?.videoQualities ?: listOf()
     val targetVideoQuality = state?.targetVideoQuality
-    LazyColumn {
+    LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
                 headlineText = { Text(text = "Automatic") },
