@@ -39,7 +39,6 @@ fun DefaultUI(
                     }
                 }
             }
-            ErrorDisplay(modifier = Modifier.fillMaxWidth(1f))
         },
         centerChrome = {
             val state = LocalTHEOplayer.current
@@ -67,7 +66,18 @@ fun DefaultUI(
                     FullscreenButton()
                 }
             }
-        })
+        },
+        errorOverlay = {
+            val state = LocalTHEOplayer.current
+            Box(contentAlignment = Alignment.Center) {
+                ErrorDisplay()
+                // Ensure the user can still exit fullscreen
+                if (state?.fullscreen == true) {
+                    FullscreenButton(modifier = Modifier.align(Alignment.BottomEnd))
+                }
+            }
+        }
+    )
 }
 
 @Preview(showBackground = true)

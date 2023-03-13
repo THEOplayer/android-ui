@@ -40,6 +40,7 @@ fun UIController(
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
@@ -74,7 +75,11 @@ fun UIController(
 
     val scope = remember { UIControllerScopeImpl() }
 
-    val backgroundVisible by remember { derivedStateOf { controlsVisible.value || scope.currentMenu != null } }
+    val backgroundVisible by remember {
+        derivedStateOf {
+            controlsVisible.value || scope.currentMenu != null || state.error != null
+        }
+    }
     val background by animateColorAsState(
         targetValue = color.copy(alpha = if (backgroundVisible) 0.5f else 0f),
         animationSpec = if (backgroundVisible) snap(0) else tween(
@@ -121,13 +126,17 @@ fun UIController(
                 }
             ) { menu ->
                 if (menu == null) {
-                    scope.PlayerControls(
-                        controlsVisible = controlsVisible.value,
-                        centerOverlay = centerOverlay,
-                        topChrome = topChrome,
-                        centerChrome = centerChrome,
-                        bottomChrome = bottomChrome
-                    )
+                    if (state.error != null) {
+                        errorOverlay?.let { scope.it() }
+                    } else {
+                        scope.PlayerControls(
+                            controlsVisible = controlsVisible.value,
+                            centerOverlay = centerOverlay,
+                            topChrome = topChrome,
+                            centerChrome = centerChrome,
+                            bottomChrome = bottomChrome
+                        )
+                    }
                 } else {
                     scope.menu()
                 }
