@@ -114,23 +114,27 @@ fun MenuScope.LanguageMenuExpanded() {
         if (showAudioTracks(state)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .padding(0.dp, 8.dp),
                     text = "Audio",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium
                 )
-                AudioTrackList(modifier = Modifier.weight(1f))
+                AudioTrackList()
             }
         }
         if (showSubtitleTracks(state)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(1f)
+                        .padding(0.dp, 8.dp),
                     text = "Subtitles",
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium
                 )
-                SubtitleTrackList(modifier = Modifier.weight(1f))
+                SubtitleTrackList()
             }
         }
     }
