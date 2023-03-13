@@ -11,6 +11,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -41,7 +42,8 @@ fun MenuScope.SettingsMenu() {
                     onClick = { openMenu { QualityMenu() } }
                 ) {
                     Text(
-                        text = state?.activeVideoQuality?.height?.let { "${it}p" } ?: "Automatic"
+                        text = state?.activeVideoQuality?.height?.let { "${it}p" } ?: "Automatic",
+                        textAlign = TextAlign.Center
                     )
                 }
             }
@@ -59,7 +61,8 @@ fun MenuScope.SettingsMenu() {
                     onClick = { openMenu { PlaybackRateMenu() } }
                 ) {
                     Text(
-                        text = formatPlaybackRate(state?.playbackRate ?: 1.0)
+                        text = formatPlaybackRate(state?.playbackRate ?: 1.0),
+                        textAlign = TextAlign.Center
                     )
                 }
             }
