@@ -42,7 +42,14 @@ fun DefaultUI(
             ErrorDisplay(modifier = Modifier.fillMaxWidth(1f))
         },
         centerChrome = {
+            val state = LocalTHEOplayer.current
+            if (state?.firstPlay == true) {
+                SeekButton(seekOffset = -10, iconSize = 48.dp)
+            }
             PlayButton(iconModifier = Modifier.size(96.dp))
+            if (state?.firstPlay == true) {
+                SeekButton(seekOffset = 10, iconSize = 48.dp)
+            }
         },
         bottomChrome = {
             val state = LocalTHEOplayer.current
