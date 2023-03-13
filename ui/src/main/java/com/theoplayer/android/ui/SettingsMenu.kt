@@ -53,7 +53,7 @@ fun MenuScope.SettingsMenu() {
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = ""
+                        contentDescription = null
                     )
                 }
             }
@@ -77,7 +77,7 @@ fun MenuScope.SettingsMenu() {
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = ""
+                        contentDescription = null
                     )
                 }
             }

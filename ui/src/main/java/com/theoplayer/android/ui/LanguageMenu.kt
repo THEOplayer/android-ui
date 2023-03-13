@@ -73,7 +73,7 @@ fun MenuScope.LanguageMenuCompact() {
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = ""
+                        contentDescription = null
                     )
                 }
             }
@@ -99,7 +99,7 @@ fun MenuScope.LanguageMenuCompact() {
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = ""
+                        contentDescription = null
                     )
                 }
             }

@@ -19,7 +19,7 @@ fun LiveButton(
             Icons.Rounded.Circle,
             modifier = Modifier.size(12.dp),
             tint = Color.Red,
-            contentDescription = ""
+            contentDescription = null
         )
         Text(text = " LIVE")
     },
@@ -28,7 +28,7 @@ fun LiveButton(
             Icons.Rounded.Circle,
             modifier = Modifier.size(12.dp),
             tint = Color.Gray,
-            contentDescription = ""
+            contentDescription = null
         )
         Text(text = " LIVE")
     }
