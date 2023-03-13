@@ -1,14 +1,13 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material3.Icon
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 
 @Composable
 fun PlayButton(
@@ -16,7 +15,7 @@ fun PlayButton(
     iconModifier: Modifier = Modifier,
     play: @Composable () -> Unit = {
         Icon(
-            Icons.Rounded.PlayArrow,
+            painter = painterResource(id = R.drawable.play),
             modifier = iconModifier,
             tint = Color.White,
             contentDescription = "Play"
@@ -24,7 +23,7 @@ fun PlayButton(
     },
     pause: @Composable () -> Unit = {
         Icon(
-            Icons.Rounded.Pause,
+            painter = painterResource(id = R.drawable.pause),
             modifier = iconModifier,
             tint = Color.White,
             contentDescription = "Pause"
