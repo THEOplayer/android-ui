@@ -1,13 +1,11 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -116,8 +114,10 @@ fun MenuScope.LanguageMenuExpanded() {
         if (showAudioTracks(state)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
+                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
                     text = "Audio",
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium
                 )
                 AudioTrackList(modifier = Modifier.weight(1f))
             }
@@ -125,8 +125,10 @@ fun MenuScope.LanguageMenuExpanded() {
         if (showSubtitleTracks(state)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
+                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
                     text = "Subtitles",
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleMedium
                 )
                 SubtitleTrackList(modifier = Modifier.weight(1f))
             }
