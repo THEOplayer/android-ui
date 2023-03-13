@@ -75,10 +75,22 @@ fun UIController(
 
     val scope = remember { UIControllerScopeImpl() }
 
-    val backgroundVisible by remember {
+    val uiState by remember {
         derivedStateOf {
-            controlsVisible.value || scope.currentMenu != null || state.error != null
+            val currentMenu = scope.currentMenu
+            if (state.error != null) {
+                UIState.Error
+            } else if (currentMenu != null) {
+                UIState.Menu(currentMenu)
+            } else {
+                UIState.Controls
+            }
         }
+    }
+    val backgroundVisible = if (uiState is UIState.Controls) {
+        controlsVisible.value
+    } else {
+        true
     }
     val background by animateColorAsState(
         targetValue = color.copy(alpha = if (backgroundVisible) 0.5f else 0f),
@@ -106,29 +118,40 @@ fun UIController(
                             forceControlsHidden = true
                             tapCount++
                         }),
-                targetState = scope.currentMenu,
+                targetState = uiState,
                 transitionSpec = {
-                    if (initialState == null) {
+                    if (targetState is UIState.Error) {
+                        // Show errors immediately
+                        EnterTransition.None with ExitTransition.None
+                    } else if (initialState is UIState.Menu && targetState is UIState.Menu) {
+                        if (scope.lastWasClosed) {
+                            // Close menu towards the right
+                            slideInHorizontally { -it } with
+                                    slideOutHorizontally { it }
+                        } else {
+                            // Open new menu towards the left
+                            slideInHorizontally(initialOffsetX = { it }) with
+                                    slideOutHorizontally(targetOffsetX = { -it })
+                        }
+                    } else if (targetState is UIState.Menu) {
                         // Open first menu from the bottom
                         slideInVertically { it / 4 } + fadeIn() with fadeOut()
-                    } else if (targetState == null) {
+                    } else if (initialState is UIState.Menu) {
                         // Close last menu towards the bottom
                         fadeIn() with slideOutVertically { it / 4 } + fadeOut()
-                    } else if (scope.lastWasClosed) {
-                        // Close menu towards the right
-                        slideInHorizontally { -it } with
-                                slideOutHorizontally { it }
                     } else {
-                        // Open new menu towards the left
-                        slideInHorizontally(initialOffsetX = { it }) with
-                                slideOutHorizontally(targetOffsetX = { -it })
+                        EnterTransition.None with ExitTransition.None
                     }
                 }
-            ) { menu ->
-                if (menu == null) {
-                    if (state.error != null) {
+            ) { uiState ->
+                when (uiState) {
+                    is UIState.Error -> {
                         errorOverlay?.let { scope.it() }
-                    } else {
+                    }
+                    is UIState.Menu -> {
+                        uiState.menu.let { scope.it() }
+                    }
+                    is UIState.Controls -> {
                         scope.PlayerControls(
                             controlsVisible = controlsVisible.value,
                             centerOverlay = centerOverlay,
@@ -137,8 +160,6 @@ fun UIController(
                             bottomChrome = bottomChrome
                         )
                     }
-                } else {
-                    scope.menu()
                 }
             }
         }
@@ -171,6 +192,12 @@ internal class UIControllerScopeImpl() :
             lastWasClosed = true
         }
     }
+}
+
+private sealed class UIState {
+    object Error : UIState()
+    data class Menu(val menu: MenuContent) : UIState()
+    object Controls : UIState()
 }
 
 @Composable
