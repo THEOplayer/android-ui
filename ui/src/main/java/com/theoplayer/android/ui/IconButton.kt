@@ -16,11 +16,12 @@ import androidx.compose.ui.unit.dp
  *    to allow for larger icons.
  */
 @Composable
-internal fun IconButton(
+fun IconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     colors: ButtonColors = defaultIconButtonColors(),
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit
 ) {
@@ -33,7 +34,7 @@ internal fun IconButton(
         shape = IconButtonDefaults.filledShape,
         enabled = enabled,
         colors = colors,
-        contentPadding = PaddingValues(0.dp),
+        contentPadding = contentPadding,
         interactionSource = interactionSource,
         onClick = onClick,
         content = { content() }
@@ -47,7 +48,7 @@ private val IconButtonSize = 40.dp
  * Equivalent to [IconButtonDefaults.iconButtonColors]
  */
 @Composable
-private fun defaultIconButtonColors(
+fun defaultIconButtonColors(
     containerColor: Color = Color.Transparent,
     contentColor: Color = LocalContentColor.current,
     disabledContainerColor: Color = Color.Transparent,
