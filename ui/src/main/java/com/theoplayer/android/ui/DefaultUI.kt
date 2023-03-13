@@ -44,11 +44,11 @@ fun DefaultUI(
         centerChrome = {
             val state = LocalTHEOplayer.current
             if (state?.firstPlay == true) {
-                SeekButton(seekOffset = -10, iconSize = 48.dp)
+                SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
-            PlayButton(iconModifier = Modifier.size(96.dp))
+            PlayButton(iconModifier = Modifier.size(96.dp), contentPadding = PaddingValues(8.dp))
             if (state?.firstPlay == true) {
-                SeekButton(seekOffset = 10, iconSize = 48.dp)
+                SeekButton(seekOffset = 10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
         },
         bottomChrome = {
