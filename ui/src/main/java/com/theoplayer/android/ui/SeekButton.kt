@@ -7,7 +7,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,7 +57,7 @@ fun SeekButton(
     content: @Composable () -> Unit
 ) {
     val state = LocalTHEOplayer.current
-    TextButton(
+    IconButton(
         modifier = modifier,
         onClick = {
             state?.player?.let {

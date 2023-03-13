@@ -3,7 +3,6 @@ package com.theoplayer.android.ui
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material3.Icon
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,7 +38,7 @@ fun PlayButton(
     }
 ) {
     val state = LocalTHEOplayer.current
-    TextButton(
+    IconButton(
         modifier = modifier,
         onClick = {
             state?.let {
