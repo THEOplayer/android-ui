@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -68,7 +69,13 @@ fun MenuScope.LanguageMenuCompact() {
                     onClick = { openMenu { AudioTrackMenu() } }
                 ) {
                     Text(
-                        text = state?.activeAudioTrack?.let { formatTrackLabel(it) } ?: "None"
+                        modifier = Modifier.weight(1f),
+                        text = state?.activeAudioTrack?.let { formatTrackLabel(it) } ?: "None",
+                        textAlign = TextAlign.Center
+                    )
+                    Icon(
+                        Icons.Rounded.ChevronRight,
+                        contentDescription = ""
                     )
                 }
             }
@@ -88,7 +95,13 @@ fun MenuScope.LanguageMenuCompact() {
                     onClick = { openMenu { SubtitleMenu() } }
                 ) {
                     Text(
-                        text = state?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: "Off"
+                        modifier = Modifier.weight(1f),
+                        text = state?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: "Off",
+                        textAlign = TextAlign.Center
+                    )
+                    Icon(
+                        Icons.Rounded.ChevronRight,
+                        contentDescription = ""
                     )
                 }
             }

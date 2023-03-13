@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -42,8 +43,13 @@ fun MenuScope.SettingsMenu() {
                     onClick = { openMenu { QualityMenu() } }
                 ) {
                     Text(
+                        modifier = Modifier.weight(1f),
                         text = state?.activeVideoQuality?.height?.let { "${it}p" } ?: "Automatic",
                         textAlign = TextAlign.Center
+                    )
+                    Icon(
+                        Icons.Rounded.ChevronRight,
+                        contentDescription = ""
                     )
                 }
             }
@@ -61,8 +67,13 @@ fun MenuScope.SettingsMenu() {
                     onClick = { openMenu { PlaybackRateMenu() } }
                 ) {
                     Text(
+                        modifier = Modifier.weight(1f),
                         text = formatPlaybackRate(state?.playbackRate ?: 1.0),
                         textAlign = TextAlign.Center
+                    )
+                    Icon(
+                        Icons.Rounded.ChevronRight,
+                        contentDescription = ""
                     )
                 }
             }
