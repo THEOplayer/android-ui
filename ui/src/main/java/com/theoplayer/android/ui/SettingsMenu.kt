@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 
 @Composable
 fun MenuScope.SettingsMenu() {
@@ -44,7 +45,10 @@ fun MenuScope.SettingsMenu() {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = state?.activeVideoQuality?.height?.let { "${it}p" } ?: "Automatic",
+                        text = formatActiveQualityLabel(
+                            state?.targetVideoQuality,
+                            state?.activeVideoQuality
+                        ),
                         textAlign = TextAlign.Center
                     )
                     Icon(
@@ -97,4 +101,13 @@ fun MenuScope.PlaybackRateMenu() {
     ) {
         PlaybackRateList(onClick = { closeCurrentMenu() })
     }
+}
+
+internal fun formatActiveQualityLabel(
+    targetVideoQuality: VideoQuality?,
+    activeVideoQuality: VideoQuality?
+): String {
+    return targetVideoQuality?.let { "${it.height}p" }
+        ?: activeVideoQuality?.let { "Automatic (${it.height}p)" }
+        ?: "Automatic"
 }
