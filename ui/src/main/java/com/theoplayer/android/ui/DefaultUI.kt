@@ -37,6 +37,9 @@ fun DefaultUI(
                             text = it
                         )
                     }
+                    Spacer(modifier = Modifier.weight(1f))
+                    LanguageMenuButton()
+                    SettingsMenuButton()
                 }
             }
         },
@@ -61,8 +64,6 @@ fun DefaultUI(
                         showDuration = true
                     )
                     Spacer(modifier = Modifier.weight(1f))
-                    LanguageMenuButton()
-                    SettingsMenuButton()
                     FullscreenButton()
                 }
             }
