@@ -9,6 +9,8 @@ A component library for building a world-class video player experience powered b
 > **Warning**
 > This project is experimental, and breaking changes can happen frequently. As such, it is not yet recommended for use in production. We are aiming for a first stable release soon, so feedback is welcome!
 
+![Screenshot](./docs/assets/hero-screenshot.png)
+
 ## Motivation
 
 THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](https://github.com/videojs/video.js) running within a `WebView` inside of a [`THEOplayerView`](https://docs.theoplayer.com/api-reference/android/com/theoplayer/android/api/THEOplayerView.html). This new UI aims to solve some limitations from the old approach:
