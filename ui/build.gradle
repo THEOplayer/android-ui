@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
 
 android {
@@ -41,6 +42,11 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    publishing {
+        singleVariant('release') {
+            withSourcesJar()
+        }
+    }
 }
 
 dependencies {
@@ -60,4 +66,17 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
     implementation "com.theoplayer.theoplayer-sdk-android:unified:$theoplayer_version"
+}
+
+publishing {
+    publications {
+        release(MavenPublication) {
+            groupId "com.theoplayer.android-ui"
+            artifactId "android-ui"
+            version = project.ext.libraryVersion
+            afterEvaluate {
+                from components.release
+            }
+        }
+    }
 }
