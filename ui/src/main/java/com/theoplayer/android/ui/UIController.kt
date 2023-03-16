@@ -290,6 +290,12 @@ fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
 
+    DisposableEffect(key1 = theoplayerView) {
+        onDispose {
+            theoplayerView.onDestroy()
+        }
+    }
+
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(key1 = lifecycle, key2 = theoplayerView) {
         val lifecycleObserver = LifecycleEventObserver { _, event ->
