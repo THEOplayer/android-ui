@@ -9,6 +9,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+/**
+ * A button that toggles fullscreen.
+ *
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ * @param enter button content when the player is not fullscreen, typically an "enter fullscreen" icon
+ * @param exit button content when the player is fullscreen, typically an "exit fullscreen" icon
+ */
 @Composable
 fun FullscreenButton(
     modifier: Modifier = Modifier,
