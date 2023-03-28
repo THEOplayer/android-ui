@@ -5,13 +5,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
+/**
+ * A text display that shows the player's duration.
+ *
+ * @param modifier the [Modifier] to be applied to this text
+ */
 @Composable
 fun DurationDisplay(
-    modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified
+    modifier: Modifier = Modifier
 ) {
     val state = LocalTHEOplayer.current
     val duration = state?.duration ?: Double.NaN
 
-    Text(modifier = modifier, color = color, text = formatTime(duration))
+    Text(modifier = modifier, text = formatTime(duration))
 }

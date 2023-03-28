@@ -3,12 +3,19 @@ package com.theoplayer.android.ui
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 
+/**
+ * A text display that shows the player's current time.
+ *
+ * @param modifier the [Modifier] to be applied to this text
+ * @param showRemaining if set, shows the remaining time of the stream as a negative value
+ * (e.g. "-01:23")
+ * @param showDuration if set, also shows the duration of the stream
+ * (e.g. "01:23 / 10:00")
+ */
 @Composable
 fun CurrentTimeDisplay(
     modifier: Modifier = Modifier,
-    color: Color = Color.Unspecified,
     showRemaining: Boolean = false,
     showDuration: Boolean = false,
 ) {
@@ -29,5 +36,5 @@ fun CurrentTimeDisplay(
         text.append(formatTime(duration))
     }
 
-    Text(modifier = modifier, color = color, text = text.toString())
+    Text(modifier = modifier, text = text.toString())
 }

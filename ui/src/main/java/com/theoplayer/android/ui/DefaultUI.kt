@@ -61,9 +61,7 @@ fun DefaultUI(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MuteButton()
                     LiveButton()
-                    CurrentTimeDisplay(
-                        showDuration = true
-                    )
+                    CurrentTimeDisplay(showDuration = true)
                     Spacer(modifier = Modifier.weight(1f))
                     FullscreenButton()
                 }
