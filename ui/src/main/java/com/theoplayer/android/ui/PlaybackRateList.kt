@@ -42,7 +42,7 @@ fun PlaybackRateList(
     }
 }
 
-internal val playbackRateFormat = DecimalFormat("#.##")
+private val playbackRateFormat = DecimalFormat("#.##")
 
 internal fun formatPlaybackRate(rate: Double): String {
     return if (rate == 1.0) {

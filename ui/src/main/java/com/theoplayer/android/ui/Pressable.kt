@@ -14,7 +14,7 @@ import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-fun Modifier.pressable(
+internal fun Modifier.pressable(
     interactionSource: MutableInteractionSource,
     enabled: Boolean = true,
     requireUnconsumed: Boolean = true
@@ -89,7 +89,7 @@ fun Modifier.pressable(
  * Like [AwaitPointerEventScope.waitForUpOrCancellation],
  * but skips the [PointerInputChange.isConsumed] checks.
  */
-internal suspend fun AwaitPointerEventScope.waitForUpOrCancellationIgnoreConsumed(): PointerInputChange? {
+private suspend fun AwaitPointerEventScope.waitForUpOrCancellationIgnoreConsumed(): PointerInputChange? {
     while (true) {
         val event = awaitPointerEvent(PointerEventPass.Main)
         if (event.changes.all { it.changedToUpIgnoreConsumed() }) {

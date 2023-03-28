@@ -58,8 +58,8 @@ fun QualityList(
     }
 }
 
-internal val zeroPrecisionFormat = DecimalFormat("#")
-internal val singlePrecisionFormat = DecimalFormat("#.#")
+private val zeroPrecisionFormat = DecimalFormat("#")
+private val singlePrecisionFormat = DecimalFormat("#.#")
 
 internal fun formatBandwidth(bandwidth: Long): String {
     return if (bandwidth > 1e7) {

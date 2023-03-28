@@ -85,7 +85,7 @@ fun DefaultUI(
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+private fun DefaultPreview() {
     DefaultUI(
         config = THEOplayerConfig.Builder().build(),
         title = "Elephant's Dream"

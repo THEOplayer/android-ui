@@ -29,7 +29,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
-val controlsExitDuration = 500.milliseconds
+private val controlsExitDuration = 500.milliseconds
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
@@ -173,7 +173,7 @@ fun UIController(
 interface UIControllerScope : MenuScope {
 }
 
-internal class UIControllerScopeImpl() :
+private class UIControllerScopeImpl() :
     UIControllerScope {
     private var menuStack = mutableStateListOf<MenuContent>()
 
@@ -201,7 +201,7 @@ private sealed class UIState {
 }
 
 @Composable
-internal fun PlayerContainer(
+private fun PlayerContainer(
     modifier: Modifier = Modifier,
     theoplayerView: THEOplayerView? = null,
     ui: @Composable () -> Unit
@@ -242,7 +242,7 @@ internal fun PlayerContainer(
 }
 
 @Composable
-internal fun UIControllerScope.PlayerControls(
+private fun UIControllerScope.PlayerControls(
     controlsVisible: Boolean,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -286,7 +286,7 @@ internal fun UIControllerScope.PlayerControls(
 }
 
 @Composable
-fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
+private fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
 
@@ -315,7 +315,7 @@ fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     return theoplayerView
 }
 
-internal fun Modifier.toggleControlsOnTap(
+private fun Modifier.toggleControlsOnTap(
     controlsVisible: State<Boolean>,
     showControlsTemporarily: () -> Unit,
     hideControls: () -> Unit
@@ -350,7 +350,7 @@ internal fun Modifier.toggleControlsOnTap(
     }
 }
 
-internal suspend fun PointerInputScope.detectAnyPointerEvent(
+private suspend fun PointerInputScope.detectAnyPointerEvent(
     pass: PointerEventPass = PointerEventPass.Main,
     onPointer: () -> Unit
 ) {

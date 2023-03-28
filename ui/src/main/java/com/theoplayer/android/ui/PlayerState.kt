@@ -454,7 +454,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     }
 }
 
-fun isSubtitleTrack(track: TextTrack): Boolean {
+private fun isSubtitleTrack(track: TextTrack): Boolean {
     return when (track.kind) {
         TextTrackKind.SUBTITLES.type -> true
         TextTrackKind.CAPTIONS.type -> true
