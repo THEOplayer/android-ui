@@ -5,7 +5,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.source.SourceDescription
@@ -80,14 +79,5 @@ fun DefaultUI(
                 }
             }
         }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun DefaultPreview() {
-    DefaultUI(
-        config = THEOplayerConfig.Builder().build(),
-        title = "Elephant's Dream"
     )
 }
