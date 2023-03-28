@@ -17,6 +17,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlin.math.absoluteValue
 
+/**
+ * A button that seeks forward or backward by a fixed offset.
+ *
+ * This draws a seek forward or backward icon inside the button, with the seek offset centered
+ * within the icon. If you want to use a different icon, use the other overload that accepts
+ * custom `content`.
+ *
+ * @param modifier the [Modifier] to be applied to this button
+ * @param seekOffset the offset (in seconds) by which to seek forward (if positive)
+ * or backward (if negative)
+ * @param iconSize the size of the icon
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ */
 @Composable
 fun SeekButton(
     modifier: Modifier = Modifier,
@@ -52,11 +66,20 @@ fun SeekButton(
     }
 }
 
+/**
+ * A button that seeks forward or backward by a fixed offset.
+ *
+ * @param modifier the [Modifier] to be applied to this button
+ * @param seekOffset the offset (in seconds) by which to seek forward (if positive)
+ * or backward (if negative)
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ */
 @Composable
 fun SeekButton(
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
     seekOffset: Int = 10,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit
 ) {
     val state = LocalTHEOplayer.current
@@ -69,7 +92,7 @@ fun SeekButton(
                     it.currentTime = (it.currentTime + seekOffset).coerceIn(0.0, it.duration)
                 }
             }
-        }) {
-        content()
-    }
+        },
+        content = content
+    )
 }
