@@ -17,14 +17,12 @@ fun FullscreenButton(
     enter: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Fullscreen,
-            tint = Color.White,
             contentDescription = "Enter fullscreen"
         )
     },
     exit: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.FullscreenExit,
-            tint = Color.White,
             contentDescription = "Exit fullscreen"
         )
     }

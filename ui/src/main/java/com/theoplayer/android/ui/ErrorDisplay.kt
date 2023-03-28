@@ -27,7 +27,6 @@ fun ErrorDisplay(
                 Icon(
                     Icons.Rounded.Error,
                     modifier = Modifier.size(48.dp),
-                    tint = Color.White,
                     contentDescription = null
                 )
             }

@@ -19,7 +19,6 @@ fun PlayButton(
         Icon(
             painter = painterResource(id = R.drawable.play),
             modifier = iconModifier,
-            tint = Color.White,
             contentDescription = "Play"
         )
     },
@@ -27,7 +26,6 @@ fun PlayButton(
         Icon(
             painter = painterResource(id = R.drawable.pause),
             modifier = iconModifier,
-            tint = Color.White,
             contentDescription = "Pause"
         )
     },
@@ -35,7 +33,6 @@ fun PlayButton(
         Icon(
             Icons.Rounded.Replay,
             modifier = iconModifier,
-            tint = Color.White,
             contentDescription = "Replay"
         )
     }

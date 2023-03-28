@@ -23,7 +23,6 @@ fun MenuScope.SettingsMenu() {
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
-                tint = Color.White,
                 contentDescription = "Close"
             )
         },

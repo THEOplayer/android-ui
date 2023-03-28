@@ -21,7 +21,6 @@ fun MenuScope.LanguageMenu() {
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
-                tint = Color.White,
                 contentDescription = "Close"
             )
         },

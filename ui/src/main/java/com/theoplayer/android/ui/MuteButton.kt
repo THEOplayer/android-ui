@@ -17,14 +17,12 @@ fun MuteButton(
     mute: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.VolumeUp,
-            tint = Color.White,
             contentDescription = "Mute"
         )
     },
     unmute: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.VolumeOff,
-            tint = Color.White,
             contentDescription = "Unmute"
         )
     }
