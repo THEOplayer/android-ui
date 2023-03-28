@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
  * respond to user input, and it will appear visually disabled and disabled to accessibility
  * services.
  * @param colors [ButtonColors] that will be used to resolve the colors for this button in different
- * states. See [defaultIconButtonColors].
+ * states. See [IconButtonDefaults.iconButtonColors].
  * @param contentPadding the spacing values to apply internally between the container and the
  * content
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
@@ -36,7 +36,7 @@ fun IconButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    colors: ButtonColors = defaultIconButtonColors(),
+    colors: ButtonColors = IconButtonDefaults.iconButtonColors(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     content: @Composable () -> Unit
@@ -47,7 +47,7 @@ fun IconButton(
                 minWidth = IconButtonSize,
                 minHeight = IconButtonSize
             ),
-        shape = IconButtonDefaults.filledShape,
+        shape = androidx.compose.material3.IconButtonDefaults.filledShape,
         enabled = enabled,
         colors = colors,
         contentPadding = contentPadding,
@@ -61,10 +61,14 @@ private const val DisabledIconOpacity = 0.38f
 private val IconButtonSize = 40.dp
 
 /**
+ * Contains the default values used by icon buttons.
+ */
+object IconButtonDefaults {
+/**
  * Creates a [ButtonColors] that represents the default colors used in a [IconButton].
  *
- * Equivalent to [IconButtonDefaults.iconButtonColors], but as [ButtonColors]
- * instead of [androidx.compose.material3.IconButtonColors].
+ * Equivalent to [androidx.compose.material3.IconButtonDefaults.iconButtonColors],
+ * but as [ButtonColors] instead of [androidx.compose.material3.IconButtonColors].
  *
  * @param containerColor the container color of this icon button when enabled.
  * @param contentColor the content color of this icon button when enabled.
@@ -72,7 +76,7 @@ private val IconButtonSize = 40.dp
  * @param disabledContentColor the content color of this icon button when not enabled.
  */
 @Composable
-fun defaultIconButtonColors(
+fun iconButtonColors(
     containerColor: Color = Color.Transparent,
     contentColor: Color = LocalContentColor.current,
     disabledContainerColor: Color = Color.Transparent,
@@ -84,4 +88,5 @@ fun defaultIconButtonColors(
         disabledContainerColor = disabledContainerColor,
         disabledContentColor = disabledContentColor
     )
+}
 }

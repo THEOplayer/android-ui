@@ -16,7 +16,7 @@ import com.theoplayer.android.ui.theme.THEOplayerTheme
 @Composable
 fun LiveButton(
     modifier: Modifier = Modifier,
-    colors: ButtonColors = defaultIconButtonColors(),
+    colors: ButtonColors = IconButtonDefaults.iconButtonColors(),
     liveThreshold: Double = 10.0,
     live: @Composable RowScope.() -> Unit = {
         Icon(
