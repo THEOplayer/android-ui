@@ -14,6 +14,7 @@ import androidx.compose.ui.unit.dp
 fun LiveButton(
     modifier: Modifier = Modifier,
     colors: ButtonColors = ButtonDefaults.textButtonColors(),
+    liveThreshold: Double = 10.0,
     live: @Composable RowScope.() -> Unit = {
         Icon(
             Icons.Rounded.Circle,
@@ -35,8 +36,8 @@ fun LiveButton(
 ) {
     val state = LocalTHEOplayer.current
     if (state?.streamType == StreamType.Live || state?.streamType == StreamType.Dvr) {
-        // TODO Make live threshold configurable?
-        val isLive = !state.paused && ((state.seekable.lastEnd ?: 0.0) - state.currentTime) <= 10
+        val isLive =
+            !state.paused && ((state.seekable.lastEnd ?: 0.0) - state.currentTime) <= liveThreshold
         TextButton(
             modifier = modifier,
             colors = colors,
