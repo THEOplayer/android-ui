@@ -64,29 +64,29 @@ private val IconButtonSize = 40.dp
  * Contains the default values used by icon buttons.
  */
 object IconButtonDefaults {
-/**
- * Creates a [ButtonColors] that represents the default colors used in a [IconButton].
- *
- * Equivalent to [androidx.compose.material3.IconButtonDefaults.iconButtonColors],
- * but as [ButtonColors] instead of [androidx.compose.material3.IconButtonColors].
- *
- * @param containerColor the container color of this icon button when enabled.
- * @param contentColor the content color of this icon button when enabled.
- * @param disabledContainerColor the container color of this icon button when not enabled.
- * @param disabledContentColor the content color of this icon button when not enabled.
- */
-@Composable
-fun iconButtonColors(
-    containerColor: Color = Color.Transparent,
-    contentColor: Color = LocalContentColor.current,
-    disabledContainerColor: Color = Color.Transparent,
-    disabledContentColor: Color = contentColor.copy(alpha = DisabledIconOpacity)
-): ButtonColors {
-    return ButtonDefaults.textButtonColors(
-        containerColor = containerColor,
-        contentColor = contentColor,
-        disabledContainerColor = disabledContainerColor,
-        disabledContentColor = disabledContentColor
-    )
-}
+    /**
+     * Creates a [ButtonColors] that represents the default colors used in a [IconButton].
+     *
+     * Equivalent to [androidx.compose.material3.IconButtonDefaults.iconButtonColors],
+     * but as [ButtonColors] instead of [androidx.compose.material3.IconButtonColors].
+     *
+     * @param containerColor the container color of this icon button when enabled.
+     * @param contentColor the content color of this icon button when enabled.
+     * @param disabledContainerColor the container color of this icon button when not enabled.
+     * @param disabledContentColor the content color of this icon button when not enabled.
+     */
+    @Composable
+    fun iconButtonColors(
+        containerColor: Color = Color.Transparent,
+        contentColor: Color = LocalContentColor.current,
+        disabledContainerColor: Color = Color.Transparent,
+        disabledContentColor: Color = contentColor.copy(alpha = DisabledIconOpacity)
+    ): ButtonColors {
+        return ButtonDefaults.textButtonColors(
+            containerColor = containerColor,
+            contentColor = contentColor,
+            disabledContainerColor = disabledContainerColor,
+            disabledContentColor = disabledContentColor
+        )
+    }
 }
