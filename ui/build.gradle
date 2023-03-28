@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.dokka'
     id 'maven-publish'
 }
 
@@ -66,6 +67,8 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
     implementation "com.theoplayer.theoplayer-sdk-android:unified:$theoplayer_version"
+
+    dokkaPlugin "org.jetbrains.dokka:android-documentation-plugin:$dokka_version"
 }
 
 publishing {
