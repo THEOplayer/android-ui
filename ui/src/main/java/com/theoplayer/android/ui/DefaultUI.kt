@@ -56,7 +56,9 @@ fun DefaultUI(
         bottomChrome = {
             val state = LocalTHEOplayer.current
             if (state?.firstPlay == true) {
-                SeekBar()
+                if (state.streamType != StreamType.Live) {
+                    SeekBar()
+                }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MuteButton()
                     LiveButton()
