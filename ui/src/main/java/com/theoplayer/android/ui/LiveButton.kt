@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Circle
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 
 @Composable
 fun LiveButton(
@@ -19,7 +22,7 @@ fun LiveButton(
         Icon(
             Icons.Rounded.Circle,
             modifier = Modifier.size(12.dp),
-            tint = Color.Red,
+            tint = THEOplayerTheme.playerColors.liveButtonLive,
             contentDescription = null
         )
         Text(text = " LIVE")
@@ -28,7 +31,7 @@ fun LiveButton(
         Icon(
             Icons.Rounded.Circle,
             modifier = Modifier.size(12.dp),
-            tint = Color.Gray,
+            tint = THEOplayerTheme.playerColors.liveButtonDvr,
             contentDescription = null
         )
         Text(text = " LIVE")
