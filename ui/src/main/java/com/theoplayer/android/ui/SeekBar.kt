@@ -8,6 +8,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 
+/**
+ * A seek bar showing the current time of the player, and which seeks the player when clicked or dragged.
+ *
+ * While the user is dragging the seek bar, the player is temporarily paused.
+ *
+ * @param modifier the [Modifier] to be applied to this seek bar
+ * @param colors [SliderColors] that will be used to resolve the colors used for this seek bar in
+ * different states. See [SliderDefaults.colors].
+ */
 @Composable
 fun SeekBar(
     modifier: Modifier = Modifier,
