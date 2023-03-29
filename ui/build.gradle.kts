@@ -1,3 +1,14 @@
+import org.jetbrains.dokka.base.DokkaBase
+import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.gradle.DokkaTask
+import kotlin.text.Typography.copyright
+
+buildscript {
+    dependencies {
+        classpath("org.jetbrains.dokka:dokka-base:1.8.10")
+    }
+}
+
 plugins {
     id("com.android.library")
     id("org.jetbrains.kotlin.android")
@@ -90,5 +101,12 @@ publishing {
                 from(components["release"])
             }
         }
+    }
+}
+
+tasks.withType<DokkaTask>().configureEach {
+    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
+        customAssets = listOf(file("assets/logo-icon.svg"))
+        footerMessage = "$copyright 2023 THEO Technologies"
     }
 }
