@@ -30,43 +30,171 @@ import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as Te
 import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
 import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 
+/**
+ * Represents the state of the player.
+ *
+ * All properties are backed by [State] or [MutableState] objects, so reads from within a
+ * [Composable] function will automatically subscribe to changes of that property.
+ */
 interface PlayerState {
+    /**
+     * Returns the backing THEOplayer instance.
+     *
+     * Note that [Player] properties are *not* backed by [State] objects, so composables
+     * will *not* be automatically subscribed to changes. Instead, use [Player.addEventListener],
+     * or use a corresponding [PlayerState] property if available.
+     */
     val player: Player?
 
+    /**
+     * Returns the current playback position of the media, in seconds.
+     */
     val currentTime: Double
+
+    /**
+     * Returns the duration of the media, in seconds.
+     */
     val duration: Double
+
+    /**
+     * Returns the ranges of the media to which the player can seek.
+     */
     val seekable: TimeRanges
+
+    /**
+     * Returns whether the player is paused.
+     */
     val paused: Boolean
+
+    /**
+     * Returns whether playback has reached the end of the media.
+     */
     val ended: Boolean
+
+    /**
+     * Returns whether the player is seeking.
+     */
     val seeking: Boolean
+
+    /**
+     * Returns the [ReadyState] of the player.
+     */
     val readyState: ReadyState
+
+    /**
+     * Returns or sets the audio volume of the player.
+     *
+     * The player's volume is separate from the device's media volume.
+     * In general, it is recommended to let the user control the volume of the device instead,
+     * and leave the player's volume untouched.
+     */
     var volume: Double
+
+    /**
+     * Returns or sets whether the audio is muted.
+     */
     var muted: Boolean
+
+    /**
+     * Returns or sets the playback rate of the player.
+     */
     var playbackRate: Double
+
+    /**
+     * Returns whether the player has already started playback before.
+     *
+     * This can be used to show certain controls only after the user has first started playback.
+     */
     val firstPlay: Boolean
+
+    /**
+     * Returns any fatal error the player has encountered, if any.
+     */
     val error: THEOplayerException?
+
+    /**
+     * Returns or sets whether the player should be shown in fullscreen mode.
+     */
     var fullscreen: Boolean
 
+    /**
+     * Returns whether the player is currently waiting for more data to resume playback.
+     */
     val loading: Boolean
+
+    /**
+     * Returns the [StreamType] of the media.
+     *
+     * This can be used to show or hide certain controls which are only relevant
+     * for certain stream types.
+     */
     val streamType: StreamType
 
+    /**
+     * Returns the currently active video quality.
+     */
     val activeVideoQuality: VideoQuality?
+
+    /**
+     * Returns or sets the target video quality.
+     *
+     * If `null`, then the player will choose a video quality based on its ABR algorithm.
+     * Otherwise, the player will only load from the given video quality.
+     */
     var targetVideoQuality: VideoQuality?
+
+    /**
+     * Returns all available video qualities.
+     */
     val videoQualities: List<VideoQuality>
 
+    /**
+     * Returns all available audio tracks.
+     */
     val audioTracks: List<MediaTrack<AudioQuality>>
+
+    /**
+     * Returns or sets the active audio track.
+     */
     var activeAudioTrack: MediaTrack<AudioQuality>?
 
+    /**
+     * Returns all available subtitle tracks.
+     *
+     * A subtitle track is a [TextTrack] whose [kind][TextTrack.getKind]
+     * is [TextTrackKind.SUBTITLES] or [TextTrackKind.CAPTIONS].
+     */
     val subtitleTracks: List<TextTrack>
+
+    /**
+     * Returns or sets the active subtitle track.
+     */
     var activeSubtitleTrack: TextTrack?
 }
 
+/**
+ * The type of a stream.
+ */
 enum class StreamType {
+    /**
+     * Video-on-demand: the stream has a known fixed duration.
+     */
     Vod,
+
+    /**
+     * Live: the stream has an unknown duration, and does not allow seeking to an earlier time.
+     */
     Live,
+
+    /**
+     * DVR: the stream has an unknown duration, and allows seeking to an earlier time.
+     */
     Dvr
 }
 
+/**
+ * Creates and remembers a [PlayerState] that tracks the state of the given [theoplayerView]'s player.
+ */
 @Composable
 fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
     val state = remember(theoplayerView) { PlayerStateImpl(theoplayerView) }
