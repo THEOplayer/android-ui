@@ -3,9 +3,7 @@ package com.theoplayer.android.ui
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 
 /**
@@ -27,30 +25,30 @@ fun SeekBar(
     val seekable = state?.seekable ?: TimeRanges(listOf())
     val valueRange = (seekable.firstStart ?: 0).toFloat().rangeTo((seekable.lastEnd ?: 0).toFloat())
 
-    val seekTime = remember { mutableStateOf<Float?>(null) }
-    val wasPlayingBeforeSeek = remember { mutableStateOf(false) }
+    var seekTime by remember { mutableStateOf<Float?>(null) }
+    var wasPlayingBeforeSeek by remember { mutableStateOf(false) }
 
     Slider(
         modifier = modifier,
         colors = colors,
-        value = seekTime.value ?: currentTime,
+        value = seekTime ?: currentTime,
         valueRange = valueRange,
         enabled = seekable.ranges.isNotEmpty(),
         onValueChange = { time ->
-            seekTime.value = time
+            seekTime = time
             state?.player?.let {
                 if (!it.isPaused) {
-                    wasPlayingBeforeSeek.value = true
+                    wasPlayingBeforeSeek = true
                     it.pause()
                 }
                 it.currentTime = time.toDouble()
             }
         },
         onValueChangeFinished = {
-            seekTime.value = null
-            if (wasPlayingBeforeSeek.value) {
+            seekTime = null
+            if (wasPlayingBeforeSeek) {
                 state?.player?.play()
-                wasPlayingBeforeSeek.value = false
+                wasPlayingBeforeSeek = false
             }
         }
     )
