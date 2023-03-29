@@ -1,5 +1,7 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.api.player.track.Track
+import java.util.*
 import kotlin.math.absoluteValue
 
 fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = false): String {
@@ -40,4 +42,21 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
         result.append(seconds.toString().padStart(2, '0'))
     }
     return result.toString()
+}
+
+internal fun formatTrackLabel(track: Track): String {
+    val label = track.label
+    if (!label.isNullOrEmpty()) {
+        return label
+    }
+    val languageCode = track.language
+    if (!languageCode.isNullOrEmpty()) {
+        val locale = Locale.forLanguageTag(languageCode)
+        val languageName = locale.getDisplayName(locale)
+        if (languageName.isNotEmpty()) {
+            return languageName
+        }
+        return languageCode
+    }
+    return ""
 }
