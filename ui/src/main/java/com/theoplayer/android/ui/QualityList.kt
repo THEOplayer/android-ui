@@ -10,6 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import java.text.DecimalFormat
 
+/**
+ * A list of video qualities, from which the user can choose a target video quality.
+ *
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param onClick called when a video quality in the list is clicked
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QualityList(

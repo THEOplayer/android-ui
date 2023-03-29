@@ -10,6 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import java.util.*
 
+/**
+ * A list of subtitle tracks, from which the user can choose an active subtitle track.
+ *
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param onClick called when a subtitle track in the list is clicked
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubtitleTrackList(

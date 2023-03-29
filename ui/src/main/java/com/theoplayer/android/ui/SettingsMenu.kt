@@ -15,6 +15,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 
+/**
+ * A [Menu] to change the settings of the player, such as the video quality or the playback rate.
+ *
+ * @see QualityMenu
+ * @see PlaybackRateMenu
+ */
 @Composable
 fun MenuScope.SettingsMenu() {
     Menu(
@@ -83,6 +89,11 @@ fun MenuScope.SettingsMenu() {
     }
 }
 
+/**
+ * A [Menu] to change the video quality of the stream.
+ *
+ * @see QualityList
+ */
 @Composable
 fun MenuScope.QualityMenu() {
     Menu(
@@ -92,6 +103,11 @@ fun MenuScope.QualityMenu() {
     }
 }
 
+/**
+ * A [Menu] to change the playback rate of the player.
+ *
+ * @see PlaybackRateList
+ */
 @Composable
 fun MenuScope.PlaybackRateMenu() {
     Menu(

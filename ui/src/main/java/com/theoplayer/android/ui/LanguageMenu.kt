@@ -13,6 +13,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+/**
+ * A [Menu] to change the spoken language and subtitles of the stream.
+ *
+ * Depending on the available screen width, this shows either [compact][LanguageMenuCompact]
+ * or [expanded][LanguageMenuExpanded] contents.
+ */
 @Composable
 fun MenuScope.LanguageMenu() {
     Menu(
@@ -46,6 +52,15 @@ private fun showSubtitleTracks(state: PlayerState?): Boolean {
     return state != null && state.subtitleTracks.isNotEmpty()
 }
 
+/**
+ * The compact menu contents of the [LanguageMenu].
+ *
+ * In this form, the currently selected audio and subtitle track are shown inside buttons.
+ * Click these buttons opens a separate menu to change the audio track or subtitle track.
+ *
+ * @see AudioTrackMenu
+ * @see SubtitleMenu
+ */
 @Composable
 fun MenuScope.LanguageMenuCompact() {
     val state = LocalTHEOplayer.current
@@ -105,6 +120,14 @@ fun MenuScope.LanguageMenuCompact() {
     }
 }
 
+/**
+ * The expanded menu contents of the [LanguageMenu].
+ *
+ * In this form, the list of audio and subtitle tracks are shown side-by-side.
+ *
+ * @see AudioTrackList
+ * @see SubtitleTrackList
+ */
 @Composable
 fun MenuScope.LanguageMenuExpanded() {
     val state = LocalTHEOplayer.current
@@ -138,6 +161,11 @@ fun MenuScope.LanguageMenuExpanded() {
     }
 }
 
+/**
+ * A [Menu] to change the spoken language of the stream.
+ *
+ * @see AudioTrackList
+ */
 @Composable
 fun MenuScope.AudioTrackMenu() {
     Menu(
@@ -147,6 +175,11 @@ fun MenuScope.AudioTrackMenu() {
     }
 }
 
+/**
+ * A [Menu] to change the subtitles of the stream.
+ *
+ * @see SubtitleTrackList
+ */
 @Composable
 fun MenuScope.SubtitleMenu() {
     Menu(
