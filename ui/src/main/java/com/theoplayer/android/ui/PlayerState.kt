@@ -197,7 +197,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
 
     override val streamType by derivedStateOf {
         if (duration.isInfinite()) {
-            val slidingWindow = (seekable.lastEnd ?: 0.0) - (seekable.firstStart ?: 0.0)
+            val slidingWindow = seekable.bounds?.let { it.endInclusive - it.start } ?: 0.0
             // TODO Make DVR threshold configurable?
             if (slidingWindow >= 60) {
                 StreamType.Dvr

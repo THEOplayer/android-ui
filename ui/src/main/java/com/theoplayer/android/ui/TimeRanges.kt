@@ -9,16 +9,26 @@ data class TimeRanges(private val ranges: List<ClosedFloatingPointRange<Double>>
     List<ClosedFloatingPointRange<Double>> by ranges {
 
     /**
-     * Returns the start of the first range, if any.
+     * Returns the start of the first range, or `null` if [empty][isEmpty].
      */
     val firstStart: Double?
         get() = firstOrNull()?.start
 
     /**
-     * Returns the end of the last range, if any.
+     * Returns the end of the last range, or `null` if [empty][isEmpty].
      */
     val lastEnd: Double?
         get() = lastOrNull()?.endInclusive
+
+    /**
+     * Returns the bounding time range from [firstStart] to [lastEnd], or `null` if [empty][isEmpty].
+     */
+    val bounds: ClosedFloatingPointRange<Double>?
+        get() = if (isEmpty()) {
+            null
+        } else {
+            first().start..last().endInclusive
+        }
 
     companion object {
         /**
