@@ -6,7 +6,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -14,9 +13,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -313,52 +309,4 @@ private fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     }
 
     return theoplayerView
-}
-
-private fun Modifier.toggleControlsOnTap(
-    controlsVisible: State<Boolean>,
-    showControlsTemporarily: () -> Unit,
-    hideControls: () -> Unit
-): Modifier {
-    return this.pointerInput(Unit) {
-        coroutineScope {
-            var didHideControls = false
-            launch {
-                detectTapGestures(onPress = {
-                    didHideControls = false
-                    // Hide controls immediately when pressed while visible
-                    val controlsWereVisible = controlsVisible.value
-                    awaitRelease()
-                    if (controlsWereVisible) {
-                        didHideControls = true
-                        hideControls()
-                    }
-                })
-            }
-            launch {
-                detectAnyPointerEvent(pass = PointerEventPass.Final) {
-                    // Show controls temporarily when pressing, moving or releasing a pointer
-                    // - except if we just hid the controls by pressing
-                    if (didHideControls) {
-                        didHideControls = false
-                    } else {
-                        showControlsTemporarily()
-                    }
-                }
-            }
-        }
-    }
-}
-
-private suspend fun PointerInputScope.detectAnyPointerEvent(
-    pass: PointerEventPass = PointerEventPass.Main,
-    onPointer: () -> Unit
-) {
-    val currentContext = currentCoroutineContext()
-    awaitPointerEventScope {
-        while (currentContext.isActive) {
-            awaitPointerEvent(pass = pass)
-            onPointer()
-        }
-    }
 }
