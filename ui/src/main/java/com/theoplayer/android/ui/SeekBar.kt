@@ -33,7 +33,7 @@ fun SeekBar(
         colors = colors,
         value = seekTime ?: currentTime,
         valueRange = valueRange,
-        enabled = seekable.ranges.isNotEmpty(),
+        enabled = seekable.isNotEmpty(),
         onValueChange = { time ->
             seekTime = time
             state?.player?.let {
