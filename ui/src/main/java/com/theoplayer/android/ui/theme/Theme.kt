@@ -119,19 +119,6 @@ fun THEOplayerTheme(
 }
 
 /**
- * Contains functions to access the current theme values provided at the call site's position in
- * the hierarchy.
- */
-object THEOplayerTheme {
-    /**
-     * Retrieves the current [PlayerColors] at the call site's position in the hierarchy.
-     */
-    val playerColors: PlayerColors
-        @Composable
-        get() = LocalPlayerColors.current
-}
-
-/**
  * Provides theme colors, shapes and fonts to be used by the player, using the THEOplayer brand style.
  *
  * @param useDarkTheme Whether to use light or dark colors.
@@ -162,4 +149,17 @@ fun THEOplayerTheme(
         playerColors = playerColors,
         content = content
     )
+}
+
+/**
+ * Contains functions to access the current theme values provided at the call site's position in
+ * the hierarchy.
+ */
+object THEOplayerTheme {
+    /**
+     * Retrieves the current [PlayerColors] at the call site's position in the hierarchy.
+     */
+    val playerColors: PlayerColors
+        @Composable
+        get() = LocalPlayerColors.current
 }
