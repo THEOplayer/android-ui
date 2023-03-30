@@ -7,8 +7,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
+import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 
+/**
+ * A default THEOplayer UI component.
+ *
+ * This component provides a great player experience out-of-the-box, that works for all types
+ * of streams. It provides all the common playback controls for playing, seeking, changing
+ * languages and qualities.
+ *
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
+ * For more extensive customizations, we recommend defining your own custom UI using
+ * a [UIController].
+ *
+ * @param modifier the [Modifier] to be applied to this UI
+ * @param config the player configuration to be used when constructing the [THEOplayerView]
+ * @param source the source description to load into the player
+ * @param title the stream's title, shown at the top of the player
+ * @see UIController
+ */
 @Composable
 fun DefaultUI(
     modifier: Modifier = Modifier,

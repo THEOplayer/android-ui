@@ -6,6 +6,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -20,6 +21,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 import kotlinx.coroutines.*
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -27,6 +29,29 @@ import kotlin.time.DurationUnit
 
 private val controlsExitDuration = 500.milliseconds
 
+/**
+ * A container component for a THEOplayer UI.
+ *
+ * This component provides a basic layout structure for a player UI,
+ * and handles the creation and management of a [THEOplayerView] instance for this UI.
+ *
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
+ *
+ * @param modifier the [Modifier] to be applied to this container
+ * @param config the player configuration to be used when constructing the [THEOplayerView]
+ * @param source the source description to load into the player
+ * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
+ * for this container. You can create and pass in your own `remember`ed instance to observe
+ * [Interaction]s and customize the behavior of this container.
+ * @param color the background color for the overlay while showing the UI controls
+ * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
+ * @param errorOverlay content to show when the player encountered a fatal error,
+ * typically an [ErrorDisplay].
+ * @param topChrome controls to show at the top of the player, for example the stream's title.
+ * @param centerChrome controls to show in the center of the player, for example a large [PlayButton].
+ * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
+ * or a [Row] containing a [MuteButton] and a [FullscreenButton].
+ */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun UIController(
@@ -166,6 +191,9 @@ fun UIController(
     }
 }
 
+/**
+ * Scope for the contents of a [UIController].
+ */
 interface UIControllerScope : MenuScope {
 }
 
