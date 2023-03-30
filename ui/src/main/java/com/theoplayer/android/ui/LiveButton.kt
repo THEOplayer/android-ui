@@ -52,7 +52,7 @@ fun LiveButton(
         Text(text = " LIVE")
     }
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     if (state?.streamType == StreamType.Live || state?.streamType == StreamType.Dvr) {
         val isLive =
             !state.paused && ((state.seekable.lastEnd ?: 0.0) - state.currentTime) <= liveThreshold

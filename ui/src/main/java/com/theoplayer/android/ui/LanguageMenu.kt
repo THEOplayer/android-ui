@@ -31,7 +31,7 @@ fun MenuScope.LanguageMenu() {
         },
     ) {
         BoxWithConstraints {
-            val state = LocalTHEOplayer.current
+            val state = PlayerState.current
             val neededWidth =
                 (if (showAudioTracks(state)) 300.dp else 0.dp) +
                         (if (showSubtitleTracks(state)) 300.dp else 0.dp)
@@ -63,7 +63,7 @@ private fun showSubtitleTracks(state: PlayerState?): Boolean {
  */
 @Composable
 fun MenuScope.LanguageMenuCompact() {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(state)) {
             Row {
@@ -130,7 +130,7 @@ fun MenuScope.LanguageMenuCompact() {
  */
 @Composable
 fun MenuScope.LanguageMenuExpanded() {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(state)) {
             Column(modifier = Modifier.weight(1f)) {

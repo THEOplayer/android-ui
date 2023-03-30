@@ -19,7 +19,7 @@ fun CurrentTimeDisplay(
     showRemaining: Boolean = false,
     showDuration: Boolean = false,
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     val currentTime = state?.currentTime ?: 0.0
     val duration = state?.duration ?: Double.NaN
 

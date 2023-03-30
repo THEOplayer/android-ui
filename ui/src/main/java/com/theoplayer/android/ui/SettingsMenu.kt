@@ -32,7 +32,7 @@ fun MenuScope.SettingsMenu() {
             )
         },
     ) {
-        val state = LocalTHEOplayer.current
+        val state = PlayerState.current
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Row {
                 Text(

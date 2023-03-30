@@ -22,7 +22,7 @@ fun SubtitleTrackList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     val subtitleTracks = state?.subtitleTracks ?: listOf()
     val activeSubtitleTrack = state?.activeSubtitleTrack
     LazyColumn(modifier = modifier) {

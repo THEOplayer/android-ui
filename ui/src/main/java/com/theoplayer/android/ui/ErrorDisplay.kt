@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 fun ErrorDisplay(
     modifier: Modifier = Modifier,
 ) {
-    val error = LocalTHEOplayer.current?.error
+    val error = PlayerState.current?.error
 
     error?.let { it ->
         Row(

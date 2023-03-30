@@ -30,6 +30,8 @@ import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as Te
 import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
 import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 
+internal val LocalPlayerState = staticCompositionLocalOf<PlayerState?> { null }
+
 /**
  * Represents the state of the player.
  *
@@ -170,6 +172,18 @@ interface PlayerState {
      * Returns or sets the active subtitle track.
      */
     var activeSubtitleTrack: TextTrack?
+
+    /**
+     * Contains properties to access the current [PlayerState].
+     */
+    companion object {
+        /**
+         * Retrieves the current [PlayerState] at the call site's position in the hierarchy.
+         */
+        val current: PlayerState?
+            @Composable
+            get() = LocalPlayerState.current
+    }
 }
 
 /**

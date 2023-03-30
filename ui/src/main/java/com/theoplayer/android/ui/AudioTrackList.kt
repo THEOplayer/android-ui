@@ -22,7 +22,7 @@ fun AudioTrackList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     val audioTracks = state?.audioTracks ?: listOf()
     val activeAudioTrack = state?.activeAudioTrack
     LazyColumn(modifier = modifier) {

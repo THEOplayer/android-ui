@@ -24,7 +24,7 @@ fun PlaybackRateList(
     playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
     onClick: (() -> Unit)? = null
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     val currentPlaybackRate = state?.playbackRate ?: 1
     LazyColumn(modifier = modifier) {
         items(

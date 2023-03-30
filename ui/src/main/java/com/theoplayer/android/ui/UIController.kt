@@ -124,7 +124,7 @@ fun UIController(
     )
 
     PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
-        CompositionLocalProvider(LocalTHEOplayer provides state) {
+        CompositionLocalProvider(LocalPlayerState provides state) {
             AnimatedContent(
                 modifier = Modifier
                     .background(background)

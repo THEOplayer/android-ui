@@ -82,7 +82,7 @@ fun SeekButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,

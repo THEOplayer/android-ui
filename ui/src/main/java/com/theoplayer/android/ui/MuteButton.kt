@@ -35,7 +35,7 @@ fun MuteButton(
         )
     }
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,

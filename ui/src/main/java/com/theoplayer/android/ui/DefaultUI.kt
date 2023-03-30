@@ -40,13 +40,13 @@ fun DefaultUI(
         config = config,
         source = source,
         centerOverlay = {
-            val state = LocalTHEOplayer.current
+            val state = PlayerState.current
             if (state?.firstPlay == true) {
                 LoadingSpinner()
             }
         },
         topChrome = {
-            val state = LocalTHEOplayer.current
+            val state = PlayerState.current
             if (state?.firstPlay == true) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
@@ -62,7 +62,7 @@ fun DefaultUI(
             }
         },
         centerChrome = {
-            val state = LocalTHEOplayer.current
+            val state = PlayerState.current
             if (state?.firstPlay == true) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
@@ -72,7 +72,7 @@ fun DefaultUI(
             }
         },
         bottomChrome = {
-            val state = LocalTHEOplayer.current
+            val state = PlayerState.current
             if (state?.firstPlay == true) {
                 if (state.streamType != StreamType.Live) {
                     SeekBar()
@@ -87,7 +87,7 @@ fun DefaultUI(
             }
         },
         errorOverlay = {
-            val state = LocalTHEOplayer.current
+            val state = PlayerState.current
             Box(contentAlignment = Alignment.Center) {
                 ErrorDisplay()
                 // Ensure the user can still exit fullscreen
