@@ -20,6 +20,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 import kotlinx.coroutines.*
@@ -89,7 +90,7 @@ fun UIController(
             } else if (forceControlsHidden) {
                 false
             } else {
-                isRecentlyTapped || isPressed || state.paused
+                isRecentlyTapped || isPressed || state.paused || state.castState == PlayerCastState.CONNECTED
             }
         }
     }
