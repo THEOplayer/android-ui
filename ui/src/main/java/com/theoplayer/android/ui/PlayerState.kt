@@ -3,8 +3,13 @@ package com.theoplayer.android.ui
 import android.view.View
 import androidx.compose.runtime.*
 import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.api.cast.Cast
+import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.EventListener
+import com.theoplayer.android.api.event.chromecast.CastErrorEvent
+import com.theoplayer.android.api.event.chromecast.CastStateChangeEvent
+import com.theoplayer.android.api.event.chromecast.ChromecastEventTypes
 import com.theoplayer.android.api.event.player.*
 import com.theoplayer.android.api.event.track.mediatrack.AbstractTargetQualityChangedEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes
@@ -47,6 +52,11 @@ interface PlayerState {
      * or use a corresponding [PlayerState] property if available.
      */
     val player: Player?
+
+    /**
+     * Returns the raw [Cast] API of the backing THEOplayer instance.
+     */
+    val cast: Cast?
 
     /**
      * Returns the current playback position of the media, in seconds.
@@ -174,6 +184,10 @@ interface PlayerState {
     var activeSubtitleTrack: TextTrack?
 
     /**
+     * Returns the casting state of the player.
+     */
+    val castState: PlayerCastState
+    /**
      * Contains properties to access the current [PlayerState].
      */
     companion object {
@@ -222,6 +236,7 @@ fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
 
 private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : PlayerState {
     override val player = theoplayerView?.player
+    override val cast = theoplayerView?.cast
     override var currentTime by mutableStateOf(0.0)
     override var duration by mutableStateOf(Double.NaN)
     override var seekable by mutableStateOf(TimeRanges(listOf()))
@@ -478,6 +493,15 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     val textTrackListChangeListener =
         EventListener<TextTrackListChangeEvent> { updateActiveSubtitleTrack() }
 
+    override var castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
+
+    private fun updateCastState() {
+        castState = cast?.chromecast?.state ?: PlayerCastState.UNAVAILABLE
+    }
+
+    val chromecastStateChangeListener = EventListener<CastStateChangeEvent> { updateCastState() }
+    val chromecastErrorListener = EventListener<CastErrorEvent> { updateCastState() }
+
     init {
         updateCurrentTimeAndPlaybackState()
         updateDuration()
@@ -487,6 +511,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         updateActiveVideoTrack()
         updateAudioTracks()
         updateSubtitleTracks()
+        updateCastState()
         player?.addEventListener(PlayerEventTypes.PLAY, playListener)
         player?.addEventListener(PlayerEventTypes.PAUSE, pauseListener)
         player?.addEventListener(PlayerEventTypes.ENDED, endedListener)
@@ -535,6 +560,11 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
             TextTrackListEventTypes.TRACKLISTCHANGE,
             textTrackListChangeListener
         )
+        cast?.chromecast?.addEventListener(
+            ChromecastEventTypes.STATECHANGE,
+            chromecastStateChangeListener
+        )
+        cast?.chromecast?.addEventListener(ChromecastEventTypes.ERROR, chromecastErrorListener)
         fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
     }
 
@@ -592,6 +622,11 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
             TextTrackListEventTypes.TRACKLISTCHANGE,
             textTrackListChangeListener
         )
+        cast?.chromecast?.removeEventListener(
+            ChromecastEventTypes.STATECHANGE,
+            chromecastStateChangeListener
+        )
+        cast?.chromecast?.removeEventListener(ChromecastEventTypes.ERROR, chromecastErrorListener)
         fullscreenHandler?.onFullscreenChangeListener = null
     }
 }
