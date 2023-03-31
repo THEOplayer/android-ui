@@ -187,6 +187,12 @@ interface PlayerState {
      * Returns the casting state of the player.
      */
     val castState: PlayerCastState
+
+    /**
+     * Returns the name of the connected Chromecast receiver, if any.
+     */
+    val castReceiverName: String?
+
     /**
      * Contains properties to access the current [PlayerState].
      */
@@ -494,9 +500,11 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
         EventListener<TextTrackListChangeEvent> { updateActiveSubtitleTrack() }
 
     override var castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
+    override var castReceiverName: String? by mutableStateOf(null)
 
     private fun updateCastState() {
         castState = cast?.chromecast?.state ?: PlayerCastState.UNAVAILABLE
+        castReceiverName = cast?.chromecast?.receiverName
     }
 
     val chromecastStateChangeListener = EventListener<CastStateChangeEvent> { updateCastState() }
