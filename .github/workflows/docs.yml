@@ -23,9 +23,6 @@ jobs:
   # Build job
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [18]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -39,7 +36,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Build API documentation with Dokka
-        run: ./gradlew dokkaHtml
+        run: ./gradlew ui:dokkaHtml
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
