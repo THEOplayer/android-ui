@@ -111,3 +111,7 @@ tasks.withType<DokkaTask>().configureEach {
         footerMessage = "$copyright 2023 THEO Technologies"
     }
 }
+
+tasks.named<DokkaTask>("dokkaHtml").configure {
+    outputDirectory.set(rootDir.resolve("docs/api"))
+}

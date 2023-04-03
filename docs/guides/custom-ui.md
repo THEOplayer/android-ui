@@ -24,7 +24,7 @@ The `UIController` component is the main container of our custom UI. It handles 
 
 It also provides a skeleton layout for plugging in our playback controls, using [slots](https://developer.android.com/jetpack/compose/layouts/basics#slot-based-layouts) such as `topChrome` or `centerChrome`. We pass a composable lambda as the `centerChrome` parameter, in which we create a `PlayButton`. This will place a play button in the center of our player.
 
-![Screenshot](./assets/custom-ui-basic.png)
+![Screenshot](../assets/custom-ui-basic.png)
 
 We can add more components so the user can mute or seek the player, or go fullscreen.
 
@@ -63,13 +63,13 @@ setContent {
 
 Additionally, we change the size and padding of the play button, to make it bigger and easier to tap.
 
-![Screenshot](./assets/custom-ui-seekbar.png)
+![Screenshot](../assets/custom-ui-seekbar.png)
 
 ## Using the player's state
 
 You might have noticed that all buttons are visible immediately, even before the video starts playing for the first time. Most of the time however, you want to initially show only the play button, and then show the rest of the buttons after the video has started playing. To do this, you should check the player's current state and then adjust your player layout accordingly.
 
-Within any of the composable lambdas you pass to `UIController`, you can use `PlayerState.current` to access the player's current state. This `PlayerState` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`PlayerState.kt`](../ui/src/main/java/com/theoplayer/android/ui/PlayerState.kt) for the full list of properties.
+Within any of the composable lambdas you pass to `UIController`, you can use `PlayerState.current` to access the player's current state. This `PlayerState` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`PlayerState.kt`](../../ui/src/main/java/com/theoplayer/android/ui/PlayerState.kt) for the full list of properties.
 
 You can then perform any logic on these properties to adjust your player layout. For example, you can check the `firstPlay` property to see if the player has already started playing for the first time, and only show certain buttons if that property is `true`:
 
@@ -123,4 +123,4 @@ It may sound odd to mention the default UI when we're talking about custom UIs. 
 
 The default UI comes with all the bells and whistles that you'd expect from a fully-featured player: buttons to play or mute the video, a seek bar to seek through the video, menus to change the audio language and subtitles, and support for casting to Chromecast.
 
-Have a look at [`DefaultUI.kt`](../ui/src/main/java/com/theoplayer/android/ui/DefaultUI.kt) to learn how the default layout is implemented, and perhaps copy some ideas for your own UI.
+Have a look at [`DefaultUI.kt`](../../ui/src/main/java/com/theoplayer/android/ui/DefaultUI.kt) to learn how the default layout is implemented, and perhaps copy some ideas for your own UI.
