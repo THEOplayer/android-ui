@@ -25,7 +25,6 @@ fun MenuScope.Menu(
     backIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.ArrowBack,
-            tint = Color.White,
             contentDescription = "Back"
         )
     },

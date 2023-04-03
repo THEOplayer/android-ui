@@ -22,7 +22,6 @@ import kotlin.math.absoluteValue
 fun SeekButton(
     modifier: Modifier = Modifier,
     seekOffset: Int = 10,
-    color: Color = Color.White,
     iconSize: Dp = 24.dp,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -37,7 +36,6 @@ fun SeekButton(
                 modifier = Modifier
                     .size(iconSize)
                     .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
-                tint = color,
                 contentDescription = if (seekOffset >= 0) {
                     "Seek forward by $seekOffset seconds"
                 } else {
@@ -48,7 +46,6 @@ fun SeekButton(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .offset(y = iconSize * 0.4f),
-                color = color,
                 text = "${seekOffset.absoluteValue}",
                 fontSize = 6.sp * (iconSize / 24.dp)
             )

@@ -1,10 +1,12 @@
 package com.theoplayer.android.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.lightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.graphics.Color
 
 
 private val LightColors = lightColorScheme(
@@ -72,9 +74,44 @@ private val DarkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+@Immutable
+data class PlayerColors(
+    val liveButtonLive: Color = Color.Red,
+    val liveButtonDvr: Color = Color.Gray
+)
+
+val LocalPlayerColors = staticCompositionLocalOf { PlayerColors() }
+
+@Composable
+fun THEOplayerTheme(
+    colorScheme: ColorScheme = MaterialTheme.colorScheme,
+    shapes: Shapes = MaterialTheme.shapes,
+    typography: Typography = MaterialTheme.typography,
+    playerColors: PlayerColors = THEOplayerTheme.playerColors,
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalPlayerColors provides playerColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            shapes = shapes,
+            typography = typography,
+            content = content
+        )
+    }
+}
+
+object THEOplayerTheme {
+    val playerColors: PlayerColors
+        @Composable
+        get() = LocalPlayerColors.current
+}
+
 @Composable
 fun THEOplayerTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
+    shapes: Shapes = MaterialTheme.shapes,
+    typography: Typography = MaterialTheme.typography,
+    playerColors: PlayerColors = THEOplayerTheme.playerColors,
     content: @Composable() () -> Unit
 ) {
     val colors = if (!useDarkTheme) {
@@ -83,8 +120,11 @@ fun THEOplayerTheme(
         DarkColors
     }
 
-    MaterialTheme(
+    THEOplayerTheme(
         colorScheme = colors,
+        shapes = shapes,
+        typography = typography,
+        playerColors = playerColors,
         content = content
     )
 }

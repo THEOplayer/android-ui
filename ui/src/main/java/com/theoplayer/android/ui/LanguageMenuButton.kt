@@ -15,7 +15,6 @@ fun MenuScope.LanguageMenuButton(
     content: @Composable () -> Unit = {
         Icon(
             painter = painterResource(id = R.drawable.language),
-            tint = Color.White,
             contentDescription = "Language"
         )
     }

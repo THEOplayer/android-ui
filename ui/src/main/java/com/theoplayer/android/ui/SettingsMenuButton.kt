@@ -16,7 +16,6 @@ fun MenuScope.SettingsMenuButton(
     content: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Settings,
-            tint = Color.White,
             contentDescription = "Settings"
         )
     }
