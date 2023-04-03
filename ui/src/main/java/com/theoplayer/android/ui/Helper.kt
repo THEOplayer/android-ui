@@ -1,7 +1,20 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.api.player.track.Track
+import java.util.*
 import kotlin.math.absoluteValue
 
+/**
+ * Return the given time in a human-readable format, such as `"0:10"` or `"01:23:45"`.
+ *
+ * If the time is infinite or `NaN`, this returns `"--:--"`.
+ *
+ * @param time the time (in seconds) to be formatted
+ * @param guide another time (in seconds) such that the returned formatted time has the same
+ * number of parts and number of leading zeros as this guide.
+ * @param preferNegative whether the returned formatted time should preferably be negative,
+ * for example because it represents the time remaining in the video.
+ */
 fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = false): String {
     val isNegative = time < 0 || (preferNegative && time == 0.0);
     val absoluteTime = time.absoluteValue.toInt()
@@ -40,4 +53,26 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
         result.append(seconds.toString().padStart(2, '0'))
     }
     return result.toString()
+}
+
+/**
+ * Return a human-readable label for the given media track or text track.
+ *
+ * @param track the media track or text track
+ */
+fun formatTrackLabel(track: Track): String {
+    val label = track.label
+    if (!label.isNullOrEmpty()) {
+        return label
+    }
+    val languageCode = track.language
+    if (!languageCode.isNullOrEmpty()) {
+        val locale = Locale.forLanguageTag(languageCode)
+        val languageName = locale.getDisplayName(locale)
+        if (languageName.isNotEmpty()) {
+            return languageName
+        }
+        return languageCode
+    }
+    return ""
 }

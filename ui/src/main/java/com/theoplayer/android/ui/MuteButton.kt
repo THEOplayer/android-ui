@@ -7,9 +7,17 @@ import androidx.compose.material.icons.rounded.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * A button that toggles whether audio is muted or not.
+ *
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ * @param mute button content when the player is unmuted, typically a "mute" icon
+ * @param unmute button content when the player is muted, typically an "unmute" icon
+ */
 @Composable
 fun MuteButton(
     modifier: Modifier = Modifier,
@@ -27,7 +35,7 @@ fun MuteButton(
         )
     }
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,

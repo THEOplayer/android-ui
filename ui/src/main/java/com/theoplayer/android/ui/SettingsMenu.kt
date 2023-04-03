@@ -11,11 +11,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 
+/**
+ * A [Menu] to change the settings of the player, such as the video quality or the playback rate.
+ *
+ * @see QualityMenu
+ * @see PlaybackRateMenu
+ */
 @Composable
 fun MenuScope.SettingsMenu() {
     Menu(
@@ -27,7 +32,7 @@ fun MenuScope.SettingsMenu() {
             )
         },
     ) {
-        val state = LocalTHEOplayer.current
+        val state = PlayerState.current
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Row {
                 Text(
@@ -84,6 +89,11 @@ fun MenuScope.SettingsMenu() {
     }
 }
 
+/**
+ * A [Menu] to change the video quality of the stream.
+ *
+ * @see QualityList
+ */
 @Composable
 fun MenuScope.QualityMenu() {
     Menu(
@@ -93,6 +103,11 @@ fun MenuScope.QualityMenu() {
     }
 }
 
+/**
+ * A [Menu] to change the playback rate of the player.
+ *
+ * @see PlaybackRateList
+ */
 @Composable
 fun MenuScope.PlaybackRateMenu() {
     Menu(

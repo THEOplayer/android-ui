@@ -8,7 +8,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 
-interface FullscreenHandler {
+internal interface FullscreenHandler {
     val fullscreen: Boolean
     var onFullscreenChangeListener: OnFullscreenChangeListener?
     fun requestFullscreen()
@@ -19,7 +19,7 @@ interface FullscreenHandler {
     }
 }
 
-class FullscreenHandlerImpl(private val view: View) : FullscreenHandler {
+internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler {
     override var fullscreen: Boolean = false
         private set
     override var onFullscreenChangeListener: FullscreenHandler.OnFullscreenChangeListener? = null

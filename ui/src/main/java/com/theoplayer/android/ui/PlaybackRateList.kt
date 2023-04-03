@@ -10,6 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import java.text.DecimalFormat
 
+/**
+ * A list of playback rates, from which the user can choose a desired playback rate.
+ *
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param playbackRates the list of possible playback rates
+ * @param onClick called when a playback rate in the list is clicked
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaybackRateList(
@@ -17,7 +24,7 @@ fun PlaybackRateList(
     playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
     onClick: (() -> Unit)? = null
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     val currentPlaybackRate = state?.playbackRate ?: 1
     LazyColumn(modifier = modifier) {
         items(
@@ -42,7 +49,7 @@ fun PlaybackRateList(
     }
 }
 
-internal val playbackRateFormat = DecimalFormat("#.##")
+private val playbackRateFormat = DecimalFormat("#.##")
 
 internal fun formatPlaybackRate(rate: Double): String {
     return if (rate == 1.0) {

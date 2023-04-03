@@ -6,7 +6,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -14,9 +14,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
@@ -24,13 +21,37 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 import kotlinx.coroutines.*
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
-val controlsExitDuration = 500.milliseconds
+private val controlsExitDuration = 500.milliseconds
 
+/**
+ * A container component for a THEOplayer UI.
+ *
+ * This component provides a basic layout structure for a player UI,
+ * and handles the creation and management of a [THEOplayerView] instance for this UI.
+ *
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
+ *
+ * @param modifier the [Modifier] to be applied to this container
+ * @param config the player configuration to be used when constructing the [THEOplayerView]
+ * @param source the source description to load into the player
+ * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
+ * for this container. You can create and pass in your own `remember`ed instance to observe
+ * [Interaction]s and customize the behavior of this container.
+ * @param color the background color for the overlay while showing the UI controls
+ * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
+ * @param errorOverlay content to show when the player encountered a fatal error,
+ * typically an [ErrorDisplay].
+ * @param topChrome controls to show at the top of the player, for example the stream's title.
+ * @param centerChrome controls to show in the center of the player, for example a large [PlayButton].
+ * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
+ * or a [Row] containing a [MuteButton] and a [FullscreenButton].
+ */
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun UIController(
@@ -103,7 +124,7 @@ fun UIController(
     )
 
     PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
-        CompositionLocalProvider(LocalTHEOplayer provides state) {
+        CompositionLocalProvider(LocalPlayerState provides state) {
             AnimatedContent(
                 modifier = Modifier
                     .background(background)
@@ -170,10 +191,13 @@ fun UIController(
     }
 }
 
+/**
+ * Scope for the contents of a [UIController].
+ */
 interface UIControllerScope : MenuScope {
 }
 
-internal class UIControllerScopeImpl() :
+private class UIControllerScopeImpl() :
     UIControllerScope {
     private var menuStack = mutableStateListOf<MenuContent>()
 
@@ -201,7 +225,7 @@ private sealed class UIState {
 }
 
 @Composable
-internal fun PlayerContainer(
+private fun PlayerContainer(
     modifier: Modifier = Modifier,
     theoplayerView: THEOplayerView? = null,
     ui: @Composable () -> Unit
@@ -242,7 +266,7 @@ internal fun PlayerContainer(
 }
 
 @Composable
-internal fun UIControllerScope.PlayerControls(
+private fun UIControllerScope.PlayerControls(
     controlsVisible: Boolean,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -286,7 +310,7 @@ internal fun UIControllerScope.PlayerControls(
 }
 
 @Composable
-fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
+private fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
 
@@ -313,52 +337,4 @@ fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
     }
 
     return theoplayerView
-}
-
-internal fun Modifier.toggleControlsOnTap(
-    controlsVisible: State<Boolean>,
-    showControlsTemporarily: () -> Unit,
-    hideControls: () -> Unit
-): Modifier {
-    return this.pointerInput(Unit) {
-        coroutineScope {
-            var didHideControls = false
-            launch {
-                detectTapGestures(onPress = {
-                    didHideControls = false
-                    // Hide controls immediately when pressed while visible
-                    val controlsWereVisible = controlsVisible.value
-                    awaitRelease()
-                    if (controlsWereVisible) {
-                        didHideControls = true
-                        hideControls()
-                    }
-                })
-            }
-            launch {
-                detectAnyPointerEvent(pass = PointerEventPass.Final) {
-                    // Show controls temporarily when pressing, moving or releasing a pointer
-                    // - except if we just hid the controls by pressing
-                    if (didHideControls) {
-                        didHideControls = false
-                    } else {
-                        showControlsTemporarily()
-                    }
-                }
-            }
-        }
-    }
-}
-
-internal suspend fun PointerInputScope.detectAnyPointerEvent(
-    pass: PointerEventPass = PointerEventPass.Main,
-    onPointer: () -> Unit
-) {
-    val currentContext = currentCoroutineContext()
-    awaitPointerEventScope {
-        while (currentContext.isActive) {
-            awaitPointerEvent(pass = pass)
-            onPointer()
-        }
-    }
 }

@@ -10,13 +10,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import java.text.DecimalFormat
 
+/**
+ * A list of video qualities, from which the user can choose a target video quality.
+ *
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param onClick called when a video quality in the list is clicked
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QualityList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     val videoQualities = state?.videoQualities ?: listOf()
     val targetVideoQuality = state?.targetVideoQuality
     LazyColumn(modifier = modifier) {
@@ -58,8 +64,8 @@ fun QualityList(
     }
 }
 
-internal val zeroPrecisionFormat = DecimalFormat("#")
-internal val singlePrecisionFormat = DecimalFormat("#.#")
+private val zeroPrecisionFormat = DecimalFormat("#")
+private val singlePrecisionFormat = DecimalFormat("#.#")
 
 internal fun formatBandwidth(bandwidth: Long): String {
     return if (bandwidth > 1e7) {

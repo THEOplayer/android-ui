@@ -10,10 +10,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
+/**
+ * A [Menu] to change the spoken language and subtitles of the stream.
+ *
+ * Depending on the available screen width, this shows either [compact][LanguageMenuCompact]
+ * or [expanded][LanguageMenuExpanded] contents.
+ */
 @Composable
 fun MenuScope.LanguageMenu() {
     Menu(
@@ -26,7 +31,7 @@ fun MenuScope.LanguageMenu() {
         },
     ) {
         BoxWithConstraints {
-            val state = LocalTHEOplayer.current
+            val state = PlayerState.current
             val neededWidth =
                 (if (showAudioTracks(state)) 300.dp else 0.dp) +
                         (if (showSubtitleTracks(state)) 300.dp else 0.dp)
@@ -47,9 +52,18 @@ private fun showSubtitleTracks(state: PlayerState?): Boolean {
     return state != null && state.subtitleTracks.isNotEmpty()
 }
 
+/**
+ * The compact menu contents of the [LanguageMenu].
+ *
+ * In this form, the currently selected audio and subtitle track are shown inside buttons.
+ * Click these buttons opens a separate menu to change the audio track or subtitle track.
+ *
+ * @see AudioTrackMenu
+ * @see SubtitleMenu
+ */
 @Composable
 fun MenuScope.LanguageMenuCompact() {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(state)) {
             Row {
@@ -106,9 +120,17 @@ fun MenuScope.LanguageMenuCompact() {
     }
 }
 
+/**
+ * The expanded menu contents of the [LanguageMenu].
+ *
+ * In this form, the list of audio and subtitle tracks are shown side-by-side.
+ *
+ * @see AudioTrackList
+ * @see SubtitleTrackList
+ */
 @Composable
 fun MenuScope.LanguageMenuExpanded() {
-    val state = LocalTHEOplayer.current
+    val state = PlayerState.current
     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(state)) {
             Column(modifier = Modifier.weight(1f)) {
@@ -139,6 +161,11 @@ fun MenuScope.LanguageMenuExpanded() {
     }
 }
 
+/**
+ * A [Menu] to change the spoken language of the stream.
+ *
+ * @see AudioTrackList
+ */
 @Composable
 fun MenuScope.AudioTrackMenu() {
     Menu(
@@ -148,6 +175,11 @@ fun MenuScope.AudioTrackMenu() {
     }
 }
 
+/**
+ * A [Menu] to change the subtitles of the stream.
+ *
+ * @see SubtitleTrackList
+ */
 @Composable
 fun MenuScope.SubtitleMenu() {
     Menu(

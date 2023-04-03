@@ -9,14 +9,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 
+/**
+ * A display for a fatal error, if the player encounters one.
+ *
+ * @param modifier the [Modifier] to be applied to this display
+ */
 @Composable
 fun ErrorDisplay(
     modifier: Modifier = Modifier,
 ) {
-    val error = LocalTHEOplayer.current?.error
+    val error = PlayerState.current?.error
 
     error?.let { it ->
         Row(

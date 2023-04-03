@@ -7,7 +7,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-
+import com.theoplayer.android.ui.LiveButton
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -74,14 +74,32 @@ private val DarkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+/**
+ * Additional colors used by THEOplayer components.
+ */
 @Immutable
 data class PlayerColors(
+    /**
+     * The color of the circle icon of a [LiveButton] when playing at the live point.
+     */
     val liveButtonLive: Color = Color.Red,
+    /**
+     * The color of the circle icon of a [LiveButton] when playing behind the live point.
+     */
     val liveButtonDvr: Color = Color.Gray
 )
 
-val LocalPlayerColors = staticCompositionLocalOf { PlayerColors() }
+private val LocalPlayerColors = staticCompositionLocalOf { PlayerColors() }
 
+/**
+ * Provides theme colors, shapes and fonts to be used by the player.
+ *
+ * @param colorScheme A complete definition of the Material Color theme for this hierarchy
+ * @param shapes A set of corner shapes to be used as this hierarchy's shape system
+ * @param typography A set of text styles to be used as this hierarchy's typography system
+ * @param playerColors Additional colors used by THEOplayer components
+ * @see MaterialTheme
+ */
 @Composable
 fun THEOplayerTheme(
     colorScheme: ColorScheme = MaterialTheme.colorScheme,
@@ -100,12 +118,16 @@ fun THEOplayerTheme(
     }
 }
 
-object THEOplayerTheme {
-    val playerColors: PlayerColors
-        @Composable
-        get() = LocalPlayerColors.current
-}
-
+/**
+ * Provides theme colors, shapes and fonts to be used by the player, using the THEOplayer brand style.
+ *
+ * @param useDarkTheme Whether to use light or dark colors.
+ * By default, uses the system's dark theme setting.
+ * @param shapes A set of corner shapes to be used as this hierarchy's shape system
+ * @param typography A set of text styles to be used as this hierarchy's typography system
+ * @param playerColors Additional colors used by THEOplayer components
+ * @see MaterialTheme
+ */
 @Composable
 fun THEOplayerTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
@@ -127,4 +149,17 @@ fun THEOplayerTheme(
         playerColors = playerColors,
         content = content
     )
+}
+
+/**
+ * Contains functions to access the current theme values provided at the call site's position in
+ * the hierarchy.
+ */
+object THEOplayerTheme {
+    /**
+     * Retrieves the current [PlayerColors] at the call site's position in the hierarchy.
+     */
+    val playerColors: PlayerColors
+        @Composable
+        get() = LocalPlayerColors.current
 }
