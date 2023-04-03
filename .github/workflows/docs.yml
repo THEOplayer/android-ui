@@ -31,6 +31,10 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup Pages
         uses: actions/configure-pages@v3
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+      - name: Build API documentation with Dokka
+        run: ./gradlew dokkaHtml
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
