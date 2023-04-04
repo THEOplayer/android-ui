@@ -57,6 +57,7 @@ fun DefaultUI(
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     LanguageMenuButton()
+                    ChromecastButton()
                 }
             }
         },
@@ -73,6 +74,7 @@ fun DefaultUI(
         bottomChrome = {
             val state = PlayerState.current
             if (state?.firstPlay == true) {
+                ChromecastDisplay(modifier = Modifier.padding(8.dp))
                 if (state.streamType != StreamType.Live) {
                     SeekBar()
                 }
