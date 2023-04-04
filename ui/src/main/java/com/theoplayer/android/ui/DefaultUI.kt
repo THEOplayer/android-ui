@@ -57,7 +57,6 @@ fun DefaultUI(
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     LanguageMenuButton()
-                    SettingsMenuButton()
                 }
             }
         },
