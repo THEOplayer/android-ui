@@ -23,13 +23,24 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
 
 1. Create a new Jetpack Compose app or set up Compose in your existing Android app by following [the Compose quick start guide](https://developer.android.com/jetpack/compose/setup).
 1. Add the THEOplayer Unified Android SDK to your project by following [these installation instructions](https://github.com/THEOplayer/theoplayer-sdk-android#installation).
+1. [Add GitHub Packages as a Maven repository](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) in your project-level `settings.gradle` file:
+    ```groovy
+    dependencyResolutionManagement {
+        repositories {
+            google()
+            mavenCentral()
+            maven { url = uri("https://jitpack.io") }
+            maven { url = uri("https://maven.pkg.github.com/THEOplayer/android-ui") }
+        }
+    }
+    ```
 1. Add THEOplayer Android UI as a dependency in your module-level `build.gradle` file:
-   ```groovy
-   dependencies {
-       implementation "com.theoplayer.theoplayer-sdk-android:unified:+"
-       implementation "com.theoplayer.android-ui:+"
-   }
-   ```
+    ```groovy
+    dependencies {
+        implementation "com.theoplayer.theoplayer-sdk-android:unified:+"
+        implementation "com.theoplayer.android-ui:android-ui:1.0.0"
+    }
+    ```
 
 ## Usage
 
