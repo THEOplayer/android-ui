@@ -28,6 +28,11 @@ android {
                 "proguard-rules.pro"
             )
         }
+        // Build type that uses the latest android-ui from Maven
+        create("maven") {
+            initWith(getByName("debug"))
+            matchingFallbacks += listOf("debug")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -69,6 +74,9 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:$compose_ui_version")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_ui_version")
 
-    implementation(project(":ui"))
+    debugImplementation(project(":ui"))
+    releaseImplementation(project(":ui"))
+    "mavenImplementation"("com.theoplayer.android-ui:android-ui:1.0.0")
+
     implementation("com.theoplayer.theoplayer-sdk-android:unified:$theoplayer_version")
 }
