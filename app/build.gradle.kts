@@ -78,5 +78,5 @@ dependencies {
     releaseImplementation(project(":ui"))
     "mavenImplementation"("com.theoplayer.android-ui:android-ui:1.0.0")
 
-    implementation("com.theoplayer.theoplayer-sdk-android:unified:$theoplayer_version")
+    implementation("com.theoplayer.theoplayer-sdk-android:core:$theoplayer_version")
 }

@@ -28,6 +28,7 @@ import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEven
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
 import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent as VideoActiveQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.TargetQualityChangedEvent as VideoTargetQualityChangedEvent
 import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent as VideoAddTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent as VideoRemoveTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent as VideoTrackListChangeEvent
@@ -431,7 +432,7 @@ private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : Pla
     val videoActiveQualityChangeListener =
         EventListener<VideoActiveQualityChangedEvent> { updateActiveVideoQuality() }
     val videoTargetQualityChangeListener =
-        EventListener<AbstractTargetQualityChangedEvent<VideoQuality>> { updateTargetVideoQuality() }
+        EventListener<VideoTargetQualityChangedEvent> { updateTargetVideoQuality() }
 
     override var audioTracks = mutableStateListOf<MediaTrack<AudioQuality>>()
         private set

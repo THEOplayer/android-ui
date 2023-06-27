@@ -37,7 +37,7 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
 1. Add THEOplayer Android UI as a dependency in your module-level `build.gradle` file:
     ```groovy
     dependencies {
-        implementation "com.theoplayer.theoplayer-sdk-android:core:+"
+        implementation "com.theoplayer.theoplayer-sdk-android:core:5.+"
         implementation "com.theoplayer.android-ui:android-ui:+"
     }
     ```
