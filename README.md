@@ -34,8 +34,8 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
                 url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
                 credentials {
                     // Define gpr.user and gpr.key preferably in your local ~/.gradle/gradle.properties
-                    username = settings.ext["gpr.user"] ?: System.getenv("USERNAME")
-                    password = settings.ext["gpr.key"] ?: System.getenv("TOKEN")
+                    username = (settings.extra.has("gpr.user")) ? settings.extra["gpr.user"] : System.getenv("USERNAME")
+                    password = (settings.extra.has("gpr.key")) ? settings.extra["gpr.key"] : System.getenv("TOKEN")
                 }
             }
         }
