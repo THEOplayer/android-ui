@@ -30,9 +30,21 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
             google()
             mavenCentral()
             maven { url = uri("https://jitpack.io") }
-            maven { url = uri("https://maven.pkg.github.com/THEOplayer/android-ui") }
+            maven {
+                url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
+                credentials {
+                    // Define gpr.user and gpr.key preferably in your local ~/.gradle/gradle.properties
+                    username = settings.ext["gpr.user"] ?: System.getenv("USERNAME")
+                    password = settings.ext["gpr.key"] ?: System.getenv("TOKEN")
+                }
+            }
         }
     }
+    ```
+1. [Authenticate with GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-to-github-packages), and save your username and access token in `~/.gradle/gradle.properties`:
+    ```
+    gpr.user=YOUR_USERNAME
+    gpr.key=YOUR_ACCESS_TOKEN
     ```
 1. Add THEOplayer Android UI as a dependency in your module-level `build.gradle` file:
     ```groovy
