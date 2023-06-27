@@ -14,11 +14,11 @@
 * 💥 Update to THEOplayer Android SDK 5.
   To migrate, switch to `com.theoplayer.theoplayer-sdk-android:core` in your Gradle dependencies.
   ```diff
-   dependencies {
+    dependencies {
   -   implementation "com.theoplayer.theoplayer-sdk-android:unified:+"
   +   implementation "com.theoplayer.theoplayer-sdk-android:core:5.+"
-     implementation "com.theoplayer.android-ui:android-ui:+"
-   }
+      implementation "com.theoplayer.android-ui:android-ui:+"
+    }
   ```
 * 🚀 Added a `UIController` overload which accepts a `THEOplayerView` directly.
 
