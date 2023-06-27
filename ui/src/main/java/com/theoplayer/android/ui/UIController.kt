@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -53,7 +54,6 @@ private val controlsExitDuration = 500.milliseconds
  * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
  * or a [Row] containing a [MuteButton] and a [FullscreenButton].
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun UIController(
     modifier: Modifier = Modifier,
@@ -72,6 +72,61 @@ fun UIController(
     } else {
         rememberTHEOplayerView(config)
     }
+
+    LaunchedEffect(key1 = theoplayerView, key2 = source) {
+        theoplayerView?.player?.source = source
+    }
+
+    UIController(
+        modifier = modifier,
+        theoplayerView = theoplayerView,
+        interactionSource = interactionSource,
+        color = color,
+        centerOverlay = centerOverlay,
+        errorOverlay = errorOverlay,
+        topChrome = topChrome,
+        centerChrome = centerChrome,
+        bottomChrome = bottomChrome
+    )
+}
+
+/**
+ * A container component for a THEOplayer UI.
+ *
+ * This component provides a basic layout structure for a player UI,
+ * using the given [THEOplayerView] instance as its player.
+ *
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
+ *
+ * @param modifier the [Modifier] to be applied to this container
+ * @param theoplayerView the THEOplayer view. This should always be created using [rememberTHEOplayerView],
+ * and is moved into the [UIController] upon construction. If set to `null`, the UI shows
+ * its default state, which can be useful when previewing your custom UI using [Preview].
+ * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
+ * for this container. You can create and pass in your own `remember`ed instance to observe
+ * [Interaction]s and customize the behavior of this container.
+ * @param color the background color for the overlay while showing the UI controls
+ * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
+ * @param errorOverlay content to show when the player encountered a fatal error,
+ * typically an [ErrorDisplay].
+ * @param topChrome controls to show at the top of the player, for example the stream's title.
+ * @param centerChrome controls to show in the center of the player, for example a large [PlayButton].
+ * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
+ * or a [Row] containing a [MuteButton] and a [FullscreenButton].
+ */
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+fun UIController(
+    modifier: Modifier = Modifier,
+    theoplayerView: THEOplayerView? = rememberTHEOplayerView(),
+    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+    color: Color = Color.Black,
+    centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+) {
     val state = rememberPlayerState(theoplayerView)
 
     var tapCount by remember { mutableStateOf(0) }
@@ -170,9 +225,11 @@ fun UIController(
                     is UIState.Error -> {
                         errorOverlay?.let { scope.it() }
                     }
+
                     is UIState.Menu -> {
                         uiState.menu.let { scope.it() }
                     }
+
                     is UIState.Controls -> {
                         scope.PlayerControls(
                             controlsVisible = controlsVisible.value,
@@ -185,10 +242,6 @@ fun UIController(
                 }
             }
         }
-    }
-
-    LaunchedEffect(key1 = source) {
-        state.player?.source = source
     }
 }
 
@@ -310,8 +363,13 @@ private fun UIControllerScope.PlayerControls(
     }
 }
 
+/**
+ * Creates and remembers a THEOplayer view.
+ *
+ * @param config the player configuration
+ */
 @Composable
-private fun rememberTHEOplayerView(config: THEOplayerConfig): THEOplayerView {
+fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
 
