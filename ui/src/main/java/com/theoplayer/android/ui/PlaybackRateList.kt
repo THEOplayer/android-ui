@@ -24,8 +24,8 @@ fun PlaybackRateList(
     playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
     onClick: (() -> Unit)? = null
 ) {
-    val state = PlayerState.current
-    val currentPlaybackRate = state?.playbackRate ?: 1
+    val player = Player.current
+    val currentPlaybackRate = player?.playbackRate ?: 1
     LazyColumn(modifier = modifier) {
         items(
             count = playbackRates.size,
@@ -41,7 +41,7 @@ fun PlaybackRateList(
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    state?.playbackRate = playbackRate
+                    player?.playbackRate = playbackRate
                     onClick?.let { it() }
                 })
             )

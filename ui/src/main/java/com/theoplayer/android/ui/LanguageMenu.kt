@@ -31,10 +31,10 @@ fun MenuScope.LanguageMenu() {
         },
     ) {
         BoxWithConstraints {
-            val state = PlayerState.current
+            val player = Player.current
             val neededWidth =
-                (if (showAudioTracks(state)) 300.dp else 0.dp) +
-                        (if (showSubtitleTracks(state)) 300.dp else 0.dp)
+                (if (showAudioTracks(player)) 300.dp else 0.dp) +
+                        (if (showSubtitleTracks(player)) 300.dp else 0.dp)
             if (maxWidth < neededWidth) {
                 LanguageMenuCompact()
             } else {
@@ -44,12 +44,12 @@ fun MenuScope.LanguageMenu() {
     }
 }
 
-private fun showAudioTracks(state: PlayerState?): Boolean {
-    return state != null && state.audioTracks.size >= 2
+private fun showAudioTracks(player: Player?): Boolean {
+    return player != null && player.audioTracks.size >= 2
 }
 
-private fun showSubtitleTracks(state: PlayerState?): Boolean {
-    return state != null && state.subtitleTracks.isNotEmpty()
+private fun showSubtitleTracks(player: Player?): Boolean {
+    return player != null && player.subtitleTracks.isNotEmpty()
 }
 
 /**
@@ -63,9 +63,9 @@ private fun showSubtitleTracks(state: PlayerState?): Boolean {
  */
 @Composable
 fun MenuScope.LanguageMenuCompact() {
-    val state = PlayerState.current
+    val player = Player.current
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        if (showAudioTracks(state)) {
+        if (showAudioTracks(player)) {
             Row {
                 Text(
                     modifier = Modifier
@@ -81,7 +81,7 @@ fun MenuScope.LanguageMenuCompact() {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = state?.activeAudioTrack?.let { formatTrackLabel(it) } ?: "None",
+                        text = player?.activeAudioTrack?.let { formatTrackLabel(it) } ?: "None",
                         textAlign = TextAlign.Center
                     )
                     Icon(
@@ -91,7 +91,7 @@ fun MenuScope.LanguageMenuCompact() {
                 }
             }
         }
-        if (showSubtitleTracks(state)) {
+        if (showSubtitleTracks(player)) {
             Row {
                 Text(
                     modifier = Modifier
@@ -107,7 +107,7 @@ fun MenuScope.LanguageMenuCompact() {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = state?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: "Off",
+                        text = player?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: "Off",
                         textAlign = TextAlign.Center
                     )
                     Icon(
@@ -130,9 +130,9 @@ fun MenuScope.LanguageMenuCompact() {
  */
 @Composable
 fun MenuScope.LanguageMenuExpanded() {
-    val state = PlayerState.current
+    val player = Player.current
     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
-        if (showAudioTracks(state)) {
+        if (showAudioTracks(player)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     modifier = Modifier
@@ -145,7 +145,7 @@ fun MenuScope.LanguageMenuExpanded() {
                 AudioTrackList()
             }
         }
-        if (showSubtitleTracks(state)) {
+        if (showSubtitleTracks(player)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     modifier = Modifier

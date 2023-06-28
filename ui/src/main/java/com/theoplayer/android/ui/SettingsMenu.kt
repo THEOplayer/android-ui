@@ -32,7 +32,7 @@ fun MenuScope.SettingsMenu() {
             )
         },
     ) {
-        val state = PlayerState.current
+        val player = Player.current
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Row {
                 Text(
@@ -50,8 +50,8 @@ fun MenuScope.SettingsMenu() {
                     Text(
                         modifier = Modifier.weight(1f),
                         text = formatActiveQualityLabel(
-                            state?.targetVideoQuality,
-                            state?.activeVideoQuality
+                            player?.targetVideoQuality,
+                            player?.activeVideoQuality
                         ),
                         textAlign = TextAlign.Center
                     )
@@ -76,7 +76,7 @@ fun MenuScope.SettingsMenu() {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = formatPlaybackRate(state?.playbackRate ?: 1.0),
+                        text = formatPlaybackRate(player?.playbackRate ?: 1.0),
                         textAlign = TextAlign.Center
                     )
                     Icon(

@@ -69,7 +69,7 @@ Additionally, we change the size and padding of the play button, to make it bigg
 
 You might have noticed that all buttons are visible immediately, even before the video starts playing for the first time. Most of the time however, you want to initially show only the play button, and then show the rest of the buttons after the video has started playing. To do this, you should check the player's current state and then adjust your player layout accordingly.
 
-Within any of the composable lambdas you pass to `UIController`, you can use `PlayerState.current` to access the player's current state. This `PlayerState` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`PlayerState.kt`](../../ui/src/main/java/com/theoplayer/android/ui/PlayerState.kt) for the full list of properties.
+Within any of the composable lambdas you pass to `UIController`, you can use `Player.current` to access the current player. This `Player` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`Player.kt`](../../ui/src/main/java/com/theoplayer/android/ui/Player.kt) for the full list of properties.
 
 You can then perform any logic on these properties to adjust your player layout. For example, you can check the `firstPlay` property to see if the player has already started playing for the first time, and only show certain buttons if that property is `true`:
 
@@ -86,7 +86,7 @@ setContent {
         },
         bottomChrome = {
             // Retrieve the player's state
-            val state = PlayerState.current
+            val state = Player.current
             // Show the bottom control bar only if we have already started playing before
             if (state?.firstPlay == true) {
                 SeekBar()
@@ -102,14 +102,14 @@ setContent {
 }
 ```
 
-All of the `PlayerState` properties are backed by an observable [`State`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/State), so composables that read these properties will automatically re-compose whenever that property changes. This means you don't need any extra logic to re-draw the bottom control bar whenever `firstPlay` changes from `false` to `true`. This also makes it easy to create your own custom player components. [See the Jetpack Compose documentation for more information.](https://developer.android.com/jetpack/compose/state)
+All of the `Player` properties are backed by an observable [`State`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/State), so composables that read these properties will automatically re-compose whenever that property changes. This means you don't need any extra logic to re-draw the bottom control bar whenever `firstPlay` changes from `false` to `true`. This also makes it easy to create your own custom player components. [See the Jetpack Compose documentation for more information.](https://developer.android.com/jetpack/compose/state)
 
 ```kotlin
 @Composable
 fun MyCurrentTimeDisplay(
 ) {
-    val state = PlayerState.current
-    val currentTime = state?.currentTime ?: 0.0
+    val player = Player.current
+    val currentTime = player?.currentTime ?: 0.0
     // This text will automatically update whenever the current time changes
     Text(text = currentTime.toString())
 }

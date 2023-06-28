@@ -35,16 +35,16 @@ fun FullscreenButton(
         )
     }
 ) {
-    val state = PlayerState.current
+    val player = Player.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = {
-            state?.let {
+            player?.let {
                 it.fullscreen = !it.fullscreen
             }
         }) {
-        if (state?.fullscreen == true) {
+        if (player?.fullscreen == true) {
             exit()
         } else {
             enter()

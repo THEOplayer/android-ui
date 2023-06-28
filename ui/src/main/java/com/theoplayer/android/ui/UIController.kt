@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -35,7 +34,7 @@ private val controlsExitDuration = 500.milliseconds
  * A container component for a THEOplayer UI.
  *
  * This component provides a basic layout structure for a player UI,
- * and handles the creation and management of a [THEOplayerView] instance for this UI.
+ * and handles the creation and management of a [Player] instance for this UI.
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
@@ -67,19 +66,14 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    val theoplayerView = if (LocalInspectionMode.current) {
-        null
-    } else {
-        rememberTHEOplayerView(config)
-    }
-
-    LaunchedEffect(key1 = theoplayerView, key2 = source) {
-        theoplayerView?.player?.source = source
+    val player = rememberPlayer(config)
+    LaunchedEffect(player, source) {
+        player.player?.source = source
     }
 
     UIController(
         modifier = modifier,
-        theoplayerView = theoplayerView,
+        player = player,
         interactionSource = interactionSource,
         color = color,
         centerOverlay = centerOverlay,
@@ -93,15 +87,12 @@ fun UIController(
 /**
  * A container component for a THEOplayer UI.
  *
- * This component provides a basic layout structure for a player UI,
- * using the given [THEOplayerView] instance as its player.
+ * This component provides a basic layout structure for a player UI using the given [player].
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
  * @param modifier the [Modifier] to be applied to this container
- * @param theoplayerView the THEOplayer view. This should always be created using [rememberTHEOplayerView],
- * and is moved into the [UIController] upon construction. If set to `null`, the UI shows
- * its default state, which can be useful when previewing your custom UI using [Preview].
+ * @param player the player. This should always be created using [rememberPlayer].
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
  * for this container. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the behavior of this container.
@@ -118,7 +109,7 @@ fun UIController(
 @Composable
 fun UIController(
     modifier: Modifier = Modifier,
-    theoplayerView: THEOplayerView? = rememberTHEOplayerView(),
+    player: Player = rememberPlayer(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -127,11 +118,9 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    val state = rememberPlayerState(theoplayerView)
-
     var tapCount by remember { mutableStateOf(0) }
     var isRecentlyTapped by remember { mutableStateOf(true) }
-    LaunchedEffect(key1 = tapCount) {
+    LaunchedEffect(tapCount) {
         isRecentlyTapped = true
         delay(2.seconds)
         isRecentlyTapped = false
@@ -140,22 +129,22 @@ fun UIController(
     var forceControlsHidden by remember { mutableStateOf(false) }
     val controlsVisible = remember {
         derivedStateOf {
-            if (!state.firstPlay) {
+            if (!player.firstPlay) {
                 true
             } else if (forceControlsHidden) {
                 false
             } else {
-                isRecentlyTapped || isPressed || state.paused || state.castState == PlayerCastState.CONNECTED
+                isRecentlyTapped || isPressed || player.paused || player.castState == PlayerCastState.CONNECTED
             }
         }
     }
 
-    val scope = remember { UIControllerScopeImpl() }
+    val scope = remember(player) { UIControllerScopeImpl(player) }
 
     val uiState by remember {
         derivedStateOf {
             val currentMenu = scope.currentMenu
-            if (state.error != null) {
+            if (player.error != null) {
                 UIState.Error
             } else if (currentMenu != null) {
                 UIState.Menu(currentMenu)
@@ -179,8 +168,8 @@ fun UIController(
         )
     )
 
-    PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
-        CompositionLocalProvider(LocalPlayerState provides state) {
+    PlayerContainer(modifier = modifier, theoplayerView = player.theoplayerView) {
+        CompositionLocalProvider(LocalPlayer provides player) {
             AnimatedContent(
                 modifier = Modifier
                     .background(background)
@@ -249,9 +238,13 @@ fun UIController(
  * Scope for the contents of a [UIController].
  */
 interface UIControllerScope : MenuScope {
+    /**
+     * The player hosted in this [UIController].
+     */
+    val player: Player
 }
 
-private class UIControllerScopeImpl() :
+private class UIControllerScopeImpl(override val player: Player) :
     UIControllerScope {
     private var menuStack = mutableStateListOf<MenuContent>()
 
@@ -294,13 +287,16 @@ private fun PlayerContainer(
         }
     } else {
         val lifecycle = LocalLifecycleOwner.current.lifecycle
+        var uiContainer by remember { mutableStateOf<ViewGroup?>(null) }
+        var composeView by remember { mutableStateOf<ComposeView?>(null) }
+
         AndroidView(
             modifier = modifier.fillMaxSize(),
             factory = { context ->
-                // Install inside THEOplayerView's UI container
-                val uiContainer =
-                    theoplayerView.findViewById<ViewGroup>(com.theoplayer.android.R.id.theo_ui_container)
-                uiContainer.addView(ComposeView(context).apply {
+                uiContainer =
+                    theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
+                // Wrap our UI inside a ComposeView
+                composeView = ComposeView(context).apply {
                     // When entering fullscreen, we remove the view from its original location
                     // and add it to the activity's root view.
                     // When it is temporarily removed (and detached from the window),
@@ -313,9 +309,25 @@ private fun PlayerContainer(
                     setContent {
                         ui()
                     }
-                })
+                }
+                // Host the THEOplayer view inside our AndroidView
+                (theoplayerView.parent as? ViewGroup)?.removeView(theoplayerView)
                 theoplayerView
             })
+
+        // Install inside THEOplayerView's UI container
+        DisposableEffect(uiContainer, composeView) {
+            val container = uiContainer
+            val view = composeView
+            if (view != null) {
+                container?.addView(view)
+            }
+            onDispose {
+                if (view != null) {
+                    container?.removeView(view)
+                }
+            }
+        }
     }
 }
 
@@ -364,23 +376,46 @@ private fun UIControllerScope.PlayerControls(
 }
 
 /**
+ * Creates and remembers a [Player].
+ *
+ * @param config the player configuration
+ */
+@Composable
+fun rememberPlayer(config: THEOplayerConfig? = null): Player {
+    val theoplayerView = if (LocalInspectionMode.current) {
+        null
+    } else {
+        rememberTHEOplayerView(config)
+    }
+
+    val player = remember(theoplayerView) { PlayerImpl(theoplayerView) }
+    DisposableEffect(player) {
+        onDispose {
+            player.dispose()
+        }
+    }
+
+    return player
+}
+
+/**
  * Creates and remembers a THEOplayer view.
  *
  * @param config the player configuration
  */
 @Composable
-fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
+internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
 
-    DisposableEffect(key1 = theoplayerView) {
+    DisposableEffect(theoplayerView) {
         onDispose {
             theoplayerView.onDestroy()
         }
     }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    DisposableEffect(key1 = lifecycle, key2 = theoplayerView) {
+    DisposableEffect(lifecycle, theoplayerView) {
         val lifecycleObserver = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> theoplayerView.onResume()

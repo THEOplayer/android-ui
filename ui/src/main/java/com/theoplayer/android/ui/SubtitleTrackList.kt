@@ -22,9 +22,9 @@ fun SubtitleTrackList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val state = PlayerState.current
-    val subtitleTracks = state?.subtitleTracks ?: listOf()
-    val activeSubtitleTrack = state?.activeSubtitleTrack
+    val player = Player.current
+    val subtitleTracks = player?.subtitleTracks ?: listOf()
+    val activeSubtitleTrack = player?.activeSubtitleTrack
     LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
@@ -36,7 +36,7 @@ fun SubtitleTrackList(
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    state?.activeSubtitleTrack = null
+                    player?.activeSubtitleTrack = null
                     onClick?.let { it() }
                 })
             )
@@ -55,7 +55,7 @@ fun SubtitleTrackList(
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    state?.activeSubtitleTrack = audioTrack
+                    player?.activeSubtitleTrack = audioTrack
                     onClick?.let { it() }
                 })
             )

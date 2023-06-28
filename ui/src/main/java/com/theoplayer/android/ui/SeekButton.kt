@@ -82,12 +82,12 @@ fun SeekButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit
 ) {
-    val state = PlayerState.current
+    val player = Player.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = {
-            state?.player?.let {
+            player?.player?.let {
                 if (!it.duration.isNaN()) {
                     it.currentTime = (it.currentTime + seekOffset).coerceIn(0.0, it.duration)
                 }

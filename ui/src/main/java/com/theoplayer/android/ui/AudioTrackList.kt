@@ -22,9 +22,9 @@ fun AudioTrackList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val state = PlayerState.current
-    val audioTracks = state?.audioTracks ?: listOf()
-    val activeAudioTrack = state?.activeAudioTrack
+    val player = Player.current
+    val audioTracks = player?.audioTracks ?: listOf()
+    val activeAudioTrack = player?.activeAudioTrack
     LazyColumn(modifier = modifier) {
         items(
             count = audioTracks.size,
@@ -40,7 +40,7 @@ fun AudioTrackList(
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    state?.activeAudioTrack = audioTrack
+                    player?.activeAudioTrack = audioTrack
                     onClick?.let { it() }
                 })
             )

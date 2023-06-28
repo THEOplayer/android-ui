@@ -9,6 +9,13 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 💥 Renamed `PlayerState` to `Player`.
+* 🚀 Added overloads to `DefaultUI` and `UIController` that accept a `Player`.
+  This allows constructing a player instance in advance, and even moving it between custom UIs when recomposing.
+* 🚀 Added `UIControllerScope.player` as an non-null alternative to `Player.current`. 
+
 ## v1.1.0 (2023-06-27)
 
 * 💥 Update to THEOplayer Android SDK 5.

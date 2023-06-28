@@ -1,8 +1,14 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -35,19 +41,46 @@ fun DefaultUI(
     source: SourceDescription? = null,
     title: String? = null
 ) {
+    val player = rememberPlayer(config)
+    LaunchedEffect(key1 = player, key2 = source) {
+        player.player?.source = source
+    }
+
+    DefaultUI(modifier = modifier, player = player, title = title)
+}
+
+/**
+ * A default THEOplayer UI component.
+ *
+ * This component provides a great player experience out-of-the-box, that works for all types
+ * of streams. It provides all the common playback controls for playing, seeking, changing
+ * languages and qualities.
+ *
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
+ * For more extensive customizations, we recommend defining your own custom UI using
+ * a [UIController].
+ *
+ * @param modifier the [Modifier] to be applied to this UI
+ * @param player the player. This should always be created using [rememberPlayer].
+ * @param title the stream's title, shown at the top of the player
+ * @see UIController
+ */
+@Composable
+fun DefaultUI(
+    modifier: Modifier = Modifier,
+    player: Player = rememberPlayer(),
+    title: String? = null
+) {
     UIController(
         modifier = modifier,
-        config = config,
-        source = source,
+        player = player,
         centerOverlay = {
-            val state = PlayerState.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 LoadingSpinner()
             }
         },
         topChrome = {
-            val state = PlayerState.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
                         Text(
@@ -62,20 +95,18 @@ fun DefaultUI(
             }
         },
         centerChrome = {
-            val state = PlayerState.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
             PlayButton(iconModifier = Modifier.size(96.dp), contentPadding = PaddingValues(8.dp))
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 SeekButton(seekOffset = 10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
         },
         bottomChrome = {
-            val state = PlayerState.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 ChromecastDisplay(modifier = Modifier.padding(8.dp))
-                if (state.streamType != StreamType.Live) {
+                if (player.streamType != StreamType.Live) {
                     SeekBar()
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -88,11 +119,10 @@ fun DefaultUI(
             }
         },
         errorOverlay = {
-            val state = PlayerState.current
             Box(contentAlignment = Alignment.Center) {
                 ErrorDisplay()
                 // Ensure the user can still exit fullscreen
-                if (state?.fullscreen == true) {
+                if (player.fullscreen) {
                     FullscreenButton(modifier = Modifier.align(Alignment.BottomEnd))
                 }
             }
