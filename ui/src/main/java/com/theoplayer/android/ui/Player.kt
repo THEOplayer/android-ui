@@ -255,21 +255,7 @@ enum class StreamType {
     Dvr
 }
 
-/**
- * Creates and remembers a [Player] that tracks the state of the given [theoplayerView]'s player.
- */
-@Composable
-internal fun rememberPlayerState(theoplayerView: THEOplayerView?): Player {
-    val player = remember(theoplayerView) { PlayerImpl(theoplayerView) }
-    DisposableEffect(player) {
-        onDispose {
-            player.dispose()
-        }
-    }
-    return player
-}
-
-private class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
+internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val cast = theoplayerView?.cast
     override var currentTime by mutableStateOf(0.0)

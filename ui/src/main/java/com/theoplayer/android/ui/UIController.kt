@@ -387,7 +387,15 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
     } else {
         rememberTHEOplayerView(config)
     }
-    return rememberPlayerState(theoplayerView = theoplayerView)
+
+    val player = remember(theoplayerView) { PlayerImpl(theoplayerView) }
+    DisposableEffect(player) {
+        onDispose {
+            player.dispose()
+        }
+    }
+
+    return player
 }
 
 /**
