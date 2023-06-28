@@ -13,13 +13,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.theoplayer.android.api.THEOplayerConfig
-import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.source.SourceDescription
-import com.theoplayer.android.api.source.TextTrackDescription
 import com.theoplayer.android.api.source.TypedSource
 import com.theoplayer.android.ui.DefaultUI
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
+import com.theoplayer.android.ui.rememberTHEOplayer
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 
 class MainActivity : ComponentActivity() {
@@ -41,6 +40,11 @@ fun MainContent() {
         TypedSource.Builder("https://amssamples.streaming.mediaservices.windows.net/7ceb010f-d9a3-467a-915e-5728acced7e3/ElephantsDreamMultiAudio.ism/manifest(format=mpd-time-csf)")
             .build()
     ).build()
+
+    val player = rememberTHEOplayer()
+    LaunchedEffect(key1 = player, key2 = source) {
+        player.player?.source = source
+    }
 
     var themeMenuOpen by remember { mutableStateOf(false) }
     var theme by rememberSaveable { mutableStateOf(PlayerTheme.Default) }
@@ -75,17 +79,16 @@ fun MainContent() {
                 PlayerTheme.Default -> {
                     DefaultUI(
                         modifier = Modifier.padding(padding),
-                        config = THEOplayerConfig.Builder().build(),
-                        source = source,
+                        player = player,
                         title = "Elephant's Dream"
                     )
                 }
+
                 PlayerTheme.Nitflex -> {
                     NitflexTheme(useDarkTheme = true) {
                         NitflexUI(
                             modifier = Modifier.padding(padding),
-                            config = THEOplayerConfig.Builder().build(),
-                            source = source,
+                            player = player,
                             title = "Elephant's Dream"
                         )
                     }
