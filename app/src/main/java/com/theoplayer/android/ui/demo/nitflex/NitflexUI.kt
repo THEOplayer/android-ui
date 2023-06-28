@@ -1,11 +1,23 @@
 package com.theoplayer.android.ui.demo.nitflex
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.SkipNext
 import androidx.compose.material.icons.sharp.Speed
 import androidx.compose.material.icons.sharp.Subtitles
-import androidx.compose.material3.*
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.source.SourceDescription
-import com.theoplayer.android.ui.*
+import com.theoplayer.android.ui.CurrentTimeDisplay
+import com.theoplayer.android.ui.ErrorDisplay
+import com.theoplayer.android.ui.FullscreenButton
+import com.theoplayer.android.ui.LanguageMenu
+import com.theoplayer.android.ui.LoadingSpinner
+import com.theoplayer.android.ui.PlaybackRateMenu
+import com.theoplayer.android.ui.UIController
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
 
 @Composable
@@ -33,14 +51,12 @@ fun NitflexUI(
             config = config,
             source = source,
             centerOverlay = {
-                val state = Player.current
-                if (state?.firstPlay == true) {
+                if (player.firstPlay) {
                     LoadingSpinner()
                 }
             },
             topChrome = {
-                val state = Player.current
-                if (state?.firstPlay == true) {
+                if (player.firstPlay) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -58,12 +74,11 @@ fun NitflexUI(
                 }
             },
             centerChrome = {
-                val state = Player.current
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    if (state?.firstPlay == true) {
+                    if (player.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = -10,
                             iconSize = 48.dp,
@@ -74,7 +89,7 @@ fun NitflexUI(
                         iconModifier = Modifier.size(48.dp),
                         contentPadding = PaddingValues(8.dp)
                     )
-                    if (state?.firstPlay == true) {
+                    if (player.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = 10,
                             iconSize = 48.dp,
@@ -84,8 +99,7 @@ fun NitflexUI(
                 }
             },
             bottomChrome = {
-                val state = Player.current
-                if (state?.firstPlay == true) {
+                if (player.firstPlay) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -135,11 +149,10 @@ fun NitflexUI(
                 }
             },
             errorOverlay = {
-                val state = Player.current
                 Box(contentAlignment = Alignment.Center) {
                     ErrorDisplay()
                     // Ensure the user can still exit fullscreen
-                    if (state?.fullscreen == true) {
+                    if (player.fullscreen) {
                         FullscreenButton(modifier = Modifier.align(Alignment.BottomEnd))
                     }
                 }

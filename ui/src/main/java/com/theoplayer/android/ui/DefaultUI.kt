@@ -1,6 +1,11 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -40,14 +45,12 @@ fun DefaultUI(
         config = config,
         source = source,
         centerOverlay = {
-            val state = Player.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 LoadingSpinner()
             }
         },
         topChrome = {
-            val state = Player.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
                         Text(
@@ -62,20 +65,18 @@ fun DefaultUI(
             }
         },
         centerChrome = {
-            val state = Player.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
             PlayButton(iconModifier = Modifier.size(96.dp), contentPadding = PaddingValues(8.dp))
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 SeekButton(seekOffset = 10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
         },
         bottomChrome = {
-            val state = Player.current
-            if (state?.firstPlay == true) {
+            if (player.firstPlay) {
                 ChromecastDisplay(modifier = Modifier.padding(8.dp))
-                if (state.streamType != StreamType.Live) {
+                if (player.streamType != StreamType.Live) {
                     SeekBar()
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -88,11 +89,10 @@ fun DefaultUI(
             }
         },
         errorOverlay = {
-            val state = Player.current
             Box(contentAlignment = Alignment.Center) {
                 ErrorDisplay()
                 // Ensure the user can still exit fullscreen
-                if (state?.fullscreen == true) {
+                if (player.fullscreen) {
                     FullscreenButton(modifier = Modifier.align(Alignment.BottomEnd))
                 }
             }
