@@ -47,12 +47,12 @@ fun PlayButton(
         )
     }
 ) {
-    val state = Player.current
+    val player = Player.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = {
-            state?.let {
+            player?.let {
                 if (it.paused) {
                     it.player?.play()
                 } else {
@@ -60,11 +60,11 @@ fun PlayButton(
                 }
             }
         }) {
-        if (state == null) {
+        if (player == null) {
             play()
-        } else if (!state.paused) {
+        } else if (!player.paused) {
             pause()
-        } else if (state.ended) {
+        } else if (player.ended) {
             replay()
         } else {
             play()

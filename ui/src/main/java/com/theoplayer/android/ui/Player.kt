@@ -260,13 +260,13 @@ enum class StreamType {
  */
 @Composable
 internal fun rememberPlayerState(theoplayerView: THEOplayerView?): Player {
-    val state = remember(theoplayerView) { PlayerImpl(theoplayerView) }
-    DisposableEffect(state) {
+    val player = remember(theoplayerView) { PlayerImpl(theoplayerView) }
+    DisposableEffect(player) {
         onDispose {
-            state.dispose()
+            player.dispose()
         }
     }
-    return state
+    return player
 }
 
 private class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {

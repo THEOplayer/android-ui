@@ -13,8 +13,8 @@ import androidx.compose.ui.Modifier
 fun DurationDisplay(
     modifier: Modifier = Modifier
 ) {
-    val state = Player.current
-    val duration = state?.duration ?: Double.NaN
+    val player = Player.current
+    val duration = player?.duration ?: Double.NaN
 
     Text(modifier = modifier, text = formatTime(duration))
 }

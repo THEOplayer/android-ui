@@ -35,16 +35,16 @@ fun MuteButton(
         )
     }
 ) {
-    val state = Player.current
+    val player = Player.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = {
-            state?.let {
+            player?.let {
                 it.muted = !it.muted
             }
         }) {
-        if (state?.muted == true) {
+        if (player?.muted == true) {
             unmute()
         } else {
             mute()

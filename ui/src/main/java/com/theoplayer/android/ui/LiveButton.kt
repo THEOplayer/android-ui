@@ -52,16 +52,16 @@ fun LiveButton(
         Text(text = " LIVE")
     }
 ) {
-    val state = Player.current
-    if (state?.streamType == StreamType.Live || state?.streamType == StreamType.Dvr) {
+    val player = Player.current
+    if (player?.streamType == StreamType.Live || player?.streamType == StreamType.Dvr) {
         val isLive =
-            !state.paused && ((state.seekable.lastEnd ?: 0.0) - state.currentTime) <= liveThreshold
+            !player.paused && ((player.seekable.lastEnd ?: 0.0) - player.currentTime) <= liveThreshold
         TextButton(
             modifier = modifier,
             contentPadding = contentPadding,
             colors = colors,
             onClick = {
-                state.player?.let {
+                player.player?.let {
                     it.currentTime = Double.POSITIVE_INFINITY
                     it.play()
                 }
