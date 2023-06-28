@@ -288,13 +288,16 @@ private fun PlayerContainer(
         }
     } else {
         val lifecycle = LocalLifecycleOwner.current.lifecycle
+        var uiContainer by remember { mutableStateOf<ViewGroup?>(null) }
+        var composeView by remember { mutableStateOf<ComposeView?>(null) }
+
         AndroidView(
             modifier = modifier.fillMaxSize(),
             factory = { context ->
-                // Install inside THEOplayerView's UI container
-                val uiContainer =
-                    theoplayerView.findViewById<ViewGroup>(com.theoplayer.android.R.id.theo_ui_container)
-                uiContainer.addView(ComposeView(context).apply {
+                uiContainer =
+                    theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
+                // Wrap our UI inside a ComposeView
+                composeView = ComposeView(context).apply {
                     // When entering fullscreen, we remove the view from its original location
                     // and add it to the activity's root view.
                     // When it is temporarily removed (and detached from the window),
@@ -307,9 +310,25 @@ private fun PlayerContainer(
                     setContent {
                         ui()
                     }
-                })
+                }
+                // Host the THEOplayer view inside our AndroidView
+                (theoplayerView.parent as? ViewGroup)?.removeView(theoplayerView)
                 theoplayerView
             })
+
+        // Install inside THEOplayerView's UI container
+        DisposableEffect(uiContainer, composeView) {
+            val container = uiContainer
+            val view = composeView
+            if (view != null) {
+                container?.addView(view)
+            }
+            onDispose {
+                if (view != null) {
+                    container?.removeView(view)
+                }
+            }
+        }
     }
 }
 
