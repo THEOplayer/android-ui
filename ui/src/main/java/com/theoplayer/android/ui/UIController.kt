@@ -67,7 +67,7 @@ fun UIController(
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
     val player = rememberPlayer(config)
-    LaunchedEffect(key1 = player, key2 = source) {
+    LaunchedEffect(player, source) {
         player.player?.source = source
     }
 
@@ -120,7 +120,7 @@ fun UIController(
 ) {
     var tapCount by remember { mutableStateOf(0) }
     var isRecentlyTapped by remember { mutableStateOf(true) }
-    LaunchedEffect(key1 = tapCount) {
+    LaunchedEffect(tapCount) {
         isRecentlyTapped = true
         delay(2.seconds)
         isRecentlyTapped = false
@@ -408,14 +408,14 @@ internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplaye
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
 
-    DisposableEffect(key1 = theoplayerView) {
+    DisposableEffect(theoplayerView) {
         onDispose {
             theoplayerView.onDestroy()
         }
     }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-    DisposableEffect(key1 = lifecycle, key2 = theoplayerView) {
+    DisposableEffect(lifecycle, theoplayerView) {
         val lifecycleObserver = LifecycleEventObserver { _, event ->
             when (event) {
                 Lifecycle.Event.ON_RESUME -> theoplayerView.onResume()
