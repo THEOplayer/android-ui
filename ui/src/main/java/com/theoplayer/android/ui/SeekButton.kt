@@ -82,7 +82,7 @@ fun SeekButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,

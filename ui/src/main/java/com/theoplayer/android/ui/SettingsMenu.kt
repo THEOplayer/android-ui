@@ -32,7 +32,7 @@ fun MenuScope.SettingsMenu() {
             )
         },
     ) {
-        val state = PlayerState.current
+        val state = Player.current
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Row {
                 Text(

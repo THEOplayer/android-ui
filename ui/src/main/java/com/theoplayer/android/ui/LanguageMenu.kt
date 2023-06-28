@@ -31,7 +31,7 @@ fun MenuScope.LanguageMenu() {
         },
     ) {
         BoxWithConstraints {
-            val state = PlayerState.current
+            val state = Player.current
             val neededWidth =
                 (if (showAudioTracks(state)) 300.dp else 0.dp) +
                         (if (showSubtitleTracks(state)) 300.dp else 0.dp)
@@ -44,11 +44,11 @@ fun MenuScope.LanguageMenu() {
     }
 }
 
-private fun showAudioTracks(state: PlayerState?): Boolean {
+private fun showAudioTracks(state: Player?): Boolean {
     return state != null && state.audioTracks.size >= 2
 }
 
-private fun showSubtitleTracks(state: PlayerState?): Boolean {
+private fun showSubtitleTracks(state: Player?): Boolean {
     return state != null && state.subtitleTracks.isNotEmpty()
 }
 
@@ -63,7 +63,7 @@ private fun showSubtitleTracks(state: PlayerState?): Boolean {
  */
 @Composable
 fun MenuScope.LanguageMenuCompact() {
-    val state = PlayerState.current
+    val state = Player.current
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(state)) {
             Row {
@@ -130,7 +130,7 @@ fun MenuScope.LanguageMenuCompact() {
  */
 @Composable
 fun MenuScope.LanguageMenuExpanded() {
-    val state = PlayerState.current
+    val state = Player.current
     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(state)) {
             Column(modifier = Modifier.weight(1f)) {

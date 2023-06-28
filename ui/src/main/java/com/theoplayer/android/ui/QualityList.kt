@@ -22,7 +22,7 @@ fun QualityList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     val videoQualities = state?.videoQualities ?: listOf()
     val targetVideoQuality = state?.targetVideoQuality
     LazyColumn(modifier = modifier) {

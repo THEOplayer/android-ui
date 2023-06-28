@@ -47,7 +47,7 @@ fun ChromecastButton(
         )
     }
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     val castState = state?.castState ?: PlayerCastState.UNAVAILABLE
     if (castState == PlayerCastState.UNAVAILABLE) {
         // Hide when Chromecast is not available

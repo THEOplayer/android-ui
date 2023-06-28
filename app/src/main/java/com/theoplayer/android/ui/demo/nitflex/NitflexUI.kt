@@ -33,13 +33,13 @@ fun NitflexUI(
             config = config,
             source = source,
             centerOverlay = {
-                val state = PlayerState.current
+                val state = Player.current
                 if (state?.firstPlay == true) {
                     LoadingSpinner()
                 }
             },
             topChrome = {
-                val state = PlayerState.current
+                val state = Player.current
                 if (state?.firstPlay == true) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -58,7 +58,7 @@ fun NitflexUI(
                 }
             },
             centerChrome = {
-                val state = PlayerState.current
+                val state = Player.current
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -84,7 +84,7 @@ fun NitflexUI(
                 }
             },
             bottomChrome = {
-                val state = PlayerState.current
+                val state = Player.current
                 if (state?.firstPlay == true) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -135,7 +135,7 @@ fun NitflexUI(
                 }
             },
             errorOverlay = {
-                val state = PlayerState.current
+                val state = Player.current
                 Box(contentAlignment = Alignment.Center) {
                     ErrorDisplay()
                     // Ensure the user can still exit fullscreen

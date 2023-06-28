@@ -1,7 +1,17 @@
 package com.theoplayer.android.ui
 
 import android.view.View
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.Cast
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
@@ -10,13 +20,23 @@ import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.chromecast.CastErrorEvent
 import com.theoplayer.android.api.event.chromecast.CastStateChangeEvent
 import com.theoplayer.android.api.event.chromecast.ChromecastEventTypes
-import com.theoplayer.android.api.event.player.*
-import com.theoplayer.android.api.event.track.mediatrack.AbstractTargetQualityChangedEvent
+import com.theoplayer.android.api.event.player.DurationChangeEvent
+import com.theoplayer.android.api.event.player.EndedEvent
+import com.theoplayer.android.api.event.player.ErrorEvent
+import com.theoplayer.android.api.event.player.PauseEvent
+import com.theoplayer.android.api.event.player.PlayEvent
+import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.event.player.RateChangeEvent
+import com.theoplayer.android.api.event.player.ReadyStateChangeEvent
+import com.theoplayer.android.api.event.player.SeekedEvent
+import com.theoplayer.android.api.event.player.SeekingEvent
+import com.theoplayer.android.api.event.player.SourceChangeEvent
+import com.theoplayer.android.api.event.player.TimeUpdateEvent
+import com.theoplayer.android.api.event.player.VolumeChangeEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes
 import com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes
 import com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes
 import com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes
-import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.ReadyState
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
@@ -35,24 +55,25 @@ import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListCha
 import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as TextAddTrackEvent
 import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
 import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
+import com.theoplayer.android.api.player.Player as THEOplayer
 
-internal val LocalPlayerState = staticCompositionLocalOf<PlayerState?> { null }
+internal val LocalPlayer = staticCompositionLocalOf<Player?> { null }
 
 /**
- * Represents the state of the player.
+ * A player holding a [THEOplayer] instance that can be hosted by a [DefaultUI] or [UIController].
  *
  * All properties are backed by [State] or [MutableState] objects, so reads from within a
  * [Composable] function will automatically subscribe to changes of that property.
  */
-interface PlayerState {
+interface Player {
     /**
      * Returns the backing THEOplayer instance.
      *
-     * Note that [Player] properties are *not* backed by [State] objects, so composables
-     * will *not* be automatically subscribed to changes. Instead, use [Player.addEventListener],
-     * or use a corresponding [PlayerState] property if available.
+     * Note that [THEOplayer] properties are *not* backed by [State] objects, so composables
+     * will *not* be automatically subscribed to changes. Instead, use [THEOplayer.addEventListener],
+     * or use a corresponding [Player] property if available.
      */
-    val player: Player?
+    val player: THEOplayer?
 
     /**
      * Returns the wrapped THEOplayer view.
@@ -202,15 +223,15 @@ interface PlayerState {
     val castReceiverName: String?
 
     /**
-     * Contains properties to access the current [PlayerState].
+     * Contains properties to access the current [Player].
      */
     companion object {
         /**
-         * Retrieves the current [PlayerState] at the call site's position in the hierarchy.
+         * Retrieves the current [Player] at the call site's position in the hierarchy.
          */
-        val current: PlayerState?
+        val current: Player?
             @Composable
-            get() = LocalPlayerState.current
+            get() = LocalPlayer.current
     }
 }
 
@@ -235,11 +256,11 @@ enum class StreamType {
 }
 
 /**
- * Creates and remembers a [PlayerState] that tracks the state of the given [theoplayerView]'s player.
+ * Creates and remembers a [Player] that tracks the state of the given [theoplayerView]'s player.
  */
 @Composable
-internal fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
-    val state = remember(theoplayerView) { PlayerStateImpl(theoplayerView) }
+internal fun rememberPlayerState(theoplayerView: THEOplayerView?): Player {
+    val state = remember(theoplayerView) { PlayerImpl(theoplayerView) }
     DisposableEffect(state) {
         onDispose {
             state.dispose()
@@ -248,7 +269,7 @@ internal fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
     return state
 }
 
-private class PlayerStateImpl(override val theoplayerView: THEOplayerView?) : PlayerState {
+private class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val cast = theoplayerView?.cast
     override var currentTime by mutableStateOf(0.0)

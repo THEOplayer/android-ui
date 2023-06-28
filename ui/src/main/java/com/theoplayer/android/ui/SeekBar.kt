@@ -20,7 +20,7 @@ fun SeekBar(
     modifier: Modifier = Modifier,
     colors: SliderColors = SliderDefaults.colors()
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     val currentTime = state?.currentTime?.toFloat() ?: 0.0f
     val seekable = state?.seekable ?: TimeRanges(listOf())
     val valueRange = seekable.bounds ?: 0.0..0.0

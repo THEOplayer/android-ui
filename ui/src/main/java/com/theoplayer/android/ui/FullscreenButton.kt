@@ -35,7 +35,7 @@ fun FullscreenButton(
         )
     }
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,

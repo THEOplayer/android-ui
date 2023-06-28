@@ -30,7 +30,7 @@ fun LoadingSpinner(
     strokeWidth: Dp = ProgressIndicatorDefaults.CircularStrokeWidth,
     delay: Duration = 500.milliseconds
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     val loading = state?.loading ?: false
     AnimatedVisibility(
         visible = loading,

@@ -40,13 +40,13 @@ fun DefaultUI(
         config = config,
         source = source,
         centerOverlay = {
-            val state = PlayerState.current
+            val state = Player.current
             if (state?.firstPlay == true) {
                 LoadingSpinner()
             }
         },
         topChrome = {
-            val state = PlayerState.current
+            val state = Player.current
             if (state?.firstPlay == true) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
@@ -62,7 +62,7 @@ fun DefaultUI(
             }
         },
         centerChrome = {
-            val state = PlayerState.current
+            val state = Player.current
             if (state?.firstPlay == true) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
@@ -72,7 +72,7 @@ fun DefaultUI(
             }
         },
         bottomChrome = {
-            val state = PlayerState.current
+            val state = Player.current
             if (state?.firstPlay == true) {
                 ChromecastDisplay(modifier = Modifier.padding(8.dp))
                 if (state.streamType != StreamType.Live) {
@@ -88,7 +88,7 @@ fun DefaultUI(
             }
         },
         errorOverlay = {
-            val state = PlayerState.current
+            val state = Player.current
             Box(contentAlignment = Alignment.Center) {
                 ErrorDisplay()
                 // Ensure the user can still exit fullscreen

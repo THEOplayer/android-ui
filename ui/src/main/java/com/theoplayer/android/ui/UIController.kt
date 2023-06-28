@@ -15,7 +15,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -35,7 +34,7 @@ private val controlsExitDuration = 500.milliseconds
  * A container component for a THEOplayer UI.
  *
  * This component provides a basic layout structure for a player UI,
- * and handles the creation and management of a [PlayerState] instance for this UI.
+ * and handles the creation and management of a [Player] instance for this UI.
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
@@ -111,7 +110,7 @@ fun UIController(
 @Composable
 fun UIController(
     modifier: Modifier = Modifier,
-    player: PlayerState = rememberTHEOplayer(),
+    player: Player = rememberTHEOplayer(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -171,7 +170,7 @@ fun UIController(
     )
 
     PlayerContainer(modifier = modifier, theoplayerView = player.theoplayerView) {
-        CompositionLocalProvider(LocalPlayerState provides player) {
+        CompositionLocalProvider(LocalPlayer provides player) {
             AnimatedContent(
                 modifier = Modifier
                     .background(background)
@@ -355,12 +354,12 @@ private fun UIControllerScope.PlayerControls(
 }
 
 /**
- * Creates and remembers a [PlayerState].
+ * Creates and remembers a [Player].
  *
  * @param config the player configuration
  */
 @Composable
-fun rememberTHEOplayer(config: THEOplayerConfig? = null): PlayerState {
+fun rememberTHEOplayer(config: THEOplayerConfig? = null): Player {
     val theoplayerView = if (LocalInspectionMode.current) {
         null
     } else {

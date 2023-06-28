@@ -25,7 +25,7 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 fun ChromecastDisplay(
     modifier: Modifier = Modifier
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     if (state?.castState != PlayerCastState.CONNECTED) {
         // Hide when not connected to Chromecast
         return
@@ -48,7 +48,7 @@ fun ChromecastDisplay(
 fun ChromecastDisplayCompact(
     modifier: Modifier = Modifier
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     if (state?.castState != PlayerCastState.CONNECTED) {
         // Hide when not connected to Chromecast
         return
@@ -77,7 +77,7 @@ fun ChromecastDisplayCompact(
 fun ChromecastDisplayExpanded(
     modifier: Modifier = Modifier
 ) {
-    val state = PlayerState.current
+    val state = Player.current
     if (state?.castState != PlayerCastState.CONNECTED) {
         // Hide when not connected to Chromecast
         return
