@@ -35,7 +35,7 @@ private val controlsExitDuration = 500.milliseconds
  * A container component for a THEOplayer UI.
  *
  * This component provides a basic layout structure for a player UI,
- * and handles the creation and management of a [THEOplayerView] instance for this UI.
+ * and handles the creation and management of a [PlayerState] instance for this UI.
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
@@ -67,19 +67,15 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    val theoplayerView = if (LocalInspectionMode.current) {
-        null
-    } else {
-        rememberTHEOplayerView(config)
-    }
+    val player = rememberTHEOplayer(config)
 
-    LaunchedEffect(key1 = theoplayerView, key2 = source) {
-        theoplayerView?.player?.source = source
+    LaunchedEffect(key1 = player, key2 = source) {
+        player.player?.source = source
     }
 
     UIController(
         modifier = modifier,
-        theoplayerView = theoplayerView,
+        player = player,
         interactionSource = interactionSource,
         color = color,
         centerOverlay = centerOverlay,
@@ -93,15 +89,12 @@ fun UIController(
 /**
  * A container component for a THEOplayer UI.
  *
- * This component provides a basic layout structure for a player UI,
- * using the given [THEOplayerView] instance as its player.
+ * This component provides a basic layout structure for a player UI using the given [player].
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
  * @param modifier the [Modifier] to be applied to this container
- * @param theoplayerView the THEOplayer view. This should always be created using [rememberTHEOplayerView],
- * and is moved into the [UIController] upon construction. If set to `null`, the UI shows
- * its default state, which can be useful when previewing your custom UI using [Preview].
+ * @param player the player. This should always be created using [rememberTHEOplayer].
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
  * for this container. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the behavior of this container.
@@ -118,7 +111,7 @@ fun UIController(
 @Composable
 fun UIController(
     modifier: Modifier = Modifier,
-    theoplayerView: THEOplayerView? = rememberTHEOplayerView(),
+    player: PlayerState = rememberTHEOplayer(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -127,8 +120,6 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    val state = rememberPlayerState(theoplayerView)
-
     var tapCount by remember { mutableStateOf(0) }
     var isRecentlyTapped by remember { mutableStateOf(true) }
     LaunchedEffect(key1 = tapCount) {
@@ -140,12 +131,12 @@ fun UIController(
     var forceControlsHidden by remember { mutableStateOf(false) }
     val controlsVisible = remember {
         derivedStateOf {
-            if (!state.firstPlay) {
+            if (!player.firstPlay) {
                 true
             } else if (forceControlsHidden) {
                 false
             } else {
-                isRecentlyTapped || isPressed || state.paused || state.castState == PlayerCastState.CONNECTED
+                isRecentlyTapped || isPressed || player.paused || player.castState == PlayerCastState.CONNECTED
             }
         }
     }
@@ -155,7 +146,7 @@ fun UIController(
     val uiState by remember {
         derivedStateOf {
             val currentMenu = scope.currentMenu
-            if (state.error != null) {
+            if (player.error != null) {
                 UIState.Error
             } else if (currentMenu != null) {
                 UIState.Menu(currentMenu)
@@ -179,8 +170,8 @@ fun UIController(
         )
     )
 
-    PlayerContainer(modifier = modifier, theoplayerView = theoplayerView) {
-        CompositionLocalProvider(LocalPlayerState provides state) {
+    PlayerContainer(modifier = modifier, theoplayerView = player.theoplayerView) {
+        CompositionLocalProvider(LocalPlayerState provides player) {
             AnimatedContent(
                 modifier = Modifier
                     .background(background)
@@ -364,12 +355,27 @@ private fun UIControllerScope.PlayerControls(
 }
 
 /**
+ * Creates and remembers a [PlayerState].
+ *
+ * @param config the player configuration
+ */
+@Composable
+fun rememberTHEOplayer(config: THEOplayerConfig? = null): PlayerState {
+    val theoplayerView = if (LocalInspectionMode.current) {
+        null
+    } else {
+        rememberTHEOplayerView(config)
+    }
+    return rememberPlayerState(theoplayerView = theoplayerView)
+}
+
+/**
  * Creates and remembers a THEOplayer view.
  *
  * @param config the player configuration
  */
 @Composable
-fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
+internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
 

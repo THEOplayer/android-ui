@@ -55,6 +55,13 @@ interface PlayerState {
     val player: Player?
 
     /**
+     * Returns the wrapped THEOplayer view.
+     *
+     * *DO NOT* use this view directly! It will be managed by a [UIController] or [DefaultUI].
+     */
+    val theoplayerView: THEOplayerView?
+
+    /**
      * Returns the raw [Cast] API of the backing THEOplayer instance.
      */
     val cast: Cast?
@@ -231,7 +238,7 @@ enum class StreamType {
  * Creates and remembers a [PlayerState] that tracks the state of the given [theoplayerView]'s player.
  */
 @Composable
-fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
+internal fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
     val state = remember(theoplayerView) { PlayerStateImpl(theoplayerView) }
     DisposableEffect(state) {
         onDispose {
@@ -241,7 +248,7 @@ fun rememberPlayerState(theoplayerView: THEOplayerView?): PlayerState {
     return state
 }
 
-private class PlayerStateImpl(private val theoplayerView: THEOplayerView?) : PlayerState {
+private class PlayerStateImpl(override val theoplayerView: THEOplayerView?) : PlayerState {
     override val player = theoplayerView?.player
     override val cast = theoplayerView?.cast
     override var currentTime by mutableStateOf(0.0)
