@@ -39,7 +39,7 @@ import com.theoplayer.android.ui.PlaybackRateMenu
 import com.theoplayer.android.ui.Player
 import com.theoplayer.android.ui.UIController
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
-import com.theoplayer.android.ui.rememberTHEOplayer
+import com.theoplayer.android.ui.rememberPlayer
 
 @Composable
 fun NitflexUI(
@@ -48,7 +48,7 @@ fun NitflexUI(
     source: SourceDescription? = null,
     title: String? = null
 ) {
-    val player = rememberTHEOplayer(config)
+    val player = rememberPlayer(config)
     LaunchedEffect(key1 = player, key2 = source) {
         player.player?.source = source
     }
@@ -59,7 +59,7 @@ fun NitflexUI(
 @Composable
 fun NitflexUI(
     modifier: Modifier = Modifier,
-    player: Player = rememberTHEOplayer(),
+    player: Player = rememberPlayer(),
     title: String? = null
 ) {
     ProvideTextStyle(value = TextStyle(color = Color.White)) {

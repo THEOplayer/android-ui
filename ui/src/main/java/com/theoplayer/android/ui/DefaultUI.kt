@@ -41,7 +41,7 @@ fun DefaultUI(
     source: SourceDescription? = null,
     title: String? = null
 ) {
-    val player = rememberTHEOplayer(config)
+    val player = rememberPlayer(config)
     LaunchedEffect(key1 = player, key2 = source) {
         player.player?.source = source
     }
@@ -61,14 +61,14 @@ fun DefaultUI(
  * a [UIController].
  *
  * @param modifier the [Modifier] to be applied to this UI
- * @param player the player. This should always be created using [rememberTHEOplayer].
+ * @param player the player. This should always be created using [rememberPlayer].
  * @param title the stream's title, shown at the top of the player
  * @see UIController
  */
 @Composable
 fun DefaultUI(
     modifier: Modifier = Modifier,
-    player: Player = rememberTHEOplayer(),
+    player: Player = rememberPlayer(),
     title: String? = null
 ) {
     UIController(

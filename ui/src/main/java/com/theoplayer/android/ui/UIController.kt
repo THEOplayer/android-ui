@@ -66,7 +66,7 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    val player = rememberTHEOplayer(config)
+    val player = rememberPlayer(config)
     LaunchedEffect(key1 = player, key2 = source) {
         player.player?.source = source
     }
@@ -92,7 +92,7 @@ fun UIController(
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
  * @param modifier the [Modifier] to be applied to this container
- * @param player the player. This should always be created using [rememberTHEOplayer].
+ * @param player the player. This should always be created using [rememberPlayer].
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
  * for this container. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the behavior of this container.
@@ -109,7 +109,7 @@ fun UIController(
 @Composable
 fun UIController(
     modifier: Modifier = Modifier,
-    player: Player = rememberTHEOplayer(),
+    player: Player = rememberPlayer(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -381,7 +381,7 @@ private fun UIControllerScope.PlayerControls(
  * @param config the player configuration
  */
 @Composable
-fun rememberTHEOplayer(config: THEOplayerConfig? = null): Player {
+fun rememberPlayer(config: THEOplayerConfig? = null): Player {
     val theoplayerView = if (LocalInspectionMode.current) {
         null
     } else {
