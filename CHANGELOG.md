@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.2.0 (2023-06-28)
 
 * 💥 Renamed `PlayerState` to `Player`.
 * 🚀 Added overloads to `DefaultUI` and `UIController` that accept a `Player`.
