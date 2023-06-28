@@ -140,7 +140,7 @@ fun UIController(
         }
     }
 
-    val scope = remember { UIControllerScopeImpl() }
+    val scope = remember(player) { UIControllerScopeImpl(player) }
 
     val uiState by remember {
         derivedStateOf {
@@ -239,9 +239,13 @@ fun UIController(
  * Scope for the contents of a [UIController].
  */
 interface UIControllerScope : MenuScope {
+    /**
+     * The player hosted in this [UIController].
+     */
+    val player: Player
 }
 
-private class UIControllerScopeImpl() :
+private class UIControllerScopeImpl(override val player: Player) :
     UIControllerScope {
     private var menuStack = mutableStateListOf<MenuContent>()
 
