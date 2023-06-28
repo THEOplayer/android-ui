@@ -19,6 +19,7 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,8 +36,10 @@ import com.theoplayer.android.ui.FullscreenButton
 import com.theoplayer.android.ui.LanguageMenu
 import com.theoplayer.android.ui.LoadingSpinner
 import com.theoplayer.android.ui.PlaybackRateMenu
+import com.theoplayer.android.ui.Player
 import com.theoplayer.android.ui.UIController
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
+import com.theoplayer.android.ui.rememberTHEOplayer
 
 @Composable
 fun NitflexUI(
@@ -45,11 +48,24 @@ fun NitflexUI(
     source: SourceDescription? = null,
     title: String? = null
 ) {
+    val player = rememberTHEOplayer(config)
+    LaunchedEffect(key1 = player, key2 = source) {
+        player.player?.source = source
+    }
+
+    NitflexUI(modifier = modifier, player = player, title = title)
+}
+
+@Composable
+fun NitflexUI(
+    modifier: Modifier = Modifier,
+    player: Player = rememberTHEOplayer(),
+    title: String? = null
+) {
     ProvideTextStyle(value = TextStyle(color = Color.White)) {
         UIController(
             modifier = modifier,
-            config = config,
-            source = source,
+            player = player,
             centerOverlay = {
                 if (player.firstPlay) {
                     LoadingSpinner()

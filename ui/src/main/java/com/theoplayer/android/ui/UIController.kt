@@ -67,7 +67,6 @@ fun UIController(
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
     val player = rememberTHEOplayer(config)
-
     LaunchedEffect(key1 = player, key2 = source) {
         player.player?.source = source
     }
