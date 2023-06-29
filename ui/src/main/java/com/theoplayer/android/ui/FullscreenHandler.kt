@@ -47,7 +47,7 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
 
         // Enter landscape mode
         previousRequestedOrientation = activity.requestedOrientation
-        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
 
         // Move view to root of activity
         val rootView = activity.findViewById<ViewGroup>(android.R.id.content)
