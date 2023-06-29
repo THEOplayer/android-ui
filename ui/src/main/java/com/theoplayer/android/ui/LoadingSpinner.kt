@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
@@ -28,7 +29,7 @@ fun LoadingSpinner(
     modifier: Modifier = Modifier,
     color: Color = ProgressIndicatorDefaults.circularColor,
     strokeWidth: Dp = ProgressIndicatorDefaults.CircularStrokeWidth,
-    delay: Duration = 500.milliseconds
+    delay: Duration = THEOplayerTheme.playerAnimations.loadingSpinnerDelay
 ) {
     val player = Player.current
     val loading = player?.loading ?: false

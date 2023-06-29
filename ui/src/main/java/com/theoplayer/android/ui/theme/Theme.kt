@@ -13,6 +13,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.theoplayer.android.ui.LiveButton
+import com.theoplayer.android.ui.LoadingSpinner
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -111,6 +112,10 @@ data class PlayerAnimations(
      * The animation duration when fading out the player controls.
      */
     val controlsExitDuration: Duration = 500.milliseconds,
+    /**
+     * The delay for the [LoadingSpinner] to become visible after the player starts buffering.
+     */
+    val loadingSpinnerDelay: Duration = 500.milliseconds,
 )
 
 private val LocalPlayerAnimations = staticCompositionLocalOf { PlayerAnimations() }
