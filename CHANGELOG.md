@@ -29,7 +29,7 @@
     dependencies {
   -   implementation "com.theoplayer.theoplayer-sdk-android:unified:+"
   +   implementation "com.theoplayer.theoplayer-sdk-android:core:5.+"
-      implementation "com.theoplayer.android-ui:android-ui:+"
+      implementation "com.theoplayer.android-ui:android-ui:1.+"
     }
   ```
 * 🚀 Added a `UIController` overload which accepts a `THEOplayerView` directly.
