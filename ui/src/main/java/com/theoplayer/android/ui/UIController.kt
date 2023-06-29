@@ -3,7 +3,6 @@ package com.theoplayer.android.ui
 import android.view.ViewGroup
 import androidx.compose.animation.*
 import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.Interaction
@@ -24,11 +23,8 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 import kotlinx.coroutines.*
-import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
-
-private val controlsExitDuration = 500.milliseconds
 
 /**
  * A container component for a THEOplayer UI.
@@ -160,11 +156,17 @@ fun UIController(
     }
     val background by animateColorAsState(
         targetValue = color.copy(alpha = if (backgroundVisible) 0.5f else 0f),
-        animationSpec = if (backgroundVisible) snap(0) else tween(
+        animationSpec = tween(
             easing = LinearEasing,
-            durationMillis = controlsExitDuration.toInt(
-                DurationUnit.MILLISECONDS
-            )
+            durationMillis = if (backgroundVisible) {
+                THEOplayerTheme.playerAnimations.controlsEnterDuration.toInt(
+                    DurationUnit.MILLISECONDS
+                )
+            } else {
+                THEOplayerTheme.playerAnimations.controlsExitDuration.toInt(
+                    DurationUnit.MILLISECONDS
+                )
+            }
         )
     )
 
@@ -350,11 +352,20 @@ private fun UIControllerScope.PlayerControls(
     }
     AnimatedVisibility(
         visible = controlsVisible,
-        enter = EnterTransition.None,
+        enter = fadeIn(
+            animationSpec = tween(
+                easing = LinearEasing,
+                durationMillis = THEOplayerTheme.playerAnimations.controlsEnterDuration.toInt(
+                    DurationUnit.MILLISECONDS
+                )
+            )
+        ),
         exit = fadeOut(
             animationSpec = tween(
                 easing = LinearEasing,
-                durationMillis = controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
+                durationMillis = THEOplayerTheme.playerAnimations.controlsExitDuration.toInt(
+                    DurationUnit.MILLISECONDS
+                )
             )
         )
     ) {
