@@ -49,7 +49,7 @@ fun NitflexUI(
     title: String? = null
 ) {
     val player = rememberPlayer(config)
-    LaunchedEffect(key1 = player, key2 = source) {
+    LaunchedEffect(player, source) {
         player.player?.source = source
     }
 
