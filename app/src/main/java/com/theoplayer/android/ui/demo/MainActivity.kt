@@ -42,7 +42,7 @@ fun MainContent() {
     ).build()
 
     val player = rememberPlayer()
-    LaunchedEffect(key1 = player, key2 = source) {
+    LaunchedEffect(player, source) {
         player.player?.source = source
     }
 

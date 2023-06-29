@@ -1,13 +1,21 @@
 package com.theoplayer.android.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.*
+import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Shapes
+import androidx.compose.material3.Typography
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.theoplayer.android.ui.LiveButton
+import com.theoplayer.android.ui.LoadingSpinner
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -75,7 +83,7 @@ private val DarkColors = darkColorScheme(
 )
 
 /**
- * Additional colors used by THEOplayer components.
+ * Additional colors used by THEOplayer UI components.
  */
 @Immutable
 data class PlayerColors(
@@ -92,12 +100,34 @@ data class PlayerColors(
 private val LocalPlayerColors = staticCompositionLocalOf { PlayerColors() }
 
 /**
+ * Animation settings used by THEOplayer UI components.
+ */
+@Immutable
+data class PlayerAnimations(
+    /**
+     * The animation duration when fading in the player controls.
+     */
+    val controlsEnterDuration: Duration = 0.milliseconds,
+    /**
+     * The animation duration when fading out the player controls.
+     */
+    val controlsExitDuration: Duration = 500.milliseconds,
+    /**
+     * The delay for the [LoadingSpinner] to become visible after the player starts buffering.
+     */
+    val loadingSpinnerDelay: Duration = 500.milliseconds,
+)
+
+private val LocalPlayerAnimations = staticCompositionLocalOf { PlayerAnimations() }
+
+/**
  * Provides theme colors, shapes and fonts to be used by the player.
  *
  * @param colorScheme A complete definition of the Material Color theme for this hierarchy
  * @param shapes A set of corner shapes to be used as this hierarchy's shape system
  * @param typography A set of text styles to be used as this hierarchy's typography system
- * @param playerColors Additional colors used by THEOplayer components
+ * @param playerColors Additional colors used by THEOplayer UI components
+ * @param playerAnimations Additional animation settings used by THEOplayer UI components
  * @see MaterialTheme
  */
 @Composable
@@ -106,9 +136,13 @@ fun THEOplayerTheme(
     shapes: Shapes = MaterialTheme.shapes,
     typography: Typography = MaterialTheme.typography,
     playerColors: PlayerColors = THEOplayerTheme.playerColors,
+    playerAnimations: PlayerAnimations = THEOplayerTheme.playerAnimations,
     content: @Composable () -> Unit
 ) {
-    CompositionLocalProvider(LocalPlayerColors provides playerColors) {
+    CompositionLocalProvider(
+        LocalPlayerColors provides playerColors,
+        LocalPlayerAnimations provides playerAnimations
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             shapes = shapes,
@@ -125,7 +159,8 @@ fun THEOplayerTheme(
  * By default, uses the system's dark theme setting.
  * @param shapes A set of corner shapes to be used as this hierarchy's shape system
  * @param typography A set of text styles to be used as this hierarchy's typography system
- * @param playerColors Additional colors used by THEOplayer components
+ * @param playerColors Additional colors used by THEOplayer UI components
+ * @param playerAnimations Additional animation settings used by THEOplayer UI components
  * @see MaterialTheme
  */
 @Composable
@@ -134,6 +169,7 @@ fun THEOplayerTheme(
     shapes: Shapes = MaterialTheme.shapes,
     typography: Typography = MaterialTheme.typography,
     playerColors: PlayerColors = THEOplayerTheme.playerColors,
+    playerAnimations: PlayerAnimations = THEOplayerTheme.playerAnimations,
     content: @Composable() () -> Unit
 ) {
     val colors = if (!useDarkTheme) {
@@ -147,6 +183,7 @@ fun THEOplayerTheme(
         shapes = shapes,
         typography = typography,
         playerColors = playerColors,
+        playerAnimations = playerAnimations,
         content = content
     )
 }
@@ -162,4 +199,11 @@ object THEOplayerTheme {
     val playerColors: PlayerColors
         @Composable
         get() = LocalPlayerColors.current
+
+    /**
+     * Retrieves the current [PlayerAnimations] at the call site's position in the hierarchy.
+     */
+    val playerAnimations: PlayerAnimations
+        @Composable
+        get() = LocalPlayerAnimations.current
 }
