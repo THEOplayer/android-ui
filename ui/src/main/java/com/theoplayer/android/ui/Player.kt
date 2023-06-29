@@ -268,16 +268,27 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     override val player = theoplayerView?.player
     override val cast = theoplayerView?.cast
     override var currentTime by mutableStateOf(0.0)
+        private set
     override var duration by mutableStateOf(Double.NaN)
+        private set
     override var seekable by mutableStateOf(TimeRanges(listOf()))
+        private set
     override var paused by mutableStateOf(true)
+        private set
     override var ended by mutableStateOf(false)
+        private set
     override var seeking by mutableStateOf(false)
+        private set
     override var readyState by mutableStateOf(ReadyState.HAVE_NOTHING)
+        private set
     override var videoWidth by mutableStateOf(0)
+        private set
     override var videoHeight by mutableStateOf(0)
+        private set
     override var firstPlay by mutableStateOf(false)
+        private set
     override var error by mutableStateOf<THEOplayerException?>(null)
+        private set
 
     private fun updateCurrentTime() {
         currentTime = player?.currentTime ?: 0.0
@@ -304,17 +315,18 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         videoHeight = player?.videoHeight ?: 0
     }
 
-    val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
-    val pauseListener = EventListener<PauseEvent> { updateCurrentTimeAndPlaybackState() }
-    val endedListener = EventListener<EndedEvent> { updateCurrentTimeAndPlaybackState() }
-    val timeUpdateListener = EventListener<TimeUpdateEvent> { updateCurrentTime() }
-    val durationChangeListener = EventListener<DurationChangeEvent> { updateDuration() }
-    val seekingListener = EventListener<SeekingEvent> { updateCurrentTimeAndPlaybackState() }
-    val seekedListener = EventListener<SeekedEvent> { updateCurrentTimeAndPlaybackState() }
-    val readyStateChangeListener =
+    private val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
+    private val pauseListener = EventListener<PauseEvent> { updateCurrentTimeAndPlaybackState() }
+    private val endedListener = EventListener<EndedEvent> { updateCurrentTimeAndPlaybackState() }
+    private val timeUpdateListener = EventListener<TimeUpdateEvent> { updateCurrentTime() }
+    private val durationChangeListener = EventListener<DurationChangeEvent> { updateDuration() }
+    private val seekingListener =
+        EventListener<SeekingEvent> { updateCurrentTimeAndPlaybackState() }
+    private val seekedListener = EventListener<SeekedEvent> { updateCurrentTimeAndPlaybackState() }
+    private val readyStateChangeListener =
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
-    val resizeListener = EventListener<ResizeEvent> { updateVideoWidthAndHeight() }
-    val sourceChangeListener = EventListener<SourceChangeEvent> {
+    private val resizeListener = EventListener<ResizeEvent> { updateVideoWidthAndHeight() }
+    private val sourceChangeListener = EventListener<SourceChangeEvent> {
         error = null
         firstPlay = false
         updateCurrentTimeAndPlaybackState()
@@ -322,7 +334,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         updateVideoWidthAndHeight()
         updateActiveVideoTrack()
     }
-    val errorListener = EventListener<ErrorEvent> { event ->
+    private val errorListener = EventListener<ErrorEvent> { event ->
         error = event.errorObject
         updateCurrentTimeAndPlaybackState()
         updateDuration()
@@ -350,7 +362,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         _muted = player?.isMuted ?: false
     }
 
-    val volumeChangeListener = EventListener<VolumeChangeEvent> { updateVolumeAndMuted() }
+    private val volumeChangeListener = EventListener<VolumeChangeEvent> { updateVolumeAndMuted() }
 
     private var _playbackRate by mutableStateOf(1.0)
     override var playbackRate: Double
@@ -364,7 +376,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         _playbackRate = player?.playbackRate ?: 1.0
     }
 
-    val rateChangeListener = EventListener<RateChangeEvent> { updatePlaybackRate() }
+    private val rateChangeListener = EventListener<RateChangeEvent> { updatePlaybackRate() }
 
     private val fullscreenHandler: FullscreenHandler? =
         theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
@@ -458,13 +470,15 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         _targetVideoQuality = activeVideoTrack?.targetQuality
     }
 
-    val videoAddTrackListener = EventListener<VideoAddTrackEvent> { updateActiveVideoTrack() }
-    val videoRemoveTrackListener = EventListener<VideoRemoveTrackEvent> { updateActiveVideoTrack() }
-    val videoTrackListChangeListener =
+    private val videoAddTrackListener =
+        EventListener<VideoAddTrackEvent> { updateActiveVideoTrack() }
+    private val videoRemoveTrackListener =
+        EventListener<VideoRemoveTrackEvent> { updateActiveVideoTrack() }
+    private val videoTrackListChangeListener =
         EventListener<VideoTrackListChangeEvent> { updateActiveVideoTrack() }
-    val videoActiveQualityChangeListener =
+    private val videoActiveQualityChangeListener =
         EventListener<VideoActiveQualityChangedEvent> { updateActiveVideoQuality() }
-    val videoTargetQualityChangeListener =
+    private val videoTargetQualityChangeListener =
         EventListener<VideoTargetQualityChangedEvent> { updateTargetVideoQuality() }
 
     override var audioTracks = mutableStateListOf<MediaTrack<AudioQuality>>()
@@ -495,9 +509,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         _activeAudioTrack = audioTracks.find { it.isEnabled }
     }
 
-    val audioAddTrackListener = EventListener<AudioAddTrackEvent> { updateAudioTracks() }
-    val audioRemoveTrackListener = EventListener<AudioRemoveTrackEvent> { updateAudioTracks() }
-    val audioTrackListChangeListener =
+    private val audioAddTrackListener = EventListener<AudioAddTrackEvent> { updateAudioTracks() }
+    private val audioRemoveTrackListener =
+        EventListener<AudioRemoveTrackEvent> { updateAudioTracks() }
+    private val audioTrackListChangeListener =
         EventListener<AudioTrackListChangeEvent> { updateActiveAudioTrack() }
 
     override var subtitleTracks = mutableStateListOf<TextTrack>()
@@ -528,9 +543,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         _activeSubtitleTrack = subtitleTracks.find { it.mode == TextTrackMode.SHOWING }
     }
 
-    val textAddTrackListener = EventListener<TextAddTrackEvent> { updateSubtitleTracks() }
-    val textRemoveTrackListener = EventListener<TextRemoveTrackEvent> { updateSubtitleTracks() }
-    val textTrackListChangeListener =
+    private val textAddTrackListener = EventListener<TextAddTrackEvent> { updateSubtitleTracks() }
+    private val textRemoveTrackListener =
+        EventListener<TextRemoveTrackEvent> { updateSubtitleTracks() }
+    private val textTrackListChangeListener =
         EventListener<TextTrackListChangeEvent> { updateActiveSubtitleTrack() }
 
     override var castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
@@ -541,8 +557,9 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         castReceiverName = cast?.chromecast?.receiverName
     }
 
-    val chromecastStateChangeListener = EventListener<CastStateChangeEvent> { updateCastState() }
-    val chromecastErrorListener = EventListener<CastErrorEvent> { updateCastState() }
+    private val chromecastStateChangeListener =
+        EventListener<CastStateChangeEvent> { updateCastState() }
+    private val chromecastErrorListener = EventListener<CastErrorEvent> { updateCastState() }
 
     init {
         updateCurrentTimeAndPlaybackState()
