@@ -2,14 +2,12 @@ package com.theoplayer.android.ui
 
 import android.view.View
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.theoplayer.android.api.THEOplayerView
@@ -28,6 +26,7 @@ import com.theoplayer.android.api.event.player.PlayEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.RateChangeEvent
 import com.theoplayer.android.api.event.player.ReadyStateChangeEvent
+import com.theoplayer.android.api.event.player.ResizeEvent
 import com.theoplayer.android.api.event.player.SeekedEvent
 import com.theoplayer.android.api.event.player.SeekingEvent
 import com.theoplayer.android.api.event.player.SourceChangeEvent
@@ -140,6 +139,16 @@ interface Player {
      * Returns or sets the playback rate of the player.
      */
     var playbackRate: Double
+
+    /**
+     * Returns the width of the active video rendition, in pixels.
+     */
+    val videoWidth: Int
+
+    /**
+     * Returns the height of the active video rendition, in pixels.
+     */
+    val videoHeight: Int
 
     /**
      * Returns whether the player has already started playback before.
@@ -265,6 +274,8 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     override var ended by mutableStateOf(false)
     override var seeking by mutableStateOf(false)
     override var readyState by mutableStateOf(ReadyState.HAVE_NOTHING)
+    override var videoWidth by mutableStateOf(0)
+    override var videoHeight by mutableStateOf(0)
     override var firstPlay by mutableStateOf(false)
     override var error by mutableStateOf<THEOplayerException?>(null)
 
@@ -288,6 +299,11 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         }
     }
 
+    private fun updateVideoWidthAndHeight() {
+        videoWidth = player?.videoWidth ?: 0
+        videoHeight = player?.videoHeight ?: 0
+    }
+
     val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
     val pauseListener = EventListener<PauseEvent> { updateCurrentTimeAndPlaybackState() }
     val endedListener = EventListener<EndedEvent> { updateCurrentTimeAndPlaybackState() }
@@ -297,17 +313,20 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     val seekedListener = EventListener<SeekedEvent> { updateCurrentTimeAndPlaybackState() }
     val readyStateChangeListener =
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
+    val resizeListener = EventListener<ResizeEvent> { updateVideoWidthAndHeight() }
     val sourceChangeListener = EventListener<SourceChangeEvent> {
         error = null
         firstPlay = false
         updateCurrentTimeAndPlaybackState()
         updateDuration()
+        updateVideoWidthAndHeight()
         updateActiveVideoTrack()
     }
     val errorListener = EventListener<ErrorEvent> { event ->
         error = event.errorObject
         updateCurrentTimeAndPlaybackState()
         updateDuration()
+        updateVideoWidthAndHeight()
         updateActiveVideoTrack()
     }
 
@@ -531,6 +550,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         updateVolumeAndMuted()
         updatePlaybackRate()
         updateFullscreen()
+        updateVideoWidthAndHeight()
         updateActiveVideoTrack()
         updateAudioTracks()
         updateSubtitleTracks()
@@ -545,6 +565,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         player?.addEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeListener)
         player?.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.addEventListener(PlayerEventTypes.RATECHANGE, rateChangeListener)
+        player?.addEventListener(PlayerEventTypes.RESIZE, resizeListener)
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
         player?.videoTracks?.addEventListener(
@@ -607,6 +628,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         player?.removeEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeListener)
         player?.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.removeEventListener(PlayerEventTypes.RATECHANGE, rateChangeListener)
+        player?.removeEventListener(PlayerEventTypes.RESIZE, resizeListener)
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
         player?.videoTracks?.removeEventListener(
