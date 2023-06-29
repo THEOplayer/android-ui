@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🐛 Fix consuming apps unable to install different version of the THEOplayer Android SDK.
+
 ## v1.2.0 (2023-06-28)
 
 * 💥 Renamed `PlayerState` to `Player`.

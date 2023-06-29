@@ -86,7 +86,12 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling:$compose_ui_version")
     debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_ui_version")
 
-    implementation("com.theoplayer.theoplayer-sdk-android:core:$theoplayer_version")
+    implementation("com.theoplayer.theoplayer-sdk-android:core") {
+        version {
+            strictly("[5.0, 6.0[")
+            prefer(theoplayer_version)
+        }
+    }
 
     dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:$dokka_version")
 }
