@@ -11,6 +11,7 @@
 
 ## Unreleased
 
+* 🚀 Added `THEOplayerTheme.playerAnimations` to control the animation settings of the various UI components.
 * 🐛 Fix consuming apps unable to install different version of the THEOplayer Android SDK.
 
 ## v1.2.0 (2023-06-28)
