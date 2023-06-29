@@ -9,6 +9,11 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🚀 Added `Player.videoWidth` and `Player.videoHeight`
+* 🐛 Fixed player not following device rotation while fullscreen. 
+
 ## v1.3.0 (2023-06-29)
 
 * 🚀 Added `THEOplayerTheme.playerAnimations` to control the animation settings of the various UI components.

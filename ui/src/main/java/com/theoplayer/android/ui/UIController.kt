@@ -279,11 +279,13 @@ private fun PlayerContainer(
     theoplayerView: THEOplayerView? = null,
     ui: @Composable () -> Unit
 ) {
+    val containerModifier = Modifier
+        .fillMaxSize()
+        .background(Color.Black)
+        .then(modifier)
     if (theoplayerView == null) {
         Box(
-            modifier = modifier
-                .fillMaxSize()
-                .background(Color.Black)
+            modifier = containerModifier
         ) {
             ui()
         }
@@ -293,7 +295,7 @@ private fun PlayerContainer(
         var composeView by remember { mutableStateOf<ComposeView?>(null) }
 
         AndroidView(
-            modifier = modifier.fillMaxSize(),
+            modifier = containerModifier,
             factory = { context ->
                 uiContainer =
                     theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
