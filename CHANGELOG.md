@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.3.1 (2023-06-30)
 
 * 🚀 Added `Player.source`, `.videoWidth` and `.videoHeight` properties.
 * 🚀 Added `Player.play()` and `.pause()` shortcut methods.
