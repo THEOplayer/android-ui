@@ -54,9 +54,9 @@ fun PlayButton(
         onClick = {
             player?.let {
                 if (it.paused) {
-                    it.player?.play()
+                    it.play()
                 } else {
-                    it.player?.pause()
+                    it.pause()
                 }
             }
         }) {

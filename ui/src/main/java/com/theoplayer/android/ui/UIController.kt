@@ -65,7 +65,7 @@ fun UIController(
 ) {
     val player = rememberPlayer(config)
     LaunchedEffect(player, source) {
-        player.player?.source = source
+        player.source = source
     }
 
     UIController(

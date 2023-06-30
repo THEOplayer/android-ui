@@ -44,7 +44,7 @@ fun MainContent() {
 
     val player = rememberPlayer()
     LaunchedEffect(player, source) {
-        player.player?.source = source
+        player.source = source
     }
 
     var themeMenuOpen by remember { mutableStateOf(false) }

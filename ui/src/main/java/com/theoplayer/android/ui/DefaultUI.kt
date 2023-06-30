@@ -43,7 +43,7 @@ fun DefaultUI(
 ) {
     val player = rememberPlayer(config)
     LaunchedEffect(player, source) {
-        player.player?.source = source
+        player.source = source
     }
 
     DefaultUI(modifier = modifier, player = player, title = title)

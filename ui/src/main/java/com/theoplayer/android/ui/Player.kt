@@ -43,6 +43,7 @@ import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
+import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
@@ -80,6 +81,11 @@ interface Player {
      * *DO NOT* use this view directly! It will be managed by a [UIController] or [DefaultUI].
      */
     val theoplayerView: THEOplayerView?
+
+    /**
+     * Returns or sets the player's source.
+     */
+    var source: SourceDescription?
 
     /**
      * Returns the raw [Cast] API of the backing THEOplayer instance.
@@ -232,6 +238,16 @@ interface Player {
     val castReceiverName: String?
 
     /**
+     * Starts or resumes playback.
+     */
+    fun play()
+
+    /**
+     * Pauses playback.
+     */
+    fun pause()
+
+    /**
      * Contains properties to access the current [Player].
      */
     companion object {
@@ -327,6 +343,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
     private val resizeListener = EventListener<ResizeEvent> { updateVideoWidthAndHeight() }
     private val sourceChangeListener = EventListener<SourceChangeEvent> {
+        _source = player?.source
         error = null
         firstPlay = false
         updateCurrentTimeAndPlaybackState()
@@ -335,12 +352,31 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         updateActiveVideoTrack()
     }
     private val errorListener = EventListener<ErrorEvent> { event ->
+        _source = player?.source
         error = event.errorObject
         updateCurrentTimeAndPlaybackState()
         updateDuration()
         updateVideoWidthAndHeight()
         updateActiveVideoTrack()
     }
+
+    override fun play() {
+        paused = false
+        player?.play()
+    }
+
+    override fun pause() {
+        paused = true
+        player?.pause()
+    }
+
+    private var _source by mutableStateOf(player?.source)
+    override var source: SourceDescription?
+        get() = _source
+        set(value) {
+            _source = value
+            player?.source = value
+        }
 
     private var _volume by mutableStateOf(1.0)
     private var _muted by mutableStateOf(false)

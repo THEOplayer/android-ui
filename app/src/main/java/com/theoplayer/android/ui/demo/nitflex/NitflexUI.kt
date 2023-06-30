@@ -50,7 +50,7 @@ fun NitflexUI(
 ) {
     val player = rememberPlayer(config)
     LaunchedEffect(player, source) {
-        player.player?.source = source
+        player.source = source
     }
 
     NitflexUI(modifier = modifier, player = player, title = title)
