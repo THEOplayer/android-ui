@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Brush
+import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -60,6 +61,12 @@ fun MainContent() {
                     Text(text = "Demo")
                 },
                 actions = {
+                    IconButton(onClick = {
+                        player.source = source
+                        player.play()
+                    }) {
+                        Icon(Icons.Rounded.Refresh, contentDescription = "Reload")
+                    }
                     IconButton(onClick = { themeMenuOpen = true }) {
                         Icon(Icons.Rounded.Brush, contentDescription = "Theme")
                     }
