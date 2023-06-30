@@ -338,12 +338,14 @@ private fun PlayerContainer(
         DisposableEffect(uiContainer, composeView) {
             val container = uiContainer
             val view = composeView
-            if (view != null) {
-                container?.addView(view)
+            if (container != null && view != null) {
+                container.addView(view)
+                theoplayerView.postInvalidate()
             }
             onDispose {
-                if (view != null) {
-                    container?.removeView(view)
+                if (container != null && view != null) {
+                    container.removeView(view)
+                    theoplayerView.postInvalidate()
                 }
             }
         }
