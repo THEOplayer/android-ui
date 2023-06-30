@@ -115,11 +115,13 @@ fun UIController(
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
     var tapCount by remember { mutableStateOf(0) }
-    var isRecentlyTapped by remember { mutableStateOf(true) }
+    var isRecentlyTapped by remember { mutableStateOf(false) }
     LaunchedEffect(tapCount) {
-        isRecentlyTapped = true
-        delay(2.seconds)
-        isRecentlyTapped = false
+        if (tapCount > 0) {
+            isRecentlyTapped = true
+            delay(2.seconds)
+            isRecentlyTapped = false
+        }
     }
     val isPressed by interactionSource.collectIsPressedAsState()
     var forceControlsHidden by remember { mutableStateOf(false) }
