@@ -11,8 +11,10 @@
 
 ## Unreleased
 
-* 🚀 Added `Player.videoWidth` and `Player.videoHeight`
-* 🐛 Fixed player not following device rotation while fullscreen. 
+* 🚀 Added `Player.source`, `.videoWidth` and `.videoHeight` properties.
+* 🚀 Added `Player.play()` and `.pause()` shortcut methods.
+* 🐛 Fixed player not following device rotation while fullscreen.
+* 💅 When autoplaying a new video, the UI now starts out as hidden.
 
 ## v1.3.0 (2023-06-29)
 

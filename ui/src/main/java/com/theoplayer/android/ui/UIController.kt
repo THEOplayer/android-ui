@@ -23,6 +23,7 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 import kotlinx.coroutines.*
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
 
@@ -64,7 +65,7 @@ fun UIController(
 ) {
     val player = rememberPlayer(config)
     LaunchedEffect(player, source) {
-        player.player?.source = source
+        player.source = source
     }
 
     UIController(
@@ -115,17 +116,30 @@ fun UIController(
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
     var tapCount by remember { mutableStateOf(0) }
-    var isRecentlyTapped by remember { mutableStateOf(true) }
+    var isRecentlyTapped by remember { mutableStateOf(false) }
     LaunchedEffect(tapCount) {
-        isRecentlyTapped = true
-        delay(2.seconds)
-        isRecentlyTapped = false
+        if (tapCount > 0) {
+            isRecentlyTapped = true
+            delay(2.seconds)
+            isRecentlyTapped = false
+        }
     }
     val isPressed by interactionSource.collectIsPressedAsState()
     var forceControlsHidden by remember { mutableStateOf(false) }
+
+    // Wait a little bit before showing the controls and enabling animations,
+    // so we can hide the UI immediately in case of autoplay.
+    var isReady by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(50.milliseconds)
+        isReady = true
+    }
+
     val controlsVisible = remember {
         derivedStateOf {
-            if (!player.firstPlay) {
+            if (!isReady) {
+                false
+            } else if (!player.firstPlay) {
                 true
             } else if (forceControlsHidden) {
                 false
@@ -224,6 +238,7 @@ fun UIController(
                     is UIState.Controls -> {
                         scope.PlayerControls(
                             controlsVisible = controlsVisible.value,
+                            animationsActive = isReady,
                             centerOverlay = centerOverlay,
                             topChrome = topChrome,
                             centerChrome = centerChrome,
@@ -323,12 +338,14 @@ private fun PlayerContainer(
         DisposableEffect(uiContainer, composeView) {
             val container = uiContainer
             val view = composeView
-            if (view != null) {
-                container?.addView(view)
+            if (container != null && view != null) {
+                container.addView(view)
+                theoplayerView.postInvalidate()
             }
             onDispose {
-                if (view != null) {
-                    container?.removeView(view)
+                if (container != null && view != null) {
+                    container.removeView(view)
+                    theoplayerView.postInvalidate()
                 }
             }
         }
@@ -338,6 +355,7 @@ private fun PlayerContainer(
 @Composable
 private fun UIControllerScope.PlayerControls(
     controlsVisible: Boolean,
+    animationsActive: Boolean,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -354,22 +372,22 @@ private fun UIControllerScope.PlayerControls(
     }
     AnimatedVisibility(
         visible = controlsVisible,
-        enter = fadeIn(
+        enter = if (animationsActive) fadeIn(
             animationSpec = tween(
                 easing = LinearEasing,
                 durationMillis = THEOplayerTheme.playerAnimations.controlsEnterDuration.toInt(
                     DurationUnit.MILLISECONDS
                 )
             )
-        ),
-        exit = fadeOut(
+        ) else EnterTransition.None,
+        exit = if (animationsActive) fadeOut(
             animationSpec = tween(
                 easing = LinearEasing,
                 durationMillis = THEOplayerTheme.playerAnimations.controlsExitDuration.toInt(
                     DurationUnit.MILLISECONDS
                 )
             )
-        )
+        ) else ExitTransition.None,
     ) {
         centerChrome?.let {
             Row(
