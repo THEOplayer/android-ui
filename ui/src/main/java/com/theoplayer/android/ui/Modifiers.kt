@@ -182,18 +182,18 @@ internal fun Modifier.defaultAspectRatio(
     ratio: Float,
     matchHeightConstraintsFirst: Boolean = false
 ): Modifier = this.then(
-    AspectRatioModifier(
+    DefaultAspectRatioModifier(
         ratio,
         matchHeightConstraintsFirst,
         debugInspectorInfo {
-            name = "aspectRatio"
+            name = "defaultAspectRatio"
             properties["ratio"] = ratio
             properties["matchHeightConstraintsFirst"] = matchHeightConstraintsFirst
         }
     )
 )
 
-private class AspectRatioModifier(
+private class DefaultAspectRatioModifier(
     val aspectRatio: Float,
     val matchHeightConstraintsFirst: Boolean,
     inspectorInfo: InspectorInfo.() -> Unit
@@ -260,30 +260,22 @@ private class AspectRatioModifier(
             tryMaxHeight().also { if (it != IntSize.Zero) return it }
             tryMinWidth().also { if (it != IntSize.Zero) return it }
             tryMinHeight().also { if (it != IntSize.Zero) return it }
-            tryMaxWidth(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
-            tryMaxHeight(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
-            tryMinWidth(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
-            tryMinHeight(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
         } else {
             tryMaxHeight().also { if (it != IntSize.Zero) return it }
             tryMaxWidth().also { if (it != IntSize.Zero) return it }
             tryMinHeight().also { if (it != IntSize.Zero) return it }
             tryMinWidth().also { if (it != IntSize.Zero) return it }
-            tryMaxHeight(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
-            tryMaxWidth(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
-            tryMinHeight(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
-            tryMinWidth(enforceConstraints = false).also { if (it != IntSize.Zero) return it }
         }
         return IntSize.Zero
     }
 
-    private fun Constraints.tryMaxWidth(enforceConstraints: Boolean = true): IntSize {
+    private fun Constraints.tryMaxWidth(): IntSize {
         val maxWidth = this.maxWidth
         if (maxWidth != Constraints.Infinity) {
             val height = (maxWidth / aspectRatio).roundToInt()
             if (height > 0) {
                 val size = IntSize(maxWidth, height)
-                if (!enforceConstraints || isSatisfiedBy(size)) {
+                if (isSatisfiedBy(size)) {
                     return size
                 }
             }
@@ -291,13 +283,13 @@ private class AspectRatioModifier(
         return IntSize.Zero
     }
 
-    private fun Constraints.tryMaxHeight(enforceConstraints: Boolean = true): IntSize {
+    private fun Constraints.tryMaxHeight(): IntSize {
         val maxHeight = this.maxHeight
         if (maxHeight != Constraints.Infinity) {
             val width = (maxHeight * aspectRatio).roundToInt()
             if (width > 0) {
                 val size = IntSize(width, maxHeight)
-                if (!enforceConstraints || isSatisfiedBy(size)) {
+                if (isSatisfiedBy(size)) {
                     return size
                 }
             }
@@ -305,24 +297,24 @@ private class AspectRatioModifier(
         return IntSize.Zero
     }
 
-    private fun Constraints.tryMinWidth(enforceConstraints: Boolean = true): IntSize {
+    private fun Constraints.tryMinWidth(): IntSize {
         val minWidth = this.minWidth
         val height = (minWidth / aspectRatio).roundToInt()
         if (height > 0) {
             val size = IntSize(minWidth, height)
-            if (!enforceConstraints || isSatisfiedBy(size)) {
+            if (isSatisfiedBy(size)) {
                 return size
             }
         }
         return IntSize.Zero
     }
 
-    private fun Constraints.tryMinHeight(enforceConstraints: Boolean = true): IntSize {
+    private fun Constraints.tryMinHeight(): IntSize {
         val minHeight = this.minHeight
         val width = (minHeight * aspectRatio).roundToInt()
         if (width > 0) {
             val size = IntSize(width, minHeight)
-            if (!enforceConstraints || isSatisfiedBy(size)) {
+            if (isSatisfiedBy(size)) {
                 return size
             }
         }
@@ -331,7 +323,7 @@ private class AspectRatioModifier(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        val otherModifier = other as? AspectRatioModifier ?: return false
+        val otherModifier = other as? DefaultAspectRatioModifier ?: return false
         return aspectRatio == otherModifier.aspectRatio &&
                 matchHeightConstraintsFirst == other.matchHeightConstraintsFirst
     }
@@ -339,5 +331,5 @@ private class AspectRatioModifier(
     override fun hashCode(): Int =
         aspectRatio.hashCode() * 31 + matchHeightConstraintsFirst.hashCode()
 
-    override fun toString(): String = "AspectRatioModifier(aspectRatio=$aspectRatio)"
+    override fun toString(): String = "DefaultAspectRatioModifier(aspectRatio=$aspectRatio)"
 }
