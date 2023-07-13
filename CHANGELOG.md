@@ -9,6 +9,11 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 💅 `UIController` now sizes itself to match the video's aspect ratio, except if this were to
+  conflict with a different size constraint (such as `Modifier.fillMaxSize()`).
+
 ## v1.3.2 (2023-07-13)
 
 * 🏠 Publish to THEOplayer's own Maven repository.

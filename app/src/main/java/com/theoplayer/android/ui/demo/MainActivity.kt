@@ -3,7 +3,6 @@ package com.theoplayer.android.ui.demo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -85,13 +84,7 @@ fun MainContent() {
         }, content = { padding ->
             val playerModifier = Modifier
                 .padding(padding)
-                .aspectRatio(
-                    if (player.videoWidth != 0 && player.videoHeight != 0) {
-                        player.videoWidth.toFloat() / player.videoHeight.toFloat()
-                    } else {
-                        16f / 9f
-                    }
-                )
+                .fillMaxSize(1f)
             when (theme) {
                 PlayerTheme.Default -> {
                     DefaultUI(

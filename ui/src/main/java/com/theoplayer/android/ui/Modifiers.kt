@@ -1,20 +1,46 @@
 package com.theoplayer.android.ui
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.runtime.*
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
+import androidx.compose.ui.input.pointer.isOutOfBounds
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
+import androidx.compose.ui.layout.LayoutModifier
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.platform.InspectorInfo
+import androidx.compose.ui.platform.InspectorValueInfo
 import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.isSatisfiedBy
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 internal fun Modifier.pressable(
     interactionSource: MutableInteractionSource,
@@ -150,4 +176,161 @@ private suspend fun PointerInputScope.detectAnyPointerEvent(
             onPointer()
         }
     }
+}
+
+internal fun Modifier.constrainedAspectRatio(
+    @FloatRange(from = 0.0, fromInclusive = false)
+    ratio: Float,
+    matchHeightConstraintsFirst: Boolean = false
+): Modifier = this.then(
+    ConstrainedAspectRatioModifier(
+        ratio,
+        matchHeightConstraintsFirst,
+        debugInspectorInfo {
+            name = "constrainedAspectRatio"
+            properties["ratio"] = ratio
+            properties["matchHeightConstraintsFirst"] = matchHeightConstraintsFirst
+        }
+    )
+)
+
+private class ConstrainedAspectRatioModifier(
+    val aspectRatio: Float,
+    val matchHeightConstraintsFirst: Boolean,
+    inspectorInfo: InspectorInfo.() -> Unit
+) : LayoutModifier, InspectorValueInfo(inspectorInfo) {
+    init {
+        require(aspectRatio > 0) { "aspectRatio $aspectRatio must be > 0" }
+    }
+
+    override fun MeasureScope.measure(
+        measurable: Measurable,
+        constraints: Constraints
+    ): MeasureResult {
+        val size = constraints.findSize()
+        val wrappedConstraints = if (size != IntSize.Zero) {
+            Constraints.fixed(size.width, size.height)
+        } else {
+            constraints
+        }
+        val placeable = measurable.measure(wrappedConstraints)
+        return layout(placeable.width, placeable.height) {
+            placeable.placeRelative(0, 0)
+        }
+    }
+
+    override fun IntrinsicMeasureScope.minIntrinsicWidth(
+        measurable: IntrinsicMeasurable,
+        height: Int
+    ) = if (height != Constraints.Infinity) {
+        (height * aspectRatio).roundToInt()
+    } else {
+        measurable.minIntrinsicWidth(height)
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicWidth(
+        measurable: IntrinsicMeasurable,
+        height: Int
+    ) = if (height != Constraints.Infinity) {
+        (height * aspectRatio).roundToInt()
+    } else {
+        measurable.maxIntrinsicWidth(height)
+    }
+
+    override fun IntrinsicMeasureScope.minIntrinsicHeight(
+        measurable: IntrinsicMeasurable,
+        width: Int
+    ) = if (width != Constraints.Infinity) {
+        (width / aspectRatio).roundToInt()
+    } else {
+        measurable.minIntrinsicHeight(width)
+    }
+
+    override fun IntrinsicMeasureScope.maxIntrinsicHeight(
+        measurable: IntrinsicMeasurable,
+        width: Int
+    ) = if (width != Constraints.Infinity) {
+        (width / aspectRatio).roundToInt()
+    } else {
+        measurable.maxIntrinsicHeight(width)
+    }
+
+    private fun Constraints.findSize(): IntSize {
+        if (!matchHeightConstraintsFirst) {
+            tryMaxWidth().also { if (it != IntSize.Zero) return it }
+            tryMaxHeight().also { if (it != IntSize.Zero) return it }
+            tryMinWidth().also { if (it != IntSize.Zero) return it }
+            tryMinHeight().also { if (it != IntSize.Zero) return it }
+        } else {
+            tryMaxHeight().also { if (it != IntSize.Zero) return it }
+            tryMaxWidth().also { if (it != IntSize.Zero) return it }
+            tryMinHeight().also { if (it != IntSize.Zero) return it }
+            tryMinWidth().also { if (it != IntSize.Zero) return it }
+        }
+        return IntSize.Zero
+    }
+
+    private fun Constraints.tryMaxWidth(): IntSize {
+        val maxWidth = this.maxWidth
+        if (maxWidth != Constraints.Infinity) {
+            val height = (maxWidth / aspectRatio).roundToInt()
+            if (height > 0) {
+                val size = IntSize(maxWidth, height)
+                if (isSatisfiedBy(size)) {
+                    return size
+                }
+            }
+        }
+        return IntSize.Zero
+    }
+
+    private fun Constraints.tryMaxHeight(): IntSize {
+        val maxHeight = this.maxHeight
+        if (maxHeight != Constraints.Infinity) {
+            val width = (maxHeight * aspectRatio).roundToInt()
+            if (width > 0) {
+                val size = IntSize(width, maxHeight)
+                if (isSatisfiedBy(size)) {
+                    return size
+                }
+            }
+        }
+        return IntSize.Zero
+    }
+
+    private fun Constraints.tryMinWidth(): IntSize {
+        val minWidth = this.minWidth
+        val height = (minWidth / aspectRatio).roundToInt()
+        if (height > 0) {
+            val size = IntSize(minWidth, height)
+            if (isSatisfiedBy(size)) {
+                return size
+            }
+        }
+        return IntSize.Zero
+    }
+
+    private fun Constraints.tryMinHeight(): IntSize {
+        val minHeight = this.minHeight
+        val width = (minHeight * aspectRatio).roundToInt()
+        if (width > 0) {
+            val size = IntSize(width, minHeight)
+            if (isSatisfiedBy(size)) {
+                return size
+            }
+        }
+        return IntSize.Zero
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        val otherModifier = other as? ConstrainedAspectRatioModifier ?: return false
+        return aspectRatio == otherModifier.aspectRatio &&
+                matchHeightConstraintsFirst == other.matchHeightConstraintsFirst
+    }
+
+    override fun hashCode(): Int =
+        aspectRatio.hashCode() * 31 + matchHeightConstraintsFirst.hashCode()
+
+    override fun toString(): String = "ConstrainedAspectRatioModifier(aspectRatio=$aspectRatio)"
 }
