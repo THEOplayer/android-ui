@@ -11,18 +11,7 @@ dependencyResolutionManagement {
         google()
         mavenCentral()
         maven { url = uri("https://jitpack.io") }
-        maven {
-            url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
-            credentials {
-                // Define gpr.user and gpr.key preferably in your local ~/.gradle/gradle.properties
-                username =
-                    if (settings.extra.has("gpr.user")) settings.extra["gpr.user"] as String?
-                    else System.getenv("USERNAME")
-                password =
-                    if (settings.extra.has("gpr.key")) settings.extra["gpr.key"] as String?
-                    else System.getenv("TOKEN")
-            }
-        }
+        maven { url = uri("https://maven.theoplayer.com/releases") }
     }
 }
 rootProject.name = "THEOplayer Android UI"

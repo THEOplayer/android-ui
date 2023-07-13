@@ -23,29 +23,46 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
 
 1. Create a new Jetpack Compose app or set up Compose in your existing Android app by following [the Compose quick start guide](https://developer.android.com/jetpack/compose/setup).
 1. Add the native THEOplayer Android SDK to your project by following [these installation instructions](https://github.com/THEOplayer/theoplayer-sdk-android#installation).
-1. [Add GitHub Packages as a Maven repository](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) in your project-level `settings.gradle` file:
+1. Add the THEOplayer Maven repository to your project-level `settings.gradle` file:
     ```groovy
     dependencyResolutionManagement {
         repositories {
             google()
             mavenCentral()
             maven { url = uri("https://jitpack.io") }
-            maven {
-                url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
-                credentials {
-                    // Define gpr.user and gpr.key preferably in your local ~/.gradle/gradle.properties
-                    username = (settings.ext.has("gpr.user")) ? settings.ext["gpr.user"] : System.getenv("USERNAME")
-                    password = (settings.ext.has("gpr.key")) ? settings.ext["gpr.key"] : System.getenv("TOKEN")
-                }
-            }
+            maven { url = uri("https://maven.theoplayer.com/releases") }
         }
     }
     ```
-1. [Authenticate with GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-to-github-packages), and save your username and access token in `~/.gradle/gradle.properties`:
-    ```
-    gpr.user=YOUR_USERNAME
-    gpr.key=YOUR_ACCESS_TOKEN
-    ```
+   Alternatively, you can use the GitHub Packages mirror.
+   <details>
+   <summary>GitHub Packages setup</summary>
+   
+   1. [Add GitHub Packages as a Maven repository](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#using-a-published-package) to your project-level `settings.gradle` file:
+      ```groovy
+      dependencyResolutionManagement {
+          repositories {
+              google()
+              mavenCentral()
+              maven { url = uri("https://jitpack.io") }
+              maven {
+                  url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
+                  credentials {
+                      // Define gpr.user and gpr.key preferably in your local ~/.gradle/gradle.properties
+                      username = (settings.ext.has("gpr.user")) ? settings.ext["gpr.user"] : System.getenv("USERNAME")
+                      password = (settings.ext.has("gpr.key")) ? settings.ext["gpr.key"] : System.getenv("TOKEN")
+                  }
+              }
+          }
+      }
+      ```
+   1. [Authenticate with GitHub Packages](https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-gradle-registry#authenticating-to-github-packages), and save your username and access token in `~/.gradle/gradle.properties`:
+      ```
+      gpr.user=YOUR_USERNAME
+      gpr.key=YOUR_ACCESS_TOKEN
+      ```
+   
+   </details>
 1. Add THEOplayer Android UI as a dependency in your module-level `build.gradle` file:
     ```groovy
     dependencies {
