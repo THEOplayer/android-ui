@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import androidx.annotation.FloatRange
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
@@ -178,7 +179,7 @@ private suspend fun PointerInputScope.detectAnyPointerEvent(
 }
 
 internal fun Modifier.defaultAspectRatio(
-    /*@FloatRange(from = 0.0, fromInclusive = false)*/
+    @FloatRange(from = 0.0, fromInclusive = false)
     ratio: Float,
     matchHeightConstraintsFirst: Boolean = false
 ): Modifier = this.then(
