@@ -178,23 +178,23 @@ private suspend fun PointerInputScope.detectAnyPointerEvent(
     }
 }
 
-internal fun Modifier.defaultAspectRatio(
+internal fun Modifier.constrainedAspectRatio(
     @FloatRange(from = 0.0, fromInclusive = false)
     ratio: Float,
     matchHeightConstraintsFirst: Boolean = false
 ): Modifier = this.then(
-    DefaultAspectRatioModifier(
+    ConstrainedAspectRatioModifier(
         ratio,
         matchHeightConstraintsFirst,
         debugInspectorInfo {
-            name = "defaultAspectRatio"
+            name = "constrainedAspectRatio"
             properties["ratio"] = ratio
             properties["matchHeightConstraintsFirst"] = matchHeightConstraintsFirst
         }
     )
 )
 
-private class DefaultAspectRatioModifier(
+private class ConstrainedAspectRatioModifier(
     val aspectRatio: Float,
     val matchHeightConstraintsFirst: Boolean,
     inspectorInfo: InspectorInfo.() -> Unit
@@ -324,7 +324,7 @@ private class DefaultAspectRatioModifier(
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        val otherModifier = other as? DefaultAspectRatioModifier ?: return false
+        val otherModifier = other as? ConstrainedAspectRatioModifier ?: return false
         return aspectRatio == otherModifier.aspectRatio &&
                 matchHeightConstraintsFirst == other.matchHeightConstraintsFirst
     }
@@ -332,5 +332,5 @@ private class DefaultAspectRatioModifier(
     override fun hashCode(): Int =
         aspectRatio.hashCode() * 31 + matchHeightConstraintsFirst.hashCode()
 
-    override fun toString(): String = "DefaultAspectRatioModifier(aspectRatio=$aspectRatio)"
+    override fun toString(): String = "ConstrainedAspectRatioModifier(aspectRatio=$aspectRatio)"
 }
