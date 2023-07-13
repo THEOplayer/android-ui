@@ -82,7 +82,9 @@ fun MainContent() {
                 }
             )
         }, content = { padding ->
-            val playerModifier = Modifier.padding(padding)
+            val playerModifier = Modifier
+                .padding(padding)
+                .fillMaxSize(1f)
             when (theme) {
                 PlayerTheme.Default -> {
                     DefaultUI(
