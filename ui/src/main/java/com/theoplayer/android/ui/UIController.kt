@@ -184,7 +184,7 @@ fun UIController(
         )
     )
 
-    PlayerContainer(modifier = modifier, theoplayerView = player.theoplayerView) {
+    PlayerContainer(modifier = modifier, player = player) {
         CompositionLocalProvider(LocalPlayer provides player) {
             AnimatedContent(
                 modifier = Modifier
@@ -291,13 +291,14 @@ private sealed class UIState {
 @Composable
 private fun PlayerContainer(
     modifier: Modifier = Modifier,
-    theoplayerView: THEOplayerView? = null,
+    player: Player,
     ui: @Composable () -> Unit
 ) {
+    val theoplayerView = player.theoplayerView
     val containerModifier = Modifier
-        .fillMaxSize()
         .background(Color.Black)
         .then(modifier)
+        .playerAspectRatio(player)
     if (theoplayerView == null) {
         Box(
             modifier = containerModifier
@@ -462,4 +463,14 @@ internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplaye
     }
 
     return theoplayerView
+}
+
+internal fun Modifier.playerAspectRatio(player: Player): Modifier {
+    return this.aspectRatio(
+        if (player.videoWidth != 0 && player.videoHeight != 0) {
+            player.videoWidth.toFloat() / player.videoHeight.toFloat()
+        } else {
+            16f / 9f
+        }
+    )
 }
