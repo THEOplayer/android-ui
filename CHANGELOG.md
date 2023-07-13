@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.3.2 (2023-07-13)
+
+* 🏠 Publish to THEOplayer's own Maven repository.
+
 ## v1.3.1 (2023-06-30)
 
 * 🚀 Added `Player.source`, `.videoWidth` and `.videoHeight` properties.
