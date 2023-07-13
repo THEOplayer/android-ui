@@ -466,7 +466,7 @@ internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplaye
 }
 
 internal fun Modifier.playerAspectRatio(player: Player): Modifier {
-    return this.aspectRatio(
+    return this.defaultAspectRatio(
         if (player.videoWidth != 0 && player.videoHeight != 0) {
             player.videoWidth.toFloat() / player.videoHeight.toFloat()
         } else {
