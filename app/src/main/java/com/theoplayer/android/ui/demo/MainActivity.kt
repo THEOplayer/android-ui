@@ -59,7 +59,7 @@ fun MainContent() {
         .ads(imaAdDescription)
         .build()
 
-    DisposableEffect(player) {
+    LaunchedEffect(player) {
         player.theoplayerView?.let { playerView ->
             val imaIntegration = createGoogleImaIntegration(playerView)
             player.player?.addIntegration(imaIntegration)
@@ -71,9 +71,6 @@ fun MainContent() {
             Log.d(TAG, "IMA ERROR: ${(event as GoogleImaAdErrorEvent).adError?.errorType}")
         }
         player.source = source
-        onDispose {
-            // Clean-up: remove listeners
-        }
     }
 
     var themeMenuOpen by remember { mutableStateOf(false) }
