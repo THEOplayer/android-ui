@@ -77,4 +77,6 @@ dependencies {
     "mavenImplementation"("com.theoplayer.android-ui:android-ui:1.+")
 
     implementation(libs.theoplayer)
+    implementation(libs.theoplayer.ads)
+    implementation(libs.theoplayer.ads.ima)
 }
