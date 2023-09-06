@@ -447,6 +447,7 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
 internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
+    var wasPlayingAd by remember { mutableStateOf(false) }
 
     DisposableEffect(theoplayerView) {
         onDispose {
@@ -458,8 +459,19 @@ internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplaye
     DisposableEffect(lifecycle, theoplayerView) {
         val lifecycleObserver = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_RESUME -> theoplayerView.onResume()
-                Lifecycle.Event.ON_PAUSE -> theoplayerView.onPause()
+                Lifecycle.Event.ON_RESUME -> {
+                    theoplayerView.onResume()
+                    if (wasPlayingAd) {
+                        theoplayerView.player.play()
+                        wasPlayingAd = false
+                    }
+                }
+
+                Lifecycle.Event.ON_PAUSE -> {
+                    wasPlayingAd = theoplayerView.player.ads.isPlaying
+                    theoplayerView.onPause()
+                }
+
                 Lifecycle.Event.ON_DESTROY -> theoplayerView.onDestroy()
                 else -> {}
             }
