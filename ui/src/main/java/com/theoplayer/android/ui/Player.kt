@@ -11,6 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
 import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.api.ads.Ads
+import com.theoplayer.android.api.ads.ima.GoogleImaAdEvent
+import com.theoplayer.android.api.ads.ima.GoogleImaAdEventType
 import com.theoplayer.android.api.cast.Cast
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.error.THEOplayerException
@@ -91,6 +94,11 @@ interface Player {
      * Returns the raw [Cast] API of the backing THEOplayer instance.
      */
     val cast: Cast?
+
+    /**
+     * Returns the raw [Ads] API of the backing THEOplayer instance.
+     */
+    val ads: Ads?
 
     /**
      * Returns the current playback position of the media, in seconds.
@@ -177,6 +185,11 @@ interface Player {
      * Returns whether the player is currently waiting for more data to resume playback.
      */
     val loading: Boolean
+
+    /**
+     * Returns whether the player is currently playing an ad.
+     */
+    val inAd: Boolean
 
     /**
      * Returns the [StreamType] of the media.
@@ -283,6 +296,7 @@ enum class StreamType {
 internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val cast = theoplayerView?.cast
+    override val ads = theoplayerView?.player?.ads
     override var currentTime by mutableStateOf(0.0)
         private set
     override var duration by mutableStateOf(Double.NaN)
@@ -290,6 +304,8 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     override var seekable by mutableStateOf(TimeRanges(listOf()))
         private set
     override var paused by mutableStateOf(true)
+        private set
+    override var inAd by mutableStateOf(false)
         private set
     override var ended by mutableStateOf(false)
         private set
@@ -342,6 +358,8 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     private val readyStateChangeListener =
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
     private val resizeListener = EventListener<ResizeEvent> { updateVideoWidthAndHeight() }
+    private val adStartedListener = EventListener<GoogleImaAdEvent> { inAd = true }
+    private val adCompletedListener = EventListener<GoogleImaAdEvent> { inAd = false }
     private val sourceChangeListener = EventListener<SourceChangeEvent> {
         _source = player?.source
         error = null
@@ -665,6 +683,8 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         )
         cast?.chromecast?.addEventListener(ChromecastEventTypes.ERROR, chromecastErrorListener)
         fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
+        ads?.addEventListener(GoogleImaAdEventType.STARTED, adStartedListener)
+        ads?.addEventListener(GoogleImaAdEventType.COMPLETED, adCompletedListener)
     }
 
     fun dispose() {

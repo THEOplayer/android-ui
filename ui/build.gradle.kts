@@ -89,6 +89,16 @@ dependencies {
     }
 
     dokkaPlugin(libs.dokka.plugin)
+    implementation(libs.theoplayer.ads) {
+        version {
+            strictly("[5.0, 7.0[")
+        }
+    }
+    implementation(libs.theoplayer.ads.ima) {
+        version {
+            strictly("[5.0, 7.0[")
+        }
+    }
 }
 
 publishing {

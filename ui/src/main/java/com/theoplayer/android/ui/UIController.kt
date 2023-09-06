@@ -187,6 +187,10 @@ fun UIController(
 
     PlayerContainer(modifier = modifier, player = player) {
         CompositionLocalProvider(LocalPlayer provides player) {
+            if (player.inAd) {
+                // Do not overlay controls in case of ad play-out.
+                return@CompositionLocalProvider
+            }
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
