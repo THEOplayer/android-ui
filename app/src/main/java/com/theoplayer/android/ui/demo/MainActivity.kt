@@ -13,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.ads.ima.GoogleImaAdErrorEvent
@@ -46,6 +47,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainContent() {
     val player = rememberPlayer()
+    var adBuffering by remember { mutableStateOf(false) }
 
     val adTag = "https://cdn.theoplayer.com/demos/ads/vast/dfp-preroll-no-skip.xml"
     val imaAdDescription =
@@ -67,9 +69,15 @@ fun MainContent() {
         player.player?.addEventListener(PlayerEventTypes.PLAY) { Log.d(TAG, "PLAY") }
         player.player?.addEventListener(PlayerEventTypes.PLAYING) { Log.d(TAG, "PLAYING") }
         player.player?.addEventListener(PlayerEventTypes.PAUSE) { Log.d(TAG, "PAUSE") }
+        player.player?.ads?.addEventListener(GoogleImaAdEventType.AD_BUFFERING) {
+            // Force a recompose, otherwise the AdPlayer won't start when auto-playing
+            Log.d(TAG, "IMA BUFFERING")
+            adBuffering = true
+        }
         player.player?.ads?.addEventListener(GoogleImaAdEventType.AD_ERROR) { event ->
             Log.d(TAG, "IMA ERROR: ${(event as GoogleImaAdErrorEvent).adError?.errorType}")
         }
+        player.player?.isAutoplay = true
         player.source = source
     }
 
@@ -78,7 +86,12 @@ fun MainContent() {
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        color = if (adBuffering) {
+            // TEMP work-around: force a recomposition when ad starts buffering
+            MaterialTheme.colorScheme.background
+        } else {
+            MaterialTheme.colorScheme.background
+        }
     ) {
         Scaffold(topBar = {
             TopAppBar(
