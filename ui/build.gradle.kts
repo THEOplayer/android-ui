@@ -88,7 +88,7 @@ dependencies {
 
     implementation("com.theoplayer.theoplayer-sdk-android:core") {
         version {
-            strictly("[5.0, 6.0[")
+            strictly("[5.0, 7.0[")
             prefer(theoplayer_version)
         }
     }

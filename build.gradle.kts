@@ -11,7 +11,7 @@ buildscript {
     }
     val compose_ui_version by extra("1.3.3")
     val material3_version by extra("1.0.1")
-    val theoplayer_version by extra("5.5.0")
+    val theoplayer_version by extra("6.1.0")
     val dokka_version by extra("1.8.10")
 }
 plugins {
