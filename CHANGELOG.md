@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🚀 Allow THEOplayer Android SDK 6.
+
 ## v1.3.3 (2023-07-13)
 
 * 💅 `UIController` now sizes itself to match the video's aspect ratio, except if this were to
