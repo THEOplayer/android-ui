@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainContent() {
     val source = SourceDescription.Builder(
-        TypedSource.Builder("https://amssamples.streaming.mediaservices.windows.net/7ceb010f-d9a3-467a-915e-5728acced7e3/ElephantsDreamMultiAudio.ism/manifest(format=mpd-time-csf)")
+        TypedSource.Builder("https://cdn.theoplayer.com/video/elephants-dream/playlist.m3u8")
             .build()
     ).build()
 
