@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.3.4 (2023-10-17)
 
 * 🚀 Allow THEOplayer Android SDK 6.
 
