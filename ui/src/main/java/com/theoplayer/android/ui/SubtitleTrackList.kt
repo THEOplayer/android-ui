@@ -2,7 +2,6 @@ package com.theoplayer.android.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -16,7 +15,6 @@ import java.util.*
  * @param modifier the [Modifier] to be applied to this menu
  * @param onClick called when a subtitle track in the list is clicked
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubtitleTrackList(
     modifier: Modifier = Modifier,
@@ -28,7 +26,7 @@ fun SubtitleTrackList(
     LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
-                headlineText = { Text(text = "Off") },
+                headlineContent = { Text(text = "Off") },
                 leadingContent = {
                     RadioButton(
                         selected = (activeSubtitleTrack == null),
@@ -47,7 +45,7 @@ fun SubtitleTrackList(
         ) {
             val audioTrack = subtitleTracks[it]
             ListItem(
-                headlineText = { Text(text = formatTrackLabel(audioTrack)) },
+                headlineContent = { Text(text = formatTrackLabel(audioTrack)) },
                 leadingContent = {
                     RadioButton(
                         selected = (activeSubtitleTrack == audioTrack),

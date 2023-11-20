@@ -169,6 +169,7 @@ fun UIController(
         true
     }
     val background by animateColorAsState(
+        label = "BackgroundAnimation",
         targetValue = color.copy(alpha = if (backgroundVisible) 0.5f else 0f),
         animationSpec = tween(
             easing = LinearEasing,
@@ -187,6 +188,7 @@ fun UIController(
     PlayerContainer(modifier = modifier, player = player) {
         CompositionLocalProvider(LocalPlayer provides player) {
             AnimatedContent(
+                label = "ContentAnimation",
                 modifier = Modifier
                     .background(background)
                     .pressable(interactionSource = interactionSource, requireUnconsumed = false)
@@ -204,25 +206,25 @@ fun UIController(
                 transitionSpec = {
                     if (targetState is UIState.Error) {
                         // Show errors immediately
-                        EnterTransition.None with ExitTransition.None
+                        EnterTransition.None togetherWith ExitTransition.None
                     } else if (initialState is UIState.Menu && targetState is UIState.Menu) {
                         if (scope.lastWasClosed) {
                             // Close menu towards the right
-                            slideInHorizontally { -it } with
+                            slideInHorizontally { -it } togetherWith
                                     slideOutHorizontally { it }
                         } else {
                             // Open new menu towards the left
-                            slideInHorizontally(initialOffsetX = { it }) with
+                            slideInHorizontally(initialOffsetX = { it }) togetherWith
                                     slideOutHorizontally(targetOffsetX = { -it })
                         }
                     } else if (targetState is UIState.Menu) {
                         // Open first menu from the bottom
-                        slideInVertically { it / 4 } + fadeIn() with fadeOut()
+                        slideInVertically { it / 4 } + fadeIn() togetherWith fadeOut()
                     } else if (initialState is UIState.Menu) {
                         // Close last menu towards the bottom
-                        fadeIn() with slideOutVertically { it / 4 } + fadeOut()
+                        fadeIn() togetherWith slideOutVertically { it / 4 } + fadeOut()
                     } else {
-                        EnterTransition.None with ExitTransition.None
+                        EnterTransition.None togetherWith ExitTransition.None
                     }
                 }
             ) { uiState ->

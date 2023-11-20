@@ -2,7 +2,6 @@ package com.theoplayer.android.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -17,7 +16,6 @@ import java.text.DecimalFormat
  * @param playbackRates the list of possible playback rates
  * @param onClick called when a playback rate in the list is clicked
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaybackRateList(
     modifier: Modifier = Modifier,
@@ -33,7 +31,7 @@ fun PlaybackRateList(
         ) {
             val playbackRate = playbackRates[it]
             ListItem(
-                headlineText = { Text(text = formatPlaybackRate(playbackRate)) },
+                headlineContent = { Text(text = formatPlaybackRate(playbackRate)) },
                 leadingContent = {
                     RadioButton(
                         selected = (currentPlaybackRate == playbackRate),
