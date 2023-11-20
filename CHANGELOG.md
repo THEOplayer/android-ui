@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 💅 Renamed project to "THEOplayer Open Video UI for Android".
+
 ## v1.3.4 (2023-10-17)
 
 * 🚀 Allow THEOplayer Android SDK 6.
