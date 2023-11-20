@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:7.4.2")
+        classpath("com.android.tools.build:gradle:8.1.3")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
     }
     val compose_ui_version by extra("1.3.3")
@@ -16,8 +16,8 @@ buildscript {
 }
 plugins {
     val dokka_version: String by extra
-    id("com.android.application") version "7.4.2" apply false
-    id("com.android.library") version "7.4.2" apply false
+    id("com.android.application") version "8.1.3" apply false
+    id("com.android.library") version "8.1.3" apply false
     id("org.jetbrains.kotlin.android") version "1.8.10" apply false
     id("org.jetbrains.dokka") version dokka_version apply false
 }
