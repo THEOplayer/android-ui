@@ -9,12 +9,10 @@ buildscript {
         classpath(libs.gradle.plugin)
         classpath(libs.kotlin.gradle.plugin)
     }
-    val dokka_version by extra("1.8.10")
 }
 plugins {
-    val dokka_version: String by extra
-    id("com.android.application") version "8.1.3" apply false
-    id("com.android.library") version "8.1.3" apply false
-    id("org.jetbrains.kotlin.android") version "1.8.10" apply false
-    id("org.jetbrains.dokka") version dokka_version apply false
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.dokka) apply false
 }

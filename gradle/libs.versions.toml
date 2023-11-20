@@ -36,3 +36,7 @@ junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 theoplayer = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer" }
 
 [plugins]
+android-application = { id = "com.android.application", version.ref = "gradle" }
+android-library = { id = "com.android.library", version.ref = "gradle" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-gradle-plugin" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
