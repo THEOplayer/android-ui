@@ -6,12 +6,9 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.3")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.8.10")
+        classpath(libs.gradle.plugin)
+        classpath(libs.kotlin.gradle.plugin)
     }
-    val compose_ui_version by extra("1.3.3")
-    val material3_version by extra("1.0.1")
-    val theoplayer_version by extra("6.1.0")
     val dokka_version by extra("1.8.10")
 }
 plugins {

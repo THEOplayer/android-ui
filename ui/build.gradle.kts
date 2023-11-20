@@ -5,7 +5,7 @@ import kotlin.text.Typography.copyright
 
 buildscript {
     dependencies {
-        classpath("org.jetbrains.dokka:dokka-base:1.8.10")
+        classpath(libs.dokka.base)
     }
 }
 
@@ -65,34 +65,30 @@ android {
 }
 
 dependencies {
-    val compose_ui_version: String by rootProject.extra
-    val material3_version: String by rootProject.extra
-    val theoplayer_version: String by rootProject.extra
-    val dokka_version: String by rootProject.extra
+    implementation(platform(libs.androidx.compose.bom))
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.0")
-    implementation("androidx.activity:activity-compose:1.6.1")
-    implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.compose.ui:ui:$compose_ui_version")
-    implementation("androidx.compose.ui:ui-tooling-preview:$compose_ui_version")
-    implementation("androidx.compose.material3:material3:$material3_version")
-    implementation("androidx.compose.material:material-icons-extended:1.3.1")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.5")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:$compose_ui_version")
-    debugImplementation("androidx.compose.ui:ui-tooling:$compose_ui_version")
-    debugImplementation("androidx.compose.ui:ui-test-manifest:$compose_ui_version")
+    implementation(libs.androidx.ktx)
+    implementation(libs.androidx.lifecycle.runtime)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.compose.ui.ui)
+    implementation(libs.androidx.compose.ui.toolingPreview)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.iconsExtended)
+    testImplementation(libs.junit4)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso)
+    androidTestImplementation(libs.androidx.compose.ui.testJunit4)
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.testManifest)
 
-    implementation("com.theoplayer.theoplayer-sdk-android:core") {
+    implementation(libs.theoplayer) {
         version {
             strictly("[5.0, 7.0[")
-            prefer(theoplayer_version)
         }
     }
 
-    dokkaPlugin("org.jetbrains.dokka:android-documentation-plugin:$dokka_version")
+    dokkaPlugin(libs.dokka.plugin)
 }
 
 publishing {
