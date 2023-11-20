@@ -7,7 +7,6 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import java.util.*
 
 /**
  * A list of subtitle tracks, from which the user can choose an active subtitle track.
