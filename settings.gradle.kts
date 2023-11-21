@@ -14,6 +14,6 @@ dependencyResolutionManagement {
         maven { url = uri("https://maven.theoplayer.com/releases") }
     }
 }
-rootProject.name = "THEOplayer Android UI"
+rootProject.name = "THEOplayer Open Video UI for Android"
 include(":app")
 include(":ui")

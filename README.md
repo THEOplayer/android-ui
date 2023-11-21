@@ -1,4 +1,4 @@
-# THEOplayer Android UI
+# THEOplayer Open Video UI for Android
 
 A component library for building a world-class video player experience powered by the [THEOplayer Android SDK](https://www.theoplayer.com/product/theoplayer).
 
@@ -17,7 +17,7 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
 
 - Built for Android. With the old UI, you would effectively use web technologies to customize your player, which feels disconnected from the rest of your Android app. With the new UI, you get a truly native UI that can take full advantage of the Android platform.
 - Designed with customization in mind. With the old UI, customizing anything beyond changing some text and icon colors was difficult, and could break in unpredictable ways when updating to a new THEOplayer version. With the new UI, all components can be customized in a variety of ways with a well-documented API.
-- Developed in the open. Although the old UI is based on the open-source video.js library, any custom components bundled with THEOplayer remained closed-source. With the new UI, the source code of all components is publicly available. Advanced users can learn about the inner workings of each component, modify them, and even contribute their changes back to THEOplayer Android UI.
+- Developed in the open. Although the old UI is based on the open-source video.js library, any custom components bundled with THEOplayer remained closed-source. With the new UI, the source code of all components is publicly available. Advanced users can learn about the inner workings of each component, modify them, and even contribute their changes back to Open Video UI.
 
 ## Installation
 
@@ -63,7 +63,7 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
       ```
    
    </details>
-1. Add THEOplayer Android UI as a dependency in your module-level `build.gradle` file:
+1. Add Open Video UI as a dependency in your module-level `build.gradle` file:
     ```groovy
     dependencies {
         implementation "com.theoplayer.theoplayer-sdk-android:core:5.+"
