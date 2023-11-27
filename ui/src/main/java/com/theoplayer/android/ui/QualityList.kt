@@ -2,7 +2,6 @@ package com.theoplayer.android.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -16,7 +15,6 @@ import java.text.DecimalFormat
  * @param modifier the [Modifier] to be applied to this menu
  * @param onClick called when a video quality in the list is clicked
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QualityList(
     modifier: Modifier = Modifier,
@@ -28,7 +26,7 @@ fun QualityList(
     LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
-                headlineText = { Text(text = "Automatic") },
+                headlineContent = { Text(text = "Automatic") },
                 leadingContent = {
                     RadioButton(
                         selected = (targetVideoQuality == null),
@@ -47,8 +45,8 @@ fun QualityList(
         ) {
             val quality = videoQualities[it]
             ListItem(
-                headlineText = { Text(text = "${quality.height}p") },
-                supportingText = { Text(text = formatBandwidth(quality.bandwidth)) },
+                headlineContent = { Text(text = "${quality.height}p") },
+                supportingContent = { Text(text = formatBandwidth(quality.bandwidth)) },
                 leadingContent = {
                     RadioButton(
                         selected = (targetVideoQuality == quality),

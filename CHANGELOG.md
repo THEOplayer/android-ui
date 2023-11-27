@@ -11,6 +11,7 @@
 
 ## Unreleased
 
+* 💥 Updated to Jetpack Compose version 1.5.4 ([BOM](https://developer.android.com/jetpack/compose/bom) 2023.10.01).
 * 💅 Renamed project to "THEOplayer Open Video UI for Android".
 
 ## v1.3.4 (2023-10-17)

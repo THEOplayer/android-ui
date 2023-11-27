@@ -1,7 +1,7 @@
 package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.player.track.Track
-import java.util.*
+import java.util.Locale
 import kotlin.math.absoluteValue
 
 /**

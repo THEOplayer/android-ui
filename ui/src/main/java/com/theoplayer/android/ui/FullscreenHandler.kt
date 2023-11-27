@@ -24,10 +24,8 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         private set
     override var onFullscreenChangeListener: FullscreenHandler.OnFullscreenChangeListener? = null
 
-    private var previousSystemBarsBehavior: Int =
-        WindowInsetsControllerCompat.BEHAVIOR_SHOW_BARS_BY_SWIPE
-    private var previousRequestedOrientation: Int =
-        ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+    private var previousSystemBarsBehavior: Int = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
+    private var previousRequestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     private var previousViewParent: ViewGroup? = null
     private var previousViewIndex: Int = 0
     private var previousViewLayoutParams: ViewGroup.LayoutParams? = null
