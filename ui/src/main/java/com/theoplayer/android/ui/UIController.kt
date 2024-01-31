@@ -316,7 +316,9 @@ private fun PlayerContainer(
             modifier = containerModifier,
             factory = { context ->
                 uiContainer =
-                    theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
+// TEMP: fix for 6.7.0+, uncomment for lower versions
+//                    theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
+                    theoplayerView.findViewById(com.theoplayer.android.dist.R.id.theo_ui_container)
                 // Wrap our UI inside a ComposeView
                 composeView = ComposeView(context).apply {
                     // When entering fullscreen, we remove the view from its original location
