@@ -27,8 +27,11 @@ fun SeekBar(
     val player = Player.current
     val currentTime = player?.currentTime?.toFloat() ?: 0.0f
     val seekable = player?.seekable ?: TimeRanges(listOf())
-    val valueRange = seekable.bounds ?: 0.0..0.0
 
+    val valueRange = remember(seekable) {
+        val bounds = seekable.bounds ?: 0.0..0.0
+        bounds.start.toFloat()..bounds.endInclusive.toFloat()
+    }
     var seekTime by remember { mutableStateOf<Float?>(null) }
     var wasPlayingBeforeSeek by remember { mutableStateOf(false) }
 
@@ -36,16 +39,18 @@ fun SeekBar(
         modifier = modifier,
         colors = colors,
         value = seekTime ?: currentTime,
-        valueRange = valueRange.start.toFloat()..valueRange.endInclusive.toFloat(),
+        valueRange = valueRange,
         enabled = seekable.isNotEmpty(),
-        onValueChange = { time ->
-            seekTime = time
-            player?.player?.let {
-                if (!it.isPaused) {
-                    wasPlayingBeforeSeek = true
-                    it.pause()
+        onValueChange = remember {
+            { time ->
+                seekTime = time
+                player?.player?.let {
+                    if (!it.isPaused) {
+                        wasPlayingBeforeSeek = true
+                        it.pause()
+                    }
+                    it.currentTime = time.toDouble()
                 }
-                it.currentTime = time.toDouble()
             }
         },
         // This needs to always be the *same* callback,
