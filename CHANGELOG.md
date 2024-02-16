@@ -9,6 +9,13 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 💥 Updated to Jetpack Compose version 1.6.1 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.02.00).
+* 🐛 Fixed dragging the `SeekBar` when
+  using [Compose Material 3 version 1.2.0](https://developer.android.com/jetpack/androidx/releases/compose-material3#1.2.0)
+  or higher. ([#24](https://github.com/THEOplayer/android-ui/issues/24))
+
 ## v1.4.0 (2023-11-27)
 
 * 💥 Updated to Jetpack Compose version 1.5.4 ([BOM](https://developer.android.com/jetpack/compose/bom) 2023.10.01).
@@ -44,7 +51,7 @@
 * 💥 Renamed `PlayerState` to `Player`.
 * 🚀 Added overloads to `DefaultUI` and `UIController` that accept a `Player`.
   This allows constructing a player instance in advance, and even moving it between custom UIs when recomposing.
-* 🚀 Added `UIControllerScope.player` as an non-null alternative to `Player.current`. 
+* 🚀 Added `UIControllerScope.player` as an non-null alternative to `Player.current`.
 
 ## v1.1.0 (2023-06-27)
 
