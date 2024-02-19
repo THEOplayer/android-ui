@@ -38,7 +38,7 @@ jobs:
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
       - name: Build API documentation with Dokka
-        run: ./gradlew ui:dokkaHtml
+        run: ./gradlew ui:dokkaHtml --no-configuration-cache
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
