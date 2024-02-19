@@ -2,8 +2,8 @@ package com.theoplayer.android.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.VolumeOff
-import androidx.compose.material.icons.rounded.VolumeUp
+import androidx.compose.material.icons.automirrored.rounded.VolumeOff
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,13 +24,13 @@ fun MuteButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     mute: @Composable () -> Unit = {
         Icon(
-            Icons.Rounded.VolumeUp,
+            Icons.AutoMirrored.Rounded.VolumeUp,
             contentDescription = "Mute"
         )
     },
     unmute: @Composable () -> Unit = {
         Icon(
-            Icons.Rounded.VolumeOff,
+            Icons.AutoMirrored.Rounded.VolumeOff,
             contentDescription = "Unmute"
         )
     }

@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
@@ -37,7 +37,7 @@ fun MenuScope.Menu(
     title: @Composable () -> Unit,
     backIcon: @Composable () -> Unit = {
         Icon(
-            Icons.Rounded.ArrowBack,
+            Icons.AutoMirrored.Rounded.ArrowBack,
             contentDescription = "Back"
         )
     },
