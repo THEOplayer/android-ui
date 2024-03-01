@@ -433,9 +433,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     private val rateChangeListener = EventListener<RateChangeEvent> { updatePlaybackRate() }
 
     private val fullscreenHandler: FullscreenHandler? =
-// TEMP: fix for 6.7.0+, uncomment for lower versions
-//        theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
-        theoplayerView?.findViewById<View>(com.theoplayer.android.dist.R.id.theo_player_container)
+        theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
             ?.let { FullscreenHandlerImpl(it) }
     private var _fullscreen by mutableStateOf(false)
     override var fullscreen: Boolean
