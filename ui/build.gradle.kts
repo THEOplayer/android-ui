@@ -133,5 +133,5 @@ tasks.withType<DokkaTask>().configureEach {
 }
 
 tasks.named<DokkaTask>("dokkaHtml").configure {
-    outputDirectory.set(rootDir.resolve("docs/api"))
+    outputDirectory.set(rootDir.resolve("site/api"))
 }
