@@ -1,6 +1,7 @@
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
 import org.jetbrains.dokka.gradle.DokkaTask
+import java.time.Year
 import kotlin.text.Typography.copyright
 
 buildscript {
@@ -84,7 +85,7 @@ dependencies {
 
     implementation(libs.theoplayer) {
         version {
-            strictly("[5.0, 7.0[")
+            strictly("[5.0, 8.0)")
         }
     }
 
@@ -127,7 +128,7 @@ publishing {
 tasks.withType<DokkaTask>().configureEach {
     pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
         customAssets = listOf(file("assets/logo-icon.svg"))
-        footerMessage = "$copyright 2023 THEO Technologies"
+        footerMessage = "$copyright ${Year.now().value} THEO Technologies"
     }
 }
 
