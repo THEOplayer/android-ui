@@ -69,7 +69,7 @@ Additionally, we change the size and padding of the play button, to make it bigg
 
 You might have noticed that all buttons are visible immediately, even before the video starts playing for the first time. Most of the time however, you want to initially show only the play button, and then show the rest of the buttons after the video has started playing. To do this, you should check the player's current state and then adjust your player layout accordingly.
 
-Within any of the composable lambdas you pass to `UIController`, you can use `Player.current` to access the current player. This `Player` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`Player.kt`](../../ui/src/main/java/com/theoplayer/android/ui/Player.kt) for the full list of properties.
+Within any of the composable lambdas you pass to `UIController`, you can use `Player.current` to access the current player. This `Player` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`Player.kt`](https://github.com/THEOplayer/android-ui/blob/main/ui/src/main/java/com/theoplayer/android/ui/Player.kt) for the full list of properties.
 
 You can then perform any logic on these properties to adjust your player layout. For example, you can check the `firstPlay` property to see if the player has already started playing for the first time, and only show certain buttons if that property is `true`:
 

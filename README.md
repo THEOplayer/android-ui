@@ -104,7 +104,7 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
-See [the demo app](app/src/main/java/com/theoplayer/android/ui/demo/MainActivity.kt) for a complete and working example.
+See [the demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/MainActivity.kt) for a complete and working example.
 
 ### Custom UI
 
