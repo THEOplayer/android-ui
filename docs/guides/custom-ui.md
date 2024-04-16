@@ -123,4 +123,4 @@ It may sound odd to mention the default UI when we're talking about custom UIs. 
 
 The default UI comes with all the bells and whistles that you'd expect from a fully-featured player: buttons to play or mute the video, a seek bar to seek through the video, menus to change the audio language and subtitles, and support for casting to Chromecast.
 
-Have a look at [`DefaultUI.kt`](../../ui/src/main/java/com/theoplayer/android/ui/DefaultUI.kt) to learn how the default layout is implemented, and perhaps copy some ideas for your own UI.
+Have a look at [`DefaultUI.kt`](https://github.com/THEOplayer/android-ui/blob/main/ui/src/main/java/com/theoplayer/android/ui/DefaultUI.kt) to learn how the default layout is implemented, and perhaps copy some ideas for your own UI.
