@@ -1,5 +1,6 @@
 import org.jetbrains.dokka.base.DokkaBase
 import org.jetbrains.dokka.base.DokkaBaseConfiguration
+import org.jetbrains.dokka.gradle.AbstractDokkaTask
 import org.jetbrains.dokka.gradle.DokkaTask
 import java.time.Year
 import kotlin.text.Typography.copyright
@@ -125,7 +126,9 @@ publishing {
     }
 }
 
-tasks.withType<DokkaTask>().configureEach {
+tasks.withType<AbstractDokkaTask>().configureEach {
+    moduleName = rootProject.name
+
     pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
         customAssets = listOf(file("assets/logo-icon.svg"))
         footerMessage = "$copyright ${Year.now().value} THEO Technologies"
