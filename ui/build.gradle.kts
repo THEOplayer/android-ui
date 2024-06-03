@@ -61,7 +61,8 @@ android {
     publishing {
         singleVariant("release") {
             withSourcesJar()
-            withJavadocJar()
+            // We use Dokka for JavaDoc generation, see dokkaJavadocJar below
+            // withJavadocJar()
         }
     }
 }
@@ -93,6 +94,13 @@ dependencies {
     dokkaPlugin(libs.dokka.plugin)
 }
 
+val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
+    group = "documentation"
+    from(tasks.dokkaJavadoc)
+    dependsOn(tasks.dokkaJavadoc)
+    archiveClassifier.set("javadoc")
+}
+
 publishing {
     repositories {
         maven {
@@ -119,6 +127,7 @@ publishing {
             groupId = "com.theoplayer.android-ui"
             artifactId = "android-ui"
             version = libraryVersion
+            artifact(dokkaJavadocJar)
             afterEvaluate {
                 from(components["release"])
             }
