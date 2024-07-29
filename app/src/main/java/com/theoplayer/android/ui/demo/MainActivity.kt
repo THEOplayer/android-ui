@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.theoplayer.android.api.THEOplayerConfig
+import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
 import com.theoplayer.android.ui.DefaultUI
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
@@ -48,6 +49,11 @@ fun MainContent() {
     var streamMenuOpen by remember { mutableStateOf(false) }
 
     val player = rememberPlayer()
+    LaunchedEffect(player) {
+        player.theoplayerView?.let { theoplayerView ->
+            theoplayerView.player.addIntegration(GoogleImaIntegrationFactory.createGoogleImaIntegration(theoplayerView))
+        }
+    }
     LaunchedEffect(player, stream) {
         player.source = stream.source
     }
