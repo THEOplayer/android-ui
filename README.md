@@ -29,7 +29,6 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
         repositories {
             google()
             mavenCentral()
-            maven { url = uri("https://jitpack.io") }
             maven { url = uri("https://maven.theoplayer.com/releases") }
         }
     }
@@ -44,7 +43,6 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
           repositories {
               google()
               mavenCentral()
-              maven { url = uri("https://jitpack.io") }
               maven {
                   url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
                   credentials {
@@ -53,6 +51,7 @@ THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](
                       password = (settings.ext.has("gpr.key")) ? settings.ext["gpr.key"] : System.getenv("TOKEN")
                   }
               }
+              maven { url = uri("https://maven.theoplayer.com/releases") }
           }
       }
       ```
