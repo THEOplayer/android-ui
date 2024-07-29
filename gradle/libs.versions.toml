@@ -11,7 +11,7 @@ ui-test-junit4 = "1.6.5" # ...not in BOM for some reason?
 androidx-junit = "1.1.5"
 androidx-espresso = "3.5.1"
 dokka = "1.9.20"
-theoplayer = "7.1.1"
+theoplayer = "7.8.0"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
