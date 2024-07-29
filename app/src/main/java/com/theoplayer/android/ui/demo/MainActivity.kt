@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent() {
-    var stream by rememberSaveable { mutableStateOf(streams.first()) }
+    var stream by rememberSaveable(stateSaver = StreamSaver) { mutableStateOf(streams.first()) }
     var streamMenuOpen by remember { mutableStateOf(false) }
 
     val player = rememberPlayer()
