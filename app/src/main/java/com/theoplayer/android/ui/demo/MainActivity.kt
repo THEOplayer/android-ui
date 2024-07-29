@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent() {
-    var stream by remember { mutableStateOf(streams.first()) }
+    var stream by rememberSaveable { mutableStateOf(streams.first()) }
     var streamMenuOpen by remember { mutableStateOf(false) }
 
     val player = rememberPlayer()
@@ -85,7 +85,7 @@ fun MainContent() {
                     }
                 }
             )
-        }, content = { padding ->
+        }) { padding ->
             val playerModifier = Modifier
                 .padding(padding)
                 .fillMaxSize(1f)
@@ -130,7 +130,7 @@ fun MainContent() {
                     onDismissRequest = { themeMenuOpen = false }
                 )
             }
-        })
+        }
     }
 }
 
