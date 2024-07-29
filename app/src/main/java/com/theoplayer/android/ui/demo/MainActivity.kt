@@ -3,19 +3,26 @@ package com.theoplayer.android.ui.demo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Brush
+import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import com.theoplayer.android.api.THEOplayerConfig
-import com.theoplayer.android.api.source.SourceDescription
-import com.theoplayer.android.api.source.TypedSource
 import com.theoplayer.android.ui.DefaultUI
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
@@ -37,14 +44,12 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent() {
-    val source = SourceDescription.Builder(
-        TypedSource.Builder("https://cdn.theoplayer.com/video/elephants-dream/playlist.m3u8")
-            .build()
-    ).build()
+    var stream by remember { mutableStateOf(streams.first()) }
+    var streamMenuOpen by remember { mutableStateOf(false) }
 
     val player = rememberPlayer()
-    LaunchedEffect(player, source) {
-        player.source = source
+    LaunchedEffect(player, stream) {
+        player.source = stream.source
     }
 
     var themeMenuOpen by remember { mutableStateOf(false) }
@@ -61,10 +66,13 @@ fun MainContent() {
                 },
                 actions = {
                     IconButton(onClick = {
-                        player.source = source
+                        player.source = stream.source
                         player.play()
                     }) {
                         Icon(Icons.Rounded.Refresh, contentDescription = "Reload")
+                    }
+                    IconButton(onClick = { streamMenuOpen = true }) {
+                        Icon(Icons.Rounded.Movie, contentDescription = "Stream")
                     }
                     IconButton(onClick = { themeMenuOpen = true }) {
                         Icon(Icons.Rounded.Brush, contentDescription = "Theme")
@@ -90,7 +98,7 @@ fun MainContent() {
                     DefaultUI(
                         modifier = playerModifier,
                         player = player,
-                        title = "Elephant's Dream"
+                        title = stream.title
                     )
                 }
 
@@ -99,10 +107,22 @@ fun MainContent() {
                         NitflexUI(
                             modifier = playerModifier,
                             player = player,
-                            title = "Elephant's Dream"
+                            title = stream.title
                         )
                     }
                 }
+            }
+
+            if (streamMenuOpen) {
+                SelectStreamDialog(
+                    streams = streams,
+                    currentStream = stream,
+                    onSelectStream = {
+                        stream = it
+                        streamMenuOpen = false
+                    },
+                    onDismissRequest = { streamMenuOpen = false }
+                )
             }
         })
     }
@@ -111,6 +131,44 @@ fun MainContent() {
 enum class PlayerTheme {
     Default,
     Nitflex
+}
+
+@Composable
+fun SelectStreamDialog(
+    streams: List<Stream>,
+    currentStream: Stream,
+    onSelectStream: (Stream) -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Select a stream",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                LazyColumn {
+                    items(items = streams) {
+                        ListItem(
+                            headlineContent = { Text(text = it.title) },
+                            leadingContent = {
+                                RadioButton(
+                                    selected = (it == currentStream),
+                                    onClick = null
+                                )
+                            },
+                            modifier = Modifier.clickable(onClick = {
+                                onSelectStream(it)
+                            })
+                        )
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Preview(showBackground = true)
