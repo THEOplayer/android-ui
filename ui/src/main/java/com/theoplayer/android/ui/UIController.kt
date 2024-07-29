@@ -141,6 +141,8 @@ fun UIController(
                 false
             } else if (!player.firstPlay) {
                 true
+            } else if (player.playingAd) {
+                false
             } else if (forceControlsHidden) {
                 false
             } else {
@@ -187,10 +189,6 @@ fun UIController(
 
     PlayerContainer(modifier = modifier, player = player) {
         CompositionLocalProvider(LocalPlayer provides player) {
-            if (player.playingAd) {
-                // Do not overlay controls in case of ad play-out.
-                return@CompositionLocalProvider
-            }
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
@@ -244,7 +242,7 @@ fun UIController(
                     is UIState.Controls -> {
                         scope.PlayerControls(
                             controlsVisible = controlsVisible.value,
-                            animationsActive = isReady,
+                            animationsActive = isReady && !player.playingAd,
                             centerOverlay = centerOverlay,
                             topChrome = topChrome,
                             centerChrome = centerChrome,
