@@ -105,7 +105,7 @@ publishing {
     repositories {
         maven {
             name = "reposilite"
-            url = uri("https://reposilite.prudentgiraffe.com/releases")
+            url = uri("https://maven.theoplayer.com/releases")
             credentials {
                 username = System.getenv("REPOSILITE_USERNAME")
                 password = System.getenv("REPOSILITE_PASSWORD")
