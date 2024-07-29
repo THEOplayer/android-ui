@@ -83,16 +83,6 @@ fun MainContent() {
                     IconButton(onClick = { themeMenuOpen = true }) {
                         Icon(Icons.Rounded.Brush, contentDescription = "Theme")
                     }
-                    DropdownMenu(
-                        expanded = themeMenuOpen,
-                        onDismissRequest = { themeMenuOpen = false }) {
-                        DropdownMenuItem(
-                            text = { Text(text = "Default theme") },
-                            onClick = { theme = PlayerTheme.Default })
-                        DropdownMenuItem(
-                            text = { Text(text = "Nitflex theme") },
-                            onClick = { theme = PlayerTheme.Nitflex })
-                    }
                 }
             )
         }, content = { padding ->
@@ -130,13 +120,23 @@ fun MainContent() {
                     onDismissRequest = { streamMenuOpen = false }
                 )
             }
+            if (themeMenuOpen) {
+                SelectThemeDialog(
+                    currentTheme = theme,
+                    onSelectTheme = {
+                        theme = it
+                        themeMenuOpen = false
+                    },
+                    onDismissRequest = { themeMenuOpen = false }
+                )
+            }
         })
     }
 }
 
-enum class PlayerTheme {
-    Default,
-    Nitflex
+enum class PlayerTheme(val title: String) {
+    Default(title = "Default theme"),
+    Nitflex(title = "Nitflex theme")
 }
 
 @Composable
@@ -168,6 +168,43 @@ fun SelectStreamDialog(
                             },
                             modifier = Modifier.clickable(onClick = {
                                 onSelectStream(it)
+                            })
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SelectThemeDialog(
+    currentTheme: PlayerTheme,
+    onSelectTheme: (PlayerTheme) -> Unit,
+    onDismissRequest: () -> Unit,
+) {
+    Dialog(onDismissRequest = onDismissRequest) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = "Select a theme",
+                    style = MaterialTheme.typography.headlineSmall
+                )
+                LazyColumn {
+                    items(items = PlayerTheme.values()) {
+                        ListItem(
+                            headlineContent = { Text(text = it.title) },
+                            leadingContent = {
+                                RadioButton(
+                                    selected = (it == currentTheme),
+                                    onClick = null
+                                )
+                            },
+                            modifier = Modifier.clickable(onClick = {
+                                onSelectTheme(it)
                             })
                         )
                     }
