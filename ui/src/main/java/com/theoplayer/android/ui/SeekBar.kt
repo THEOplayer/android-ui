@@ -27,12 +27,16 @@ fun SeekBar(
     val player = Player.current
     val currentTime = player?.currentTime?.toFloat() ?: 0.0f
     val seekable = player?.seekable ?: TimeRanges.empty()
+    val duration = player?.duration ?: Double.NaN
     val playingAd = player?.playingAd ?: false
     val enabled = seekable.isNotEmpty() && !playingAd
 
-    val valueRange = remember(seekable) {
-        val bounds = seekable.bounds ?: 0.0..0.0
-        bounds.start.toFloat()..bounds.endInclusive.toFloat()
+    val valueRange = remember(seekable, duration) {
+        seekable.bounds?.let { bounds ->
+            bounds.start.toFloat()..bounds.endInclusive.toFloat()
+        } ?: run {
+            0f..(if (duration.isFinite()) duration.toFloat() else 0f)
+        }
     }
     var seekTime by remember { mutableStateOf<Float?>(null) }
     var wasPlayingBeforeSeek by remember { mutableStateOf(false) }
