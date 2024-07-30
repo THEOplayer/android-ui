@@ -27,6 +27,8 @@ fun SeekBar(
     val player = Player.current
     val currentTime = player?.currentTime?.toFloat() ?: 0.0f
     val seekable = player?.seekable ?: TimeRanges.empty()
+    val playingAd = player?.playingAd ?: false
+    val enabled = seekable.isNotEmpty() && !playingAd
 
     val valueRange = remember(seekable) {
         val bounds = seekable.bounds ?: 0.0..0.0
@@ -40,7 +42,7 @@ fun SeekBar(
         colors = colors,
         value = seekTime ?: currentTime,
         valueRange = valueRange,
-        enabled = seekable.isNotEmpty(),
+        enabled = enabled,
         onValueChange = remember {
             { time ->
                 seekTime = time
