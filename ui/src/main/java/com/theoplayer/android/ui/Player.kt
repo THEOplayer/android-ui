@@ -301,7 +301,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         private set
     override var duration by mutableStateOf(Double.NaN)
         private set
-    override var seekable by mutableStateOf(TimeRanges(listOf()))
+    override var seekable by mutableStateOf(TimeRanges.empty())
         private set
     override var paused by mutableStateOf(true)
         private set
@@ -324,7 +324,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
 
     private fun updateCurrentTime() {
         currentTime = player?.currentTime ?: 0.0
-        seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges(listOf())
+        seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges.empty()
     }
 
     private fun updateDuration() {

@@ -26,7 +26,7 @@ fun SeekBar(
 ) {
     val player = Player.current
     val currentTime = player?.currentTime?.toFloat() ?: 0.0f
-    val seekable = player?.seekable ?: TimeRanges(listOf())
+    val seekable = player?.seekable ?: TimeRanges.empty()
 
     val valueRange = remember(seekable) {
         val bounds = seekable.bounds ?: 0.0..0.0
