@@ -102,7 +102,6 @@ fun UIController(
  * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
  * or a [Row] containing a [MuteButton] and a [FullscreenButton].
  */
-@OptIn(ExperimentalAnimationApi::class)
 @Composable
 fun UIController(
     modifier: Modifier = Modifier,
