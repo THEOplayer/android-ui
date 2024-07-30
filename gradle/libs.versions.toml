@@ -1,15 +1,15 @@
 [versions]
 gradle = "8.3.2"
 kotlin-gradle-plugin = "1.8.10"
-ktx = "1.12.0"
-lifecycle-runtime = "2.7.0"
-activity-compose = "1.8.2"
-appcompat = "1.6.1"
-compose-bom = "2024.04.00"
+ktx = "1.13.1"
+lifecycle-runtime = "2.8.4"
+activity-compose = "1.9.1"
+appcompat = "1.7.0"
+compose-bom = "2024.06.00"
 junit4 = "4.13.2"
-ui-test-junit4 = "1.6.5" # ...not in BOM for some reason?
-androidx-junit = "1.1.5"
-androidx-espresso = "3.5.1"
+ui-test-junit4 = "1.6.8" # ...not in BOM for some reason?
+androidx-junit = "1.2.1"
+androidx-espresso = "3.6.1"
 dokka = "1.9.20"
 theoplayer = "7.8.0"
 
