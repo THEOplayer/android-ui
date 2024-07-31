@@ -325,6 +325,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     private fun updateCurrentTime() {
         currentTime = player?.currentTime ?: 0.0
         seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges.empty()
+        updatePlayingAd()
     }
 
     private fun updateDuration() {
