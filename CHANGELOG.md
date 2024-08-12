@@ -9,6 +9,11 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 💥 Updated to Jetpack Compose version 1.6.8 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.06.00).
+* 🚀 Added basic support for advertisements. (Requires THEOplayer SDK version 7.10.0 or higher.)
+
 ## v1.6.0 (2024-04-16)
 
 * 🚀 Added support for THEOplayer Android SDK version 7.

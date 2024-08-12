@@ -31,6 +31,14 @@ data class TimeRanges(private val ranges: List<ClosedFloatingPointRange<Double>>
         }
 
     companion object {
+        private val _empty by lazy(mode = LazyThreadSafetyMode.NONE) { TimeRanges(listOf()) }
+
+        /**
+         * Returns an empty [TimeRanges].
+         */
+        @JvmStatic
+        fun empty(): TimeRanges = _empty
+
         /**
          * Converts a [com.theoplayer.android.api.timerange.TimeRanges] to a [TimeRanges].
          */
