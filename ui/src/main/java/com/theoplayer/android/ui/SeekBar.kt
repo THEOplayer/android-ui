@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
@@ -9,6 +10,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 
 /**
  * A seek bar showing the current time of the player, and which seeks the player when clicked or dragged.
@@ -42,7 +45,12 @@ fun SeekBar(
     var wasPlayingBeforeSeek by remember { mutableStateOf(false) }
 
     Slider(
-        modifier = modifier,
+        modifier = modifier.systemGestureExclusion {
+            Rect(
+                topLeft = Offset(0f, 0f),
+                bottomRight = Offset(it.size.width.toFloat(), it.size.height.toFloat() + 20)
+            )
+        },
         colors = colors,
         value = seekTime ?: currentTime,
         valueRange = valueRange,
