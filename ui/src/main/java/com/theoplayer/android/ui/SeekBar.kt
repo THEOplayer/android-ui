@@ -48,7 +48,7 @@ fun SeekBar(
         modifier = modifier.systemGestureExclusion {
             Rect(
                 topLeft = Offset(0f, 0f),
-                bottomRight = Offset(it.size.width.toFloat(), it.size.height.toFloat() + 20)
+                bottomRight = Offset(it.size.width.toFloat(), it.size.height.toFloat())
             )
         },
         colors = colors,
