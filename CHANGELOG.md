@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.7.1 (2024-08-20)
 
 * 🐛 Disable system gestures on the `SeekBar` component. ([#30](https://github.com/THEOplayer/android-ui/pull/30)) 
 
