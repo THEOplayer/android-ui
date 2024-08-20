@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🐛 Disable system gestures on the `SeekBar` component. ([#30](https://github.com/THEOplayer/android-ui/pull/30)) 
+
 ## v1.7.0 (2024-08-12)
 
 * 💥 Updated to Jetpack Compose version 1.6.8 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.06.00).

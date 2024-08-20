@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.foundation.systemGestureExclusion
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
@@ -42,7 +43,7 @@ fun SeekBar(
     var wasPlayingBeforeSeek by remember { mutableStateOf(false) }
 
     Slider(
-        modifier = modifier,
+        modifier = modifier.systemGestureExclusion(),
         colors = colors,
         value = seekTime ?: currentTime,
         valueRange = valueRange,
