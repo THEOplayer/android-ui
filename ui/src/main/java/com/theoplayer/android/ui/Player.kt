@@ -16,7 +16,6 @@ import com.theoplayer.android.api.cast.Cast
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.ads.AdBeginEvent
 import com.theoplayer.android.api.event.ads.AdEvent
 import com.theoplayer.android.api.event.ads.AdsEventTypes
 import com.theoplayer.android.api.event.chromecast.CastErrorEvent
@@ -348,11 +347,8 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         videoHeight = player?.videoHeight ?: 0
     }
 
-    private fun updatePlayingAd(event: AdEvent<*>? = null) {
-        playingAd = when (event) {
-            is AdBeginEvent -> true
-            else -> false
-        }
+    private fun updatePlayingAd() {
+        playingAd = ads?.isPlaying ?: false
     }
 
     private val playListener = EventListener<PlayEvent> { updateCurrentTimeAndPlaybackState() }
@@ -366,9 +362,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     private val readyStateChangeListener =
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
     private val resizeListener = EventListener<ResizeEvent> { updateVideoWidthAndHeight() }
-    private val adListener = EventListener<AdEvent<*>> {
-        updatePlayingAd(it)
-    }
+    private val adListener = EventListener<AdEvent<*>> { updatePlayingAd() }
     private val sourceChangeListener = EventListener<SourceChangeEvent> {
         _source = player?.source
         error = null
@@ -686,9 +680,9 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
             TextTrackListEventTypes.TRACKLISTCHANGE,
             textTrackListChangeListener
         )
-        ads?.addEventListener(AdsEventTypes.AD_BEGIN, adListener)
+        ads?.addEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.addEventListener(AdsEventTypes.AD_SKIP, adListener)
-        ads?.addEventListener(AdsEventTypes.AD_END, adListener)
+        ads?.addEventListener(AdsEventTypes.AD_BREAK_END, adListener)
         cast?.chromecast?.addEventListener(
             ChromecastEventTypes.STATECHANGE,
             chromecastStateChangeListener
@@ -752,8 +746,9 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
             TextTrackListEventTypes.TRACKLISTCHANGE,
             textTrackListChangeListener
         )
-        ads?.removeEventListener(AdsEventTypes.AD_BEGIN, adListener)
-        ads?.removeEventListener(AdsEventTypes.AD_END, adListener)
+        ads?.removeEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
+        ads?.removeEventListener(AdsEventTypes.AD_SKIP, adListener)
+        ads?.removeEventListener(AdsEventTypes.AD_BREAK_END, adListener)
         cast?.chromecast?.removeEventListener(
             ChromecastEventTypes.STATECHANGE,
             chromecastStateChangeListener
