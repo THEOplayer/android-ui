@@ -9,12 +9,15 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## v1.7.1 (2024-08-20)
+## Unreleased
 
-* 🐛 Disable system gestures on the `SeekBar` component. ([#30](https://github.com/THEOplayer/android-ui/pull/30)) 
 * 🐛 Fixed ad clickthrough not working. ([#33](https://github.com/THEOplayer/android-ui/pull/33))
 * 🐛 Fixed UI not re-appearing after playing an ad. ([#33](https://github.com/THEOplayer/android-ui/pull/33))
 * 🐛 Fixed exiting fullscreen disabling [edge-to-edge display](https://developer.android.com/develop/ui/views/layout/edge-to-edge-manually). ([#32](https://github.com/THEOplayer/android-ui/pull/32))
+
+## v1.7.1 (2024-08-20)
+
+* 🐛 Disable system gestures on the `SeekBar` component. ([#30](https://github.com/THEOplayer/android-ui/pull/30)) 
 
 ## v1.7.0 (2024-08-12)
 
