@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.7.2 (2024-08-28)
 
 * 🐛 Fixed ad clickthrough not working. ([#33](https://github.com/THEOplayer/android-ui/pull/33))
 * 🐛 Fixed UI not re-appearing after playing an ad. ([#33](https://github.com/THEOplayer/android-ui/pull/33))
