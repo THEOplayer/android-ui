@@ -12,6 +12,8 @@
 ## v1.7.1 (2024-08-20)
 
 * 🐛 Disable system gestures on the `SeekBar` component. ([#30](https://github.com/THEOplayer/android-ui/pull/30)) 
+* 🐛 Fixed ad clickthrough not working. ([#33](https://github.com/THEOplayer/android-ui/pull/33))
+* 🐛 Fixed UI not re-appearing after playing an ad. ([#33](https://github.com/THEOplayer/android-ui/pull/33))
 
 ## v1.7.0 (2024-08-12)
 
