@@ -217,6 +217,10 @@ fun UIController(
 
     PlayerContainer(modifier = modifier, player = player) {
         CompositionLocalProvider(LocalPlayer provides player) {
+            if (player.playingAd) {
+                // Remove player UI entirely while playing an ad, to make clickthrough work
+                return@CompositionLocalProvider
+            }
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
@@ -359,8 +363,7 @@ private fun PlayerContainer(
                         ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle)
                     )
                     setContent {
-                        if (player.playingAd.not())
-                            ui()
+                        ui()
                     }
                 }
                 // Host the THEOplayer view inside our AndroidView
