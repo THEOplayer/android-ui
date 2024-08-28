@@ -35,7 +35,6 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         val window = activity.window
 
         // Hide system bars
-        WindowCompat.setDecorFitsSystemWindows(window, false)
         WindowCompat.getInsetsController(window, view).let { controller ->
             controller.hide(WindowInsetsCompat.Type.systemBars())
             previousSystemBarsBehavior = controller.systemBarsBehavior
@@ -74,7 +73,6 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         val window = activity.window
 
         // Restore system bars
-        WindowCompat.setDecorFitsSystemWindows(window, true)
         WindowCompat.getInsetsController(window, view).let { controller ->
             controller.show(WindowInsetsCompat.Type.systemBars())
             controller.systemBarsBehavior = previousSystemBarsBehavior
