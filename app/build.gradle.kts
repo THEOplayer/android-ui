@@ -79,4 +79,5 @@ dependencies {
     implementation(libs.theoplayer)
     implementation(libs.theoplayer.ads)
     implementation(libs.theoplayer.ads.ima)
+    implementation(libs.theoplayer.cast)
 }

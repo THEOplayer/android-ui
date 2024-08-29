@@ -37,6 +37,7 @@ junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 theoplayer = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer" }
 theoplayer-ads = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads", version.ref = "theoplayer" }
 theoplayer-ads-ima = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads-ima", version.ref = "theoplayer" }
+theoplayer-cast = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-cast", version.ref = "theoplayer" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }

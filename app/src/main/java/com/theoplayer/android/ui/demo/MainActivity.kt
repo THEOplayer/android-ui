@@ -24,6 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
+import com.theoplayer.android.api.cast.CastConfiguration
+import com.theoplayer.android.api.cast.CastIntegrationFactory
+import com.theoplayer.android.api.cast.CastStrategy
 import com.theoplayer.android.ui.DefaultUI
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
@@ -51,7 +54,17 @@ fun MainContent() {
     val player = rememberPlayer()
     LaunchedEffect(player) {
         player.theoplayerView?.let { theoplayerView ->
-            theoplayerView.player.addIntegration(GoogleImaIntegrationFactory.createGoogleImaIntegration(theoplayerView))
+            // Add ads integration through Google IMA
+            theoplayerView.player.addIntegration(
+                GoogleImaIntegrationFactory.createGoogleImaIntegration(theoplayerView)
+            )
+            // Add Chromecast integration
+            val castConfiguration = CastConfiguration.Builder().apply {
+                castStrategy(CastStrategy.AUTO)
+            }.build()
+            theoplayerView.player.addIntegration(
+                CastIntegrationFactory.createCastIntegration(theoplayerView, castConfiguration)
+            )
         }
     }
     LaunchedEffect(player, stream) {
