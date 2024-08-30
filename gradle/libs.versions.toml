@@ -7,9 +7,11 @@ activity-compose = "1.9.1"
 appcompat = "1.7.0"
 compose-bom = "2024.06.00"
 junit4 = "4.13.2"
+playServices-castFramework = "21.5.0"
 ui-test-junit4 = "1.6.8" # ...not in BOM for some reason?
 androidx-junit = "1.2.1"
 androidx-espresso = "3.6.1"
+androidx-mediarouter = "1.7.0"
 dokka = "1.9.20"
 theoplayer = "7.10.0"
 
@@ -29,6 +31,8 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-toolingPreview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso" }
+androidx-mediarouter = { group = "androidx.mediarouter", name = "mediarouter", version.ref = "androidx-mediarouter" }
+playServices-castFramework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "playServices-castFramework" }
 gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 dokka-base = { group = "org.jetbrains.dokka", name = "dokka-base", version.ref = "dokka" }
 dokka-plugin = { group = "org.jetbrains.dokka", name = "android-documentation-plugin", version.ref = "dokka" }

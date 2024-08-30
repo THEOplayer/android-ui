@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.google.android.gms.cast.framework.CastContext
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
 import com.theoplayer.android.api.cast.CastConfiguration
@@ -36,6 +37,9 @@ import com.theoplayer.android.ui.theme.THEOplayerTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Initialize Chromecast immediately, for automatic receiver discovery to work correctly.
+        CastContext.getSharedInstance(this)
 
         setContent {
             THEOplayerTheme(useDarkTheme = true) {
