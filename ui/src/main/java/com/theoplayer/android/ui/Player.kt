@@ -296,7 +296,7 @@ enum class StreamType {
 internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val ads = theoplayerView?.player?.ads
-    override val cast = theoplayerView?.cast
+    override var cast by mutableStateOf<Cast?>(null)
     override var currentTime by mutableStateOf(0.0)
         private set
     override var duration by mutableStateOf(Double.NaN)
@@ -367,6 +367,9 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         _source = player?.source
         error = null
         firstPlay = false
+        // The cast integration is only registered *after* rememberPlayer() is called,
+        // so it's not available at construction time. Check if it's available now.
+        updateCast(theoplayerView?.cast)
         updateCurrentTimeAndPlaybackState()
         updateDuration()
         updateVideoWidthAndHeight()
@@ -611,6 +614,29 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     override var castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
     override var castReceiverName: String? by mutableStateOf(null)
 
+    private fun updateCast(cast: Cast?) {
+        if (this.cast == cast) return
+        this.cast?.let { oldCast ->
+            oldCast.chromecast.removeEventListener(
+                ChromecastEventTypes.STATECHANGE,
+                chromecastStateChangeListener
+            )
+            oldCast.chromecast.removeEventListener(
+                ChromecastEventTypes.ERROR,
+                chromecastErrorListener
+            )
+        }
+        this.cast = cast
+        cast?.let {
+            cast.chromecast.addEventListener(
+                ChromecastEventTypes.STATECHANGE,
+                chromecastStateChangeListener
+            )
+            cast.chromecast.addEventListener(ChromecastEventTypes.ERROR, chromecastErrorListener)
+        }
+        updateCastState()
+    }
+
     private fun updateCastState() {
         castState = cast?.chromecast?.state ?: PlayerCastState.UNAVAILABLE
         castReceiverName = cast?.chromecast?.receiverName
@@ -683,11 +709,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         ads?.addEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.addEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.addEventListener(AdsEventTypes.AD_BREAK_END, adListener)
-        cast?.chromecast?.addEventListener(
-            ChromecastEventTypes.STATECHANGE,
-            chromecastStateChangeListener
-        )
-        cast?.chromecast?.addEventListener(ChromecastEventTypes.ERROR, chromecastErrorListener)
+        updateCast(theoplayerView?.cast)
         fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
     }
 
@@ -749,11 +771,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         ads?.removeEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.removeEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.removeEventListener(AdsEventTypes.AD_BREAK_END, adListener)
-        cast?.chromecast?.removeEventListener(
-            ChromecastEventTypes.STATECHANGE,
-            chromecastStateChangeListener
-        )
-        cast?.chromecast?.removeEventListener(ChromecastEventTypes.ERROR, chromecastErrorListener)
+        updateCast(null)
         fullscreenHandler?.onFullscreenChangeListener = null
     }
 }
