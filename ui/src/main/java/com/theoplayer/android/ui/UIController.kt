@@ -167,14 +167,14 @@ fun UIController(
         derivedStateOf {
             if (!isReady) {
                 false
-            } else if (!player.firstPlay) {
+            } else if (!player.firstPlay || player.castState == PlayerCastState.CONNECTED) {
                 true
             } else if (player.playingAd) {
                 false
             } else if (forceControlsHidden) {
                 false
             } else {
-                isRecentlyTapped || isPressed || player.paused || player.castState == PlayerCastState.CONNECTED
+                isRecentlyTapped || isPressed || player.paused
             }
         }
     }
