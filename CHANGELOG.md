@@ -9,6 +9,12 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🐛 Fixed the Chromecast button never appearing. ([#34](https://github.com/THEOplayer/android-ui/pull/34))
+* 🐛 Fixed the seek bar being disabled while casting. ([#35](https://github.com/THEOplayer/android-ui/issues/35), [#36](https://github.com/THEOplayer/android-ui/pull/36))
+* 📝 Added a ["Setting up Chromecast" guide](./docs/guides/chromecast.md).
+
 ## v1.7.2 (2024-08-28)
 
 * 🐛 Fixed ad clickthrough not working. ([#33](https://github.com/THEOplayer/android-ui/pull/33))
