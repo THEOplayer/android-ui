@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 
 /**
  * A seek bar showing the current time of the player, and which seeks the player when clicked or dragged.
@@ -30,7 +31,10 @@ fun SeekBar(
     val seekable = player?.seekable ?: TimeRanges.empty()
     val duration = player?.duration ?: Double.NaN
     val playingAd = player?.playingAd ?: false
-    val enabled = seekable.isNotEmpty() && !playingAd
+    // `player.seekable` is (incorrectly) empty while casting, see #35
+    // Temporary fix: always allow seeking while casting.
+    val casting = player?.castState == PlayerCastState.CONNECTED
+    val enabled = (seekable.isNotEmpty() && !playingAd) || casting
 
     val valueRange = remember(seekable, duration) {
         seekable.bounds?.let { bounds ->
