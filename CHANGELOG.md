@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.7.4 (2024-09-02)
 
 * 🐛 Fixed a crash when playing a live stream on Chromecast.
 
