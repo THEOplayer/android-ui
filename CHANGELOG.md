@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🐛 Fixed a crash when playing a live stream on Chromecast.
+
 ## v1.7.3 (2024-09-02)
 
 * 🐛 Fixed the Chromecast button never appearing. ([#34](https://github.com/THEOplayer/android-ui/pull/34))

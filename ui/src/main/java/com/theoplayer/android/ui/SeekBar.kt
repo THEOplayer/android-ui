@@ -40,7 +40,7 @@ fun SeekBar(
         seekable.bounds?.let { bounds ->
             bounds.start.toFloat()..bounds.endInclusive.toFloat()
         } ?: run {
-            0f..(if (duration.isFinite()) duration.toFloat() else 0f)
+            0f..(if (duration.isFinite()) duration.toFloat().coerceAtLeast(0f) else 0f)
         }
     }
     var seekTime by remember { mutableStateOf<Float?>(null) }
