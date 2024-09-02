@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.7.3 (2024-09-02)
 
 * 🐛 Fixed the Chromecast button never appearing. ([#34](https://github.com/THEOplayer/android-ui/pull/34))
 * 🐛 Fixed the seek bar being disabled while casting. ([#35](https://github.com/THEOplayer/android-ui/issues/35), [#36](https://github.com/THEOplayer/android-ui/pull/36))
