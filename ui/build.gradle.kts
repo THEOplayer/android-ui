@@ -87,7 +87,7 @@ dependencies {
 
     implementation(libs.theoplayer) {
         version {
-            strictly("[5.0, 8.0)")
+            strictly("[5.0, 9.0)")
         }
     }
 
