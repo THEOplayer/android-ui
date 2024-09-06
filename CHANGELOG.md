@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🚀 Added support for THEOplayer 8.0.
+
 ## v1.7.4 (2024-09-02)
 
 * 🐛 Fixed a crash when playing a live stream on Chromecast.
