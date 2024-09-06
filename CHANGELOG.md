@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.8.0 (2024-09-06)
 
 * 🚀 Added support for THEOplayer 8.0.
 
