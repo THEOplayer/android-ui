@@ -123,10 +123,9 @@ publishing {
 
     publications {
         register<MavenPublication>("release") {
-            val libraryVersion: String by rootProject.extra
             groupId = "com.theoplayer.android-ui"
             artifactId = "android-ui"
-            version = libraryVersion
+            version = project.version as String
             artifact(dokkaJavadocJar)
             afterEvaluate {
                 from(components["release"])
