@@ -457,6 +457,13 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
         val context = LocalContext.current
         remember { THEOplayerView(context, config) }
     }
+
+    DisposableEffect(theoplayerView) {
+        onDispose {
+            theoplayerView?.onDestroy()
+        }
+    }
+
     return rememberPlayerInternal(theoplayerView)
 }
 
@@ -479,6 +486,17 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
  * This couples the lifecycle of the given [THEOplayerView] to the current activity.
  * That is, it automatically calls [THEOplayerView.onPause] and [THEOplayerView.onResume]
  * whenever the current activity is [paused][Activity.onPause] or [resumed][Activity.onResume].
+ *
+ * The [THEOplayerView] is **not** automatically destroyed when the composition is disposed.
+ * If you need this, use a [DisposableEffect]:
+ * ```kotlin
+ * val player = rememberPlayer(theoplayerView)
+ * DisposableEffect(theoplayerView) {
+ *     onDispose {
+ *         theoplayerView.onDestroy()
+ *     }
+ * }
+ * ```
  *
  * @param theoplayerView the existing THEOplayer view
  */
@@ -504,12 +522,6 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
 @Composable
 internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView {
     var wasPlayingAd by remember { mutableStateOf(false) }
-
-    DisposableEffect(theoplayerView) {
-        onDispose {
-            theoplayerView.onDestroy()
-        }
-    }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle, theoplayerView) {
