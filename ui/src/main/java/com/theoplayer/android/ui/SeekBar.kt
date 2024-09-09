@@ -95,8 +95,7 @@ fun SeekBar(
                 thumbTrackGapSize = 0.dp
             )
         },
-        onValueChange = remember {
-            { time ->
+        onValueChange = { time ->
                 seekTime = time
                 player?.player?.let {
                     if (!it.isPaused) {
@@ -105,19 +104,13 @@ fun SeekBar(
                     }
                     it.currentTime = time.toDouble()
                 }
-            }
         },
-        // This needs to always be the *same* callback,
-        // otherwise Slider will reset its internal SliderState while dragging.
-        // https://github.com/androidx/androidx/blob/4d69c45e6361a2e5af77edc9f7f92af3d0db3877/compose/material3/material3/src/commonMain/kotlin/androidx/compose/material3/Slider.kt#L270-L282
-        onValueChangeFinished = remember {
-            {
+        onValueChangeFinished = {
                 seekTime = null
                 if (wasPlayingBeforeSeek) {
                     player?.player?.play()
                     wasPlayingBeforeSeek = false
                 }
-            }
         }
     )
 }
