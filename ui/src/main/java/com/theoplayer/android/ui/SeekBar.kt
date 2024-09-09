@@ -16,7 +16,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.SliderDefaults.colors
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -126,7 +125,7 @@ private val StateLayerSize = 40.0.dp
 private fun SeekBarThumb(
     interactionSource: MutableInteractionSource,
     modifier: Modifier = Modifier,
-    colors: SliderColors = colors(),
+    colors: SliderColors = SliderDefaults.colors(),
     enabled: Boolean = true,
     thumbSize: DpSize = ThumbSize
 ) {
