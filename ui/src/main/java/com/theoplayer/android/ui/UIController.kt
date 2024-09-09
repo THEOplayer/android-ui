@@ -466,10 +466,6 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
  * The [THEOplayerView] should be [remembered][remember] so it's not re-created on every
  * recomposition.
  *
- * This couples the lifecycle of the given [THEOplayerView] to the current activity.
- * That is, it automatically calls [THEOplayerView.onPause] and [THEOplayerView.onResume]
- * whenever the current activity is [paused][Activity.onPause] or [resumed][Activity.onResume].
- *
  * Example usage:
  * ```kotlin
  * val context = LocalContext.current
@@ -479,6 +475,10 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
  * }
  * val player = rememberPlayer(theoplayerView)
  * ```
+ *
+ * This couples the lifecycle of the given [THEOplayerView] to the current activity.
+ * That is, it automatically calls [THEOplayerView.onPause] and [THEOplayerView.onResume]
+ * whenever the current activity is [paused][Activity.onPause] or [resumed][Activity.onResume].
  *
  * @param theoplayerView the existing THEOplayer view
  */
