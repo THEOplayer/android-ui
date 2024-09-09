@@ -17,6 +17,7 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderDefaults.colors
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -157,13 +158,12 @@ private fun SeekBarThumb(
     }
     val shape = CircleShape
 
-    @Suppress("DEPRECATION_ERROR")
-    (Spacer(
+    Spacer(
         modifier
             .size(thumbSize)
             .indication(
                 interactionSource = interactionSource,
-                indication = androidx.compose.material.ripple.rememberRipple(
+                indication = ripple(
                     bounded = false,
                     radius = StateLayerSize / 2
                 )
@@ -171,7 +171,7 @@ private fun SeekBarThumb(
             .hoverable(interactionSource = interactionSource)
             .shadow(if (enabled) elevation else 0.dp, shape, clip = false)
             .background(colors.thumbColor(enabled), shape)
-    ))
+    )
 }
 
 private fun SliderColors.thumbColor(enabled: Boolean): Color =
