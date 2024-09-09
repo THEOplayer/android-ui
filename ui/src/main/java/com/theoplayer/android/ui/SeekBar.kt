@@ -96,21 +96,21 @@ fun SeekBar(
             )
         },
         onValueChange = { time ->
-                seekTime = time
-                player?.player?.let {
-                    if (!it.isPaused) {
-                        wasPlayingBeforeSeek = true
-                        it.pause()
-                    }
-                    it.currentTime = time.toDouble()
+            seekTime = time
+            player?.player?.let {
+                if (!it.isPaused) {
+                    wasPlayingBeforeSeek = true
+                    it.pause()
                 }
+                it.currentTime = time.toDouble()
+            }
         },
         onValueChangeFinished = {
-                seekTime = null
-                if (wasPlayingBeforeSeek) {
-                    player?.player?.play()
-                    wasPlayingBeforeSeek = false
-                }
+            seekTime = null
+            if (wasPlayingBeforeSeek) {
+                player?.player?.play()
+                wasPlayingBeforeSeek = false
+            }
         }
     )
 }
