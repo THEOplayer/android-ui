@@ -297,6 +297,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     override val player = theoplayerView?.player
     override val ads = theoplayerView?.player?.ads
     override var cast by mutableStateOf<Cast?>(null)
+        private set
     override var currentTime by mutableStateOf(0.0)
         private set
     override var duration by mutableStateOf(Double.NaN)

@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import android.app.Activity
 import android.view.ViewGroup
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -453,8 +454,60 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
     val theoplayerView = if (LocalInspectionMode.current) {
         null
     } else {
-        rememberTHEOplayerView(config)
+        val context = LocalContext.current
+        remember { THEOplayerView(context, config) }
     }
+
+    DisposableEffect(theoplayerView) {
+        onDispose {
+            theoplayerView?.onDestroy()
+        }
+    }
+
+    return rememberPlayerInternal(theoplayerView)
+}
+
+/**
+ * Create a [Player] wrapping an existing [THEOplayerView].
+ *
+ * The [THEOplayerView] should be [remembered][remember] so it's not re-created on every
+ * recomposition.
+ *
+ * Example usage:
+ * ```kotlin
+ * val context = LocalContext.current
+ * val theoplayerView = remember(context) {
+ *   val config = THEOplayerConfig.Builder().build()
+ *   THEOplayerView(context, config)
+ * }
+ * val player = rememberPlayer(theoplayerView)
+ * ```
+ *
+ * This couples the lifecycle of the given [THEOplayerView] to the current activity.
+ * That is, it automatically calls [THEOplayerView.onPause] and [THEOplayerView.onResume]
+ * whenever the current activity is [paused][Activity.onPause] or [resumed][Activity.onResume].
+ *
+ * The [THEOplayerView] is **not** automatically destroyed when the composition is disposed.
+ * If you need this, use a [DisposableEffect]:
+ * ```kotlin
+ * val player = rememberPlayer(theoplayerView)
+ * DisposableEffect(theoplayerView) {
+ *     onDispose {
+ *         theoplayerView.onDestroy()
+ *     }
+ * }
+ * ```
+ *
+ * @param theoplayerView the existing THEOplayer view
+ */
+@Composable
+fun rememberPlayer(theoplayerView: THEOplayerView): Player {
+    return rememberPlayerInternal(theoplayerView)
+}
+
+@Composable
+internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
+    theoplayerView?.let { setupTHEOplayerView(it) }
 
     val player = remember(theoplayerView) { PlayerImpl(theoplayerView) }
     DisposableEffect(player) {
@@ -466,22 +519,9 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
     return player
 }
 
-/**
- * Creates and remembers a THEOplayer view.
- *
- * @param config the player configuration
- */
 @Composable
-internal fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
-    val context = LocalContext.current
-    val theoplayerView = remember { THEOplayerView(context, config) }
+internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView {
     var wasPlayingAd by remember { mutableStateOf(false) }
-
-    DisposableEffect(theoplayerView) {
-        onDispose {
-            theoplayerView.onDestroy()
-        }
-    }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle, theoplayerView) {
