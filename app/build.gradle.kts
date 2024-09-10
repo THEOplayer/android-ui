@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.theoplayer.android.ui.demo"
-        minSdk = 24
+        minSdk = 21
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
