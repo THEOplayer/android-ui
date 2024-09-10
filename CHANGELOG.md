@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## $v{version} (2024-09-10)
 
 * 💥 Updated to Jetpack Compose version 1.7.0 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.09.00).
 * 💥 Changed `colors` parameter in `IconButton` and `LiveButton` to be an `IconButtonColors`.
