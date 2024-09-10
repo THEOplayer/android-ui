@@ -25,6 +25,6 @@ const today = `${now.getFullYear()}-${(now.getMonth() + 1)
   .padStart(2, "0")}-${now.getDate().toString().padStart(2, "0")}`;
 changelog = changelog.replace(
   /^## Unreleased$/m,
-  `## ${version} (${today})`
+  `## v${version} (${today})`
 );
 fs.writeFileSync(changelogPath, changelog);
