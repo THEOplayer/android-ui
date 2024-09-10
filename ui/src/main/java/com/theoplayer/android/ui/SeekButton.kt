@@ -57,8 +57,8 @@ fun SeekButton(
             )
             Text(
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(y = iconSize * 0.4f),
+                    .align(Alignment.Center)
+                    .offset(y = iconSize * 0.1f),
                 text = "${seekOffset.absoluteValue}",
                 fontSize = 6.sp * (iconSize / 24.dp)
             )

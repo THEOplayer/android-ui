@@ -25,9 +25,7 @@ import androidx.compose.ui.unit.dp
 fun ErrorDisplay(
     modifier: Modifier = Modifier,
 ) {
-    val error = Player.current?.error
-
-    error?.let { it ->
+    Player.current?.error?.let { error ->
         Row(
             modifier = modifier,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -50,7 +48,7 @@ fun ErrorDisplay(
                     )
                 }
                 Text(
-                    text = "${it.message}"
+                    text = "${error.message}"
                 )
             }
         }

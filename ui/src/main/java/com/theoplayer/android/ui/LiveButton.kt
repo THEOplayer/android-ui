@@ -8,6 +8,8 @@ import androidx.compose.material.icons.rounded.Circle
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -35,7 +37,7 @@ import com.theoplayer.android.ui.theme.THEOplayerTheme
 fun LiveButton(
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
-    colors: ButtonColors = IconButtonDefaults.iconButtonColors(),
+    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     liveThreshold: Double = 10.0,
     live: @Composable RowScope.() -> Unit = {
         Icon(
@@ -63,7 +65,7 @@ fun LiveButton(
         TextButton(
             modifier = modifier,
             contentPadding = contentPadding,
-            colors = colors,
+            colors = colors.toButtonColors(),
             onClick = {
                 player.player?.let {
                     it.currentTime = Double.POSITIVE_INFINITY

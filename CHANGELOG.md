@@ -9,6 +9,13 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.9.0 (2024-09-10)
+
+* 💥 Updated to Jetpack Compose version 1.7.0 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.09.00).
+* 💥 Changed `colors` parameter in `IconButton` and `LiveButton` to be an `IconButtonColors`.
+* 🚀 Added support for Android Lollipop (API 21), to align with the THEOplayer Android SDK.
+* 🚀 Added `rememberPlayer(THEOplayerView)` to create a `Player` wrapping an existing `THEOplayerView`.
+
 ## v1.8.0 (2024-09-06)
 
 * 🚀 Added support for THEOplayer 8.0.
