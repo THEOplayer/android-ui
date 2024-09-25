@@ -14,7 +14,7 @@ fun DurationDisplay(
     modifier: Modifier = Modifier
 ) {
     val player = Player.current
-    val duration = player?.duration ?: Double.NaN
+    val duration = player?.seekable?.lastEnd ?: player?.duration ?: Double.NaN
 
     Text(modifier = modifier, text = formatTime(duration))
 }
