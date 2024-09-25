@@ -112,7 +112,12 @@ fun DefaultUI(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MuteButton()
                     LiveButton()
-                    CurrentTimeDisplay(showDuration = true)
+                    if (player.streamType != StreamType.Live) {
+                        CurrentTimeDisplay(
+                            showRemaining = player.streamType == StreamType.Dvr,
+                            showDuration = player.streamType == StreamType.Vod
+                        )
+                    }
                     Spacer(modifier = Modifier.weight(1f))
                     FullscreenButton()
                 }
