@@ -9,6 +9,13 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🐛 Fix `DurationDisplay` to show the time of the live point when playing a live or DVR stream.
+* 🐛 Fix `CurrentTimeDisplay` to show the time offset to the live point when playing a live or DVR stream with `showRemaining = true`.
+* 💅 Changed `DefaultUi` to hide the current time display when playing a live stream.
+* 💅 Changed `DefaultUi` to show the time offset to the live point when playing a DVR stream.
+
 ## v1.9.0 (2024-09-10)
 
 * 💥 Updated to Jetpack Compose version 1.7.0 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.09.00).
