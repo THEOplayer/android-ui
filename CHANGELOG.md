@@ -15,6 +15,7 @@
 * 🐛 Fix `CurrentTimeDisplay` to show the time offset to the live point when playing a live or DVR stream with `showRemaining = true`.
 * 💅 Changed `DefaultUi` to hide the current time display when playing a live stream.
 * 💅 Changed `DefaultUi` to show the time offset to the live point when playing a DVR stream.
+* 💅 Changed `LanguageMenuButton` to automatically hide itself when there are no alternative audio or subtitle tracks to select.
 
 ## v1.9.0 (2024-09-10)
 
