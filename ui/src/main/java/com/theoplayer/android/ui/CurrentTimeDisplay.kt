@@ -21,7 +21,7 @@ fun CurrentTimeDisplay(
 ) {
     val player = Player.current
     val currentTime = player?.currentTime ?: 0.0
-    val duration = player?.duration ?: Double.NaN
+    val duration = player?.seekable?.lastEnd ?: player?.duration ?: Double.NaN
 
     val time = if (showRemaining) {
         -(duration - currentTime)

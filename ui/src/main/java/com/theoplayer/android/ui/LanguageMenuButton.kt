@@ -25,10 +25,20 @@ fun MenuScope.LanguageMenuButton(
         )
     }
 ) {
+    val player = Player.current
+    if (!showLanguageMenuButton(player)) {
+        // Hide when no alternative audio or subtitle tracks are available
+        return
+    }
+
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = { openMenu { LanguageMenu() } }) {
         content()
     }
+}
+
+internal fun showLanguageMenuButton(player: Player?): Boolean {
+    return showAudioTracks(player) || showSubtitleTracks(player)
 }
