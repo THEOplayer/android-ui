@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.9.1 (2024-10-01)
 
 * 🐛 Fix `DurationDisplay` to show the time of the live point when playing a live or DVR stream.
 * 🐛 Fix `CurrentTimeDisplay` to show the time offset to the live point when playing a live or DVR stream with `showRemaining = true`.
