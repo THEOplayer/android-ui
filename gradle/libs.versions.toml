@@ -13,7 +13,7 @@ androidx-junit = "1.2.1"
 androidx-espresso = "3.6.1"
 androidx-mediarouter = "1.7.0"
 dokka = "1.9.20"
-theoplayer = "7.11.0"
+theoplayer = "8.1.1"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
