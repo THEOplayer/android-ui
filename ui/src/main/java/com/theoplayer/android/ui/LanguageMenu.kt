@@ -48,11 +48,11 @@ fun MenuScope.LanguageMenu() {
     }
 }
 
-private fun showAudioTracks(player: Player?): Boolean {
+internal fun showAudioTracks(player: Player?): Boolean {
     return player != null && player.audioTracks.size >= 2
 }
 
-private fun showSubtitleTracks(player: Player?): Boolean {
+internal fun showSubtitleTracks(player: Player?): Boolean {
     return player != null && player.subtitleTracks.isNotEmpty()
 }
 
