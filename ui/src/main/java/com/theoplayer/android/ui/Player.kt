@@ -296,8 +296,6 @@ enum class StreamType {
 internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val ads = theoplayerView?.player?.ads
-    override var cast by mutableStateOf<Cast?>(null)
-        private set
     override var currentTime by mutableStateOf(0.0)
         private set
     override var duration by mutableStateOf(Double.NaN)
@@ -368,8 +366,6 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         _source = player?.source
         error = null
         firstPlay = false
-        // The cast integration is only registered *after* rememberPlayer() is called,
-        // so it's not available at construction time. Check if it's available now.
         updateCast(theoplayerView?.cast)
         updateCurrentTimeAndPlaybackState()
         updateDuration()
@@ -612,12 +608,31 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     private val textTrackListChangeListener =
         EventListener<TextTrackListChangeEvent> { updateActiveSubtitleTrack() }
 
-    override var castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
-    override var castReceiverName: String? by mutableStateOf(null)
+    private var _cast by mutableStateOf<Cast?>(null)
+    private var _castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
+    private var _castReceiverName: String? by mutableStateOf(null)
+    override val cast: Cast?
+        get() {
+            // The cast integration is only registered *after* rememberPlayer() is called,
+            // so it might not be available at construction time.
+            // Always use the getter on THEOplayerView to get the current cast integration.
+            updateCast(theoplayerView?.cast)
+            return _cast
+        }
+    override val castState: PlayerCastState
+        get() {
+            updateCast(theoplayerView?.cast)
+            return _castState
+        }
+    override val castReceiverName: String?
+        get() {
+            updateCast(theoplayerView?.cast)
+            return _castReceiverName
+        }
 
     private fun updateCast(cast: Cast?) {
-        if (this.cast == cast) return
-        this.cast?.let { oldCast ->
+        if (_cast == cast) return
+        _cast?.let { oldCast ->
             oldCast.chromecast.removeEventListener(
                 ChromecastEventTypes.STATECHANGE,
                 chromecastStateChangeListener
@@ -627,7 +642,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
                 chromecastErrorListener
             )
         }
-        this.cast = cast
+        _cast = cast
         cast?.let {
             cast.chromecast.addEventListener(
                 ChromecastEventTypes.STATECHANGE,
@@ -639,8 +654,8 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     }
 
     private fun updateCastState() {
-        castState = cast?.chromecast?.state ?: PlayerCastState.UNAVAILABLE
-        castReceiverName = cast?.chromecast?.receiverName
+        _castState = cast?.chromecast?.state ?: PlayerCastState.UNAVAILABLE
+        _castReceiverName = cast?.chromecast?.receiverName
     }
 
     private val chromecastStateChangeListener =
@@ -657,6 +672,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         updateActiveVideoTrack()
         updateAudioTracks()
         updateSubtitleTracks()
+        updateCast(theoplayerView?.cast)
         updateCastState()
         player?.addEventListener(PlayerEventTypes.PLAY, playListener)
         player?.addEventListener(PlayerEventTypes.PAUSE, pauseListener)
@@ -710,7 +726,6 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         ads?.addEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.addEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.addEventListener(AdsEventTypes.AD_BREAK_END, adListener)
-        updateCast(theoplayerView?.cast)
         fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
     }
 
