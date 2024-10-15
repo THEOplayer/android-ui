@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.9.2 (2024-10-15)
 
 * 🐛 Fix `Player.cast` not available before first source change.
 
