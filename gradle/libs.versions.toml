@@ -13,7 +13,7 @@ androidx-junit = "1.2.1"
 androidx-espresso = "3.6.1"
 androidx-mediarouter = "1.7.0"
 dokka = "1.9.20"
-theoplayer = "7.11.0"
+theoplayer = "8.2.0"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
@@ -39,7 +39,6 @@ dokka-plugin = { group = "org.jetbrains.dokka", name = "android-documentation-pl
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 theoplayer = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer" }
-theoplayer-ads = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads", version.ref = "theoplayer" }
 theoplayer-ads-ima = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads-ima", version.ref = "theoplayer" }
 theoplayer-cast = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-cast", version.ref = "theoplayer" }
 

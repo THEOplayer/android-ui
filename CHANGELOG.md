@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.9.2 (2024-10-15)
+
+* 🐛 Fix `Player.cast` not available before first source change.
+
 ## v1.9.1 (2024-10-01)
 
 * 🐛 Fix `DurationDisplay` to show the time of the live point when playing a live or DVR stream.
