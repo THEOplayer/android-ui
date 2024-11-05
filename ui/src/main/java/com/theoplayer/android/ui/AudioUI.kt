@@ -94,10 +94,8 @@ fun AudioUI(
                 ChromecastButton(iconModifier = Modifier.size(iconSize))
             }
         },
-        centerChrome = {
-            ChromecastDisplay(modifier = Modifier.padding(8.dp))
-        },
         bottomChrome = {
+            ChromecastDisplay(modifier = Modifier.padding(8.dp))
             if (player.streamType != StreamType.Live) {
                 Box(
                     modifier = Modifier.minimumInteractiveComponentSize(),
