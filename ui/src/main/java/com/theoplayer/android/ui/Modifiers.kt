@@ -182,16 +182,14 @@ internal fun Modifier.constrainedAspectRatio(
     @FloatRange(from = 0.0, fromInclusive = false)
     ratio: Float,
     matchHeightConstraintsFirst: Boolean = false
-): Modifier = this.then(
-    ConstrainedAspectRatioElement(
-        ratio,
-        matchHeightConstraintsFirst,
-        debugInspectorInfo {
-            name = "constrainedAspectRatio"
-            properties["ratio"] = ratio
-            properties["matchHeightConstraintsFirst"] = matchHeightConstraintsFirst
-        }
-    )
+): Modifier = this then ConstrainedAspectRatioElement(
+    ratio,
+    matchHeightConstraintsFirst,
+    debugInspectorInfo {
+        name = "constrainedAspectRatio"
+        properties["ratio"] = ratio
+        properties["matchHeightConstraintsFirst"] = matchHeightConstraintsFirst
+    }
 )
 
 private class ConstrainedAspectRatioElement(

@@ -38,7 +38,7 @@ fun ErrorDisplay(
             Column {
                 Icon(
                     Icons.Rounded.Error,
-                    modifier = Modifier.size(iconSize).then(iconModifier),
+                    modifier = Modifier.size(iconSize) then iconModifier,
                     contentDescription = null
                 )
             }

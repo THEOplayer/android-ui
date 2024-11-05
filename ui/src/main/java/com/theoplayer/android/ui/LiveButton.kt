@@ -47,7 +47,7 @@ fun LiveButton(
     live: @Composable RowScope.() -> Unit = {
         Icon(
             Icons.Rounded.Circle,
-            modifier = Modifier.size(iconSize).then(iconModifier),
+            modifier = Modifier.size(iconSize) then iconModifier,
             tint = THEOplayerTheme.playerColors.liveButtonLive,
             contentDescription = null
         )
@@ -56,7 +56,7 @@ fun LiveButton(
     dvr: @Composable RowScope. () -> Unit = {
         Icon(
             Icons.Rounded.Circle,
-            modifier = Modifier.size(iconSize).then(iconModifier),
+            modifier = Modifier.size(iconSize) then iconModifier,
             tint = THEOplayerTheme.playerColors.liveButtonDvr,
             contentDescription = null
         )
