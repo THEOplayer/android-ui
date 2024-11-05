@@ -36,11 +36,11 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.isSatisfiedBy
+import androidx.compose.ui.util.fastRoundToInt
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 internal fun Modifier.pressable(
     interactionSource: MutableInteractionSource,
@@ -256,7 +256,7 @@ private class ConstrainedAspectRatioNode(
         measurable: IntrinsicMeasurable,
         height: Int
     ) = if (height != Constraints.Infinity) {
-        (height * aspectRatio).roundToInt()
+        (height * aspectRatio).fastRoundToInt()
     } else {
         measurable.minIntrinsicWidth(height)
     }
@@ -265,7 +265,7 @@ private class ConstrainedAspectRatioNode(
         measurable: IntrinsicMeasurable,
         height: Int
     ) = if (height != Constraints.Infinity) {
-        (height * aspectRatio).roundToInt()
+        (height * aspectRatio).fastRoundToInt()
     } else {
         measurable.maxIntrinsicWidth(height)
     }
@@ -274,7 +274,7 @@ private class ConstrainedAspectRatioNode(
         measurable: IntrinsicMeasurable,
         width: Int
     ) = if (width != Constraints.Infinity) {
-        (width / aspectRatio).roundToInt()
+        (width / aspectRatio).fastRoundToInt()
     } else {
         measurable.minIntrinsicHeight(width)
     }
@@ -283,7 +283,7 @@ private class ConstrainedAspectRatioNode(
         measurable: IntrinsicMeasurable,
         width: Int
     ) = if (width != Constraints.Infinity) {
-        (width / aspectRatio).roundToInt()
+        (width / aspectRatio).fastRoundToInt()
     } else {
         measurable.maxIntrinsicHeight(width)
     }
@@ -306,7 +306,7 @@ private class ConstrainedAspectRatioNode(
     private fun Constraints.tryMaxWidth(): IntSize {
         val maxWidth = this.maxWidth
         if (maxWidth != Constraints.Infinity) {
-            val height = (maxWidth / aspectRatio).roundToInt()
+            val height = (maxWidth / aspectRatio).fastRoundToInt()
             if (height > 0) {
                 val size = IntSize(maxWidth, height)
                 if (isSatisfiedBy(size)) {
@@ -320,7 +320,7 @@ private class ConstrainedAspectRatioNode(
     private fun Constraints.tryMaxHeight(): IntSize {
         val maxHeight = this.maxHeight
         if (maxHeight != Constraints.Infinity) {
-            val width = (maxHeight * aspectRatio).roundToInt()
+            val width = (maxHeight * aspectRatio).fastRoundToInt()
             if (width > 0) {
                 val size = IntSize(width, maxHeight)
                 if (isSatisfiedBy(size)) {
@@ -333,7 +333,7 @@ private class ConstrainedAspectRatioNode(
 
     private fun Constraints.tryMinWidth(): IntSize {
         val minWidth = this.minWidth
-        val height = (minWidth / aspectRatio).roundToInt()
+        val height = (minWidth / aspectRatio).fastRoundToInt()
         if (height > 0) {
             val size = IntSize(minWidth, height)
             if (isSatisfiedBy(size)) {
@@ -345,7 +345,7 @@ private class ConstrainedAspectRatioNode(
 
     private fun Constraints.tryMinHeight(): IntSize {
         val minHeight = this.minHeight
-        val width = (minHeight * aspectRatio).roundToInt()
+        val width = (minHeight * aspectRatio).fastRoundToInt()
         if (width > 0) {
             val size = IntSize(width, minHeight)
             if (isSatisfiedBy(size)) {
