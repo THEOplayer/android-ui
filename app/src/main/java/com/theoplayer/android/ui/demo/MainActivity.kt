@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,6 +32,7 @@ import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
 import com.theoplayer.android.api.cast.CastConfiguration
 import com.theoplayer.android.api.cast.CastIntegrationFactory
 import com.theoplayer.android.api.cast.CastStrategy
+import com.theoplayer.android.ui.AudioUI
 import com.theoplayer.android.ui.DefaultUI
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
@@ -106,13 +109,12 @@ fun MainContent() {
                 }
             )
         }) { padding ->
-            val playerModifier = Modifier
-                .padding(padding)
-                .fillMaxSize(1f)
             when (theme) {
                 PlayerTheme.Default -> {
                     DefaultUI(
-                        modifier = playerModifier,
+                        modifier = Modifier
+                            .padding(padding)
+                            .fillMaxSize(1f),
                         player = player,
                         title = stream.title
                     )
@@ -121,7 +123,21 @@ fun MainContent() {
                 PlayerTheme.Nitflex -> {
                     NitflexTheme(useDarkTheme = true) {
                         NitflexUI(
-                            modifier = playerModifier,
+                            modifier = Modifier
+                                .padding(padding)
+                                .fillMaxSize(1f),
+                            player = player,
+                            title = stream.title
+                        )
+                    }
+                }
+
+                PlayerTheme.AudioOnly -> {
+                    Box(
+                        modifier = Modifier.padding(padding),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AudioUI(
                             player = player,
                             title = stream.title
                         )
@@ -156,7 +172,8 @@ fun MainContent() {
 
 enum class PlayerTheme(val title: String) {
     Default(title = "Default theme"),
-    Nitflex(title = "Nitflex theme")
+    Nitflex(title = "Nitflex theme"),
+    AudioOnly(title = "Audio-only")
 }
 
 @Composable

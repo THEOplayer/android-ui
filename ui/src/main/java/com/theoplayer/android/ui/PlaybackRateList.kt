@@ -49,9 +49,9 @@ fun PlaybackRateList(
 
 private val playbackRateFormat = DecimalFormat("#.##")
 
-internal fun formatPlaybackRate(rate: Double): String {
+internal fun formatPlaybackRate(rate: Double, default: String = "Normal"): String {
     return if (rate == 1.0) {
-        "Normal"
+        default
     } else {
         "${playbackRateFormat.format(rate)}x"
     }
