@@ -15,6 +15,7 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
  * A button to start and stop casting using Chromecast.
  *
  * @param modifier the [Modifier] to be applied to this button
+ * @param iconModifier the [Modifier] to be applied to the [Icon]s inside this button
  * @param contentPadding the spacing values to apply internally between the container and the
  * content
  * @param availableIcon button content when Chromecast is available but not connected,
@@ -27,22 +28,26 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 @Composable
 fun ChromecastButton(
     modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     availableIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
+            modifier = iconModifier,
             contentDescription = "Start casting"
         )
     },
     connectingIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
+            modifier = iconModifier,
             contentDescription = "Stop casting"
         )
     },
     connectedIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.CastConnected,
+            modifier = iconModifier,
             contentDescription = "Stop casting"
         )
     }

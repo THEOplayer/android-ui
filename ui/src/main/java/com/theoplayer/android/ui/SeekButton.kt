@@ -27,6 +27,7 @@ import kotlin.math.absoluteValue
  * @param modifier the [Modifier] to be applied to this button
  * @param seekOffset the offset (in seconds) by which to seek forward (if positive)
  * or backward (if negative)
+ * @param iconModifier the [Modifier] to be applied to the [Icon] inside this button
  * @param iconSize the size of the icon
  * @param contentPadding the spacing values to apply internally between the container and the
  * content
@@ -35,6 +36,7 @@ import kotlin.math.absoluteValue
 fun SeekButton(
     modifier: Modifier = Modifier,
     seekOffset: Int = 10,
+    iconModifier: Modifier = Modifier,
     iconSize: Dp = 24.dp,
     contentPadding: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -48,7 +50,8 @@ fun SeekButton(
                 Icons.Rounded.Replay,
                 modifier = Modifier
                     .size(iconSize)
-                    .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
+                    .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f)
+                    .then(iconModifier),
                 contentDescription = if (seekOffset >= 0) {
                     "Seek forward by $seekOffset seconds"
                 } else {

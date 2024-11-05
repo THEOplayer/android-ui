@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 
@@ -22,6 +23,8 @@ import com.theoplayer.android.ui.theme.THEOplayerTheme
  * and seeks to the live point when clicked.
  *
  * @param modifier the [Modifier] to be applied to this button
+ * @param iconModifier the [Modifier] to be applied to the [Icon] inside this button
+ * @param iconSize the size of the icon
  * @param contentPadding the spacing values to apply internally between the container and the
  * content
  * @param colors [ButtonColors] that will be used to resolve the colors for this button in different
@@ -36,13 +39,15 @@ import com.theoplayer.android.ui.theme.THEOplayerTheme
 @Composable
 fun LiveButton(
     modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    iconSize: Dp = 12.dp,
     contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     liveThreshold: Double = 10.0,
     live: @Composable RowScope.() -> Unit = {
         Icon(
             Icons.Rounded.Circle,
-            modifier = Modifier.size(12.dp),
+            modifier = Modifier.size(iconSize).then(iconModifier),
             tint = THEOplayerTheme.playerColors.liveButtonLive,
             contentDescription = null
         )
@@ -51,7 +56,7 @@ fun LiveButton(
     dvr: @Composable RowScope. () -> Unit = {
         Icon(
             Icons.Rounded.Circle,
-            modifier = Modifier.size(12.dp),
+            modifier = Modifier.size(iconSize).then(iconModifier),
             tint = THEOplayerTheme.playerColors.liveButtonDvr,
             contentDescription = null
         )
