@@ -134,7 +134,9 @@ fun MainContent() {
 
                 PlayerTheme.AudioOnly -> {
                     Box(
-                        modifier = Modifier.padding(padding),
+                        modifier = Modifier
+                            .fillMaxSize(1f)
+                            .padding(padding),
                         contentAlignment = Alignment.Center
                     ) {
                         AudioUI(
