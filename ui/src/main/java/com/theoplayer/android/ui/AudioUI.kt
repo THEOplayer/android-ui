@@ -69,14 +69,15 @@ fun AudioUI(
  * @param modifier the [Modifier] to be applied to this UI
  * @param player the player. This should always be created using [rememberPlayer].
  * @param title the stream's title, shown at the top of the player
+ * @param iconSize the size of the icons
  * @see UIController
  */
 @Composable
 fun AudioUI(
     modifier: Modifier = Modifier,
-    iconSize: Dp = 32.dp,
     player: Player = rememberPlayer(),
-    title: String? = null
+    title: String? = null,
+    iconSize: Dp = 32.dp
 ) {
     UIController(
         modifier = modifier,
