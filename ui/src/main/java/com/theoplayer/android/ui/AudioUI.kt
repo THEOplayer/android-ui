@@ -103,13 +103,14 @@ fun AudioUI(
         },
         bottomChrome = {
             ChromecastDisplay(modifier = Modifier.padding(8.dp))
+            Row(
+                modifier = Modifier.minimumInteractiveComponentSize(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SeekBar(modifier = Modifier.weight(1f))
+                LiveButton(iconModifier = Modifier.size(iconSize))
+            }
             if (player.streamType != StreamType.Live) {
-                Box(
-                    modifier = Modifier.minimumInteractiveComponentSize(),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    SeekBar()
-                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
