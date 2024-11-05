@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -107,7 +108,12 @@ fun DefaultUI(
             if (player.firstPlay) {
                 ChromecastDisplay(modifier = Modifier.padding(8.dp))
                 if (player.streamType != StreamType.Live) {
-                    SeekBar()
+                    Box(
+                        modifier = Modifier.minimumInteractiveComponentSize(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        SeekBar()
+                    }
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MuteButton()

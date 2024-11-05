@@ -18,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -120,7 +121,12 @@ fun NitflexUI(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        NitflexSeekBar(modifier = Modifier.weight(1f))
+                        Box(
+                            modifier = Modifier.weight(1f).minimumInteractiveComponentSize(),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            NitflexSeekBar()
+                        }
                         CurrentTimeDisplay(showRemaining = true)
                     }
                     Row(
