@@ -72,6 +72,8 @@ import kotlin.time.DurationUnit
  * for this container. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the behavior of this container.
  * @param color the background color for the overlay while showing the UI controls
+ * @param controlsVisible whether the player controls should be visible.
+ * If unset, the controls automatically hide when inactive and show when tapped or paused.
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
  * @param errorOverlay content to show when the player encountered a fatal error,
  * typically an [ErrorDisplay].
@@ -87,6 +89,7 @@ fun UIController(
     source: SourceDescription? = null,
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
+    controlsVisible: Boolean? = null,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -103,6 +106,7 @@ fun UIController(
         player = player,
         interactionSource = interactionSource,
         color = color,
+        controlsVisible = controlsVisible,
         centerOverlay = centerOverlay,
         errorOverlay = errorOverlay,
         topChrome = topChrome,
@@ -124,6 +128,8 @@ fun UIController(
  * for this container. You can create and pass in your own `remember`ed instance to observe
  * [Interaction]s and customize the behavior of this container.
  * @param color the background color for the overlay while showing the UI controls
+ * @param controlsVisible whether the player controls should be visible.
+ * If unset, the controls automatically hide when inactive and show when tapped or paused.
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
  * @param errorOverlay content to show when the player encountered a fatal error,
  * typically an [ErrorDisplay].
@@ -138,6 +144,7 @@ fun UIController(
     player: Player = rememberPlayer(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
+    controlsVisible: Boolean? = null,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -164,19 +171,20 @@ fun UIController(
         isReady = true
     }
 
-    val controlsVisible = remember {
+    val currentControlsVisible = remember {
         derivedStateOf {
-            if (!isReady) {
-                false
-            } else if (!player.firstPlay || player.castState == PlayerCastState.CONNECTED) {
-                true
-            } else if (player.playingAd) {
-                false
-            } else if (forceControlsHidden) {
-                false
-            } else {
-                isRecentlyTapped || isPressed || player.paused
-            }
+            controlsVisible
+                ?: if (!isReady) {
+                    false
+                } else if (!player.firstPlay || player.castState == PlayerCastState.CONNECTED) {
+                    true
+                } else if (player.playingAd) {
+                    false
+                } else if (forceControlsHidden) {
+                    false
+                } else {
+                    isRecentlyTapped || isPressed || player.paused
+                }
         }
     }
 
@@ -195,7 +203,7 @@ fun UIController(
         }
     }
     val backgroundVisible = if (uiState is UIState.Controls) {
-        controlsVisible.value
+        currentControlsVisible.value
     } else {
         true
     }
@@ -228,7 +236,7 @@ fun UIController(
                     .background(background)
                     .pressable(interactionSource = interactionSource, requireUnconsumed = false)
                     .toggleControlsOnTap(
-                        controlsVisible = controlsVisible,
+                        controlsVisible = currentControlsVisible,
                         showControlsTemporarily = {
                             forceControlsHidden = false
                             tapCount++
@@ -274,7 +282,7 @@ fun UIController(
 
                     is UIState.Controls -> {
                         scope.PlayerControls(
-                            controlsVisible = controlsVisible.value,
+                            controlsVisible = currentControlsVisible.value,
                             animationsActive = isReady && !player.playingAd,
                             centerOverlay = centerOverlay,
                             topChrome = topChrome,
