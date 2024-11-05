@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -84,10 +85,15 @@ fun AudioUI(
         topChrome = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 title?.let {
-                    Text(
-                        modifier = Modifier.padding(8.dp),
-                        text = it
-                    )
+                    Box(
+                        // Match size of menu buttons, to avoid layout shift
+                        modifier = Modifier
+                            .sizeIn(minHeight = iconSize)
+                            .minimumInteractiveComponentSize(),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(text = it)
+                    }
                 }
                 Spacer(modifier = Modifier.weight(1f))
                 LanguageMenuButton(iconModifier = Modifier.size(iconSize))
@@ -171,9 +177,13 @@ internal fun MenuScope.PlaybackRateButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = { openMenu { PlaybackRateMenu() } }) {
-        Text(
+        Box(
             modifier = iconModifier,
-            text = formatPlaybackRate(player?.playbackRate ?: 1.0, "1x"),
-        )
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = formatPlaybackRate(player?.playbackRate ?: 1.0, "1x"),
+            )
+        }
     }
 }
