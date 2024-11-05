@@ -2,6 +2,7 @@ package com.theoplayer.android.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -83,7 +84,7 @@ fun SeekButton(
     modifier: Modifier = Modifier,
     seekOffset: Int = 10,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    content: @Composable () -> Unit
+    content: @Composable RowScope.() -> Unit
 ) {
     val player = Player.current
     IconButton(

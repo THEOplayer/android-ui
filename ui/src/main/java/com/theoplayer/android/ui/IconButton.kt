@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -14,6 +16,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -53,9 +56,9 @@ fun IconButton(
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    content: @Composable () -> Unit
+    content: @Composable RowScope.() -> Unit
 ) {
-    Box(
+    Row(
         modifier = modifier
             .minimumInteractiveComponentSize()
             .defaultMinSize(
@@ -72,10 +75,13 @@ fun IconButton(
                 interactionSource = interactionSource,
                 indication = ripple(bounded = false)
             ),
-        contentAlignment = Alignment.Center
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         val contentColor = colors.contentColor(enabled)
-        CompositionLocalProvider(LocalContentColor provides contentColor, content = content)
+        CompositionLocalProvider(LocalContentColor provides contentColor) {
+            content()
+        }
     }
 }
 
