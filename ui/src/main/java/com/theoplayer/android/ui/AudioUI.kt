@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -86,19 +85,11 @@ fun AudioUI(
         topChrome = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 title?.let {
-                    Box(
-                        // Match size of menu buttons, to avoid layout shift
-                        modifier = Modifier
-                            .sizeIn(minHeight = iconSize)
-                            .minimumInteractiveComponentSize(),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(text = it)
-                    }
+                    Text(
+                        modifier = Modifier.padding(8.dp),
+                        text = it
+                    )
                 }
-                Spacer(modifier = Modifier.weight(1f))
-                LanguageMenuButton(iconModifier = Modifier.size(iconSize))
-                ChromecastButton(iconModifier = Modifier.size(iconSize))
             }
         },
         bottomChrome = {
@@ -127,37 +118,55 @@ fun AudioUI(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                    .padding(horizontal = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                MuteButton(
-                    iconModifier = Modifier.size(iconSize),
-                    contentPadding = PaddingValues(8.dp)
-                )
-                SeekButton(
-                    seekOffset = -10,
-                    iconSize = iconSize,
-                    contentPadding = PaddingValues(8.dp)
-                )
-                Box(contentAlignment = Alignment.Center) {
-                    if (player.firstPlay) {
-                        LoadingSpinner()
-                    }
-                    PlayButton(
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    MuteButton(
                         iconModifier = Modifier.size(iconSize),
                         contentPadding = PaddingValues(8.dp)
                     )
                 }
-                SeekButton(
-                    seekOffset = 10,
-                    iconSize = iconSize,
-                    contentPadding = PaddingValues(8.dp)
-                )
-                PlaybackRateButton(
-                    iconModifier = Modifier.size(iconSize),
-                    contentPadding = PaddingValues(8.dp)
-                )
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SeekButton(
+                        seekOffset = -10,
+                        iconSize = iconSize,
+                        contentPadding = PaddingValues(8.dp)
+                    )
+                    Box(contentAlignment = Alignment.Center) {
+                        if (player.firstPlay) {
+                            LoadingSpinner()
+                        }
+                        PlayButton(
+                            iconModifier = Modifier.size(iconSize),
+                            contentPadding = PaddingValues(8.dp)
+                        )
+                    }
+                    SeekButton(
+                        seekOffset = 10,
+                        iconSize = iconSize,
+                        contentPadding = PaddingValues(8.dp)
+                    )
+                }
+                Row(
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    PlaybackRateButton(
+                        iconModifier = Modifier.size(iconSize),
+                        contentPadding = PaddingValues(8.dp)
+                    )
+                    LanguageMenuButton(iconModifier = Modifier.size(iconSize))
+                    ChromecastButton(iconModifier = Modifier.size(iconSize))
+                }
             }
         },
         errorOverlay = {
