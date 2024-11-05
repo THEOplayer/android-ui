@@ -24,8 +24,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
@@ -409,7 +407,6 @@ private fun UIControllerScope.PlayerControls(
 ) {
     centerOverlay?.let {
         Row(
-            modifier = Modifier.fillMaxSize(),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -437,17 +434,19 @@ private fun UIControllerScope.PlayerControls(
     ) {
         centerChrome?.let {
             Row(
-                modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 it()
             }
         }
-        Column(modifier = Modifier.fillMaxSize()) {
-            topChrome?.let { it() }
-            Spacer(modifier = Modifier.weight(1f))
-            bottomChrome?.let { it() }
+        Column(verticalArrangement = Arrangement.SpaceBetween) {
+            Column {
+                topChrome?.let { it() }
+            }
+            Column {
+                bottomChrome?.let { it() }
+            }
         }
     }
 }
