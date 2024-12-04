@@ -47,7 +47,7 @@ fun SeekBar(
     colors: SliderColors = SliderDefaults.colors()
 ) {
     val player = Player.current
-    val currentTime = player?.currentTime?.toFloat() ?: 0.0f
+    val currentTime = player?.currentTime ?: 0.0
     val seekable = player?.seekable ?: TimeRanges.empty()
     val duration = player?.duration ?: Double.NaN
     val playingAd = player?.playingAd ?: false
@@ -56,11 +56,9 @@ fun SeekBar(
     val casting = player?.castState == PlayerCastState.CONNECTED
     val enabled = (seekable.isNotEmpty() && !playingAd) || casting
 
-    val valueRange = remember(seekable, duration) {
-        seekable.bounds?.let { bounds ->
-            bounds.start.toFloat()..bounds.endInclusive.toFloat()
-        } ?: run {
-            0f..(if (duration.isFinite()) duration.toFloat().coerceAtLeast(0f) else 0f)
+    val seekableRange = remember(seekable, duration) {
+        seekable.bounds ?: run {
+            0.0..(if (duration.isFinite()) duration.coerceAtLeast(0.0) else 0.0)
         }
     }
     var seekTime by remember { mutableStateOf<Float?>(null) }
@@ -71,8 +69,10 @@ fun SeekBar(
     Slider(
         modifier = modifier.systemGestureExclusion(),
         colors = colors,
-        value = seekTime ?: currentTime,
-        valueRange = valueRange,
+        // Seekable start can be very large (e.g. a Unix timestamp), which can lead to precision loss
+        // when converted to a float. Instead, make the slider always start at zero.
+        value = seekTime ?: (currentTime - seekableRange.start).toFloat(),
+        valueRange = 0f..(seekableRange.endInclusive - seekableRange.start).toFloat(),
         enabled = enabled,
         interactionSource = interactionSource,
         thumb = {
@@ -101,7 +101,7 @@ fun SeekBar(
                     wasPlayingBeforeSeek = true
                     it.pause()
                 }
-                it.currentTime = time.toDouble()
+                it.currentTime = seekableRange.start + time.toDouble()
             }
         },
         onValueChangeFinished = {
