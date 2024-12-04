@@ -9,6 +9,11 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* Fix `SeekBar` not working for livestreams with a large `player.seekable.start(0)`,
+  such as MPEG-DASH streams that use Unix timestamps for their MPD timeline. ([#52](https://github.com/THEOplayer/android-ui/pull/52))
+
 ## v1.9.2 (2024-10-15)
 
 * 🐛 Fix `Player.cast` not available before first source change.
