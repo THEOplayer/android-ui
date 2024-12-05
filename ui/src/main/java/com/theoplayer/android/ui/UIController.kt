@@ -1,6 +1,7 @@
 package com.theoplayer.android.ui
 
 import android.app.Activity
+import android.view.View
 import android.view.ViewGroup
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -331,11 +332,24 @@ private fun PlayerContainer(
     player: Player,
     ui: @Composable () -> Unit
 ) {
+    val isPipEnabled =
+        true //todo: change it in a way that if user has activated pip using config, it becomes true.
+    val pipHandler =
+        player.theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
+            ?.let {
+                PipHandler(view = it, context = LocalContext.current)
+            }
     val theoplayerView = player.theoplayerView
     val containerModifier = Modifier
         .background(Color.Black)
         .then(modifier)
         .playerAspectRatio(player)
+        .then(
+            pipHandler.takeIf { isPipEnabled && pipHandler != null }?.let {
+                Modifier.installPip(it, player = player)
+            } ?: Modifier
+        )
+
     if (theoplayerView == null) {
         Box(
             modifier = containerModifier
@@ -535,7 +549,7 @@ internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView
                     }
                 }
 
-                Lifecycle.Event.ON_PAUSE -> {
+                Lifecycle.Event.ON_STOP -> {
                     wasPlayingAd = theoplayerView.player.ads.isPlaying
                     theoplayerView.onPause()
                 }
