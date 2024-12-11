@@ -1,19 +1,19 @@
 [versions]
-gradle = "8.5.2"
+gradle = "8.7.3"
 kotlin-gradle-plugin = "1.9.25"
-ktx = "1.13.1"
-lifecycle-compose = "2.8.5"
-activity-compose = "1.9.2"
+ktx = "1.15.0"
+lifecycle-compose = "2.8.7"
+activity-compose = "1.9.3"
 appcompat = "1.7.0"
-compose-bom = "2024.09.00"
+compose-bom = "2024.11.00"
 junit4 = "4.13.2"
 playServices-castFramework = "21.5.0"
-ui-test-junit4 = "1.7.0" # ...not in BOM for some reason?
+ui-test-junit4 = "1.7.5" # ...not in BOM for some reason?
 androidx-junit = "1.2.1"
 androidx-espresso = "3.6.1"
 androidx-mediarouter = "1.7.0"
 dokka = "1.9.20"
-theoplayer = "8.2.0"
+theoplayer = "8.6.2"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
