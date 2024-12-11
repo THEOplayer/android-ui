@@ -11,6 +11,7 @@
 
 ## Unreleased
 
+* 💥 Updated to Jetpack Compose version 1.7.5 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.11.00).
 * Fix `SeekBar` not working for livestreams with a large `player.seekable.start(0)`,
   such as MPEG-DASH streams that use Unix timestamps for their MPD timeline. ([#52](https://github.com/THEOplayer/android-ui/pull/52))
 
