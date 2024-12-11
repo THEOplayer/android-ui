@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.theoplayer.android.ui.demo"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.theoplayer.android.ui.demo"
