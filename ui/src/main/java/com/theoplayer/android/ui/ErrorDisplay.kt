@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 /**
@@ -43,7 +44,7 @@ fun ErrorDisplay(
                     contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
-                        text = "An error occurred",
+                        text = stringResource(R.string.theoplayer_ui_error_title),
                         style = MaterialTheme.typography.headlineMedium
                     )
                 }

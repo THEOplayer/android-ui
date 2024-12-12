@@ -6,7 +6,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import java.text.DecimalFormat
 
 /**
@@ -47,12 +49,13 @@ fun PlaybackRateList(
     }
 }
 
-private val playbackRateFormat = DecimalFormat("#.##")
-
+@Composable
 internal fun formatPlaybackRate(rate: Double): String {
     return if (rate == 1.0) {
-        "Normal"
+        stringResource(R.string.theoplayer_ui_playback_rate_normal, rate)
     } else {
-        "${playbackRateFormat.format(rate)}x"
+        val format = stringResource(R.string.theoplayer_ui_playback_rate_format)
+        val decimalFormat = remember(format) { DecimalFormat(format) }
+        decimalFormat.format(rate)
     }
 }
