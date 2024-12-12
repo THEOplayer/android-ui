@@ -56,8 +56,8 @@ fun SeekButton(
                     } else {
                         R.plurals.theoplayer_ui_btn_seek_backward
                     },
-                    seekOffset,
-                    seekOffset
+                    seekOffset.absoluteValue,
+                    seekOffset.absoluteValue
                 )
             )
             Text(
