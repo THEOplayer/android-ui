@@ -13,12 +13,12 @@
     <string name="theoplayer_ui_btn_mute">Dempen</string>
     <string name="theoplayer_ui_btn_unmute">Dempen opheffen</string>
     <plurals name="theoplayer_ui_btn_seek_forward">
-        <item quantity="one">Spring %1$s seconde vooruit</item>
-        <item quantity="other">Spring %1$s seconden vooruit</item>
+        <item quantity="one">Spring %1$d seconde vooruit</item>
+        <item quantity="other">Spring %1$d seconden vooruit</item>
     </plurals>
     <plurals name="theoplayer_ui_btn_seek_backward">
-        <item quantity="one">Spring %1$s seconde achteruit</item>
-        <item quantity="other">Spring %1$s seconden achteruit</item>
+        <item quantity="one">Spring %1$d seconde achteruit</item>
+        <item quantity="other">Spring %1$d seconden achteruit</item>
     </plurals>
     <string name="theoplayer_ui_btn_live">LIVE</string>
     <string name="theoplayer_ui_chromecast_playing_on_receiver">Speelt op %1$s</string>
@@ -36,7 +36,7 @@
     <string name="theoplayer_ui_subtitles_off">Uit</string>
     <string name="theoplayer_ui_playback_rate_normal">Normaal</string>
     <string name="theoplayer_ui_quality_automatic">Automatisch</string>
-    <string name="theoplayer_ui_quality_automatic_with_height">Automatisch (%1$sp)</string>
+    <string name="theoplayer_ui_quality_automatic_with_height">Automatisch (%1$dp)</string>
     <string name="theoplayer_ui_track_unknown">Onbekend</string>
     <string name="theoplayer_ui_error_title">Fout</string>
 </resources>
