@@ -12,8 +12,14 @@
     <string name="theoplayer_ui_btn_back">Terug</string>
     <string name="theoplayer_ui_btn_mute">Dempen</string>
     <string name="theoplayer_ui_btn_unmute">Dempen opheffen</string>
-    <string name="theoplayer_ui_btn_seek_forward">Spring vooruit met %1$s seconden</string>
-    <string name="theoplayer_ui_btn_seek_backward">Spring terug met %1$s seconden</string>
+    <plurals name="theoplayer_ui_btn_seek_forward">
+        <item quantity="one">Spring %1$s seconde vooruit</item>
+        <item quantity="other">Spring %1$s seconden vooruit</item>
+    </plurals>
+    <plurals name="theoplayer_ui_btn_seek_backward">
+        <item quantity="one">Spring %1$s seconde achteruit</item>
+        <item quantity="other">Spring %1$s seconden achteruit</item>
+    </plurals>
     <string name="theoplayer_ui_btn_live">LIVE</string>
     <string name="theoplayer_ui_chromecast_playing_on_receiver">Speelt op %1$s</string>
     <string name="theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line">Speelt op</string>
