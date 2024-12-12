@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 
@@ -46,7 +47,7 @@ fun LiveButton(
             tint = THEOplayerTheme.playerColors.liveButtonLive,
             contentDescription = null
         )
-        Text(text = " LIVE")
+        Text(text = " " + stringResource(R.string.theoplayer_ui_btn_live))
     },
     dvr: @Composable RowScope. () -> Unit = {
         Icon(
@@ -55,13 +56,14 @@ fun LiveButton(
             tint = THEOplayerTheme.playerColors.liveButtonDvr,
             contentDescription = null
         )
-        Text(text = " LIVE")
+        Text(text = " " + stringResource(R.string.theoplayer_ui_btn_live))
     }
 ) {
     val player = Player.current
     if (player?.streamType == StreamType.Live || player?.streamType == StreamType.Dvr) {
         val isLive =
-            !player.paused && ((player.seekable.lastEnd ?: 0.0) - player.currentTime) <= liveThreshold
+            !player.paused && ((player.seekable.lastEnd
+                ?: 0.0) - player.currentTime) <= liveThreshold
         TextButton(
             modifier = modifier,
             contentPadding = contentPadding,

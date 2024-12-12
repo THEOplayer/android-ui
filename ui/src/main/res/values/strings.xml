@@ -1,1 +1,69 @@
-<resources></resources>
+<resources>
+    <string name="theoplayer_ui_btn_play">Play</string>
+    <string name="theoplayer_ui_btn_pause">Pause</string>
+    <string name="theoplayer_ui_btn_replay">Replay</string>
+    <string name="theoplayer_ui_btn_chromecast_start">Start casting</string>
+    <string name="theoplayer_ui_btn_chromecast_stop">Stop casting</string>
+    <string name="theoplayer_ui_btn_fullscreen_enter">Enter fullscreen</string>
+    <string name="theoplayer_ui_btn_fullscreen_exit">Exit fullscreen</string>
+    <string name="theoplayer_ui_btn_menu_close">Close</string>
+    <string name="theoplayer_ui_btn_back">Back</string>
+    <string name="theoplayer_ui_btn_mute">Mute</string>
+    <string name="theoplayer_ui_btn_unmute">Unmute</string>
+    <string name="theoplayer_ui_btn_seek_forward">Seek forward by %1$s seconds</string>
+    <string name="theoplayer_ui_btn_seek_backward">Seek backward by %1$s seconds</string>
+    <string name="theoplayer_ui_btn_live">LIVE</string>
+
+    <!-- The current time of the player -->
+    <string name="theoplayer_ui_current_time">%1$s</string>
+    <!-- The remaining time of the player -->
+    <string name="theoplayer_ui_current_time_remaining">%1$s</string>
+    <!-- The current time of the player, followed by the player's duration -->
+    <string name="theoplayer_ui_current_time_with_duration">%1$s / %2$s</string>
+    <!-- The remaining time of the player, followed by the player's duration -->
+    <string name="theoplayer_ui_current_time_remaining_with_duration">%1$s / %2$s</string>
+
+    <!--
+        The text shown on the player while connected to a Chromecast receiver with a known name.
+        Example: "Playing on Living Room", where "Living Room" is the name of the receiver.
+    -->
+    <string name="theoplayer_ui_chromecast_playing_on_receiver">Playing on %1$s</string>
+    <!-- Same as above, when the text is shown over two lines. -->
+    <string name="theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line">Playing on</string>
+    <string name="theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line">%1$s</string>
+    <!--
+        The text shown on the player while connected to a Chromecast receiver with an unknown name.
+    -->
+    <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver">Playing on Chromecast</string>
+    <!-- Same as above, when the text is shown over two lines. -->
+    <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line">Playing on</string>
+    <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_second_line">Chromecast</string>
+
+    <!-- The title of the language menu, where users can select an audio and subtitle language. -->
+    <string name="theoplayer_ui_menu_language">Language</string>
+    <!-- The title of the settings menu, where users can change e.g. the quality and playback speed. -->
+    <string name="theoplayer_ui_menu_settings">Settings</string>
+    <!-- The title of the audio language menu. -->
+    <string name="theoplayer_ui_menu_audio">Audio</string>
+    <!-- The label shown on the audio language dropdown to disable the audio. -->
+    <string name="theoplayer_ui_menu_audio_none">None</string>
+    <!-- The title of the subtitle menu. -->
+    <string name="theoplayer_ui_menu_subtitles">Subtitles</string>
+    <!-- The label shown on the subtitle dropdown to disable all subtitles. -->
+    <string name="theoplayer_ui_menu_subtitles_off">Off</string>
+    <!-- The title of the playback speed menu. -->
+    <string name="theoplayer_ui_menu_playback_rate">Playback speed</string>
+    <!-- The title of the quality selection menu. -->
+    <string name="theoplayer_ui_menu_quality">Quality</string>
+
+    <!-- The label shown for the normal playback speed (1x). -->
+    <string name="theoplayer_ui_playback_rate_normal">Normal</string>
+    <!--
+        The label shown for playback speeds different from the normal (1x) speed.
+        Must be a valid format string for java.text.DecimalFormat.
+    -->
+    <string name="theoplayer_ui_playback_rate_format">#.##x</string>
+
+    <!-- The title for a fatal error, shown above the full error message. -->
+    <string name="theoplayer_ui_error_title">An error occurred</string>
+</resources>

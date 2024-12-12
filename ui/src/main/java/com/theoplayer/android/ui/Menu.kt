@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 
 /**
  * The content for a new menu, typically this should draw a single [Menu].
@@ -38,7 +39,7 @@ fun MenuScope.Menu(
     backIcon: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.ArrowBack,
-            contentDescription = "Back"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_back)
         )
     },
     content: @Composable () -> Unit,
