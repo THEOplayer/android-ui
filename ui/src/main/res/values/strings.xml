@@ -10,8 +10,14 @@
     <string name="theoplayer_ui_btn_back">Back</string>
     <string name="theoplayer_ui_btn_mute">Mute</string>
     <string name="theoplayer_ui_btn_unmute">Unmute</string>
-    <string name="theoplayer_ui_btn_seek_forward">Seek forward by %1$s seconds</string>
-    <string name="theoplayer_ui_btn_seek_backward">Seek backward by %1$s seconds</string>
+    <plurals name="theoplayer_ui_btn_seek_forward">
+        <item quantity="one">Seek forward by %1$s second</item>
+        <item quantity="other">Seek forward by %1$s seconds</item>
+    </plurals>
+    <plurals name="theoplayer_ui_btn_seek_backward">
+        <item quantity="one">Seek backward by %1$s second</item>
+        <item quantity="other">Seek backward by %1$s seconds</item>
+    </plurals>
     <string name="theoplayer_ui_btn_live">LIVE</string>
 
     <!-- The current time of the player -->
