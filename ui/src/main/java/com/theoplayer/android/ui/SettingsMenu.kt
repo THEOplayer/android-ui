@@ -118,11 +118,22 @@ fun MenuScope.PlaybackRateMenu() {
     }
 }
 
+@Composable
 internal fun formatActiveQualityLabel(
     targetVideoQuality: VideoQuality?,
     activeVideoQuality: VideoQuality?
 ): String {
-    return targetVideoQuality?.let { "${it.height}p" }
-        ?: activeVideoQuality?.let { "Automatic (${it.height}p)" }
-        ?: "Automatic"
+    return if (targetVideoQuality != null) {
+        stringResource(
+            R.string.theoplayer_ui_quality_with_height,
+            targetVideoQuality.height
+        )
+    } else if (activeVideoQuality != null) {
+        stringResource(
+            R.string.theoplayer_ui_quality_automatic_with_height,
+            activeVideoQuality.height
+        )
+    } else {
+        stringResource(R.string.theoplayer_ui_quality_automatic)
+    }
 }

@@ -1,5 +1,7 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.theoplayer.android.api.player.track.Track
 import java.util.Locale
 import kotlin.math.absoluteValue
@@ -60,6 +62,7 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
  *
  * @param track the media track or text track
  */
+@Composable
 fun formatTrackLabel(track: Track): String {
     val label = track.label
     if (!label.isNullOrEmpty()) {
@@ -74,5 +77,5 @@ fun formatTrackLabel(track: Track): String {
         }
         return languageCode
     }
-    return ""
+    return stringResource(R.string.theoplayer_ui_track_unknown)
 }
