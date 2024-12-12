@@ -88,7 +88,7 @@ fun MenuScope.LanguageMenuCompact() {
                         modifier = Modifier.weight(1f),
                         text = player?.activeAudioTrack?.let { formatTrackLabel(it) }
                             ?: stringResource(
-                                R.string.theoplayer_ui_menu_audio_none
+                                R.string.theoplayer_ui_audio_none
                             ),
                         textAlign = TextAlign.Center
                     )
@@ -116,7 +116,7 @@ fun MenuScope.LanguageMenuCompact() {
                     Text(
                         modifier = Modifier.weight(1f),
                         text = player?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: stringResource(
-                            R.string.theoplayer_ui_menu_subtitles_off
+                            R.string.theoplayer_ui_subtitles_off
                         ),
                         textAlign = TextAlign.Center
                     )

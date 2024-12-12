@@ -45,16 +45,18 @@
     <string name="theoplayer_ui_menu_settings">Settings</string>
     <!-- The title of the audio language menu. -->
     <string name="theoplayer_ui_menu_audio">Audio</string>
-    <!-- The label shown on the audio language dropdown to disable the audio. -->
-    <string name="theoplayer_ui_menu_audio_none">None</string>
     <!-- The title of the subtitle menu. -->
     <string name="theoplayer_ui_menu_subtitles">Subtitles</string>
-    <!-- The label shown on the subtitle dropdown to disable all subtitles. -->
-    <string name="theoplayer_ui_menu_subtitles_off">Off</string>
     <!-- The title of the playback speed menu. -->
     <string name="theoplayer_ui_menu_playback_rate">Playback speed</string>
     <!-- The title of the quality selection menu. -->
     <string name="theoplayer_ui_menu_quality">Quality</string>
+
+    <!-- The label shown on the audio language dropdown to disable the audio. -->
+    <string name="theoplayer_ui_audio_none">None</string>
+
+    <!-- The label shown on the subtitle dropdown to disable all subtitles. -->
+    <string name="theoplayer_ui_subtitles_off">Off</string>
 
     <!-- The label shown for the normal playback speed (1x). -->
     <string name="theoplayer_ui_playback_rate_normal">Normal</string>
@@ -63,6 +65,23 @@
         Must be a valid format string for java.text.DecimalFormat.
     -->
     <string name="theoplayer_ui_playback_rate_format">#.##x</string>
+
+    <!-- The label shown for a quality with a specified height (in pixels) -->
+    <string name="theoplayer_ui_quality_with_height">%1$sp</string>
+    <!-- The label shown for the automatic quality -->
+    <string name="theoplayer_ui_quality_automatic">Automatic</string>
+    <!-- The label shown for the automatic quality, along with the currently active quality's height (in pixels) -->
+    <string name="theoplayer_ui_quality_automatic_with_height">Automatic (%1$sp)</string>
+
+    <!-- The label shown for bandwidths larger than 10 Mbps. -->
+    <string name="theoplayer_ui_bandwidth_format_10mbps">#Mbps</string>
+    <!-- The label shown for bandwidths between 1 Mbps and 10 Mbps. -->
+    <string name="theoplayer_ui_bandwidth_format_1mbps">#.#Mbps</string>
+    <!-- The label shown for bandwidths below 1 Mbps. -->
+    <string name="theoplayer_ui_bandwidth_format_kbps">#kbps</string>
+
+    <!-- The label shown for an audio or subtitle track with an unspecified name or language. -->
+    <string name="theoplayer_ui_track_unknown">Unknown</string>
 
     <!-- The title for a fatal error, shown above the full error message. -->
     <string name="theoplayer_ui_error_title">An error occurred</string>
