@@ -16,6 +16,9 @@
 ## v1.9.3 (2024-12-17)
 
 * 💥 Updated to Jetpack Compose version 1.7.5 ([BOM](https://developer.android.com/jetpack/compose/bom) 2024.11.00).
+* 🚀 Added localization support.
+  * See `res/values/strings.xml` for the full list of translatable strings, which you can override in your app's `strings.xml`.
+  * For more information, see [Localize your app on Android Developers](https://developer.android.com/guide/topics/resources/localization).
 * 🐛 Fix `SeekBar` not working for livestreams with a large `player.seekable.start(0)`,
   such as MPEG-DASH streams that use Unix timestamps for their MPD timeline. ([#52](https://github.com/THEOplayer/android-ui/pull/52))
 
