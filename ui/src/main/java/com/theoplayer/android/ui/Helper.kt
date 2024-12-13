@@ -18,7 +18,7 @@ import kotlin.math.absoluteValue
  * for example because it represents the time remaining in the video.
  */
 fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = false): String {
-    val isNegative = time < 0 || (preferNegative && time == 0.0);
+    val isNegative = time < 0 || (preferNegative && time == 0.0)
     val absoluteTime = time.absoluteValue.toInt()
 
     val guideMinutes = ((guide / 60) % 60).toInt()

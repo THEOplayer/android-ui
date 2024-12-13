@@ -37,7 +37,7 @@ fun CurrentTimeDisplay(
             } else {
                 R.string.theoplayer_ui_current_time_with_duration
             },
-            formatTime(time, duration),
+            formatTime(time, duration, preferNegative = showRemaining),
             formatTime(duration)
         )
     } else {
@@ -47,7 +47,7 @@ fun CurrentTimeDisplay(
             } else {
                 R.string.theoplayer_ui_current_time
             },
-            formatTime(time, duration),
+            formatTime(time, duration, preferNegative = showRemaining),
         )
     }
 
