@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="theoplayer_ui_btn_play">Play</string>
     <string name="theoplayer_ui_btn_pause">Pause</string>
     <string name="theoplayer_ui_btn_replay">Replay</string>
@@ -11,35 +11,30 @@
     <string name="theoplayer_ui_btn_mute">Mute</string>
     <string name="theoplayer_ui_btn_unmute">Unmute</string>
     <plurals name="theoplayer_ui_btn_seek_forward">
-        <item quantity="one">Seek forward by %1$d second</item>
-        <item quantity="other">Seek forward by %1$d seconds</item>
+        <item quantity="one">Seek forward by <xliff:g example="5" id="seek_offset">%1$d</xliff:g> second</item>
+        <item quantity="other">Seek forward by <xliff:g example="5" id="seek_offset">%1$d</xliff:g> seconds</item>
     </plurals>
     <plurals name="theoplayer_ui_btn_seek_backward">
-        <item quantity="one">Seek backward by %1$d second</item>
-        <item quantity="other">Seek backward by %1$d seconds</item>
+        <item quantity="one">Seek backward by <xliff:g example="5" id="seek_offset">%1$d</xliff:g> second</item>
+        <item quantity="other">Seek backward by <xliff:g example="5" id="seek_offset">%1$d</xliff:g> seconds</item>
     </plurals>
     <string name="theoplayer_ui_btn_live">LIVE</string>
 
     <!-- The current time of the player -->
-    <string name="theoplayer_ui_current_time">%1$s</string>
+    <string name="theoplayer_ui_current_time"><xliff:g example="01:23" id="current_time">%1$s</xliff:g></string>
     <!-- The remaining time of the player -->
-    <string name="theoplayer_ui_current_time_remaining">%1$s</string>
+    <string name="theoplayer_ui_current_time_remaining"><xliff:g example="-01:23" id="remaining_time">%1$s</xliff:g></string>
     <!-- The current time of the player, followed by the player's duration -->
-    <string name="theoplayer_ui_current_time_with_duration">%1$s / %2$s</string>
+    <string name="theoplayer_ui_current_time_with_duration"><xliff:g example="01:23" id="current_time">%1$s</xliff:g> / <xliff:g example="60:00" id="duration">%2$s</xliff:g></string>
     <!-- The remaining time of the player, followed by the player's duration -->
-    <string name="theoplayer_ui_current_time_remaining_with_duration">%1$s / %2$s</string>
+    <string name="theoplayer_ui_current_time_remaining_with_duration"><xliff:g example="-01:23" id="remaining_time">%1$s</xliff:g> / <xliff:g example="60:00" id="duration">%2$s</xliff:g></string>
 
-    <!--
-        The text shown on the player while connected to a Chromecast receiver with a known name.
-        Example: "Playing on Living Room", where "Living Room" is the name of the receiver.
-    -->
-    <string name="theoplayer_ui_chromecast_playing_on_receiver">Playing on %1$s</string>
+    <!-- The text shown on the player while connected to a Chromecast receiver with a known name. -->
+    <string name="theoplayer_ui_chromecast_playing_on_receiver">Playing on <xliff:g example="Living Room" id="receiver_name">%1$s</xliff:g></string>
     <!-- Same as above, when the text is shown over two lines. -->
     <string name="theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line">Playing on</string>
-    <string name="theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line">%1$s</string>
-    <!--
-        The text shown on the player while connected to a Chromecast receiver with an unknown name.
-    -->
+    <string name="theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line"><xliff:g example="Living Room" id="receiver_name">%1$s</xliff:g></string>
+    <!-- The text shown on the player while connected to a Chromecast receiver with an unknown name. -->
     <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver">Playing on Chromecast</string>
     <!-- Same as above, when the text is shown over two lines. -->
     <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line">Playing on</string>
@@ -73,11 +68,11 @@
     <string name="theoplayer_ui_playback_rate_format">#.##x</string>
 
     <!-- The label shown for a quality with a specified height (in pixels) -->
-    <string name="theoplayer_ui_quality_with_height">%1$dp</string>
+    <string name="theoplayer_ui_quality_with_height"><xliff:g example="720" id="quality_height">%1$d</xliff:g>p</string>
     <!-- The label shown for the automatic quality -->
     <string name="theoplayer_ui_quality_automatic">Automatic</string>
     <!-- The label shown for the automatic quality, along with the currently active quality's height (in pixels) -->
-    <string name="theoplayer_ui_quality_automatic_with_height">Automatic (%1$dp)</string>
+    <string name="theoplayer_ui_quality_automatic_with_height">Automatic (<xliff:g example="720" id="quality_height">%1$d</xliff:g>p)</string>
 
     <!--
         The label shown for bandwidths larger than 10 Mbps.
