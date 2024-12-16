@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="nl">
     <string name="app_name">THEOplayer Open Video UI voor Android Demo</string>
     <string name="theoplayer_ui_btn_play">Afspelen</string>
     <string name="theoplayer_ui_btn_pause">Pauzeren</string>
