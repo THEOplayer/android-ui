@@ -27,6 +27,13 @@ val streams by lazy {
                     .timeOffset("start")
                     .build()
             ).build()
+        ),
+        Stream(
+            title = "DASH-IF Livesim",
+            source = SourceDescription.Builder(
+                TypedSource.Builder("https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd")
+                    .build()
+            ).build()
         )
     )
 }
