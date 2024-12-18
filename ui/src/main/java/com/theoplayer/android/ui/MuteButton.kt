@@ -7,6 +7,7 @@ import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 /**
@@ -25,13 +26,13 @@ fun MuteButton(
     mute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeUp,
-            contentDescription = "Mute"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_mute)
         )
     },
     unmute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeOff,
-            contentDescription = "Unmute"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_unmute)
         )
     }
 ) {

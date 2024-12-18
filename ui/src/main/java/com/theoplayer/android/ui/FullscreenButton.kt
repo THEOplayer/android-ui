@@ -7,6 +7,7 @@ import androidx.compose.material.icons.rounded.FullscreenExit
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 /**
@@ -25,13 +26,13 @@ fun FullscreenButton(
     enter: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Fullscreen,
-            contentDescription = "Enter fullscreen"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_enter)
         )
     },
     exit: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.FullscreenExit,
-            contentDescription = "Exit fullscreen"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_exit)
         )
     }
 ) {

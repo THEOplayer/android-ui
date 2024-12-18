@@ -6,7 +6,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import java.text.DecimalFormat
 
 /**
@@ -26,7 +28,7 @@ fun QualityList(
     LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
-                headlineContent = { Text(text = "Automatic") },
+                headlineContent = { Text(text = stringResource(R.string.theoplayer_ui_quality_automatic)) },
                 leadingContent = {
                     RadioButton(
                         selected = (targetVideoQuality == null),
@@ -45,7 +47,14 @@ fun QualityList(
         ) {
             val quality = videoQualities[it]
             ListItem(
-                headlineContent = { Text(text = "${quality.height}p") },
+                headlineContent = {
+                    Text(
+                        text = stringResource(
+                            R.string.theoplayer_ui_quality_with_height,
+                            quality.height
+                        )
+                    )
+                },
                 supportingContent = { Text(text = formatBandwidth(quality.bandwidth)) },
                 leadingContent = {
                     RadioButton(
@@ -62,15 +71,17 @@ fun QualityList(
     }
 }
 
-private val zeroPrecisionFormat = DecimalFormat("#")
-private val singlePrecisionFormat = DecimalFormat("#.#")
-
+@Composable
 internal fun formatBandwidth(bandwidth: Long): String {
-    return if (bandwidth > 1e7) {
-        "${zeroPrecisionFormat.format(bandwidth / 1e6)}Mbps"
-    } else if (bandwidth > 1e6) {
-        "${singlePrecisionFormat.format(bandwidth / 1e6)}Mbps"
-    } else {
-        "${zeroPrecisionFormat.format(bandwidth / 1e3)}kbps"
-    }
+    val format = stringResource(
+        if (bandwidth >= 1e7) {
+            R.string.theoplayer_ui_bandwidth_format_10mbps
+        } else if (bandwidth >= 1e6) {
+            R.string.theoplayer_ui_bandwidth_format_1mbps
+        } else {
+            R.string.theoplayer_ui_bandwidth_format_kbps
+        }
+    )
+    val decimalFormat = remember(format) { DecimalFormat(format) }
+    return decimalFormat.format(bandwidth / (if (bandwidth >= 1e6) 1e6 else 1e3))
 }

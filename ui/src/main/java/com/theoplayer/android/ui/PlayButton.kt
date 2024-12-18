@@ -7,6 +7,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 /**
@@ -29,21 +30,21 @@ fun PlayButton(
         Icon(
             painter = painterResource(id = R.drawable.play),
             modifier = iconModifier,
-            contentDescription = "Play"
+            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_play)
         )
     },
     pause: @Composable () -> Unit = {
         Icon(
             painter = painterResource(id = R.drawable.pause),
             modifier = iconModifier,
-            contentDescription = "Pause"
+            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_pause)
         )
     },
     replay: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Replay,
             modifier = iconModifier,
-            contentDescription = "Replay"
+            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_replay)
         )
     }
 ) {
