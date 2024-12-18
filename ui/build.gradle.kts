@@ -1,7 +1,3 @@
-import org.jetbrains.dokka.base.DokkaBase
-import org.jetbrains.dokka.base.DokkaBaseConfiguration
-import org.jetbrains.dokka.gradle.AbstractDokkaTask
-import org.jetbrains.dokka.gradle.DokkaTask
 import java.time.Year
 import kotlin.text.Typography.copyright
 
@@ -15,6 +11,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.dokka.javadoc)
     id("maven-publish")
 }
 
@@ -94,10 +91,27 @@ dependencies {
     dokkaPlugin(libs.dokka.plugin)
 }
 
+dokka {
+    moduleName = rootProject.name
+
+    pluginsConfiguration.html {
+        customAssets.from("assets/logo-icon.svg")
+        footerMessage = "$copyright ${Year.now().value} THEO Technologies"
+    }
+
+    dokkaPublications.html {
+        outputDirectory = rootDir.resolve("site/api")
+    }
+
+    dokkaPublications.javadoc {
+        enabled = true
+    }
+}
+
 val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
-    group = "documentation"
-    from(tasks.dokkaJavadoc)
-    dependsOn(tasks.dokkaJavadoc)
+    group = "dokka"
+    from(tasks.dokkaGeneratePublicationJavadoc)
+    dependsOn(tasks.dokkaGeneratePublicationJavadoc)
     archiveClassifier.set("javadoc")
 }
 
@@ -132,17 +146,4 @@ publishing {
             }
         }
     }
-}
-
-tasks.withType<AbstractDokkaTask>().configureEach {
-    moduleName = rootProject.name
-
-    pluginConfiguration<DokkaBase, DokkaBaseConfiguration> {
-        customAssets = listOf(file("assets/logo-icon.svg"))
-        footerMessage = "$copyright ${Year.now().value} THEO Technologies"
-    }
-}
-
-tasks.named<DokkaTask>("dokkaHtml").configure {
-    outputDirectory.set(rootDir.resolve("site/api"))
 }
