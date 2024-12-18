@@ -12,7 +12,7 @@ ui-test-junit4 = "1.7.5" # ...not in BOM for some reason?
 androidx-junit = "1.2.1"
 androidx-espresso = "3.6.1"
 androidx-mediarouter = "1.7.0"
-dokka = "1.9.20"
+dokka = "2.0.0"
 theoplayer = "8.6.2"
 
 [libraries]
@@ -47,3 +47,4 @@ android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-gradle-plugin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
+dokka-javadoc = { id = "org.jetbrains.dokka-javadoc" }
