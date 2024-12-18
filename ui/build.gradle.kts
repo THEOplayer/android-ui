@@ -94,6 +94,22 @@ dependencies {
 dokka {
     moduleName = rootProject.name
 
+    dokkaSourceSets.main {
+        sourceLink {
+            localDirectory = file("src/main/java")
+            remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui/src/main/java")
+            remoteLineSuffix = "#L"
+        }
+
+        externalDocumentationLinks {
+            register("com.theoplayer.android.api") {
+                url("https://www.theoplayer.com/docs/theoplayer/v8/api-reference/android/")
+                // Default package-list URL doesn't work on theoplayer.com... Use GitHub for now.
+                packageListUrl("https://raw.githubusercontent.com/THEOplayer/documentation/refs/heads/main/theoplayer/static/theoplayer/v8/api-reference/android/package-list")
+            }
+        }
+    }
+
     pluginsConfiguration.html {
         customAssets.from("assets/logo-icon.svg")
         footerMessage = "$copyright ${Year.now().value} THEO Technologies"
