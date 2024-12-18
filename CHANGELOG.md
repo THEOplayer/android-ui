@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.9.4 (2024-12-18)
 
 * 🐛 Revert to `compileSdk` 34. ([#56](https://github.com/THEOplayer/android-ui/pull/56/))
 
