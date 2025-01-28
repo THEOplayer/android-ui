@@ -9,6 +9,12 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🚀 Added localization support.
+  * See `res/values/strings.xml` for the full list of translatable strings, which you can override in your app's `strings.xml`.
+  * For more information, see [Localize your app on Android Developers](https://developer.android.com/guide/topics/resources/localization).
+
 ## v1.9.4 (2024-12-18)
 
 * 🐛 Revert to `compileSdk` 34. ([#56](https://github.com/THEOplayer/android-ui/pull/56/))

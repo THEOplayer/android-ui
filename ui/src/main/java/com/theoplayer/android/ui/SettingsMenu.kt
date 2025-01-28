@@ -11,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
@@ -24,11 +25,11 @@ import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 @Composable
 fun MenuScope.SettingsMenu() {
     Menu(
-        title = { Text(text = "Settings") },
+        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_settings)) },
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(R.string.theoplayer_ui_btn_menu_close)
             )
         },
     ) {
@@ -39,7 +40,7 @@ fun MenuScope.SettingsMenu() {
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    text = "Quality"
+                    text = stringResource(R.string.theoplayer_ui_menu_quality)
                 )
                 TextButton(
                     modifier = Modifier
@@ -66,7 +67,7 @@ fun MenuScope.SettingsMenu() {
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    text = "Playback speed"
+                    text = stringResource(R.string.theoplayer_ui_menu_playback_rate)
                 )
                 TextButton(
                     modifier = Modifier
@@ -97,7 +98,7 @@ fun MenuScope.SettingsMenu() {
 @Composable
 fun MenuScope.QualityMenu() {
     Menu(
-        title = { Text(text = "Quality") }
+        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_quality)) }
     ) {
         QualityList(onClick = { closeCurrentMenu() })
     }
@@ -111,17 +112,28 @@ fun MenuScope.QualityMenu() {
 @Composable
 fun MenuScope.PlaybackRateMenu() {
     Menu(
-        title = { Text(text = "Playback speed") }
+        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_playback_rate)) }
     ) {
         PlaybackRateList(onClick = { closeCurrentMenu() })
     }
 }
 
+@Composable
 internal fun formatActiveQualityLabel(
     targetVideoQuality: VideoQuality?,
     activeVideoQuality: VideoQuality?
 ): String {
-    return targetVideoQuality?.let { "${it.height}p" }
-        ?: activeVideoQuality?.let { "Automatic (${it.height}p)" }
-        ?: "Automatic"
+    return if (targetVideoQuality != null) {
+        stringResource(
+            R.string.theoplayer_ui_quality_with_height,
+            targetVideoQuality.height
+        )
+    } else if (activeVideoQuality != null) {
+        stringResource(
+            R.string.theoplayer_ui_quality_automatic_with_height,
+            activeVideoQuality.height
+        )
+    } else {
+        stringResource(R.string.theoplayer_ui_quality_automatic)
+    }
 }
