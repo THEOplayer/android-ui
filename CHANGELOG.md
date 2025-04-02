@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🚀 Added support for THEOplayer 9.0. ([#61](https://github.com/THEOplayer/android-ui/pulls/61))
+
 ## v1.9.4 (2024-12-18)
 
 * 🐛 Revert to `compileSdk` 34. ([#56](https://github.com/THEOplayer/android-ui/pull/56/))
