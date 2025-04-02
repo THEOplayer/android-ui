@@ -44,7 +44,7 @@
 
 ## v1.8.0 (2024-09-06)
 
-* 🚀 Added support for THEOplayer 8.0.
+* 🚀 Added support for THEOplayer 8.0. ([#37](https://github.com/THEOplayer/android-ui/pulls/37))
 
 ## v1.7.4 (2024-09-02)
 
