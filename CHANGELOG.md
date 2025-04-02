@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.10.0 (2025-04-02)
 
 * 🚀 Added support for THEOplayer 9.0. ([#61](https://github.com/THEOplayer/android-ui/pulls/61))
 
