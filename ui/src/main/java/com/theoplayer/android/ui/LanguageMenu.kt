@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
@@ -26,11 +27,11 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun MenuScope.LanguageMenu() {
     Menu(
-        title = { Text(text = "Language") },
+        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_language)) },
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
-                contentDescription = "Close"
+                contentDescription = stringResource(R.string.theoplayer_ui_btn_menu_close)
             )
         },
     ) {
@@ -75,7 +76,7 @@ fun MenuScope.LanguageMenuCompact() {
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    text = "Audio"
+                    text = stringResource(R.string.theoplayer_ui_menu_audio)
                 )
                 TextButton(
                     modifier = Modifier
@@ -85,7 +86,10 @@ fun MenuScope.LanguageMenuCompact() {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = player?.activeAudioTrack?.let { formatTrackLabel(it) } ?: "None",
+                        text = player?.activeAudioTrack?.let { formatTrackLabel(it) }
+                            ?: stringResource(
+                                R.string.theoplayer_ui_audio_none
+                            ),
                         textAlign = TextAlign.Center
                     )
                     Icon(
@@ -101,7 +105,7 @@ fun MenuScope.LanguageMenuCompact() {
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    text = "Subtitles"
+                    text = stringResource(R.string.theoplayer_ui_menu_subtitles)
                 )
                 TextButton(
                     modifier = Modifier
@@ -111,7 +115,9 @@ fun MenuScope.LanguageMenuCompact() {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = player?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: "Off",
+                        text = player?.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: stringResource(
+                            R.string.theoplayer_ui_subtitles_off
+                        ),
                         textAlign = TextAlign.Center
                     )
                     Icon(
@@ -142,7 +148,7 @@ fun MenuScope.LanguageMenuExpanded() {
                     modifier = Modifier
                         .fillMaxWidth(1f)
                         .padding(0.dp, 8.dp),
-                    text = "Audio",
+                    text = stringResource(R.string.theoplayer_ui_menu_audio),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -155,7 +161,7 @@ fun MenuScope.LanguageMenuExpanded() {
                     modifier = Modifier
                         .fillMaxWidth(1f)
                         .padding(0.dp, 8.dp),
-                    text = "Subtitles",
+                    text = stringResource(R.string.theoplayer_ui_menu_subtitles),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.titleMedium
                 )
@@ -173,7 +179,7 @@ fun MenuScope.LanguageMenuExpanded() {
 @Composable
 fun MenuScope.AudioTrackMenu() {
     Menu(
-        title = { Text(text = "Audio") }
+        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_audio)) }
     ) {
         AudioTrackList(onClick = { closeCurrentMenu() })
     }
@@ -187,7 +193,7 @@ fun MenuScope.AudioTrackMenu() {
 @Composable
 fun MenuScope.SubtitleMenu() {
     Menu(
-        title = { Text(text = "Subtitles") }
+        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_subtitles)) }
     ) {
         SubtitleTrackList(onClick = { closeCurrentMenu() })
     }

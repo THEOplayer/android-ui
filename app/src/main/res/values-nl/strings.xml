@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:locale="nl">
+    <string name="app_name">THEOplayer Open Video UI voor Android Demo</string>
+    <string name="theoplayer_ui_btn_play">Afspelen</string>
+    <string name="theoplayer_ui_btn_pause">Pauzeren</string>
+    <string name="theoplayer_ui_btn_replay">Opnieuw spelen</string>
+    <string name="theoplayer_ui_btn_chromecast_start">Starten met casten</string>
+    <string name="theoplayer_ui_btn_chromecast_stop">Stop casting</string>
+    <string name="theoplayer_ui_btn_fullscreen_enter">Volledig scherm</string>
+    <string name="theoplayer_ui_btn_fullscreen_exit">Volledig scherm sluiten</string>
+    <string name="theoplayer_ui_btn_menu_close">Sluiten</string>
+    <string name="theoplayer_ui_btn_back">Terug</string>
+    <string name="theoplayer_ui_btn_mute">Dempen</string>
+    <string name="theoplayer_ui_btn_unmute">Dempen opheffen</string>
+    <plurals name="theoplayer_ui_btn_seek_forward">
+        <item quantity="one">Spring %1$d seconde vooruit</item>
+        <item quantity="other">Spring %1$d seconden vooruit</item>
+    </plurals>
+    <plurals name="theoplayer_ui_btn_seek_backward">
+        <item quantity="one">Spring %1$d seconde achteruit</item>
+        <item quantity="other">Spring %1$d seconden achteruit</item>
+    </plurals>
+    <string name="theoplayer_ui_btn_live">LIVE</string>
+    <string name="theoplayer_ui_chromecast_playing_on_receiver">Speelt op %1$s</string>
+    <string name="theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line">Speelt op</string>
+    <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver">Speelt op Chromecast</string>
+    <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line">Speelt op</string>
+    <string name="theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_second_line">Chromecast</string>
+    <string name="theoplayer_ui_menu_language">Taal</string>
+    <string name="theoplayer_ui_menu_settings">Instellingen</string>
+    <string name="theoplayer_ui_menu_audio">Audio</string>
+    <string name="theoplayer_ui_menu_subtitles">Ondertitels</string>
+    <string name="theoplayer_ui_menu_playback_rate">Afspeelsnelheid</string>
+    <string name="theoplayer_ui_menu_quality">Kwaliteit</string>
+    <string name="theoplayer_ui_audio_none">Geen</string>
+    <string name="theoplayer_ui_subtitles_off">Uit</string>
+    <string name="theoplayer_ui_playback_rate_normal">Normaal</string>
+    <string name="theoplayer_ui_quality_automatic">Automatisch</string>
+    <string name="theoplayer_ui_quality_automatic_with_height">Automatisch (%1$dp)</string>
+    <string name="theoplayer_ui_track_unknown">Onbekend</string>
+    <string name="theoplayer_ui_error_title">Fout</string>
+</resources>

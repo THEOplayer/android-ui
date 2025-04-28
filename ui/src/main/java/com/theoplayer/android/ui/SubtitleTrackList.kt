@@ -7,6 +7,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 
 /**
  * A list of subtitle tracks, from which the user can choose an active subtitle track.
@@ -25,7 +26,7 @@ fun SubtitleTrackList(
     LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
-                headlineContent = { Text(text = "Off") },
+                headlineContent = { Text(text = stringResource(R.string.theoplayer_ui_subtitles_off)) },
                 leadingContent = {
                     RadioButton(
                         selected = (activeSubtitleTrack == null),
