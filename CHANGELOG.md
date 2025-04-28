@@ -11,6 +11,7 @@
 
 ## Unreleased
 
+* 💥 Bumped `compileSdk` to API 35 (Android 15).
 * 🚀 Added localization support.
   * See `res/values/strings.xml` for the full list of translatable strings, which you can override in your app's `strings.xml`.
   * For more information, see [Localize your app on Android Developers](https://developer.android.com/guide/topics/resources/localization).
