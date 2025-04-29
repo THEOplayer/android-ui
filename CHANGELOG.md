@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.11.0 (2025-04-29)
 
 * 💥 Bumped `compileSdk` to API 35 (Android 15).
 * 🚀 Added localization support.
