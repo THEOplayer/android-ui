@@ -3,6 +3,7 @@ package com.theoplayer.android.ui
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 
 /**
  * A text display that shows the player's current time.
@@ -29,12 +30,26 @@ fun CurrentTimeDisplay(
         currentTime
     }
 
-    val text = StringBuilder()
-    text.append(formatTime(time, duration))
-    if (showDuration) {
-        text.append(" / ")
-        text.append(formatTime(duration))
+    val text = if (showDuration) {
+        stringResource(
+            if (showRemaining) {
+                R.string.theoplayer_ui_current_time_remaining_with_duration
+            } else {
+                R.string.theoplayer_ui_current_time_with_duration
+            },
+            formatTime(time, duration, preferNegative = showRemaining),
+            formatTime(duration)
+        )
+    } else {
+        stringResource(
+            if (showRemaining) {
+                R.string.theoplayer_ui_current_time_remaining
+            } else {
+                R.string.theoplayer_ui_current_time
+            },
+            formatTime(time, duration, preferNegative = showRemaining),
+        )
     }
 
-    Text(modifier = modifier, text = text.toString())
+    Text(modifier = modifier, text = text)
 }

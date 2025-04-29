@@ -15,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 
@@ -68,7 +69,13 @@ fun ChromecastDisplayCompact(
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Text(
-            text = "Playing on ${player.castReceiverName ?: "Chromecast"}"
+            text = player.castReceiverName?.let {
+                stringResource(
+                    R.string.theoplayer_ui_chromecast_playing_on_receiver,
+                    it
+                )
+            }
+                ?: stringResource(R.string.theoplayer_ui_chromecast_playing_on_unknown_receiver)
         )
     }
 }
@@ -101,11 +108,23 @@ fun ChromecastDisplayExpanded(
         }
         Column {
             Text(
-                text = "Playing on",
+                text = player.castReceiverName?.let {
+                    stringResource(
+                        R.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line,
+                        it
+                    )
+                }
+                    ?: stringResource(R.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = player.castReceiverName ?: "Chromecast",
+                text = player.castReceiverName?.let {
+                    stringResource(
+                        R.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line,
+                        it
+                    )
+                }
+                    ?: stringResource(R.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_second_line),
                 style = MaterialTheme.typography.headlineSmall
             )
         }

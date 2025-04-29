@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,11 +50,15 @@ fun SeekButton(
                 modifier = Modifier
                     .size(iconSize)
                     .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
-                contentDescription = if (seekOffset >= 0) {
-                    "Seek forward by $seekOffset seconds"
-                } else {
-                    "Seek backward by $seekOffset seconds"
-                }
+                contentDescription = pluralStringResource(
+                    if (seekOffset >= 0) {
+                        R.plurals.theoplayer_ui_btn_seek_forward
+                    } else {
+                        R.plurals.theoplayer_ui_btn_seek_backward
+                    },
+                    seekOffset.absoluteValue,
+                    seekOffset.absoluteValue
+                )
             )
             Text(
                 modifier = Modifier

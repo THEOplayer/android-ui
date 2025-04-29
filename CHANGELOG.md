@@ -9,6 +9,13 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.11.0 (2025-04-29)
+
+* 💥 Bumped `compileSdk` to API 35 (Android 15).
+* 🚀 Added localization support.
+  * See `res/values/strings.xml` for the full list of translatable strings, which you can override in your app's `strings.xml`.
+  * For more information, see [Localize your app on Android Developers](https://developer.android.com/guide/topics/resources/localization).
+
 ## v1.10.0 (2025-04-02)
 
 * 🚀 Added support for THEOplayer 9.0. ([#61](https://github.com/THEOplayer/android-ui/pulls/61))

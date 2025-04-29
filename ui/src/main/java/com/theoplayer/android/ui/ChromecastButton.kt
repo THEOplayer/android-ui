@@ -7,6 +7,7 @@ import androidx.compose.material.icons.rounded.CastConnected
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 
@@ -31,19 +32,19 @@ fun ChromecastButton(
     availableIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
-            contentDescription = "Start casting"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_start)
         )
     },
     connectingIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
-            contentDescription = "Stop casting"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_stop)
         )
     },
     connectedIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.CastConnected,
-            contentDescription = "Stop casting"
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_stop)
         )
     }
 ) {
