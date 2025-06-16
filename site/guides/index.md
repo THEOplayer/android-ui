@@ -1,4 +1,4 @@
 ---
 layout: redirect
-redirect_to: https://www.theoplayer.com/docs/open-video-ui/android/guides/
+redirect_to: https://optiview.dolby.com/docs/open-video-ui/android/guides/
 ---
