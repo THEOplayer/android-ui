@@ -103,8 +103,8 @@ dokka {
 
         externalDocumentationLinks {
             register("com.theoplayer.android.api") {
-                url("https://optiview.dolby.com/docs/theoplayer/v8/api-reference/android/")
-                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v8/api-reference/android/package-list")
+                url("https://optiview.dolby.com/docs/theoplayer/v9/api-reference/android/")
+                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v9/api-reference/android/package-list")
             }
         }
     }
