@@ -111,7 +111,7 @@ dokka {
 
     pluginsConfiguration.html {
         customAssets.from("assets/logo-icon.svg")
-        footerMessage = "$copyright ${Year.now().value} THEO Technologies"
+        footerMessage = "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
     }
 
     dokkaPublications.html {
