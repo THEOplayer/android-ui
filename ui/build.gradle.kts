@@ -103,9 +103,8 @@ dokka {
 
         externalDocumentationLinks {
             register("com.theoplayer.android.api") {
-                url("https://www.theoplayer.com/docs/theoplayer/v8/api-reference/android/")
-                // Default package-list URL doesn't work on theoplayer.com... Use GitHub for now.
-                packageListUrl("https://raw.githubusercontent.com/THEOplayer/documentation/refs/heads/main/theoplayer/static/theoplayer/v8/api-reference/android/package-list")
+                url("https://optiview.dolby.com/docs/theoplayer/v8/api-reference/android/")
+                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v8/api-reference/android/package-list")
             }
         }
     }
