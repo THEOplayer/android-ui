@@ -26,7 +26,7 @@ setContent {
 
 The `UIController` component is the main container of our custom UI. It handles creating and managing the underlying THEOplayer instance, using the given `config` and `source` properties.
 
-It also provides a skeleton layout for plugging in our playback controls, using [slots](https://developer.android.com/jetpack/compose/layouts/basics#slot-based-layouts) such as `topChrome` or `centerChrome`. We pass a composable lambda as the `centerChrome` parameter, in which we create a `PlayButton`. This will place a play button in the center of our player.
+It also provides a skeleton layout for plugging in our playback controls, using [slots](https://developer.android.com/develop/ui/compose/layouts/basics#slot-based-layouts) such as `topChrome` or `centerChrome`. We pass a composable lambda as the `centerChrome` parameter, in which we create a `PlayButton`. This will place a play button in the center of our player.
 
 ![Screenshot](../assets/custom-ui-basic.png)
 

@@ -4,7 +4,7 @@ A component library for building a world-class video player experience powered b
 
 - Use the default UI for a great out-of-the-box experience, or use the individual components to build your own custom UI.
 - Built using [Jetpack Compose](https://developer.android.com/jetpack/compose), for a modern and fast Android UI development experience.
-- Easy to customize: [slot-based layouts](https://developer.android.com/jetpack/compose/layouts/basics#slot-based-layouts) and [theme-aware components](https://developer.android.com/jetpack/compose/designsystems/custom) empower you to truly make your player UI your own.
+- Easy to customize: [slot-based layouts](https://developer.android.com/develop/ui/compose/layouts/basics#slot-based-layouts) and [theme-aware components](https://developer.android.com/jetpack/compose/designsystems/custom) empower you to truly make your player UI your own.
 
 > **Note**
 > This project is under active development. While we believe it's ready for use in production, not all features are available in this first release. If you find a problem or have an idea for a new feature, don't hesitate to [open an issue](https://github.com/THEOplayer/android-ui/issues)!
