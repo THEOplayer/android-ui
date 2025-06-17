@@ -13,7 +13,7 @@ A component library for building a world-class video player experience powered b
 
 ## Motivation
 
-THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](https://github.com/videojs/video.js) running within a `WebView` inside of a [`THEOplayerView`](https://docs.theoplayer.com/api-reference/android/com/theoplayer/android/api/THEOplayerView.html). This new UI aims to solve some limitations from the old approach:
+THEOplayer Android SDK version 4.x comes with a built-in UI based on [video.js](https://github.com/videojs/video.js) running within a `WebView` inside of a [`THEOplayerView`](https://optiview.dolby.com/docs/theoplayer/v9/api-reference/android/com/theoplayer/android/api/THEOplayerView.html). This new UI aims to solve some limitations from the old approach:
 
 - Built for Android. With the old UI, you would effectively use web technologies to customize your player, which feels disconnected from the rest of your Android app. With the new UI, you get a truly native UI that can take full advantage of the Android platform.
 - Designed with customization in mind. With the old UI, customizing anything beyond changing some text and icon colors was difficult, and could break in unpredictable ways when updating to a new THEOplayer version. With the new UI, all components can be customized in a variety of ways with a well-documented API.

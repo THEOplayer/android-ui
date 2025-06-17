@@ -103,16 +103,15 @@ dokka {
 
         externalDocumentationLinks {
             register("com.theoplayer.android.api") {
-                url("https://www.theoplayer.com/docs/theoplayer/v8/api-reference/android/")
-                // Default package-list URL doesn't work on theoplayer.com... Use GitHub for now.
-                packageListUrl("https://raw.githubusercontent.com/THEOplayer/documentation/refs/heads/main/theoplayer/static/theoplayer/v8/api-reference/android/package-list")
+                url("https://optiview.dolby.com/docs/theoplayer/v9/api-reference/android/")
+                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v9/api-reference/android/package-list")
             }
         }
     }
 
     pluginsConfiguration.html {
         customAssets.from("assets/logo-icon.svg")
-        footerMessage = "$copyright ${Year.now().value} THEO Technologies"
+        footerMessage = "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
     }
 
     dokkaPublications.html {
