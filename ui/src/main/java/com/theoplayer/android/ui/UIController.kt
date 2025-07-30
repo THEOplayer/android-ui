@@ -233,10 +233,6 @@ fun UIController(
                 })
     ) {
         CompositionLocalProvider(LocalPlayer provides player) {
-            if (player.playingAd) {
-                // Remove player UI entirely while playing an ad, to make clickthrough work
-                return@CompositionLocalProvider
-            }
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
