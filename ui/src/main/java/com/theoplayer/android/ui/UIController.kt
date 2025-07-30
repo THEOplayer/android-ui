@@ -217,7 +217,21 @@ fun UIController(
         )
     )
 
-    PlayerContainer(modifier = modifier, player = player) {
+    PlayerContainer(
+        player = player,
+        modifier = modifier
+            .pressable(interactionSource = interactionSource, requireUnconsumed = false)
+            .toggleControlsOnTap(
+                controlsVisible = controlsVisible,
+                showControlsTemporarily = {
+                    forceControlsHidden = false
+                    tapCount++
+                },
+                hideControls = {
+                    forceControlsHidden = true
+                    tapCount++
+                })
+    ) {
         CompositionLocalProvider(LocalPlayer provides player) {
             if (player.playingAd) {
                 // Remove player UI entirely while playing an ad, to make clickthrough work
@@ -226,18 +240,7 @@ fun UIController(
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
-                    .background(background)
-                    .pressable(interactionSource = interactionSource, requireUnconsumed = false)
-                    .toggleControlsOnTap(
-                        controlsVisible = controlsVisible,
-                        showControlsTemporarily = {
-                            forceControlsHidden = false
-                            tapCount++
-                        },
-                        hideControls = {
-                            forceControlsHidden = true
-                            tapCount++
-                        }),
+                    .background(background),
                 targetState = uiState,
                 transitionSpec = {
                     if (targetState is UIState.Error) {
