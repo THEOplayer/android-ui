@@ -17,9 +17,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -69,9 +66,6 @@ import kotlin.time.DurationUnit
  * @param modifier the [Modifier] to be applied to this container
  * @param config the player configuration to be used when constructing the [THEOplayerView]
  * @param source the source description to load into the player
- * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
- * for this container. You can create and pass in your own `remember`ed instance to observe
- * [Interaction]s and customize the behavior of this container.
  * @param color the background color for the overlay while showing the UI controls
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
  * @param errorOverlay content to show when the player encountered a fatal error,
@@ -86,7 +80,6 @@ fun UIController(
     modifier: Modifier = Modifier,
     config: THEOplayerConfig,
     source: SourceDescription? = null,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -102,7 +95,6 @@ fun UIController(
     UIController(
         modifier = modifier,
         player = player,
-        interactionSource = interactionSource,
         color = color,
         centerOverlay = centerOverlay,
         errorOverlay = errorOverlay,
@@ -121,9 +113,6 @@ fun UIController(
  *
  * @param modifier the [Modifier] to be applied to this container
  * @param player the player. This should always be created using [rememberPlayer].
- * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
- * for this container. You can create and pass in your own `remember`ed instance to observe
- * [Interaction]s and customize the behavior of this container.
  * @param color the background color for the overlay while showing the UI controls
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
  * @param errorOverlay content to show when the player encountered a fatal error,
@@ -137,7 +126,6 @@ fun UIController(
 fun UIController(
     modifier: Modifier = Modifier,
     player: Player = rememberPlayer(),
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -154,7 +142,6 @@ fun UIController(
             isRecentlyTapped = false
         }
     }
-    val isPressed by interactionSource.collectIsPressedAsState()
     var forceControlsHidden by remember { mutableStateOf(false) }
 
     // Wait a little bit before showing the controls and enabling animations,
@@ -176,7 +163,7 @@ fun UIController(
             } else if (forceControlsHidden) {
                 false
             } else {
-                isRecentlyTapped || isPressed || player.paused
+                isRecentlyTapped || player.paused
             }
         }
     }
@@ -220,7 +207,6 @@ fun UIController(
     PlayerContainer(
         player = player,
         modifier = modifier
-            .pressable(interactionSource = interactionSource, requireUnconsumed = false)
             .toggleControlsOnTap(
                 controlsVisible = controlsVisible,
                 showControlsTemporarily = {
