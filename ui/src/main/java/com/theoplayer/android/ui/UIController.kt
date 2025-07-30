@@ -206,7 +206,10 @@ fun UIController(
 
     PlayerContainer(
         player = player,
-        modifier = modifier
+        modifier = Modifier
+            .background(Color.Black)
+            .then(modifier)
+            .playerAspectRatio(player)
             .toggleControlsOnTap(
                 controlsVisible = controlsVisible,
                 showControlsTemporarily = {
@@ -216,7 +219,8 @@ fun UIController(
                 hideControls = {
                     forceControlsHidden = true
                     tapCount++
-                })
+                }
+            )
     ) {
         CompositionLocalProvider(LocalPlayer provides player) {
             AnimatedContent(
@@ -318,13 +322,9 @@ private fun PlayerContainer(
     ui: @Composable () -> Unit
 ) {
     val theoplayerView = player.theoplayerView
-    val containerModifier = Modifier
-        .background(Color.Black)
-        .then(modifier)
-        .playerAspectRatio(player)
     if (theoplayerView == null) {
         Box(
-            modifier = containerModifier
+            modifier = modifier
         ) {
             ui()
         }
@@ -334,7 +334,7 @@ private fun PlayerContainer(
         var composeView by remember { mutableStateOf<ComposeView?>(null) }
 
         AndroidView(
-            modifier = containerModifier,
+            modifier = modifier,
             factory = { context ->
                 uiContainer =
                     theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
