@@ -30,6 +30,7 @@ import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
 import com.theoplayer.android.api.cast.CastConfiguration
 import com.theoplayer.android.api.cast.CastIntegrationFactory
 import com.theoplayer.android.api.cast.CastStrategy
+import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.ui.DefaultUI
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
@@ -59,7 +60,10 @@ fun MainContent() {
 
     val context = LocalContext.current
     val theoplayerView = remember(context) {
-        THEOplayerView(context).apply {
+        val config = THEOplayerConfig.Builder().apply {
+            pipConfiguration(PipConfiguration.Builder().build())
+        }.build()
+        THEOplayerView(context, config).apply {
             // Add ads integration through Google IMA
             player.addIntegration(
                 GoogleImaIntegrationFactory.createGoogleImaIntegration(this)
