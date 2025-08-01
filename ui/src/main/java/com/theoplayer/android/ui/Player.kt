@@ -6,6 +6,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -296,9 +298,9 @@ enum class StreamType {
 internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val ads = theoplayerView?.player?.ads
-    override var currentTime by mutableStateOf(0.0)
+    override var currentTime by mutableDoubleStateOf(0.0)
         private set
-    override var duration by mutableStateOf(Double.NaN)
+    override var duration by mutableDoubleStateOf(Double.NaN)
         private set
     override var seekable by mutableStateOf(TimeRanges.empty())
         private set
@@ -312,9 +314,9 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         private set
     override var readyState by mutableStateOf(ReadyState.HAVE_NOTHING)
         private set
-    override var videoWidth by mutableStateOf(0)
+    override var videoWidth by mutableIntStateOf(0)
         private set
-    override var videoHeight by mutableStateOf(0)
+    override var videoHeight by mutableIntStateOf(0)
         private set
     override var firstPlay by mutableStateOf(false)
         private set
@@ -401,7 +403,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
             player?.source = value
         }
 
-    private var _volume by mutableStateOf(1.0)
+    private var _volume by mutableDoubleStateOf(1.0)
     private var _muted by mutableStateOf(false)
     override var volume: Double
         get() = _volume
@@ -423,7 +425,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
 
     private val volumeChangeListener = EventListener<VolumeChangeEvent> { updateVolumeAndMuted() }
 
-    private var _playbackRate by mutableStateOf(1.0)
+    private var _playbackRate by mutableDoubleStateOf(1.0)
     override var playbackRate: Double
         get() = _playbackRate
         set(value) {

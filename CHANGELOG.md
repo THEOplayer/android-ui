@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.11.1 (2025-08-01)
+
+* 🐛 Fixed clicking on overlays from OptiView Ads not working. ([#68](https://github.com/THEOplayer/android-ui/pull/68))
+
 ## v1.11.0 (2025-04-29)
 
 * 💥 Bumped `compileSdk` to API 35 (Android 15).

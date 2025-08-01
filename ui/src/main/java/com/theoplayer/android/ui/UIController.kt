@@ -17,9 +17,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
-import androidx.compose.foundation.interaction.Interaction
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,6 +29,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,9 +66,6 @@ import kotlin.time.DurationUnit
  * @param modifier the [Modifier] to be applied to this container
  * @param config the player configuration to be used when constructing the [THEOplayerView]
  * @param source the source description to load into the player
- * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
- * for this container. You can create and pass in your own `remember`ed instance to observe
- * [Interaction]s and customize the behavior of this container.
  * @param color the background color for the overlay while showing the UI controls
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
  * @param errorOverlay content to show when the player encountered a fatal error,
@@ -85,7 +80,6 @@ fun UIController(
     modifier: Modifier = Modifier,
     config: THEOplayerConfig,
     source: SourceDescription? = null,
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -101,7 +95,6 @@ fun UIController(
     UIController(
         modifier = modifier,
         player = player,
-        interactionSource = interactionSource,
         color = color,
         centerOverlay = centerOverlay,
         errorOverlay = errorOverlay,
@@ -120,9 +113,6 @@ fun UIController(
  *
  * @param modifier the [Modifier] to be applied to this container
  * @param player the player. This should always be created using [rememberPlayer].
- * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
- * for this container. You can create and pass in your own `remember`ed instance to observe
- * [Interaction]s and customize the behavior of this container.
  * @param color the background color for the overlay while showing the UI controls
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
  * @param errorOverlay content to show when the player encountered a fatal error,
@@ -136,7 +126,6 @@ fun UIController(
 fun UIController(
     modifier: Modifier = Modifier,
     player: Player = rememberPlayer(),
-    interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     color: Color = Color.Black,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -144,7 +133,7 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    var tapCount by remember { mutableStateOf(0) }
+    var tapCount by remember { mutableIntStateOf(0) }
     var isRecentlyTapped by remember { mutableStateOf(false) }
     LaunchedEffect(tapCount) {
         if (tapCount > 0) {
@@ -153,7 +142,6 @@ fun UIController(
             isRecentlyTapped = false
         }
     }
-    val isPressed by interactionSource.collectIsPressedAsState()
     var forceControlsHidden by remember { mutableStateOf(false) }
 
     // Wait a little bit before showing the controls and enabling animations,
@@ -175,7 +163,7 @@ fun UIController(
             } else if (forceControlsHidden) {
                 false
             } else {
-                isRecentlyTapped || isPressed || player.paused
+                isRecentlyTapped || player.paused
             }
         }
     }
@@ -216,27 +204,29 @@ fun UIController(
         )
     )
 
-    PlayerContainer(modifier = modifier, player = player) {
+    PlayerContainer(
+        player = player,
+        modifier = Modifier
+            .background(Color.Black)
+            .then(modifier)
+            .playerAspectRatio(player)
+            .toggleControlsOnTap(
+                controlsVisible = controlsVisible,
+                showControlsTemporarily = {
+                    forceControlsHidden = false
+                    tapCount++
+                },
+                hideControls = {
+                    forceControlsHidden = true
+                    tapCount++
+                }
+            )
+    ) {
         CompositionLocalProvider(LocalPlayer provides player) {
-            if (player.playingAd) {
-                // Remove player UI entirely while playing an ad, to make clickthrough work
-                return@CompositionLocalProvider
-            }
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
-                    .background(background)
-                    .pressable(interactionSource = interactionSource, requireUnconsumed = false)
-                    .toggleControlsOnTap(
-                        controlsVisible = controlsVisible,
-                        showControlsTemporarily = {
-                            forceControlsHidden = false
-                            tapCount++
-                        },
-                        hideControls = {
-                            forceControlsHidden = true
-                            tapCount++
-                        }),
+                    .background(background),
                 targetState = uiState,
                 transitionSpec = {
                     if (targetState is UIState.Error) {
@@ -332,13 +322,9 @@ private fun PlayerContainer(
     ui: @Composable () -> Unit
 ) {
     val theoplayerView = player.theoplayerView
-    val containerModifier = Modifier
-        .background(Color.Black)
-        .then(modifier)
-        .playerAspectRatio(player)
     if (theoplayerView == null) {
         Box(
-            modifier = containerModifier
+            modifier = modifier
         ) {
             ui()
         }
@@ -348,7 +334,7 @@ private fun PlayerContainer(
         var composeView by remember { mutableStateOf<ComposeView?>(null) }
 
         AndroidView(
-            modifier = containerModifier,
+            modifier = modifier,
             factory = { context ->
                 uiContainer =
                     theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
