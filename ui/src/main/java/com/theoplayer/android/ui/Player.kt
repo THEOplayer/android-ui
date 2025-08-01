@@ -466,6 +466,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
             ?.let { FullscreenHandlerImpl(it) }
     private var _fullscreen by mutableStateOf(false)
+    private var onExitFullscreen: (() -> Unit)? = null
     override var fullscreen: Boolean
         get() = _fullscreen
         set(value) {
@@ -479,6 +480,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
 
     private fun updateFullscreen() {
         _fullscreen = fullscreenHandler?.fullscreen ?: false
+        if (!fullscreen) {
+            onExitFullscreen?.let { it() }
+            onExitFullscreen = null
+        }
     }
 
     val fullscreenListener =
@@ -492,7 +497,12 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     }
 
     override fun enterPictureInPicture(pipType: PiPType) {
-        theoplayerView?.piPManager?.enterPiP(pipType)
+        if (fullscreen) {
+            onExitFullscreen = { theoplayerView?.piPManager?.enterPiP(pipType) }
+            fullscreen = false
+        } else {
+            theoplayerView?.piPManager?.enterPiP(pipType)
+        }
     }
 
     override fun exitPictureInPicture() {
