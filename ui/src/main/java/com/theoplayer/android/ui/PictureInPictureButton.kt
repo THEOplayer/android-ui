@@ -41,6 +41,7 @@ fun PictureInPictureButton(
     }
 ) {
     val player = Player.current
+    if (player?.pictureInPictureSupported != true) return
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,

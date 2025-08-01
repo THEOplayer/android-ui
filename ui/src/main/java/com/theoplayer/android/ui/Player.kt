@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import android.app.Activity
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -189,6 +190,11 @@ interface Player {
      * Returns whether the player is showing in picture-in-picture mode.
      */
     val pictureInPicture: Boolean
+
+    /**
+     * Returns whether the player supports entering picture-in-picture mode.
+     */
+    val pictureInPictureSupported: Boolean
 
     /**
      * Returns whether the player is currently waiting for more data to resume playback.
@@ -480,6 +486,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
 
     override var pictureInPicture: Boolean by mutableStateOf(false)
         private set
+
+    override val pictureInPictureSupported: Boolean by lazy {
+        (theoplayerView?.context as? Activity)?.supportsPictureInPictureMode() ?: false
+    }
 
     override fun enterPictureInPicture(pipType: PiPType) {
         theoplayerView?.piPManager?.enterPiP(pipType)
