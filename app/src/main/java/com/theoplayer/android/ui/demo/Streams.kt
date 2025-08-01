@@ -11,6 +11,13 @@ data class Stream(val title: String, val source: SourceDescription)
 val streams by lazy {
     listOf(
         Stream(
+            title = "Bip Bop (HLS)",
+            source = SourceDescription.Builder(
+                TypedSource.Builder("https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8")
+                    .build()
+            ).build()
+        ),
+        Stream(
             title = "Elephant's Dream (HLS)",
             source = SourceDescription.Builder(
                 TypedSource.Builder("https://cdn.theoplayer.com/video/elephants-dream/playlist.m3u8")
