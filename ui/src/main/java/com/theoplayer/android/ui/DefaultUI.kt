@@ -80,7 +80,7 @@ fun DefaultUI(
             }
         },
         topChrome = {
-            if (player.firstPlay) {
+            if (player.firstPlay && !player.pictureInPicture) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
                         Text(
@@ -120,6 +120,7 @@ fun DefaultUI(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
+                    PictureInPictureButton()
                     FullscreenButton()
                 }
             }

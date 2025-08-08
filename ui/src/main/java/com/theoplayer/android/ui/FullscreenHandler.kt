@@ -7,6 +7,11 @@ import android.view.ViewGroup
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 internal interface FullscreenHandler {
     val fullscreen: Boolean
@@ -29,8 +34,13 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
     private var previousViewParent: ViewGroup? = null
     private var previousViewIndex: Int = 0
     private var previousViewLayoutParams: ViewGroup.LayoutParams? = null
+    private val scope = CoroutineScope(Dispatchers.Main)
 
     override fun requestFullscreen() {
+        scope.launch { requestFullscreenAsync() }
+    }
+
+    suspend fun requestFullscreenAsync() {
         val activity = view.context as? Activity ?: return
         val window = activity.window
 
@@ -53,15 +63,14 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
             previousViewIndex = parent.indexOfChild(view)
             previousViewLayoutParams = view.layoutParams
             parent.removeView(view)
-            rootView.post {
-                rootView.addView(
-                    view,
-                    ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
+            rootView.postAsync()
+            rootView.addView(
+                view,
+                ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
-            }
+            )
         }
 
         fullscreen = true
@@ -69,6 +78,10 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
     }
 
     override fun exitFullscreen() {
+        scope.launch { exitFullscreenAsync() }
+    }
+
+    private suspend fun exitFullscreenAsync() {
         val activity = view.context as? Activity ?: return
         val window = activity.window
 
@@ -85,10 +98,9 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         val rootView = activity.findViewById<ViewGroup>(android.R.id.content)
         previousViewParent?.let { parent ->
             rootView.removeView(view)
-            parent.post {
-                parent.addView(view, previousViewIndex, previousViewLayoutParams)
-                view.layout(view.left, view.top, view.right, view.bottom)
-            }
+            parent.postAsync()
+            parent.addView(view, previousViewIndex, previousViewLayoutParams)
+            view.layout(view.left, view.top, view.right, view.bottom)
         }
         previousViewParent = null
         previousViewIndex = 0
@@ -97,3 +109,6 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         onFullscreenChangeListener?.onFullscreenChange(fullscreen)
     }
 }
+
+private suspend fun View.postAsync() =
+    suspendCoroutine { continuation -> post { continuation.resume(Unit) } }
