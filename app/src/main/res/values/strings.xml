@@ -50,4 +50,7 @@
     <string name="theoplayer_ui_bandwidth_format_kbps" translatable="false">#kbps</string>
     <string name="theoplayer_ui_track_unknown">Unknown</string>
     <string name="theoplayer_ui_error_title">An error occurred</string>
+    <string name="theoplayer_ui_pip_enter">Enter picture-in-picture</string>
+    <string name="theoplayer_ui_pip_exit">Exit picture-in-picture</string>
+    <string name="theo_pip_placeholder">Video playing in PiP mode.</string>
 </resources>

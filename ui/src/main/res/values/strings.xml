@@ -95,4 +95,13 @@
 
     <!-- The title for a fatal error, shown above the full error message. -->
     <string name="theoplayer_ui_error_title">An error occurred</string>
+
+    <!-- The label shown for entering picture-in-picture. -->
+    <string name="theoplayer_ui_pip_enter">Enter picture-in-picture</string>
+
+    <!-- The label shown for exiting picture-in-picture. -->
+    <string name="theoplayer_ui_pip_exit">Exit picture-in-picture</string>
+
+    <!-- The label shown when picture-in-picture is active. -->
+    <string name="theo_pip_placeholder">Video playing in PiP mode.</string>
 </resources>

@@ -7,6 +7,7 @@ import androidx.compose.material.icons.rounded.PictureInPictureAlt
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.pip.PiPType
 
@@ -30,13 +31,13 @@ fun PictureInPictureButton(
     enter: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.PictureInPictureAlt,
-            contentDescription = "Enter picture-in-picture"
+            contentDescription = stringResource(R.string.theoplayer_ui_pip_enter),
         )
     },
     exit: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Fullscreen,
-            contentDescription = "Exit picture-in-picture"
+            contentDescription = stringResource(R.string.theoplayer_ui_pip_exit)
         )
     }
 ) {
