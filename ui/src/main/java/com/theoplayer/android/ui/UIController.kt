@@ -158,8 +158,6 @@ fun UIController(
                 false
             } else if (!player.firstPlay || player.castState == PlayerCastState.CONNECTED) {
                 true
-            } else if (player.playingAd) {
-                false
             } else if (forceControlsHidden) {
                 false
             } else {
