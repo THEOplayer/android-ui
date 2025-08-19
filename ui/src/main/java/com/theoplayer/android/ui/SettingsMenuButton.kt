@@ -27,9 +27,12 @@ fun MenuScope.SettingsMenuButton(
         )
     }
 ) {
+    val player = Player.current
+    val playingAd = player?.playingAd ?: false
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
+        enabled = !playingAd,
         onClick = { openMenu { SettingsMenu() } }) {
         content()
     }
