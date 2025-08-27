@@ -207,6 +207,13 @@ interface Player {
     val playingAd: Boolean
 
     /**
+     * Returns whether the player can seek to a different time.
+     *
+     * Seeking may sometimes be prevented, for example because the player is [playing an ad][playingAd].
+     */
+    val canSeek: Boolean
+
+    /**
      * Returns the [StreamType] of the media.
      *
      * This can be used to show or hide certain controls which are only relevant
@@ -345,6 +352,17 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         private set
     override var error by mutableStateOf<THEOplayerException?>(null)
         private set
+    override val canSeek by derivedStateOf {
+        if (playingAd) {
+            false
+        } else {
+            seekable.isNotEmpty() || run {
+                // `player.seekable` is (incorrectly) empty while casting, see #35
+                // Temporary fix: always allow seeking while casting.
+                castState == PlayerCastState.CONNECTED
+            }
+        }
+    }
 
     private fun updateCurrentTime() {
         currentTime = player?.currentTime ?: 0.0
