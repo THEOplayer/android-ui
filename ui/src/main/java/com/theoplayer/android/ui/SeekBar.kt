@@ -50,6 +50,7 @@ fun SeekBar(
     val seekable = player?.seekable ?: TimeRanges.empty()
     val duration = player?.duration ?: Double.NaN
     val enabled = player?.canSeek ?: false
+    val playingAd = player?.playingAd ?: false
 
     val seekableRange = remember(seekable, duration) {
         seekable.bounds ?: run {
@@ -71,11 +72,13 @@ fun SeekBar(
         enabled = enabled,
         interactionSource = interactionSource,
         thumb = {
-            SeekBarThumb(
-                interactionSource = interactionSource,
-                colors = colors,
-                enabled = enabled
-            )
+            if (!playingAd) {
+                SeekBarThumb(
+                    interactionSource = interactionSource,
+                    colors = colors,
+                    enabled = enabled
+                )
+            }
         },
         track = { sliderState ->
             SliderDefaults.Track(
