@@ -89,18 +89,20 @@ fun DefaultUI(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    LanguageMenuButton()
-                    SettingsMenuButton()
+                    if (!player.playingAd) {
+                        LanguageMenuButton()
+                        SettingsMenuButton()
+                    }
                     ChromecastButton()
                 }
             }
         },
         centerChrome = {
-            if (player.firstPlay) {
+            if (player.firstPlay && !player.playingAd) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
             PlayButton(iconModifier = Modifier.size(96.dp), contentPadding = PaddingValues(8.dp))
-            if (player.firstPlay) {
+            if (player.firstPlay && !player.playingAd) {
                 SeekButton(seekOffset = 10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
         },
