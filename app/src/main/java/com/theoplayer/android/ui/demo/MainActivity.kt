@@ -110,50 +110,50 @@ fun MainContent() {
             )
         }
     ) { padding ->
-            val playerModifier = Modifier
-                .padding(padding)
-                .fillMaxSize(1f)
-            when (theme) {
-                PlayerTheme.Default -> {
-                    DefaultUI(
+        val playerModifier = Modifier
+            .padding(padding)
+            .fillMaxSize(1f)
+        when (theme) {
+            PlayerTheme.Default -> {
+                DefaultUI(
+                    modifier = playerModifier,
+                    player = player,
+                    title = stream.title
+                )
+            }
+
+            PlayerTheme.Nitflex -> {
+                NitflexTheme(useDarkTheme = true) {
+                    NitflexUI(
                         modifier = playerModifier,
                         player = player,
                         title = stream.title
                     )
                 }
+            }
+        }
 
-                PlayerTheme.Nitflex -> {
-                    NitflexTheme(useDarkTheme = true) {
-                        NitflexUI(
-                            modifier = playerModifier,
-                            player = player,
-                            title = stream.title
-                        )
-                    }
-                }
-            }
-
-            if (streamMenuOpen) {
-                SelectStreamDialog(
-                    streams = streams,
-                    currentStream = stream,
-                    onSelectStream = {
-                        stream = it
-                        streamMenuOpen = false
-                    },
-                    onDismissRequest = { streamMenuOpen = false }
-                )
-            }
-            if (themeMenuOpen) {
-                SelectThemeDialog(
-                    currentTheme = theme,
-                    onSelectTheme = {
-                        theme = it
-                        themeMenuOpen = false
-                    },
-                    onDismissRequest = { themeMenuOpen = false }
-                )
-            }
+        if (streamMenuOpen) {
+            SelectStreamDialog(
+                streams = streams,
+                currentStream = stream,
+                onSelectStream = {
+                    stream = it
+                    streamMenuOpen = false
+                },
+                onDismissRequest = { streamMenuOpen = false }
+            )
+        }
+        if (themeMenuOpen) {
+            SelectThemeDialog(
+                currentTheme = theme,
+                onSelectTheme = {
+                    theme = it
+                    themeMenuOpen = false
+                },
+                onDismissRequest = { themeMenuOpen = false }
+            )
+        }
     }
 }
 
