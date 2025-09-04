@@ -85,11 +85,10 @@ fun MainContent() {
     var themeMenuOpen by remember { mutableStateOf(false) }
     var theme by rememberSaveable { mutableStateOf(PlayerTheme.Default) }
 
-    Surface(
+    Scaffold(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Scaffold(topBar = {
+        containerColor = MaterialTheme.colorScheme.background,
+        topBar = {
             TopAppBar(
                 title = {
                     Text(text = "Demo")
@@ -109,7 +108,8 @@ fun MainContent() {
                     }
                 }
             )
-        }) { padding ->
+        }
+    ) { padding ->
             val playerModifier = Modifier
                 .padding(padding)
                 .fillMaxSize(1f)
@@ -154,7 +154,6 @@ fun MainContent() {
                     onDismissRequest = { themeMenuOpen = false }
                 )
             }
-        }
     }
 }
 
