@@ -89,35 +89,43 @@ fun DefaultUI(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    LanguageMenuButton()
-                    SettingsMenuButton()
+                    if (!player.playingAd) {
+                        LanguageMenuButton()
+                        SettingsMenuButton()
+                    }
                     ChromecastButton()
                 }
             }
         },
         centerChrome = {
-            if (player.firstPlay) {
+            if (player.firstPlay && !player.playingAd) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
             PlayButton(iconModifier = Modifier.size(96.dp), contentPadding = PaddingValues(8.dp))
-            if (player.firstPlay) {
+            if (player.firstPlay && !player.playingAd) {
                 SeekButton(seekOffset = 10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
         },
         bottomChrome = {
             if (player.firstPlay) {
                 ChromecastDisplay(modifier = Modifier.padding(8.dp))
-                if (player.streamType != StreamType.Live) {
+                if (!player.playingAd && player.streamType != StreamType.Live) {
                     SeekBar()
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MuteButton()
-                    LiveButton()
-                    if (player.streamType != StreamType.Live) {
-                        CurrentTimeDisplay(
-                            showRemaining = player.streamType == StreamType.Dvr,
-                            showDuration = player.streamType == StreamType.Vod
-                        )
+                    if (player.playingAd) {
+                        if (player.streamType != StreamType.Live) {
+                            SeekBar()
+                        }
+                    } else {
+                        LiveButton()
+                        if (player.streamType != StreamType.Live) {
+                            CurrentTimeDisplay(
+                                showRemaining = player.streamType == StreamType.Dvr,
+                                showDuration = player.streamType == StreamType.Vod
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     PictureInPictureButton()

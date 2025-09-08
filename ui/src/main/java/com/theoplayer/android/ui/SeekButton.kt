@@ -88,9 +88,11 @@ fun SeekButton(
     content: @Composable () -> Unit
 ) {
     val player = Player.current
+    val enabled = player?.canSeek ?: false
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
+        enabled = enabled,
         onClick = {
             player?.player?.let {
                 if (!it.duration.isNaN()) {

@@ -29,7 +29,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 
 /**
  * A seek bar showing the current time of the player, and which seeks the player when clicked or dragged.
@@ -50,11 +49,8 @@ fun SeekBar(
     val currentTime = player?.currentTime ?: 0.0
     val seekable = player?.seekable ?: TimeRanges.empty()
     val duration = player?.duration ?: Double.NaN
+    val enabled = player?.canSeek ?: false
     val playingAd = player?.playingAd ?: false
-    // `player.seekable` is (incorrectly) empty while casting, see #35
-    // Temporary fix: always allow seeking while casting.
-    val casting = player?.castState == PlayerCastState.CONNECTED
-    val enabled = (seekable.isNotEmpty() && !playingAd) || casting
 
     val seekableRange = remember(seekable, duration) {
         seekable.bounds ?: run {
@@ -76,11 +72,13 @@ fun SeekBar(
         enabled = enabled,
         interactionSource = interactionSource,
         thumb = {
-            SeekBarThumb(
-                interactionSource = interactionSource,
-                colors = colors,
-                enabled = enabled
-            )
+            if (!playingAd) {
+                SeekBarThumb(
+                    interactionSource = interactionSource,
+                    colors = colors,
+                    enabled = enabled
+                )
+            }
         },
         track = { sliderState ->
             SliderDefaults.Track(
