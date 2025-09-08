@@ -1,7 +1,7 @@
 [versions]
 gradle = "8.13.0"
-kotlin-gradle-plugin = "1.9.25"
-ktx = "1.13.1"
+kotlin = "2.2.10"
+ktx = "1.16.0"
 lifecycle-compose = "2.8.7"
 activity-compose = "1.9.3"
 appcompat = "1.7.0"
@@ -36,7 +36,7 @@ playServices-castFramework = { group = "com.google.android.gms", name = "play-se
 gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 dokka-base = { group = "org.jetbrains.dokka", name = "dokka-base", version.ref = "dokka" }
 dokka-plugin = { group = "org.jetbrains.dokka", name = "android-documentation-plugin", version.ref = "dokka" }
-kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin-gradle-plugin" }
+kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 theoplayer = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer" }
 theoplayer-ads-ima = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads-ima", version.ref = "theoplayer" }
@@ -45,6 +45,7 @@ theoplayer-cast = { group = "com.theoplayer.theoplayer-sdk-android", name = "int
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
 android-library = { id = "com.android.library", version.ref = "gradle" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin-gradle-plugin" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 dokka-javadoc = { id = "org.jetbrains.dokka-javadoc" }
