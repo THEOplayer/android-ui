@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import android.app.Activity
 import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -29,6 +30,7 @@ import com.theoplayer.android.api.event.player.ErrorEvent
 import com.theoplayer.android.api.event.player.PauseEvent
 import com.theoplayer.android.api.event.player.PlayEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.event.player.PresentationModeChange
 import com.theoplayer.android.api.event.player.RateChangeEvent
 import com.theoplayer.android.api.event.player.ReadyStateChangeEvent
 import com.theoplayer.android.api.event.player.ResizeEvent
@@ -41,6 +43,7 @@ import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackLi
 import com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes
 import com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes
 import com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes
+import com.theoplayer.android.api.pip.PiPType
 import com.theoplayer.android.api.player.ReadyState
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
@@ -184,6 +187,16 @@ interface Player {
     var fullscreen: Boolean
 
     /**
+     * Returns whether the player is showing in picture-in-picture mode.
+     */
+    val pictureInPicture: Boolean
+
+    /**
+     * Returns whether the player supports entering picture-in-picture mode.
+     */
+    val pictureInPictureSupported: Boolean
+
+    /**
      * Returns whether the player is currently waiting for more data to resume playback.
      */
     val loading: Boolean
@@ -192,6 +205,13 @@ interface Player {
      * Returns whether the player is currently playing an ad.
      */
     val playingAd: Boolean
+
+    /**
+     * Returns whether the player can seek to a different time.
+     *
+     * Seeking may sometimes be prevented, for example because the player is [playing an ad][playingAd].
+     */
+    val canSeek: Boolean
 
     /**
      * Returns the [StreamType] of the media.
@@ -263,6 +283,16 @@ interface Player {
     fun pause()
 
     /**
+     * Enter picture-in-picture mode.
+     */
+    fun enterPictureInPicture(pipType: PiPType)
+
+    /**
+     * Exit picture-in-picture mode.
+     */
+    fun exitPictureInPicture()
+
+    /**
      * Contains properties to access the current [Player].
      */
     companion object {
@@ -322,6 +352,17 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         private set
     override var error by mutableStateOf<THEOplayerException?>(null)
         private set
+    override val canSeek by derivedStateOf {
+        if (playingAd) {
+            false
+        } else {
+            seekable.isNotEmpty() || run {
+                // `player.seekable` is (incorrectly) empty while casting, see #35
+                // Temporary fix: always allow seeking while casting.
+                castState == PlayerCastState.CONNECTED
+            }
+        }
+    }
 
     private fun updateCurrentTime() {
         currentTime = player?.currentTime ?: 0.0
@@ -443,6 +484,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
             ?.let { FullscreenHandlerImpl(it) }
     private var _fullscreen by mutableStateOf(false)
+    private var onExitFullscreen: (() -> Unit)? = null
     override var fullscreen: Boolean
         get() = _fullscreen
         set(value) {
@@ -456,10 +498,41 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
 
     private fun updateFullscreen() {
         _fullscreen = fullscreenHandler?.fullscreen ?: false
+        if (!fullscreen) {
+            onExitFullscreen?.let { it() }
+            onExitFullscreen = null
+        }
     }
 
     val fullscreenListener =
         FullscreenHandler.OnFullscreenChangeListener { updateFullscreen() }
+
+    override var pictureInPicture: Boolean by mutableStateOf(false)
+        private set
+
+    override val pictureInPictureSupported: Boolean by lazy {
+        (theoplayerView?.context as? Activity)?.supportsPictureInPictureMode() ?: false
+    }
+
+    override fun enterPictureInPicture(pipType: PiPType) {
+        if (fullscreen) {
+            onExitFullscreen = { theoplayerView?.piPManager?.enterPiP(pipType) }
+            fullscreen = false
+        } else {
+            theoplayerView?.piPManager?.enterPiP(pipType)
+        }
+    }
+
+    override fun exitPictureInPicture() {
+        theoplayerView?.piPManager?.exitPiP()
+    }
+
+    private fun updatePictureInPicture() {
+        pictureInPicture = theoplayerView?.piPManager?.isInPiP ?: false
+    }
+
+    val presentationModeChangeListener =
+        EventListener<PresentationModeChange> { updatePictureInPicture() }
 
     override val loading by derivedStateOf {
         !paused && !ended && (seeking || readyState.ordinal < ReadyState.HAVE_FUTURE_DATA.ordinal)
@@ -670,6 +743,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         updateVolumeAndMuted()
         updatePlaybackRate()
         updateFullscreen()
+        updatePictureInPicture()
         updateVideoWidthAndHeight()
         updateActiveVideoTrack()
         updateAudioTracks()
@@ -687,6 +761,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         player?.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.addEventListener(PlayerEventTypes.RATECHANGE, rateChangeListener)
         player?.addEventListener(PlayerEventTypes.RESIZE, resizeListener)
+        player?.addEventListener(
+            PlayerEventTypes.PRESENTATIONMODECHANGE,
+            presentationModeChangeListener
+        )
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
         player?.videoTracks?.addEventListener(
@@ -748,6 +826,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         player?.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeListener)
         player?.removeEventListener(PlayerEventTypes.RATECHANGE, rateChangeListener)
         player?.removeEventListener(PlayerEventTypes.RESIZE, resizeListener)
+        player?.removeEventListener(
+            PlayerEventTypes.PRESENTATIONMODECHANGE,
+            presentationModeChangeListener
+        )
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
         player?.videoTracks?.removeEventListener(

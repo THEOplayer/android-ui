@@ -9,6 +9,12 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.12.0 (2025-09-08)
+
+* 🚀 Added `PictureInPictureButton`. ([#19](https://github.com/THEOplayer/android-ui/issues/19), [#70](https://github.com/THEOplayer/android-ui/pull/70))
+* 🚀 The default UI now shows a minimal set of controls while playing an ad. ([#71](https://github.com/THEOplayer/android-ui/pull/71))
+* 🚀 `UIController` no longer hides all controls while playing an ad. ([#71](https://github.com/THEOplayer/android-ui/pull/71))
+
 ## v1.11.1 (2025-08-01)
 
 * 🐛 Fixed clicking on overlays from OptiView Ads not working. ([#68](https://github.com/THEOplayer/android-ui/pull/68))
