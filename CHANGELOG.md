@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.12.0 (2025-09-08)
 
 * 🚀 Added `PictureInPictureButton`. ([#19](https://github.com/THEOplayer/android-ui/issues/19), [#70](https://github.com/THEOplayer/android-ui/pull/70))
 * 🚀 The default UI now shows a minimal set of controls while playing an ad. ([#71](https://github.com/THEOplayer/android-ui/pull/71))
