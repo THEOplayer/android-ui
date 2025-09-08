@@ -13,6 +13,7 @@
 
 * 💥 The `minSdk` is now API 23 (Android 6.0 "Marshmallow"), to align with THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
 * 💥 Open Video UI for Android is now compiled using the Kotlin 2 compiler. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
+* 💥 Updated to Jetpack Compose version 1.9.0 ([BOM](https://developer.android.com/jetpack/compose/bom) 2025.08.01).
 * 🚀 Added support for THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
 
 ## v1.12.0 (2025-09-08)
