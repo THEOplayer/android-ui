@@ -1,5 +1,5 @@
 [versions]
-gradle = "8.7.3"
+gradle = "8.13.0"
 kotlin-gradle-plugin = "1.9.25"
 ktx = "1.13.1"
 lifecycle-compose = "2.8.7"
