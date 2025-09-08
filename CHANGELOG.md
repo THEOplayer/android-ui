@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🚀 Added support for THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
+
 ## v1.12.0 (2025-09-08)
 
 * 🚀 Added `PictureInPictureButton`. ([#19](https://github.com/THEOplayer/android-ui/issues/19), [#70](https://github.com/THEOplayer/android-ui/pull/70))
