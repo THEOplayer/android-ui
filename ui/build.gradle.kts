@@ -80,11 +80,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
 
-    implementation(libs.theoplayer) {
-        version {
-            strictly("[5.0, 11.0)")
-        }
-    }
+    implementation(libs.theoplayer)
 
     dokkaPlugin(libs.dokka.plugin)
 }
