@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.13.0 (2025-09-12)
 
 * 💥 The `minSdk` is now API 23 (Android 6.0 "Marshmallow"), to align with THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
 * 💥 Open Video UI for Android is now compiled using the Kotlin 2 compiler. Update your app to use Kotlin Gradle Plugin 2.0.0 or newer. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
