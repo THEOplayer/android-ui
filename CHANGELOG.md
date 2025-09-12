@@ -9,6 +9,13 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 💥 The `minSdk` is now API 23 (Android 6.0 "Marshmallow"), to align with THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
+* 💥 Open Video UI for Android is now compiled using the Kotlin 2 compiler. Update your app to use Kotlin Gradle Plugin 2.0.0 or newer. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
+* 💥 Updated to Jetpack Compose version 1.9.0 ([BOM](https://developer.android.com/jetpack/compose/bom) 2025.08.01).
+* 🚀 Added support for THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
+
 ## v1.12.0 (2025-09-08)
 
 * 🚀 Added `PictureInPictureButton`. ([#19](https://github.com/THEOplayer/android-ui/issues/19), [#70](https://github.com/THEOplayer/android-ui/pull/70))
@@ -28,7 +35,7 @@
 
 ## v1.10.0 (2025-04-02)
 
-* 🚀 Added support for THEOplayer 9.0. ([#61](https://github.com/THEOplayer/android-ui/pulls/61))
+* 🚀 Added support for THEOplayer 9.0. ([#61](https://github.com/THEOplayer/android-ui/pull/61))
 
 ## v1.9.4 (2024-12-18)
 
@@ -61,7 +68,7 @@
 
 ## v1.8.0 (2024-09-06)
 
-* 🚀 Added support for THEOplayer 8.0. ([#37](https://github.com/THEOplayer/android-ui/pulls/37))
+* 🚀 Added support for THEOplayer 8.0. ([#37](https://github.com/THEOplayer/android-ui/pull/37))
 
 ## v1.7.4 (2024-09-02)
 
