@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import java.time.Year
 import kotlin.text.Typography.copyright
 
@@ -45,6 +46,7 @@ android {
     }
     kotlin {
         compilerOptions {
+            apiVersion = KotlinVersion.KOTLIN_2_0
             jvmTarget = JvmTarget.JVM_1_8
         }
     }

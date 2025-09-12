@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
 plugins {
     alias(libs.plugins.android.application)
@@ -43,6 +44,7 @@ android {
     }
     kotlin {
         compilerOptions {
+            apiVersion = KotlinVersion.KOTLIN_2_0
             jvmTarget = JvmTarget.JVM_1_8
         }
     }
