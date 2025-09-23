@@ -1,7 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
-import java.time.Year
-import kotlin.text.Typography.copyright
 
 buildscript {
     dependencies {
@@ -15,7 +13,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     alias(libs.plugins.dokka.javadoc)
-    id("android-ui.library-conventions")
+    id("maven-publish")
 }
 
 android {
@@ -26,9 +24,6 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {
@@ -61,8 +56,6 @@ android {
     publishing {
         singleVariant("release") {
             withSourcesJar()
-            // We use Dokka for JavaDoc generation, see dokkaJavadocJar below
-            // withJavadocJar()
         }
     }
 }
@@ -76,8 +69,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.toolingPreview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.iconsExtended)
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso)
@@ -85,61 +76,5 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
 
-    api(project(":common"))
-    api(libs.theoplayer)
-
-    dokkaPlugin(libs.dokka.plugin)
-}
-
-dokka {
-    moduleName = rootProject.name
-
-    dokkaSourceSets.main {
-        sourceLink {
-            localDirectory = file("src/main/java")
-            remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui/src/main/java")
-            remoteLineSuffix = "#L"
-        }
-
-        externalDocumentationLinks {
-            register("com.theoplayer.android.api") {
-                url("https://optiview.dolby.com/docs/theoplayer/v10/api-reference/android/")
-                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v10/api-reference/android/package-list")
-            }
-        }
-    }
-
-    pluginsConfiguration.html {
-        customAssets.from("assets/logo-icon.svg")
-        footerMessage = "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
-    }
-
-    dokkaPublications.html {
-        outputDirectory = rootDir.resolve("site/api")
-    }
-
-    dokkaPublications.javadoc {
-        enabled = true
-    }
-}
-
-val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
-    group = "dokka"
-    from(tasks.dokkaGeneratePublicationJavadoc)
-    dependsOn(tasks.dokkaGeneratePublicationJavadoc)
-    archiveClassifier.set("javadoc")
-}
-
-publishing {
-    publications {
-        register<MavenPublication>("release") {
-            groupId = "com.theoplayer.android-ui"
-            artifactId = "android-ui"
-            version = project.version as String
-            artifact(dokkaJavadocJar)
-            afterEvaluate {
-                from(components["release"])
-            }
-        }
-    }
+    implementation(libs.theoplayer)
 }
