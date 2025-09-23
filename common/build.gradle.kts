@@ -17,7 +17,7 @@ plugins {
 }
 
 android {
-    namespace = "com.theoplayer.android.ui"
+    namespace = "com.theoplayer.android.ui.common"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
