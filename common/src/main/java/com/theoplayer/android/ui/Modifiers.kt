@@ -23,9 +23,11 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.jetbrains.annotations.ApiStatus
 import kotlin.math.roundToInt
 
-internal fun Modifier.toggleControlsOnTap(
+@ApiStatus.Internal
+fun Modifier.toggleControlsOnTap(
     controlsVisible: State<Boolean>,
     showControlsTemporarily: () -> Unit,
     hideControls: () -> Unit
@@ -73,7 +75,8 @@ private suspend fun PointerInputScope.detectAnyPointerEvent(
     }
 }
 
-internal fun Modifier.constrainedAspectRatio(
+@ApiStatus.Internal
+fun Modifier.constrainedAspectRatio(
     @FloatRange(from = 0.0, fromInclusive = false)
     ratio: Float,
     matchHeightConstraintsFirst: Boolean = false

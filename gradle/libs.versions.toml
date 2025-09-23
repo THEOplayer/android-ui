@@ -24,6 +24,7 @@ androidx-lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-r
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
 androidx-compose-material-iconsExtended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-compose-ui-ui = { group = "androidx.compose.ui", name = "ui" }

@@ -67,6 +67,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.toolingPreview)
     testImplementation(libs.junit4)
