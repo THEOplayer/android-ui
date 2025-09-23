@@ -78,3 +78,7 @@ dependencies {
 
     implementation(libs.theoplayer)
 }
+
+dokka {
+    moduleName = "Common"
+}

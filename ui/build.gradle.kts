@@ -89,6 +89,8 @@ dependencies {
     api(libs.theoplayer)
 
     dokkaPlugin(libs.dokka.plugin)
+    dokka(project(":common"))
+    dokka(project)
 }
 
 dokka {
