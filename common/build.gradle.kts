@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     alias(libs.plugins.dokka.javadoc)
-    id("maven-publish")
+    id("android-ui.library-conventions")
 }
 
 android {
@@ -82,4 +82,17 @@ dependencies {
 
 dokka {
     moduleName = "Common"
+}
+
+publishing {
+    publications {
+        register<MavenPublication>("release") {
+            groupId = "com.theoplayer.android-ui"
+            artifactId = "android-ui-common"
+            version = project.version as String
+            afterEvaluate {
+                from(components["release"])
+            }
+        }
+    }
 }
