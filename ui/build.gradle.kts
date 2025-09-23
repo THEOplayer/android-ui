@@ -85,7 +85,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
 
-    implementation(libs.theoplayer)
+    api(libs.theoplayer)
 
     dokkaPlugin(libs.dokka.plugin)
 }
