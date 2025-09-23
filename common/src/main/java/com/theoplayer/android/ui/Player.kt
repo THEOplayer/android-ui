@@ -52,6 +52,7 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import com.theoplayer.android.api.source.SourceDescription
+import org.jetbrains.annotations.ApiStatus
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
@@ -65,10 +66,11 @@ import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as
 import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 import com.theoplayer.android.api.player.Player as THEOplayer
 
-internal val LocalPlayer = staticCompositionLocalOf<Player?> { null }
+@ApiStatus.Internal
+val LocalPlayer = staticCompositionLocalOf<Player?> { null }
 
 /**
- * A player holding a [THEOplayer] instance that can be hosted by a [DefaultUI] or [UIController].
+ * A player holding a [THEOplayer] instance that can be hosted by a [com.theoplayer.android.ui.DefaultUI] or [com.theoplayer.android.ui.UIController].
  *
  * All properties are backed by [State] or [MutableState] objects, so reads from within a
  * [Composable] function will automatically subscribe to changes of that property.
@@ -86,7 +88,7 @@ interface Player {
     /**
      * Returns the wrapped THEOplayer view.
      *
-     * *DO NOT* use this view directly! It will be managed by a [UIController] or [DefaultUI].
+     * *DO NOT* use this view directly! It will be managed by a [com.theoplayer.android.ui.UIController] or [com.theoplayer.android.ui.DefaultUI].
      */
     val theoplayerView: THEOplayerView?
 
@@ -325,7 +327,8 @@ enum class StreamType {
     Dvr
 }
 
-internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
+@ApiStatus.Internal
+class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val ads = theoplayerView?.player?.ads
     override var currentTime by mutableDoubleStateOf(0.0)
@@ -504,7 +507,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         }
     }
 
-    val fullscreenListener =
+    private val fullscreenListener =
         FullscreenHandler.OnFullscreenChangeListener { updateFullscreen() }
 
     override var pictureInPicture: Boolean by mutableStateOf(false)
