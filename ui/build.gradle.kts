@@ -15,7 +15,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     alias(libs.plugins.dokka.javadoc)
-    id("maven-publish")
+    id("android-ui.library-conventions")
 }
 
 android {
@@ -130,25 +130,6 @@ val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "reposilite"
-            url = uri("https://maven.theoplayer.com/releases")
-            credentials {
-                username = System.getenv("REPOSILITE_USERNAME")
-                password = System.getenv("REPOSILITE_PASSWORD")
-            }
-        }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-
     publications {
         register<MavenPublication>("release") {
             groupId = "com.theoplayer.android-ui"
