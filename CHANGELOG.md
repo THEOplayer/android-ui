@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🐛 Changed THEOplayer to be an `api` dependency in Gradle. ([#76](https://github.com/THEOplayer/android-ui/pull/76))
+
 ## v1.13.0 (2025-09-12)
 
 * 💥 The `minSdk` is now API 23 (Android 6.0 "Marshmallow"), to align with THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))
