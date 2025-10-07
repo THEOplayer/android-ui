@@ -51,7 +51,10 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.theme.THEOplayerTheme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.DurationUnit
@@ -370,17 +373,24 @@ private fun PlayerContainer(
             })
 
         // Install inside THEOplayerView's UI container
-        DisposableEffect(uiContainer, composeView) {
-            val container = uiContainer
-            val view = composeView
-            if (container != null && view != null) {
+        LaunchedEffect(uiContainer, composeView) {
+            val container = uiContainer ?: return@LaunchedEffect
+            val view = composeView ?: return@LaunchedEffect
+            // Attach it immediately.
+            if (view.parent !== container) {
+                (view.parent as? ViewGroup)?.removeView(view)
                 container.addView(view)
                 theoplayerView.postInvalidate()
             }
-            onDispose {
-                if (container != null && view != null) {
-                    container.removeView(view)
-                    theoplayerView.postInvalidate()
+            try {
+                awaitCancellation()
+            } finally {
+                // Remove lazily, in case we immediately re-attach it to the same container.
+                withContext(Dispatchers.Main) {
+                    if (view.parent === container) {
+                        container.removeView(view)
+                        theoplayerView.postInvalidate()
+                    }
                 }
             }
         }
