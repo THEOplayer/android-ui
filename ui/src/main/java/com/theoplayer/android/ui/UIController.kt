@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -208,6 +209,18 @@ fun UIController(
             .background(Color.Black)
             .then(modifier)
             .playerAspectRatio(player)
+            .onPreviewKeyEvent {
+                if (controlsVisible.value) {
+                    // Keep controls visible
+                    tapCount++
+                    false
+                } else {
+                    // Intercept and show controls
+                    forceControlsHidden = false
+                    tapCount++
+                    true
+                }
+            }
             .toggleControlsOnTap(
                 controlsVisible = controlsVisible,
                 showControlsTemporarily = {
