@@ -80,7 +80,7 @@ fun UIController(
     modifier: Modifier = Modifier,
     config: THEOplayerConfig,
     source: SourceDescription? = null,
-    color: Color = Color.Black,
+    color: Color = Color.Black.copy(alpha = 0.5f),
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -126,7 +126,7 @@ fun UIController(
 fun UIController(
     modifier: Modifier = Modifier,
     player: Player = rememberPlayer(),
-    color: Color = Color.Black,
+    color: Color = Color.Black.copy(alpha = 0.5f),
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -187,7 +187,7 @@ fun UIController(
     }
     val background by animateColorAsState(
         label = "BackgroundAnimation",
-        targetValue = color.copy(alpha = if (backgroundVisible) 0.5f else 0f),
+        targetValue = if (backgroundVisible) color else color.copy(alpha = 0f),
         animationSpec = tween(
             easing = LinearEasing,
             durationMillis = if (backgroundVisible) {
