@@ -15,7 +15,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     alias(libs.plugins.dokka.javadoc)
-    id("maven-publish")
+    id("android-ui.library-conventions")
 }
 
 android {
@@ -32,7 +32,7 @@ android {
     }
 
     buildTypes {
-        getByName("release") {
+        release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -85,7 +85,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.testManifest)
 
-    implementation(libs.theoplayer)
+    api(libs.theoplayer)
 
     dokkaPlugin(libs.dokka.plugin)
 }
@@ -102,8 +102,8 @@ dokka {
 
         externalDocumentationLinks {
             register("com.theoplayer.android.api") {
-                url("https://optiview.dolby.com/docs/theoplayer/v9/api-reference/android/")
-                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v9/api-reference/android/package-list")
+                url("https://optiview.dolby.com/docs/theoplayer/v10/api-reference/android/")
+                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v10/api-reference/android/package-list")
             }
         }
     }
@@ -130,25 +130,6 @@ val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
 }
 
 publishing {
-    repositories {
-        maven {
-            name = "reposilite"
-            url = uri("https://maven.theoplayer.com/releases")
-            credentials {
-                username = System.getenv("REPOSILITE_USERNAME")
-                password = System.getenv("REPOSILITE_PASSWORD")
-            }
-        }
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/THEOplayer/android-ui")
-            credentials {
-                username = System.getenv("GITHUB_ACTOR")
-                password = System.getenv("GITHUB_TOKEN")
-            }
-        }
-    }
-
     publications {
         register<MavenPublication>("release") {
             groupId = "com.theoplayer.android-ui"

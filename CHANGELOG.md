@@ -9,6 +9,11 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.13.1 (2026-01-05)
+
+* 🐛 Changed THEOplayer to be an `api` dependency in Gradle. ([#76](https://github.com/THEOplayer/android-ui/pull/76))
+* 🐛 The alpha value of the `UIController`'s background color is now correctly preserved. ([#78](https://github.com/THEOplayer/android-ui/issues/78), [#79](https://github.com/THEOplayer/android-ui/pull/79))
+
 ## v1.13.0 (2025-09-12)
 
 * 💥 The `minSdk` is now API 23 (Android 6.0 "Marshmallow"), to align with THEOplayer 10.0. ([#74](https://github.com/THEOplayer/android-ui/pull/74))

@@ -33,7 +33,7 @@ android {
             )
         }
         // Build type that uses the latest android-ui from Maven
-        create("maven") {
+        register("maven") {
             initWith(getByName("debug"))
             matchingFallbacks += listOf("debug")
         }
