@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.13.2 (2026-03-03)
 
 * 🐛 Fixed `PictureInPictureButton` to only be shown when the backing `THEOplayerView` has a valid `PiPConfiguration`. ([#81](https://github.com/THEOplayer/android-ui/pull/81))
 
