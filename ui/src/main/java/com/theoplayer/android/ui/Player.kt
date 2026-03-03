@@ -511,7 +511,9 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         private set
 
     override val pictureInPictureSupported: Boolean by lazy {
-        (theoplayerView?.context as? Activity)?.supportsPictureInPictureMode() ?: false
+        val theoplayerView = theoplayerView ?: return@lazy false
+        val activity = theoplayerView.context as? Activity ?: return@lazy false
+        theoplayerView.piPManager != null && activity.supportsPictureInPictureMode()
     }
 
     override fun enterPictureInPicture(pipType: PiPType) {

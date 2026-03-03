@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## v1.13.2 (2026-03-03)
+
+* 🐛 Fixed `PictureInPictureButton` to only be shown when the backing `THEOplayerView` has a valid `PiPConfiguration`. ([#81](https://github.com/THEOplayer/android-ui/pull/81))
+
 ## v1.13.1 (2026-01-05)
 
 * 🐛 Changed THEOplayer to be an `api` dependency in Gradle. ([#76](https://github.com/THEOplayer/android-ui/pull/76))
