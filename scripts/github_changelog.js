@@ -11,13 +11,12 @@ if (!version) {
 const changelogPath = path.resolve(__dirname, "../CHANGELOG.md");
 const changelog = fs.readFileSync(changelogPath, "utf-8");
 const headingStart = "## ";
-// Find block with current version
 const block = changelog
   .split(headingStart)
   .find((block) => block.startsWith(`v${version}`))
   .trim();
 let lines = block.split("\n");
-// Remove version
+// Remove version heading
 lines.splice(0, 1);
 
 console.log(lines.join("\n").trim());
