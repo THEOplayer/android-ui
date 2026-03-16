@@ -68,14 +68,9 @@ fun formatTrackLabel(track: Track): String {
     if (!label.isNullOrEmpty()) {
         return label
     }
-    val languageCode = track.language
-    if (!languageCode.isNullOrEmpty()) {
-        val locale = Locale.forLanguageTag(languageCode)
-        val languageName = locale.getDisplayName(locale)
-        if (languageName.isNotEmpty()) {
-            return languageName
-        }
-        return languageCode
+    val localisedLanguage = track.localisedLanguage
+    if (localisedLanguage != null) {
+        return localisedLanguage
     }
     return stringResource(R.string.theoplayer_ui_track_unknown)
 }

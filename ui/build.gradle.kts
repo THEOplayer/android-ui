@@ -78,7 +78,9 @@ dependencies {
     implementation(libs.androidx.compose.ui.toolingPreview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.material.iconsExtended)
+
     testImplementation(libs.junit4)
+    testImplementation(libs.mockk)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso)
     androidTestImplementation(libs.androidx.compose.ui.testJunit4)
