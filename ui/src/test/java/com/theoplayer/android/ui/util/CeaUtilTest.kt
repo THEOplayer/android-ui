@@ -23,7 +23,7 @@ class CeaUtilTest {
         }
 
         data class Args(
-            val label: String,
+            val label: String?,
             val expectedIsCeaFormatted: Boolean,
         )
 
@@ -32,6 +32,10 @@ class CeaUtilTest {
             @Parameterized.Parameters(name = "{0}")
             fun data() = arrayOf(
                 // False.
+                Args(
+                    label = null,
+                    expectedIsCeaFormatted = false,
+                ),
                 Args(
                     label = "",
                     expectedIsCeaFormatted = false,

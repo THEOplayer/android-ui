@@ -1,9 +1,16 @@
 package com.theoplayer.android.ui
 
+import android.content.res.Resources
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalResources
 import com.theoplayer.android.api.player.track.Track
+import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.api.player.track.texttrack.TextTrackType
+import com.theoplayer.android.ui.util.getLabelForChannelNumber
+import com.theoplayer.android.ui.util.isLabelCeaFormatted
 import com.theoplayer.android.ui.util.localisedLanguage
+import com.theoplayer.android.ui.util.runForPlayerWith
 import kotlin.math.absoluteValue
 
 /**
@@ -63,14 +70,41 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
  * @param track the media track or text track
  */
 @Composable
-fun formatTrackLabel(track: Track): String {
-    val label = track.label
+fun rememberTrackLabel(
+    track: Track,
+    resources: Resources = LocalResources.current,
+): String = remember(key1 = track.id, key2 = track.uid) {
+    val label: String? = runForPlayerWith(
+        // With 11 release, the player will no longer
+        // prefix text tracks with "CC" for CEA-608 and CEA-708,
+        // if [Track.label] is `null`.
+        desiredMajorVersion = 11,
+        actionIfEqualOrAbove = { track.label },
+        actionIfBelow = {
+            if ((track is TextTrack) && isLabelCeaFormatted(track.label)) {
+                // If we are below 11th major release
+                // and the label is CEA-formatted we
+                // can safely assume it was the last resort
+                // option to produce a meaningful label, given
+                // we cannot localize the language code in the player.
+                null
+            } else {
+                track.label
+            }
+        },
+    )
     if (!label.isNullOrEmpty()) {
-        return label
+        return@remember label
     }
     val localisedLanguage = track.localisedLanguage
     if (localisedLanguage != null) {
-        return localisedLanguage
+        return@remember localisedLanguage
     }
-    return stringResource(R.string.theoplayer_ui_track_unknown)
+    if ((track is TextTrack) && track.type == TextTrackType.CEA608) {
+        val channelNumberLabel = getLabelForChannelNumber(track.channelNumber)
+        if (channelNumberLabel != null) {
+            return@remember channelNumberLabel
+        }
+    }
+    return@remember resources.getString(R.string.theoplayer_ui_track_unknown)
 }

@@ -7,7 +7,11 @@ private val CEA_FORMATTING_REGEX = "^CC(\\d+)$".toRegex()
 /**
  * Checks whether a provided label is CEA-608 or CEA-708 formed.
  */
-internal fun isLabelCeaFormatted(label: String): Boolean {
+internal fun isLabelCeaFormatted(label: String?): Boolean {
+    if (label == null) {
+        return false
+    }
+
     val matchResult = CEA_FORMATTING_REGEX.find(label)
     val groupValues = matchResult?.groupValues
     if (matchResult == null ||
