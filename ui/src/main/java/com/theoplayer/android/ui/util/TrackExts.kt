@@ -22,17 +22,10 @@ private const val LANGUAGE_UNDEFINED = "und"
 internal val Track.localizedLanguage: String?
     get() {
         val languageCode = this.language
-        if (languageCode.isNullOrBlank() || languageCode == LANGUAGE_UNDEFINED) {
-            return null
-        }
-
-        val localisedLanguage =
-            Locale.forLanguageTag(languageCode).displayLanguage
-        if (localisedLanguage.isNullOrBlank()) {
-            return null
-        }
-
-        return localisedLanguage
+            ?.takeUnless { it.isBlank() || it == LANGUAGE_UNDEFINED }
+            ?: return null
+        val localisedLanguage = Locale.forLanguageTag(languageCode).displayLanguage
+        return localisedLanguage.takeUnless { it.isBlank() }
     }
 
 /**
@@ -79,23 +72,17 @@ internal fun constructLabel(
         track.label
     }
 
-    if (!label.isNullOrBlank()) {
-        return label
-    }
+    if (!label.isNullOrBlank()) return label
 
-    val localisedLanguage = track.localizedLanguage
-    if (localisedLanguage != null) {
-        return localisedLanguage
-    }
+    track.localizedLanguage?.let { return it }
 
     if ((track is TextTrack) && track.type == TextTrackType.CEA608) {
-        val channelNumberLabel = track.channelNumberCompat?.let { getLabelForChannelNumber(it) }
-        if (channelNumberLabel != null) {
-            return channelNumberLabel
-        }
-        if (!track.label.isNullOrBlank()) {
-            return track.label
-        }
+        track.channelNumberCompat
+            ?.let { getLabelForChannelNumber(it) }
+            ?.let { return it }
+        track.label
+            ?.takeUnless { it.isBlank() }
+            ?.let { return it }
     }
 
     return null
