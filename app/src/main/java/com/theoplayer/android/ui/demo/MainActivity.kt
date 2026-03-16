@@ -75,7 +75,7 @@ fun MainContent() {
     val context = LocalContext.current
     val theoplayerView = remember(context) {
         val config = THEOplayerConfig.Builder().apply {
-            pip(PipConfiguration.Builder().build())
+            pipConfiguration(PipConfiguration.Builder().build())
         }.build()
         THEOplayerView(context, config).apply {
             // Add ads integration through Google IMA
