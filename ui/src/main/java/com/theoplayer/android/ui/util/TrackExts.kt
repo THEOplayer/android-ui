@@ -24,7 +24,8 @@ internal val Track.localizedLanguage: String?
         val languageCode = this.language
             ?.takeUnless { it.isBlank() || it == LANGUAGE_UNDEFINED }
             ?: return null
-        val localisedLanguage = Locale.forLanguageTag(languageCode).displayLanguage
+        val locale = Locale.forLanguageTag(languageCode)
+        val localisedLanguage = locale.getDisplayName(locale)
         return localisedLanguage.takeUnless { it.isBlank() }
     }
 
