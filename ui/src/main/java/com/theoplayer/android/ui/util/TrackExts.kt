@@ -5,7 +5,7 @@ import com.theoplayer.android.api.THEOplayerGlobal
 import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
-import com.theoplayer.android.ui.R
+import java.lang.reflect.Method
 import java.util.Locale
 
 private const val LANGUAGE_UNDEFINED = "und"
@@ -90,10 +90,8 @@ internal fun constructLabel(
         return localisedLanguage
     }
 
-    if ((track is TextTrack) &&
-        track.channelNumber != null &&
-        track.type == TextTrackType.CEA608) {
-        val channelNumberLabel = getLabelForChannelNumber(track.channelNumber)
+    if ((track is TextTrack) && track.type == TextTrackType.CEA608) {
+        val channelNumberLabel = track.channelNumberCompat?.let { getLabelForChannelNumber(it) }
         if (channelNumberLabel != null) {
             return channelNumberLabel
         }
@@ -103,4 +101,20 @@ internal fun constructLabel(
     }
 
     return null
+}
+
+/**
+ * Returns [TextTrack.channelNumber], if available.
+ */
+private val TextTrack.channelNumberCompat: Int?
+    get() = textTrackChannelNumberGetter?.invoke(this) as? Int
+
+private val textTrackChannelNumberGetter: Method? by lazy {
+    try {
+        TextTrack::class.java.getDeclaredMethod("getChannelNumber").also {
+            check(it.returnType == Int::class.java)
+        }
+    } catch (_: Throwable) {
+        null
+    }
 }
