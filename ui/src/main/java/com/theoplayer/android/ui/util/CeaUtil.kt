@@ -2,6 +2,26 @@ package com.theoplayer.android.ui.util
 
 import androidx.annotation.IntRange
 
+private val CEA_FORMATTING_REGEX = "^CC(\\d+)$".toRegex()
+
+/**
+ * Checks whether a provided label is CEA-608 or CEA-708 formed.
+ */
+internal fun isLabelCeaFormatted(label: String): Boolean {
+    val matchResult = CEA_FORMATTING_REGEX.find(label)
+    val groupValues = matchResult?.groupValues
+    if (matchResult == null ||
+        groupValues == null ||
+        // There is one group we want to match with the channel number.
+        groupValues.size != 2) {
+        return false
+    }
+
+    val rawChannelNumber = groupValues[1]
+    val channelNumber = rawChannelNumber.toIntOrNull()
+    return !rawChannelNumber.startsWith("0") && channelNumber in 1..63
+}
+
 /**
  * Creates a text track label for CEA-608 and CEA-708 formats.
  *

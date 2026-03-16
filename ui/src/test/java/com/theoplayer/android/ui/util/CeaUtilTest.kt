@@ -10,6 +10,99 @@ import org.junit.runners.Parameterized
 class CeaUtilTest {
 
     @RunWith(Parameterized::class)
+    class IsLabelCeaFormattedTest(
+        private val args: Args,
+    ) {
+
+        @Test
+        fun `WHEN provided with a label THEN returns whether CEA formatted`() {
+            assertEquals(
+                args.expectedIsCeaFormatted,
+                isLabelCeaFormatted(args.label),
+            )
+        }
+
+        data class Args(
+            val label: String,
+            val expectedIsCeaFormatted: Boolean,
+        )
+
+        private companion object {
+            @JvmStatic
+            @Parameterized.Parameters(name = "{0}")
+            fun data() = arrayOf(
+                // False.
+                Args(
+                    label = "",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "abc",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "Some label",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "Text with cc1 inlined",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "cC1",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "Cc1",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "CC0",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "CC01",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "CC64",
+                    expectedIsCeaFormatted = false,
+                ),
+                Args(
+                    label = "CC128",
+                    expectedIsCeaFormatted = false,
+                ),
+
+                // True.
+                Args(
+                    label = "CC1",
+                    expectedIsCeaFormatted = true,
+                ),
+                Args(
+                    label = "CC2",
+                    expectedIsCeaFormatted = true,
+                ),
+                Args(
+                    label = "CC3",
+                    expectedIsCeaFormatted = true,
+                ),
+                Args(
+                    label = "CC4",
+                    expectedIsCeaFormatted = true,
+                ),
+                Args(
+                    label = "CC22",
+                    expectedIsCeaFormatted = true,
+                ),
+                Args(
+                    label = "CC63",
+                    expectedIsCeaFormatted = true,
+                ),
+            )
+        }
+    }
+
+    @RunWith(Parameterized::class)
     class GetLabelForChannelNumberTest(
         private val args: Args,
     ) {
