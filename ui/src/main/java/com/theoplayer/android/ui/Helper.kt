@@ -93,7 +93,7 @@ fun rememberTrackLabel(
             }
         },
     )
-    if (!label.isNullOrEmpty()) {
+    if (!label.isNullOrBlank()) {
         return@remember label
     }
     val localisedLanguage = track.localisedLanguage

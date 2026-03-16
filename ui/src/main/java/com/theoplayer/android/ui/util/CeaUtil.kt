@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui.util
 
+import androidx.annotation.CheckResult
 import androidx.annotation.IntRange
 
 private val CEA_FORMATTING_REGEX = "^CC(\\d+)$".toRegex()
@@ -7,6 +8,7 @@ private val CEA_FORMATTING_REGEX = "^CC(\\d+)$".toRegex()
 /**
  * Checks whether a provided label is CEA-608 or CEA-708 formed.
  */
+@CheckResult
 internal fun isLabelCeaFormatted(label: String?): Boolean {
     if (label == null) {
         return false
@@ -32,6 +34,7 @@ internal fun isLabelCeaFormatted(label: String?): Boolean {
  * @return an optional string composed of a [channelNumber] and a prepended
  * "CC" suffix, or `null` if the channel number is invalid.
  */
+@CheckResult
 internal fun getLabelForChannelNumber(
     @IntRange(from = 0L, to = 63L) channelNumber: Int?,
 ): String? {
