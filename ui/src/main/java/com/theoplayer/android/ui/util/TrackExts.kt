@@ -60,14 +60,12 @@ internal fun constructLabel(
 ): String? {
     val playerVersion = getPlayerMajorVersion(THEOplayerGlobal.getVersion())
 
-    val label: String? = if(
+    val label: String? = if (
         playerVersion != null &&
         playerVersion < 11 &&
         (track is TextTrack) &&
-        (
-                isLabelCeaFormatted(track.label) ||
-                        (track.label != null && track.language == track.label)
-        )) {
+        (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
+    ) {
         // If we are below 11th major release
         // and the label is CEA-formatted we
         // can safely assume it was the last resort
