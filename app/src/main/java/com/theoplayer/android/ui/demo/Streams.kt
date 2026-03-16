@@ -41,7 +41,14 @@ val streams by lazy {
                 TypedSource.Builder("https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd")
                     .build()
             ).build()
-        )
+        ),
+        Stream(
+            title = "Test card (with CEA tracks)",
+            source = SourceDescription.Builder(
+                TypedSource.Builder("https://livesim2.dashif.org/vod/testpic_2s/cea608.mpd")
+                    .build()
+            ).build()
+        ),
     )
 }
 
