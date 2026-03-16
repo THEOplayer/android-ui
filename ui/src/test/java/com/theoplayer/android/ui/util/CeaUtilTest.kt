@@ -120,19 +120,15 @@ class CeaUtilTest {
         }
 
         data class Args(
-            val channelNumber: Int?,
+            val channelNumber: Int,
             val expectedLabel: String?,
         )
 
         private companion object {
             @JvmStatic
-            @Parameterized.Parameters
+            @Parameterized.Parameters(name = "{0}")
             fun data() = arrayOf(
                 // Boundary checks.
-                Args(
-                    channelNumber = null,
-                    expectedLabel = null,
-                ),
                 Args(
                     channelNumber = -1,
                     expectedLabel = null,

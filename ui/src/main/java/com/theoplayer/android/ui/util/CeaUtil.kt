@@ -10,16 +10,14 @@ private val CEA_FORMATTING_REGEX = "^CC(\\d+)$".toRegex()
  */
 @CheckResult
 internal fun isLabelCeaFormatted(label: String?): Boolean {
-    if (label == null) {
+    if (label.isNullOrEmpty()) {
         return false
     }
 
-    val matchResult = CEA_FORMATTING_REGEX.find(label)
-    val groupValues = matchResult?.groupValues
-    if (matchResult == null ||
-        groupValues == null ||
-        // There is one group we want to match with the channel number.
-        groupValues.size != 2) {
+    val matchResult = CEA_FORMATTING_REGEX.find(label) ?: return false
+    val groupValues = matchResult.groupValues
+    // There is one group we want to match with the channel number.
+    if (groupValues.size != 2) {
         return false
     }
 
@@ -36,7 +34,7 @@ internal fun isLabelCeaFormatted(label: String?): Boolean {
  */
 @CheckResult
 internal fun getLabelForChannelNumber(
-    @IntRange(from = 0L, to = 63L) channelNumber: Int?,
+    @IntRange(from = 0L, to = 63L) channelNumber: Int,
 ): String? {
     // CEA-608 only supports channel numbers in [1, 4],
     // while CEA-708 support service numbers in [1, 63].

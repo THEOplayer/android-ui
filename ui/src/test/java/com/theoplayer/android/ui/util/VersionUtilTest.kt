@@ -1,89 +1,77 @@
 package com.theoplayer.android.ui.util
 
-import com.theoplayer.android.api.THEOplayerGlobal
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkStatic
-import io.mockk.verify
-import org.junit.Before
+import org.junit.Assert.assertEquals
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
-import org.junit.runners.JUnit4
+import org.junit.runners.Parameterized
 
 @RunWith(Enclosed::class)
 class VersionUtilTest {
 
-    @RunWith(JUnit4::class)
-    class RunForPlayerWithTest {
-
-        private val actionAbove = mockk<() -> Unit>()
-        private val actionBelow = mockk<() -> Unit>()
-
-        @Before
-        fun setUp() {
-            mockkStatic(THEOplayerGlobal::class)
-
-            every { actionAbove.invoke() } returns Unit
-            every { actionBelow.invoke() } returns Unit
-        }
+    @RunWith(Parameterized::class)
+    class RunForPlayerWithTest(
+        private val args: Args,
+    ) {
 
         @Test
-        fun `WHEN THEOplayerGlobal version is null THEN executes action for version below`() {
-            every { THEOplayerGlobal.getVersion() } returns null
-
-            runForPlayerWith(
-                desiredMajorVersion = 2,
-                actionIfEqualOrAbove = actionAbove,
-                actionIfBelow = actionBelow,
+        fun `WHEN a version string provided THEN returns a correct major version`() {
+            assertEquals(
+                args.expectedMajorVersion,
+                getPlayerMajorVersion(args.version),
             )
-
-            verify { actionBelow() }
         }
 
-        @Test
-        fun `WHEN THEOplayerGlobal version is invalid THEN executes action for version below`() {
-            every { THEOplayerGlobal.getVersion() } returns TEST_PLAYER_VERSION_INVALID
-
-            runForPlayerWith(
-                desiredMajorVersion = 2,
-                actionIfEqualOrAbove = actionAbove,
-                actionIfBelow = actionBelow,
-            )
-
-            verify { actionBelow() }
-        }
-
-        @Test
-        fun `WHEN THEOplayerGlobal version is valid and old THEN executes action for version below`() {
-            every { THEOplayerGlobal.getVersion() } returns TEST_PLAYER_VERSION_OLD
-
-            runForPlayerWith(
-                desiredMajorVersion = 2,
-                actionIfEqualOrAbove = actionAbove,
-                actionIfBelow = actionBelow,
-            )
-
-            verify { actionBelow() }
-        }
-
-        @Test
-        fun `WHEN THEOplayerGlobal version is valid and new THEN executes action for version above`() {
-            every { THEOplayerGlobal.getVersion() } returns TEST_PLAYER_VERSION_NEW
-
-            runForPlayerWith(
-                desiredMajorVersion = 2,
-                actionIfEqualOrAbove = actionAbove,
-                actionIfBelow = actionBelow,
-            )
-
-            verify { actionAbove() }
-        }
+        data class Args(
+            val version: String,
+            val expectedMajorVersion: Int?,
+        )
 
         private companion object {
-            const val TEST_PLAYER_VERSION_INVALID = "invalid version"
-            const val TEST_PLAYER_VERSION_NEW = "2.3.1"
-            const val TEST_PLAYER_VERSION_OLD = "1.1.5"
+
+            @JvmStatic
+            @Parameterized.Parameters(name = "{0}")
+            fun data() = arrayOf(
+                // Boundary checks.
+                Args(
+                    version = "",
+                    expectedMajorVersion = null,
+                ),
+                Args(
+                    version = "not a version string",
+                    expectedMajorVersion = null,
+                ),
+                Args(
+                    version = "1.00",
+                    expectedMajorVersion = null,
+                ),
+
+                // Regular checks.
+                Args(
+                    version = "11.0.0",
+                    expectedMajorVersion = 11,
+                ),
+                Args(
+                    version = "1.2.3",
+                    expectedMajorVersion = 1,
+                ),
+                Args(
+                    version = "9.8.7",
+                    expectedMajorVersion = 9,
+                ),
+                Args(
+                    version = "1.1.0-beta01",
+                    expectedMajorVersion = 1,
+                ),
+                Args(
+                    version = "2.1.0-beta.1.0",
+                    expectedMajorVersion = 2,
+                ),
+                Args(
+                    version = "16.8.2+01",
+                    expectedMajorVersion = 16,
+                ),
+            )
         }
     }
 
