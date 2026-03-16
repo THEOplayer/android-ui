@@ -3,7 +3,7 @@ package com.theoplayer.android.ui
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.theoplayer.android.api.player.track.Track
-import java.util.Locale
+import com.theoplayer.android.ui.util.localisedLanguage
 import kotlin.math.absoluteValue
 
 /**

@@ -1,4 +1,4 @@
-package com.theoplayer.android.ui
+package com.theoplayer.android.ui.util
 
 import androidx.annotation.CheckResult
 import com.theoplayer.android.api.player.track.Track

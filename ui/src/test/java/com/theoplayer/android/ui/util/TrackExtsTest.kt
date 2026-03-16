@@ -1,11 +1,10 @@
-package com.theoplayer.android.ui
+package com.theoplayer.android.ui.util
 
 import com.theoplayer.android.api.player.track.Track
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.experimental.runners.Enclosed
@@ -30,19 +29,19 @@ class TrackExtsTest {
         @Test
         fun `GIVEN language is null THEN localised language is also null`() {
             every { track.language } returns null
-            assertNull(track.localisedLanguage)
+            Assert.assertNull(track.localisedLanguage)
         }
 
         @Test
         fun `GIVEN language is und THEN localised language is null`() {
             every { track.language } returns LANGUAGE_CODE_UNDEFINED
-            assertNull(track.localisedLanguage)
+            Assert.assertNull(track.localisedLanguage)
         }
 
         @Test
         fun `GIVEN language is blank THEN localised language is null`() {
             every { track.language } returns TEST_BLANK_STRING
-            assertNull(track.localisedLanguage)
+            Assert.assertNull(track.localisedLanguage)
         }
 
         @Test
@@ -51,7 +50,7 @@ class TrackExtsTest {
             every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
             every { locale.displayLanguage } returns null
 
-            assertNull(track.localisedLanguage)
+            Assert.assertNull(track.localisedLanguage)
         }
 
         @Test
@@ -60,7 +59,7 @@ class TrackExtsTest {
             every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
             every { locale.displayLanguage } returns TEST_BLANK_STRING
 
-            assertNull(track.localisedLanguage)
+            Assert.assertNull(track.localisedLanguage)
         }
 
         @Test
@@ -69,7 +68,7 @@ class TrackExtsTest {
             every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
             every { locale.displayLanguage } returns LOCALISED_ENGLISH_CODE_NAME
 
-            assertEquals(LOCALISED_ENGLISH_CODE_NAME, track.localisedLanguage)
+            Assert.assertEquals(LOCALISED_ENGLISH_CODE_NAME, track.localisedLanguage)
         }
 
         private companion object {
