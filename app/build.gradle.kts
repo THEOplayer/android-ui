@@ -82,7 +82,28 @@ dependencies {
     releaseImplementation(project(":ui"))
     "mavenImplementation"("com.theoplayer.android-ui:android-ui:1.+")
 
-    implementation(libs.theoplayer)
-    implementation(libs.theoplayer.ads.ima)
-    implementation(libs.theoplayer.cast)
+    implementation(libs.theoplayer) {
+        useLowestSupportedPlayerVersion()
+    }
+    implementation(libs.theoplayer.ads.ima) {
+        useLowestSupportedPlayerVersion()
+    }
+    implementation(libs.theoplayer.cast) {
+        useLowestSupportedPlayerVersion()
+    }
+}
+
+val installLowestSupportedPlayerVersion: String by project.ext
+
+fun ExternalDependency.useLowestSupportedPlayerVersion() {
+    if (installLowestSupportedPlayerVersion.toBooleanStrict()) {
+        val lowestVersion = versionConstraint.strictVersion
+            .removePrefix("[")
+            .split(",", limit = 2)
+            .first()
+        version {
+            prefer(lowestVersion)
+            strictly(lowestVersion)
+        }
+    }
 }
