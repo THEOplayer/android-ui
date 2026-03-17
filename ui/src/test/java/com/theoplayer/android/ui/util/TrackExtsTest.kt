@@ -1,18 +1,14 @@
 package com.theoplayer.android.ui.util
 
 import com.theoplayer.android.api.THEOplayerGlobal
-import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.EventType
-import com.theoplayer.android.api.event.track.TrackEvent
 import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
-import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
-import com.theoplayer.android.api.player.track.texttrack.TextTrackReadyState
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
-import com.theoplayer.android.api.player.track.texttrack.cue.TextTrackCueList
+import io.mockk.clearStaticMockk
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -27,7 +23,7 @@ import java.util.Locale
 class TrackExtsTest {
 
     @RunWith(JUnit4::class)
-    class LocalisedLanguageTest {
+    class LocalisedLanguageNameTest {
 
         private val track = mockk<Track>()
         private val locale = mockk<Locale>()
@@ -37,49 +33,54 @@ class TrackExtsTest {
             mockkStatic(Locale::class)
         }
 
+        @After
+        fun tearDown() {
+            clearStaticMockk(Locale::class)
+        }
+
         @Test
         fun `GIVEN language is null THEN localised language is also null`() {
             every { track.language } returns null
-            Assert.assertNull(track.localizedLanguage)
+            Assert.assertNull(track.localizedLanguageName)
         }
 
         @Test
         fun `GIVEN language is und THEN localised language is null`() {
             every { track.language } returns LANGUAGE_CODE_UNDEFINED
-            Assert.assertNull(track.localizedLanguage)
+            Assert.assertNull(track.localizedLanguageName)
         }
 
         @Test
         fun `GIVEN language is blank THEN localised language is null`() {
             every { track.language } returns TEST_BLANK_STRING
-            Assert.assertNull(track.localizedLanguage)
+            Assert.assertNull(track.localizedLanguageName)
         }
 
         @Test
         fun `GIVEN locale returns null as displayLanguage THEN localised language is null`() {
             every { track.language } returns LANGUAGE_CODE_ENGLISH
             every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
-            every { locale.displayLanguage } returns null
+            every { locale.getDisplayName(any()) } returns null
 
-            Assert.assertNull(track.localizedLanguage)
+            Assert.assertNull(track.localizedLanguageName)
         }
 
         @Test
         fun `GIVEN locale returns a blank string as displayLanguage THEN localised language is null`() {
             every { track.language } returns LANGUAGE_CODE_ENGLISH
             every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
-            every { locale.displayLanguage } returns TEST_BLANK_STRING
+            every { locale.getDisplayName(any()) } returns TEST_BLANK_STRING
 
-            Assert.assertNull(track.localizedLanguage)
+            Assert.assertNull(track.localizedLanguageName)
         }
 
         @Test
         fun `GIVEN locale returns a valid display name THEN returns localised name`() {
             every { track.language } returns LANGUAGE_CODE_ENGLISH
             every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
-            every { locale.displayLanguage } returns LOCALISED_ENGLISH_CODE_NAME
+            every { locale.getDisplayName(any()) } returns LOCALISED_ENGLISH_CODE_NAME
 
-            Assert.assertEquals(LOCALISED_ENGLISH_CODE_NAME, track.localizedLanguage)
+            assertEquals(LOCALISED_ENGLISH_CODE_NAME, track.localizedLanguageName)
         }
 
         private companion object {
@@ -105,10 +106,16 @@ class TrackExtsTest {
             every { track.type } returns TextTrackType.CEA608
             every { track.label } returns args.label
             every { track.language } returns args.language
-//            every { track.channelNumber } returns args.channelNumber
+            every { track.captionChannel } returns args.captionChannel
 
-            mockkStatic(Track::localizedLanguage)
-            every { any<Track>().localizedLanguage } returns args.localizedLanguageName
+            mockkStatic(Track::localizedLanguageName)
+            every { any<Track>().localizedLanguageName } returns args.localizedLanguageName
+        }
+
+        @After
+        fun tearDown() {
+            clearStaticMockk(THEOplayerGlobal::class)
+            clearStaticMockk(Track::localizedLanguageName)
         }
 
         @Test
@@ -123,7 +130,7 @@ class TrackExtsTest {
             val label: String?,
             val language: String?,
             val localizedLanguageName: String?,
-            val channelNumber: String?,
+            val captionChannel: Int?,
             val playerVersion: String,
             val expectedLabel: String?,
         )
@@ -141,7 +148,7 @@ class TrackExtsTest {
                     label = null,
                     language = null,
                     localizedLanguageName = null,
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = "",
                     expectedLabel = null,
                 ),
@@ -151,7 +158,7 @@ class TrackExtsTest {
                     label = "Hello world",
                     language = null,
                     localizedLanguageName = null,
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = TEST_PLAYER_VERSION_10,
                     expectedLabel = "Hello world",
                 ),
@@ -159,7 +166,7 @@ class TrackExtsTest {
                     label = null,
                     language = "en",
                     localizedLanguageName = "English",
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = TEST_PLAYER_VERSION_10,
                     expectedLabel = "English",
                 ),
@@ -167,7 +174,7 @@ class TrackExtsTest {
                     label = "en",
                     language = "en",
                     localizedLanguageName = "English",
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = TEST_PLAYER_VERSION_10,
                     expectedLabel = "English",
                 ),
@@ -175,7 +182,7 @@ class TrackExtsTest {
                     label = "en",
                     language = null,
                     localizedLanguageName = null,
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = TEST_PLAYER_VERSION_10,
                     expectedLabel = "en",
                 ),
@@ -183,9 +190,17 @@ class TrackExtsTest {
                     label = "CC1",
                     language = "en",
                     localizedLanguageName = "English",
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = TEST_PLAYER_VERSION_10,
                     expectedLabel = "English",
+                ),
+                Args(
+                    label = null,
+                    language = null,
+                    localizedLanguageName = null,
+                    captionChannel = 1,
+                    playerVersion = TEST_PLAYER_VERSION_10,
+                    expectedLabel = "CC1",
                 ),
 
                 // v11 checks.
@@ -193,7 +208,7 @@ class TrackExtsTest {
                     label = "Hello world",
                     language = null,
                     localizedLanguageName = null,
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = TEST_PLAYER_VERSION_11,
                     expectedLabel = "Hello world",
                 ),
@@ -201,9 +216,17 @@ class TrackExtsTest {
                     label = "en",
                     language = "en",
                     localizedLanguageName = "English",
-                    channelNumber = null,
+                    captionChannel = null,
                     playerVersion = TEST_PLAYER_VERSION_11,
                     expectedLabel = "en",
+                ),
+                Args(
+                    label = null,
+                    language = null,
+                    localizedLanguageName = null,
+                    captionChannel = 4,
+                    playerVersion = TEST_PLAYER_VERSION_11,
+                    expectedLabel = "CC4",
                 ),
             )
         }

@@ -19,14 +19,14 @@ private const val LANGUAGE_UNDEFINED = "und"
  * returns `null`.
  */
 @get:CheckResult
-internal val Track.localizedLanguage: String?
+internal val Track.localizedLanguageName: String?
     get() {
         val languageCode = this.language
             ?.takeUnless { it.isBlank() || it == LANGUAGE_UNDEFINED }
             ?: return null
         val locale = Locale.forLanguageTag(languageCode)
-        val localisedLanguage = locale.getDisplayName(locale)
-        return localisedLanguage.takeUnless { it.isBlank() }
+        val localisedLanguage: String? = locale.getDisplayName(locale)
+        return localisedLanguage?.takeUnless { it.isBlank() }
     }
 
 /**
@@ -38,7 +38,7 @@ internal val Track.localizedLanguage: String?
  * 1. Track label if is not a language code
  * or a CEA-prefixed string.
  * 2. Track language display name
- * 3. Track channel number if a text CEA-608 track
+ * 3. Track caption channel if a text CEA-608 track
  * 4. Track label if was either a language code or a CEA-prefixed string
  *
  * If none of the above is satisfied, returns `null`.
@@ -47,7 +47,7 @@ internal val Track.localizedLanguage: String?
  * the player no longer constructs the [Track.getLabel] internally:
  * 1. Track label
  * 2. Track language display name
- * 3. Track channel number
+ * 3. Track caption channel
  */
 internal fun constructLabel(
     track: Track,
@@ -72,14 +72,17 @@ internal fun constructLabel(
         track.label
     }
 
-    if (!label.isNullOrBlank()) return label
+    if (!label.isNullOrBlank()) {
+        return label
+    }
 
-    track.localizedLanguage?.let { return it }
+    track.localizedLanguageName?.let { return it }
 
     if ((track is TextTrack) && track.type == TextTrackType.CEA608) {
-        track.channelNumberCompat
+        track.captionChannelCompat
             ?.let { getLabelForChannelNumber(it) }
             ?.let { return it }
+
         track.label
             ?.takeUnless { it.isBlank() }
             ?.let { return it }
@@ -89,17 +92,21 @@ internal fun constructLabel(
 }
 
 /**
- * Returns [TextTrack.channelNumber], if available.
+ * Returns [TextTrack.getCaptionChannel], if available.
  */
-private val TextTrack.channelNumberCompat: Int?
-    get() = textTrackChannelNumberGetter?.invoke(this) as? Int
+private val TextTrack.captionChannelCompat: Int?
+    get() = textTrackCaptionChannelGetter?.invoke(this) as? Int
 
-private val textTrackChannelNumberGetter: Method? by lazy {
+private val textTrackCaptionChannelGetter: Method? by lazy {
     try {
-        TextTrack::class.java.getDeclaredMethod("getChannelNumber").also {
-            check(it.returnType == Int::class.java)
+        TextTrack::class.java.getMethod("getCaptionChannel").also {
+            check(it.returnType.kotlin == Int::class)
         }
-    } catch (_: Throwable) {
+    } catch (_: NoSuchMethodException) {
+        null
+    } catch (_: SecurityException) {
+        null
+    } catch (_: IllegalStateException) {
         null
     }
 }
