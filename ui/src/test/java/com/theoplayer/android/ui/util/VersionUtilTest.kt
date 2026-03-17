@@ -8,7 +8,7 @@ import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
 
 @RunWith(Enclosed::class)
-class VersionUtilTest {
+internal class VersionUtilTest {
 
     @RunWith(Parameterized::class)
     class ParseVersionTest(
@@ -18,14 +18,14 @@ class VersionUtilTest {
         @Test
         fun `WHEN a version string provided THEN returns a correct major version`() {
             assertEquals(
-                args.expectedMajorVersion,
-                Version.parse(args.version).major,
+                args.expected,
+                Version.parse(args.version),
             )
         }
 
         data class Args(
             val version: String,
-            val expectedMajorVersion: Int,
+            val expected: Version,
         )
 
         private companion object {
@@ -35,27 +35,27 @@ class VersionUtilTest {
             fun data() = arrayOf(
                 Args(
                     version = "11.0.0",
-                    expectedMajorVersion = 11,
+                    expected = Version(major = 11, minor = 0, patchAndPrerelease = "0"),
                 ),
                 Args(
                     version = "1.2.3",
-                    expectedMajorVersion = 1,
+                    expected = Version(major = 1, minor = 2, patchAndPrerelease = "3"),
                 ),
                 Args(
                     version = "9.8.7",
-                    expectedMajorVersion = 9,
+                    expected = Version(major = 9, minor = 8, patchAndPrerelease = "7"),
                 ),
                 Args(
                     version = "1.1.0-beta01",
-                    expectedMajorVersion = 1,
+                    expected = Version(major = 1, minor = 1, patchAndPrerelease = "0-beta01"),
                 ),
                 Args(
                     version = "2.1.0-beta.1.0",
-                    expectedMajorVersion = 2,
+                    expected = Version(major = 2, minor = 1, patchAndPrerelease = "0-beta.1.0"),
                 ),
                 Args(
                     version = "16.8.2+01",
-                    expectedMajorVersion = 16,
+                    expected = Version(major = 16, minor = 8, patchAndPrerelease = "2+01"),
                 ),
             )
         }
