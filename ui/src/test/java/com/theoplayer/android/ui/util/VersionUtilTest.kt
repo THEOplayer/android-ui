@@ -26,7 +26,9 @@ internal class VersionUtilTest {
         data class Args(
             val version: String,
             val expected: Version,
-        )
+        ) {
+            override fun toString(): String = version
+        }
 
         private companion object {
 
