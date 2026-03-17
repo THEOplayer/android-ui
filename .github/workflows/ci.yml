@@ -30,4 +30,4 @@ jobs:
       - name: Assemble
         run: ./gradlew assembleRelease --configuration-cache
       - name: Run tests
-        run: ./gradlew test
+        run: ./gradlew test --configuration-cache
