@@ -29,3 +29,5 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
       - name: Assemble
         run: ./gradlew assembleRelease --configuration-cache
+      - name: Run tests
+        run: ./gradlew test --configuration-cache
