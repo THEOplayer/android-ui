@@ -4,7 +4,6 @@ import androidx.annotation.CheckResult
 import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
-import java.lang.reflect.Method
 import java.util.Locale
 
 private const val LANGUAGE_UNDEFINED = "und"
@@ -86,24 +85,4 @@ internal fun constructLabel(
     }
 
     return null
-}
-
-/**
- * Returns [TextTrack.getCaptionChannel], if available.
- */
-private val TextTrack.captionChannelCompat: Int?
-    get() = textTrackCaptionChannelGetter?.invoke(this) as? Int
-
-private val textTrackCaptionChannelGetter: Method? by lazy {
-    try {
-        TextTrack::class.java.getMethod("getCaptionChannel").also {
-            check(it.returnType.kotlin == Int::class)
-        }
-    } catch (_: NoSuchMethodException) {
-        null
-    } catch (_: SecurityException) {
-        null
-    } catch (_: IllegalStateException) {
-        null
-    }
 }
