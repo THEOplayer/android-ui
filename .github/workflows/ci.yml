@@ -27,9 +27,9 @@ jobs:
         with:
           cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+      - name: Run tests
+        run: ./gradlew test --configuration-cache
       - name: Assemble
         run: ./gradlew assembleRelease --configuration-cache
       - name: Assemble with lowest supported player version
         run: ./gradlew assembleRelease --configuration-cache -PinstallLowestSupportedPlayerVersion=true
-      - name: Run tests
-        run: ./gradlew test --configuration-cache
