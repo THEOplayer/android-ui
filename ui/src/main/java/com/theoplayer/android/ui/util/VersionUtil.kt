@@ -1,5 +1,8 @@
 package com.theoplayer.android.ui.util
 
+import com.theoplayer.android.api.THEOplayerGlobal
+import com.theoplayer.android.ui.memoizeLast
+
 private const val VERSION_DELIMITER = '.'
 
 /**
@@ -42,3 +45,11 @@ internal data class Version(
         }
     }
 }
+
+private val getCachedTheoplayerVersion = memoizeLast(Version::parse)
+
+/**
+ * Returns the major version of THEOplayer.
+ */
+internal val theoplayerVersion: Version
+    get() = getCachedTheoplayerVersion(THEOplayerGlobal.getVersion()) ?: Version.ZERO

@@ -1,7 +1,6 @@
 package com.theoplayer.android.ui.util
 
 import androidx.annotation.CheckResult
-import com.theoplayer.android.api.THEOplayerGlobal
 import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
@@ -52,11 +51,9 @@ internal val Track.localizedLanguageName: String?
 internal fun constructLabel(
     track: Track,
 ): String? {
-    val playerVersion = Version.parse(THEOplayerGlobal.getVersion()) ?: Version.ZERO
-
     val label: String? = if (
         (track is TextTrack) &&
-        playerVersion.major < 11 &&
+        theoplayerVersion.major < 11 &&
         (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
     ) {
         // If we are below 11th major release

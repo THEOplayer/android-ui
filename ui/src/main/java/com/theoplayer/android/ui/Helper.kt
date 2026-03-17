@@ -71,3 +71,23 @@ fun rememberTrackLabel(
 ): String = remember(key1 = track.id, key2 = track.uid) {
     constructLabel(track) ?: resources.getString(R.string.theoplayer_ui_track_unknown)
 }
+
+/**
+ * Memoize the most recent call.
+ */
+internal inline fun <P, R> memoizeLast(crossinline transform: (P) -> R): (P) -> R {
+    return object : (P) -> R {
+        private var lastCall: Pair<P, R>? = null
+
+        override fun invoke(input: P): R {
+            val lastCall = this.lastCall
+            return if (lastCall != null && lastCall.first == input) {
+                lastCall.second
+            } else {
+                transform(input).also { output ->
+                    this.lastCall = input to output
+                }
+            }
+        }
+    }
+}
