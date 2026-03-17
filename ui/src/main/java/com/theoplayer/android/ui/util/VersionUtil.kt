@@ -20,14 +20,14 @@ internal data class Version(
     /**
      * The patch (and prerelease) version.
      */
-    val patch: String,
+    val patchAndPrerelease: String,
 ) {
     override fun toString() = buildString {
         append(major)
         append(VERSION_DELIMITER)
         append(minor)
         append(VERSION_DELIMITER)
-        append(patch)
+        append(patchAndPrerelease)
     }
 
     companion object {
@@ -35,11 +35,11 @@ internal data class Version(
             try {
                 val versionParts = version.split(VERSION_DELIMITER, limit = 3)
                 require(versionParts.size == 3)
-                val (major, minor, patch) = versionParts
+                val (major, minor, patchAndPrerelease) = versionParts
                 return Version(
                     major = major.toInt(),
                     minor = minor.toInt(),
-                    patch = patch
+                    patchAndPrerelease = patchAndPrerelease
                 )
             } catch (e: IllegalArgumentException) {
                 throw IllegalArgumentException("Invalid version", e)
