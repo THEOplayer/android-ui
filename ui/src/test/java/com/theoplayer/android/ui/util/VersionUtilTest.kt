@@ -10,7 +10,7 @@ import org.junit.runners.Parameterized
 class VersionUtilTest {
 
     @RunWith(Parameterized::class)
-    class RunForPlayerWithTest(
+    class ParseVersionTest(
         private val args: Args,
     ) {
 
@@ -18,7 +18,7 @@ class VersionUtilTest {
         fun `WHEN a version string provided THEN returns a correct major version`() {
             assertEquals(
                 args.expectedMajorVersion,
-                getPlayerMajorVersion(args.version),
+                Version.parse(args.version)?.major,
             )
         }
 

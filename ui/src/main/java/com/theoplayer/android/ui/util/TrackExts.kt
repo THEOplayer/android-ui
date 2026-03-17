@@ -52,11 +52,11 @@ internal val Track.localizedLanguageName: String?
 internal fun constructLabel(
     track: Track,
 ): String? {
-    val playerVersion = getPlayerMajorVersion(THEOplayerGlobal.getVersion()) ?: 0
+    val playerVersion = Version.parse(THEOplayerGlobal.getVersion()) ?: Version.ZERO
 
     val label: String? = if (
         (track is TextTrack) &&
-        playerVersion < 11 &&
+        playerVersion.major < 11 &&
         (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
     ) {
         // If we are below 11th major release
