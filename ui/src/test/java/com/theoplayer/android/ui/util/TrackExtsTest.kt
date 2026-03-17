@@ -149,7 +149,7 @@ class TrackExtsTest {
                     language = null,
                     localizedLanguageName = null,
                     captionChannel = null,
-                    playerVersion = "",
+                    playerVersion = "0.0.0",
                     expectedLabel = null,
                 ),
 

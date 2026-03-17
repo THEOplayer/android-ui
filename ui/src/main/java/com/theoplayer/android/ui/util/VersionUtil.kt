@@ -31,17 +31,19 @@ internal data class Version(
     }
 
     companion object {
-        val ZERO = Version(major = 0, minor = 0, patch = "0")
-
-        fun parse(version: String): Version? {
-            val versionParts = version.split(VERSION_DELIMITER, limit = 3)
-            if (versionParts.size != 3) return null
-            val (major, minor, patch) = versionParts
-            return Version(
-                major = major.toIntOrNull() ?: return null,
-                minor = minor.toIntOrNull() ?: return null,
-                patch = patch
-            )
+        fun parse(version: String): Version {
+            try {
+                val versionParts = version.split(VERSION_DELIMITER, limit = 3)
+                require(versionParts.size == 3)
+                val (major, minor, patch) = versionParts
+                return Version(
+                    major = major.toInt(),
+                    minor = minor.toInt(),
+                    patch = patch
+                )
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException("Invalid version", e)
+            }
         }
     }
 }
@@ -52,4 +54,4 @@ private val getCachedTheoplayerVersion = memoizeLast(Version::parse)
  * Returns the major version of THEOplayer.
  */
 internal val theoplayerVersion: Version
-    get() = getCachedTheoplayerVersion(THEOplayerGlobal.getVersion()) ?: Version.ZERO
+    get() = getCachedTheoplayerVersion(THEOplayerGlobal.getVersion())
