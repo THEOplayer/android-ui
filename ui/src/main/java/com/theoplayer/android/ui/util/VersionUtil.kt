@@ -21,13 +21,20 @@ internal data class Version(
      * The patch (and prerelease) version.
      */
     val patchAndPrerelease: String,
-) {
+) : Comparable<Version> {
     override fun toString() = buildString {
         append(major)
         append(VERSION_DELIMITER)
         append(minor)
         append(VERSION_DELIMITER)
         append(patchAndPrerelease)
+    }
+
+    override fun compareTo(other: Version): Int {
+        return compareBy<Version> { it.major }
+            .thenBy { it.minor }
+            .thenBy { it.patchAndPrerelease }
+            .compare(this, other)
     }
 
     companion object {

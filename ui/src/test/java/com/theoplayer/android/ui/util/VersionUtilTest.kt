@@ -86,4 +86,34 @@ internal class VersionUtilTest {
         }
     }
 
+    class CompareVersionTest {
+        @Test
+        fun `WHEN left major is less than right major THEN left is less than right`() {
+            assertEquals(Version.parse("3.0.0") compareTo Version.parse("4.0.0"), -1)
+            assertEquals(Version.parse("3.9.1") compareTo Version.parse("4.0.0"), -1)
+            assertEquals(Version.parse("10.5.3") compareTo Version.parse("11.0.0"), -1)
+        }
+
+        @Test
+        fun `WHEN majors are equal and left minor is less than right major THEN left is less than right`() {
+            assertEquals(Version.parse("3.0.0") compareTo Version.parse("3.1.0"), -1)
+            assertEquals(Version.parse("3.9.1") compareTo Version.parse("3.10.0"), -1)
+            assertEquals(Version.parse("10.5.3") compareTo Version.parse("10.6.0"), -1)
+        }
+
+        @Test
+        fun `WHEN majors and minors are equal and left patch is less than right patch THEN left is less than right`() {
+            assertEquals(Version.parse("3.0.0") compareTo Version.parse("3.0.1"), -1)
+            assertEquals(Version.parse("3.9.1") compareTo Version.parse("3.9.10"), -1)
+            assertEquals(Version.parse("10.5.3") compareTo Version.parse("10.5.4"), -1)
+        }
+
+        @Test
+        fun `WHEN majors, minors and patches are equal THEN left is equal to right`() {
+            assertEquals(Version.parse("3.0.0") compareTo Version.parse("3.0.0"), 0)
+            assertEquals(Version.parse("3.9.1") compareTo Version.parse("3.9.1"), 0)
+            assertEquals(Version.parse("10.5.3") compareTo Version.parse("10.5.3"), 0)
+        }
+    }
+
 }
