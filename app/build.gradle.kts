@@ -38,6 +38,19 @@ android {
             matchingFallbacks += listOf("debug")
         }
     }
+
+    flavorDimensions += "player"
+    productFlavors {
+        create("latestPlayer") {
+            // Use the latest supported THEOplayer version
+            dimension = "player"
+        }
+        create("minPlayer") {
+            // Use the minimum supported THEOplayer version
+            dimension = "player"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -59,6 +72,10 @@ android {
 }
 
 dependencies {
+    val mavenImplementation = configurations.getByName("mavenImplementation")
+    val latestPlayerImplementation = configurations.getByName("latestPlayerImplementation")
+    val minPlayerImplementation = configurations.getByName("minPlayerImplementation")
+
     implementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.androidx.ktx)
@@ -80,30 +97,13 @@ dependencies {
 
     debugImplementation(project(":ui"))
     releaseImplementation(project(":ui"))
-    "mavenImplementation"("com.theoplayer.android-ui:android-ui:1.+")
+    mavenImplementation("com.theoplayer.android-ui:android-ui:1.+")
 
-    implementation(libs.theoplayer) {
-        useLowestSupportedPlayerVersion()
-    }
-    implementation(libs.theoplayer.ads.ima) {
-        useLowestSupportedPlayerVersion()
-    }
-    implementation(libs.theoplayer.cast) {
-        useLowestSupportedPlayerVersion()
-    }
-}
+    latestPlayerImplementation(libs.theoplayer)
+    latestPlayerImplementation(libs.theoplayer.ads.ima)
+    latestPlayerImplementation(libs.theoplayer.cast)
 
-val installLowestSupportedPlayerVersion: String by project.ext
-
-fun ExternalDependency.useLowestSupportedPlayerVersion() {
-    if (installLowestSupportedPlayerVersion.toBooleanStrict()) {
-        val lowestVersion = versionConstraint.strictVersion
-            .removePrefix("[")
-            .split(",", limit = 2)
-            .first()
-        version {
-            prefer(lowestVersion)
-            strictly(lowestVersion)
-        }
-    }
+    minPlayerImplementation(libs.theoplayer.min)
+    minPlayerImplementation(libs.theoplayer.min.ads.ima)
+    minPlayerImplementation(libs.theoplayer.min.cast)
 }
