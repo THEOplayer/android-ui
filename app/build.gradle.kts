@@ -72,6 +72,10 @@ android {
 }
 
 dependencies {
+    val mavenImplementation = configurations.getByName("mavenImplementation")
+    val latestPlayerImplementation = configurations.getByName("latestPlayerImplementation")
+    val minPlayerImplementation = configurations.getByName("minPlayerImplementation")
+
     implementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.androidx.ktx)
@@ -93,13 +97,13 @@ dependencies {
 
     debugImplementation(project(":ui"))
     releaseImplementation(project(":ui"))
-    "mavenImplementation"("com.theoplayer.android-ui:android-ui:1.+")
+    mavenImplementation("com.theoplayer.android-ui:android-ui:1.+")
 
-    "latestPlayerImplementation"(libs.theoplayer)
-    "latestPlayerImplementation"(libs.theoplayer.ads.ima)
-    "latestPlayerImplementation"(libs.theoplayer.cast)
+    latestPlayerImplementation(libs.theoplayer)
+    latestPlayerImplementation(libs.theoplayer.ads.ima)
+    latestPlayerImplementation(libs.theoplayer.cast)
 
-    "minPlayerImplementation"(libs.theoplayer.min)
-    "minPlayerImplementation"(libs.theoplayer.min.ads.ima)
-    "minPlayerImplementation"(libs.theoplayer.min.cast)
+    minPlayerImplementation(libs.theoplayer.min)
+    minPlayerImplementation(libs.theoplayer.min.ads.ima)
+    minPlayerImplementation(libs.theoplayer.min.cast)
 }
