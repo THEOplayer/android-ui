@@ -52,7 +52,7 @@ internal fun constructLabel(
 ): String? {
     val label: String? = if (
         (track is TextTrack) &&
-        theoplayerVersion.major < 11 &&
+        THEOplayerGlobalExt.version.major < 11 &&
         (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
     ) {
         // If we are below 11th major release

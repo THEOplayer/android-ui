@@ -9,7 +9,7 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 internal val TextTrack.captionChannelCompat: Int?
     get() {
         // TextTrack.getCaptionChannel was added in THEOplayer 10.13.0.
-        return if (theoplayerVersion >= version1013) {
+        return if (THEOplayerGlobalExt.version >= version1013) {
             TheoPlayer1013Impl.getTextTrackCaptionChannel(this)
         } else null
     }

@@ -1,12 +1,13 @@
 package com.theoplayer.android.ui.util
 
-import com.theoplayer.android.api.THEOplayerGlobal
 import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
+import io.mockk.clearMocks
 import io.mockk.clearStaticMockk
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import org.junit.After
 import org.junit.Assert
@@ -100,8 +101,8 @@ class TrackExtsTest {
 
         @Before
         fun setUp() {
-            mockkStatic(THEOplayerGlobal::class)
-            every { THEOplayerGlobal.getVersion() } returns args.playerVersion
+            mockkObject(THEOplayerGlobalExt)
+            every { THEOplayerGlobalExt.version } returns Version.parse(args.playerVersion)
 
             every { track.type } returns TextTrackType.CEA608
             every { track.label } returns args.label
@@ -114,7 +115,7 @@ class TrackExtsTest {
 
         @After
         fun tearDown() {
-            clearStaticMockk(THEOplayerGlobal::class)
+            clearMocks(THEOplayerGlobalExt)
             clearStaticMockk(Track::localizedLanguageName)
         }
 
