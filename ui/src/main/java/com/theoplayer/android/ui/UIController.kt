@@ -172,7 +172,9 @@ fun UIController(
     val uiState by remember {
         derivedStateOf {
             val currentMenu = scope.currentMenu
-            if (player.error != null) {
+            if (player.pictureInPicture) {
+                UIState.Hidden
+            } else if (player.error != null) {
                 UIState.Error
             } else if (currentMenu != null) {
                 UIState.Menu(currentMenu)
@@ -181,10 +183,10 @@ fun UIController(
             }
         }
     }
-    val backgroundVisible = if (uiState is UIState.Controls) {
-        controlsVisible.value
-    } else {
-        true
+    val backgroundVisible = when (uiState) {
+        is UIState.Controls -> controlsVisible.value
+        is UIState.Hidden -> false
+        else -> true
     }
     val background by animateColorAsState(
         label = "BackgroundAnimation",
@@ -271,6 +273,8 @@ fun UIController(
                             bottomChrome = bottomChrome
                         )
                     }
+
+                    is UIState.Hidden -> {}
                 }
             }
         }
@@ -312,6 +316,7 @@ private sealed class UIState {
     object Error : UIState()
     data class Menu(val menu: MenuContent) : UIState()
     object Controls : UIState()
+    object Hidden
 }
 
 @Composable
