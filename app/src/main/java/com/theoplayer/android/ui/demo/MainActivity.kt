@@ -124,28 +124,14 @@ fun MainContent() {
             )
         }
     ) { padding ->
-        val playerModifier = Modifier
-            .padding(padding)
-            .fillMaxSize(1f)
-        when (theme) {
-            PlayerTheme.Default -> {
-                DefaultUI(
-                    modifier = playerModifier,
-                    player = player,
-                    title = stream.title
-                )
-            }
-
-            PlayerTheme.Nitflex -> {
-                NitflexTheme(useDarkTheme = true) {
-                    NitflexUI(
-                        modifier = playerModifier,
-                        player = player,
-                        title = stream.title
-                    )
-                }
-            }
-        }
+        PlayerContent(
+            modifier = Modifier
+                .padding(padding)
+                .fillMaxSize(1f),
+            player = player,
+            stream = stream,
+            theme = theme
+        )
 
         if (streamMenuOpen) {
             SelectStreamDialog(
@@ -167,6 +153,34 @@ fun MainContent() {
                 },
                 onDismissRequest = { themeMenuOpen = false }
             )
+        }
+    }
+}
+
+@Composable
+fun PlayerContent(
+    modifier: Modifier = Modifier,
+    player: Player,
+    stream: Stream,
+    theme: PlayerTheme
+) {
+    when (theme) {
+        PlayerTheme.Default -> {
+            DefaultUI(
+                modifier = modifier,
+                player = player,
+                title = stream.title
+            )
+        }
+
+        PlayerTheme.Nitflex -> {
+            NitflexTheme(useDarkTheme = true) {
+                NitflexUI(
+                    modifier = modifier,
+                    player = player,
+                    title = stream.title
+                )
+            }
         }
     }
 }
