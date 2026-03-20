@@ -501,7 +501,7 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
         }
     }
 
-    player.isActivityInPipMode = rememberIsInPipMode()
+    player.activityInPipMode = rememberIsInPipMode()
 
     return player
 }

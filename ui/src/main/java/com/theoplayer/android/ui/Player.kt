@@ -508,8 +508,12 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     val fullscreenListener =
         FullscreenHandler.OnFullscreenChangeListener { updateFullscreen() }
 
-    override var pictureInPicture: Boolean by mutableStateOf(false)
-        private set
+    internal var activityInPipMode: Boolean by mutableStateOf(false)
+    private var pipManagerInPipMode: Boolean by mutableStateOf(false)
+
+    override val pictureInPicture: Boolean by derivedStateOf {
+        activityInPipMode || pipManagerInPipMode
+    }
 
     override val pictureInPictureSupported: Boolean by lazy {
         val theoplayerView = theoplayerView ?: return@lazy false
@@ -530,11 +534,8 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         theoplayerView?.piPManager?.exitPiP()
     }
 
-    internal var isActivityInPipMode: Boolean = false
-
-    internal fun updatePictureInPicture() {
-        pictureInPicture = isActivityInPipMode
-                || theoplayerView?.piPManager?.isInPiP == true
+    private fun updatePictureInPicture() {
+        pipManagerInPipMode = theoplayerView?.piPManager?.isInPiP == true
     }
 
     val presentationModeChangeListener =
