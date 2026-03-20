@@ -31,7 +31,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -63,6 +61,7 @@ import com.theoplayer.android.ui.rememberPlayer
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 
 class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPictureEventListener {
+    private lateinit var theoplayerView: THEOplayerView
     private lateinit var pip: VideoPlaybackPictureInPicture
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,12 +70,30 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
         // Initialize Chromecast immediately, for automatic receiver discovery to work correctly.
         CastContext.getSharedInstance(this)
 
+        // Initialize THEOplayer
+        val config = THEOplayerConfig.Builder().apply {
+            pipConfiguration(PipConfiguration.Builder().build())
+        }.build()
+        theoplayerView = THEOplayerView(this, config).apply {
+            // Add ads integration through Google IMA
+            player.addIntegration(
+                GoogleImaIntegrationFactory.createGoogleImaIntegration(this)
+            )
+            // Add Chromecast integration
+            val castConfiguration = CastConfiguration.Builder().apply {
+                castStrategy(CastStrategy.AUTO)
+            }.build()
+            player.addIntegration(
+                CastIntegrationFactory.createCastIntegration(this, castConfiguration)
+            )
+        }
+
         initializePictureInPicture()
 
         setContent {
             THEOplayerTheme(useDarkTheme = true) {
                 MainContent(
-                    pip = pip,
+                    theoplayerView = theoplayerView,
                     onEnterPip = ::enterPictureInPicture
                 )
             }
@@ -90,6 +107,7 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
             this
         )
         pip.setAspectRatio(Rational(16, 9))
+        pip.setPlayerView(theoplayerView)
         pip.setEnabled(true)
     }
 
@@ -116,38 +134,15 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainContent(
-    pip: VideoPlaybackPictureInPicture,
+    theoplayerView: THEOplayerView,
     onEnterPip: () -> Unit = {}
 ) {
     var stream by rememberSaveable(stateSaver = StreamSaver) { mutableStateOf(streams.first()) }
     var streamMenuOpen by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-    val theoplayerView = remember(context) {
-        val config = THEOplayerConfig.Builder().apply {
-            pipConfiguration(PipConfiguration.Builder().build())
-        }.build()
-        THEOplayerView(context, config).apply {
-            // Add ads integration through Google IMA
-            player.addIntegration(
-                GoogleImaIntegrationFactory.createGoogleImaIntegration(this)
-            )
-            // Add Chromecast integration
-            val castConfiguration = CastConfiguration.Builder().apply {
-                castStrategy(CastStrategy.AUTO)
-            }.build()
-            player.addIntegration(
-                CastIntegrationFactory.createCastIntegration(this, castConfiguration)
-            )
-        }
-    }
     val player = rememberPlayer(theoplayerView)
     LaunchedEffect(player, stream) {
         player.source = stream.source
-    }
-    DisposableEffect(theoplayerView) {
-        pip.setPlayerView(theoplayerView)
-        onDispose { pip.setPlayerView(null) }
     }
 
     var themeMenuOpen by remember { mutableStateOf(false) }
