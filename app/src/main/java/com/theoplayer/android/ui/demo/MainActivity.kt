@@ -1,7 +1,11 @@
 package com.theoplayer.android.ui.demo
 
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.util.Rational
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -14,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Brush
 import androidx.compose.material.icons.rounded.Movie
+import androidx.compose.material.icons.rounded.PictureInPicture
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -26,6 +31,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +43,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.core.app.PictureInPictureParamsCompat
+import androidx.core.content.ContextCompat
+import androidx.core.pip.PictureInPictureDelegate
+import androidx.core.pip.VideoPlaybackPictureInPicture
 import com.google.android.gms.cast.framework.CastContext
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
@@ -46,29 +56,69 @@ import com.theoplayer.android.api.cast.CastIntegrationFactory
 import com.theoplayer.android.api.cast.CastStrategy
 import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.ui.DefaultUI
+import com.theoplayer.android.ui.Player
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
 import com.theoplayer.android.ui.rememberPlayer
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPictureEventListener {
+    private lateinit var pip: VideoPlaybackPictureInPicture
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Initialize Chromecast immediately, for automatic receiver discovery to work correctly.
         CastContext.getSharedInstance(this)
 
+        initializePictureInPicture()
+
         setContent {
             THEOplayerTheme(useDarkTheme = true) {
-                MainContent()
+                MainContent(
+                    pip = pip,
+                    onEnterPip = ::enterPictureInPicture
+                )
             }
         }
+    }
+
+    private fun initializePictureInPicture() {
+        pip = VideoPlaybackPictureInPicture(this)
+        pip.addOnPictureInPictureEventListener(
+            ContextCompat.getMainExecutor(this),
+            this
+        )
+        pip.setAspectRatio(Rational(16, 9))
+        pip.setEnabled(true)
+    }
+
+    private fun enterPictureInPicture() {
+        val params = PictureInPictureParamsCompat.Builder().build().also {
+            pip.setPictureInPictureParams(it)
+        }
+        enterPictureInPictureMode(params)
+    }
+
+    override fun onPictureInPictureEvent(
+        event: PictureInPictureDelegate.Event,
+        config: Configuration?
+    ) {
+        // Do nothing
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        pip.close()
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainContent() {
+fun MainContent(
+    pip: VideoPlaybackPictureInPicture,
+    onEnterPip: () -> Unit = {}
+) {
     var stream by rememberSaveable(stateSaver = StreamSaver) { mutableStateOf(streams.first()) }
     var streamMenuOpen by remember { mutableStateOf(false) }
 
@@ -95,9 +145,27 @@ fun MainContent() {
     LaunchedEffect(player, stream) {
         player.source = stream.source
     }
+    DisposableEffect(theoplayerView) {
+        pip.setPlayerView(theoplayerView)
+        onDispose { pip.setPlayerView(null) }
+    }
 
     var themeMenuOpen by remember { mutableStateOf(false) }
     var theme by rememberSaveable { mutableStateOf(PlayerTheme.Default) }
+    val activity = LocalActivity.current as? ComponentActivity
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity?.isInPictureInPictureMode == true) {
+        // Only show player while in picture-in-picture mode
+        Surface(modifier = Modifier.fillMaxSize()) {
+            PlayerContent(
+                modifier = Modifier.fillMaxSize(),
+                player = player,
+                stream = stream,
+                theme = theme
+            )
+        }
+        return
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -108,6 +176,14 @@ fun MainContent() {
                     Text(text = "Demo")
                 },
                 actions = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        IconButton(onClick = onEnterPip) {
+                            Icon(
+                                Icons.Rounded.PictureInPicture,
+                                contentDescription = "Enter picture-in-picture"
+                            )
+                        }
+                    }
                     IconButton(onClick = {
                         player.source = stream.source
                         player.play()

@@ -82,6 +82,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.pip)
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.toolingPreview)
     implementation(libs.androidx.compose.material3)
