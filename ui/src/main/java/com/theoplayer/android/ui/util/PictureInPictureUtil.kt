@@ -1,4 +1,4 @@
-package com.theoplayer.android.ui
+package com.theoplayer.android.ui.util
 
 import android.app.Activity
 import android.content.pm.PackageManager

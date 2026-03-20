@@ -52,6 +52,8 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import com.theoplayer.android.api.source.SourceDescription
+import com.theoplayer.android.ui.util.isInPictureInPictureModeCompat
+import com.theoplayer.android.ui.util.supportsPictureInPictureMode
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
