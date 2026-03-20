@@ -52,7 +52,6 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import com.theoplayer.android.api.source.SourceDescription
-import com.theoplayer.android.ui.util.isInPictureInPictureModeCompat
 import com.theoplayer.android.ui.util.supportsPictureInPictureMode
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
@@ -531,11 +530,11 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         theoplayerView?.piPManager?.exitPiP()
     }
 
-    private fun updatePictureInPicture() {
-        val theoplayerView = theoplayerView ?: return
-        val activity = theoplayerView.context as? Activity
-        pictureInPicture = theoplayerView.piPManager?.isInPiP == true
-                || (activity?.isInPictureInPictureModeCompat() ?: false)
+    internal var isActivityInPipMode: Boolean = false
+
+    internal fun updatePictureInPicture() {
+        pictureInPicture = isActivityInPipMode
+                || theoplayerView?.piPManager?.isInPiP == true
     }
 
     val presentationModeChangeListener =

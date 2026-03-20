@@ -3,6 +3,16 @@ package com.theoplayer.android.ui.util
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
+import androidx.activity.compose.LocalActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.core.app.OnPictureInPictureModeChangedProvider
+import androidx.core.app.PictureInPictureModeChangedInfo
+import androidx.core.util.Consumer
 
 /**
  * From [android.content.pm.ActivityInfo]
@@ -19,6 +29,23 @@ internal fun Activity.supportsPictureInPictureMode(): Boolean {
     return (info.flags and FLAG_SUPPORTS_PICTURE_IN_PICTURE) != 0
 }
 
-internal fun Activity.isInPictureInPictureModeCompat(): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) isInPictureInPictureMode else false
+/**
+ * Returns whether the activity is in picture-in-picture mode.
+ */
+@Composable
+internal fun rememberIsInPipMode(): Boolean {
+    // https://developer.android.com/develop/ui/compose/system/picture-in-picture#handle-ui
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false
+    val activity = LocalActivity.current
+    var pipMode by remember { mutableStateOf(activity?.isInPictureInPictureMode ?: false) }
+    if (activity is OnPictureInPictureModeChangedProvider) {
+        DisposableEffect(activity) {
+            val observer = Consumer<PictureInPictureModeChangedInfo> { info ->
+                pipMode = info.isInPictureInPictureMode
+            }
+            activity.addOnPictureInPictureModeChangedListener(observer)
+            onDispose { activity.removeOnPictureInPictureModeChangedListener(observer) }
+        }
+    }
+    return pipMode
 }

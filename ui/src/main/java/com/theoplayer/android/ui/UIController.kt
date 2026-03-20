@@ -50,6 +50,7 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.theme.THEOplayerTheme
+import com.theoplayer.android.ui.util.rememberIsInPipMode
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -499,6 +500,8 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
             player.dispose()
         }
     }
+
+    player.isActivityInPipMode = rememberIsInPipMode()
 
     return player
 }
