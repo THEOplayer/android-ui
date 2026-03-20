@@ -530,7 +530,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     }
 
     private fun updatePictureInPicture() {
-        pictureInPicture = theoplayerView?.piPManager?.isInPiP ?: false
+        val theoplayerView = theoplayerView ?: return
+        val activity = theoplayerView.context as? Activity
+        pictureInPicture = theoplayerView.piPManager?.isInPiP == true
+                || (activity?.isInPictureInPictureModeCompat() ?: false)
     }
 
     val presentationModeChangeListener =

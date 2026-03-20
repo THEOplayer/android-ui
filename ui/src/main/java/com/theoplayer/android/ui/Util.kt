@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
 
-// From android.content.pm.ActivityInfo
+/**
+ * From [android.content.pm.ActivityInfo]
+ */
 private const val FLAG_SUPPORTS_PICTURE_IN_PICTURE = 0x400000
 
 /**
@@ -15,4 +17,8 @@ internal fun Activity.supportsPictureInPictureMode(): Boolean {
     if (!packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) return false
     val info = packageManager.getActivityInfo(componentName, 0)
     return (info.flags and FLAG_SUPPORTS_PICTURE_IN_PICTURE) != 0
+}
+
+internal fun Activity.isInPictureInPictureModeCompat(): Boolean {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) isInPictureInPictureMode else false
 }
