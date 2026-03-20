@@ -21,7 +21,6 @@ import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.PictureInPicture
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -60,6 +59,7 @@ import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
 import com.theoplayer.android.ui.rememberPlayer
 import com.theoplayer.android.ui.theme.THEOplayerTheme
+import androidx.compose.material3.Icon as Material3Icon
 
 class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPictureEventListener {
     private lateinit var theoplayerView: THEOplayerView
@@ -194,7 +194,7 @@ fun MainContent(
                 actions = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         IconButton(onClick = onEnterPip) {
-                            Icon(
+                            Material3Icon(
                                 Icons.Rounded.PictureInPicture,
                                 contentDescription = "Enter picture-in-picture"
                             )
@@ -204,13 +204,13 @@ fun MainContent(
                         player.source = stream.source
                         player.play()
                     }) {
-                        Icon(Icons.Rounded.Refresh, contentDescription = "Reload")
+                        Material3Icon(Icons.Rounded.Refresh, contentDescription = "Reload")
                     }
                     IconButton(onClick = { streamMenuOpen = true }) {
-                        Icon(Icons.Rounded.Movie, contentDescription = "Stream")
+                        Material3Icon(Icons.Rounded.Movie, contentDescription = "Stream")
                     }
                     IconButton(onClick = { themeMenuOpen = true }) {
-                        Icon(Icons.Rounded.Brush, contentDescription = "Theme")
+                        Material3Icon(Icons.Rounded.Brush, contentDescription = "Theme")
                     }
                 }
             )
