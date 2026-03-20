@@ -41,7 +41,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.core.app.PictureInPictureParamsCompat
 import androidx.core.content.ContextCompat
 import androidx.core.pip.PictureInPictureDelegate
 import androidx.core.pip.VideoPlaybackPictureInPicture
@@ -52,6 +51,8 @@ import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
 import com.theoplayer.android.api.cast.CastConfiguration
 import com.theoplayer.android.api.cast.CastIntegrationFactory
 import com.theoplayer.android.api.cast.CastStrategy
+import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.pip.PiPType
 import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.ui.DefaultUI
 import com.theoplayer.android.ui.Player
@@ -109,25 +110,45 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
         pip.setAspectRatio(Rational(16, 9))
         pip.setPlayerView(theoplayerView)
         pip.setEnabled(true)
+
+        theoplayerView.player.addEventListener(PlayerEventTypes.RESIZE) { updatePictureInPictureAspectRatio() }
     }
 
     private fun enterPictureInPicture() {
-        val params = PictureInPictureParamsCompat.Builder().build().also {
-            pip.setPictureInPictureParams(it)
+        theoplayerView.piPManager?.enterPiP(PiPType.CUSTOM)
+    }
+
+    private fun updatePictureInPictureAspectRatio() {
+        val player = theoplayerView.player
+        if (player.videoWidth > 0 && player.videoHeight > 0) {
+            pip.setAspectRatio(Rational(player.videoWidth, player.videoHeight))
         }
-        enterPictureInPictureMode(params)
     }
 
     override fun onPictureInPictureEvent(
         event: PictureInPictureDelegate.Event,
         config: Configuration?
     ) {
-        // Do nothing
+        val pipManager = theoplayerView.piPManager ?: return
+        when (event) {
+            PictureInPictureDelegate.Event.ENTERED -> {
+                if (!pipManager.isInPiP) {
+                    pipManager.enterPiP(PiPType.CUSTOM)
+                }
+            }
+
+            PictureInPictureDelegate.Event.EXITED -> {
+                if (pipManager.isInPiP) {
+                    pipManager.exitPiP()
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         pip.close()
+        theoplayerView.onDestroy()
     }
 }
 
