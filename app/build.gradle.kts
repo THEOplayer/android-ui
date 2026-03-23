@@ -38,6 +38,19 @@ android {
             matchingFallbacks += listOf("debug")
         }
     }
+
+    flavorDimensions += "player"
+    productFlavors {
+        create("latestPlayer") {
+            // Use the latest supported THEOplayer version
+            dimension = "player"
+        }
+        create("minPlayer") {
+            // Use the minimum supported THEOplayer version
+            dimension = "player"
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -59,12 +72,18 @@ android {
 }
 
 dependencies {
+    val mavenImplementation = configurations.getByName("mavenImplementation")
+    val latestPlayerImplementation = configurations.getByName("latestPlayerImplementation")
+    val minPlayerImplementation = configurations.getByName("minPlayerImplementation")
+
     implementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.androidx.ktx)
     implementation(libs.androidx.lifecycle.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.core)
+    implementation(libs.androidx.core.pip)
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.compose.ui.toolingPreview)
     implementation(libs.androidx.compose.material3)
@@ -80,9 +99,13 @@ dependencies {
 
     debugImplementation(project(":ui"))
     releaseImplementation(project(":ui"))
-    "mavenImplementation"("com.theoplayer.android-ui:android-ui:1.+")
+    mavenImplementation("com.theoplayer.android-ui:android-ui:1.+")
 
-    implementation(libs.theoplayer)
-    implementation(libs.theoplayer.ads.ima)
-    implementation(libs.theoplayer.cast)
+    latestPlayerImplementation(libs.theoplayer)
+    latestPlayerImplementation(libs.theoplayer.ads.ima)
+    latestPlayerImplementation(libs.theoplayer.cast)
+
+    minPlayerImplementation(libs.theoplayer.min)
+    minPlayerImplementation(libs.theoplayer.min.ads.ima)
+    minPlayerImplementation(libs.theoplayer.min.cast)
 }

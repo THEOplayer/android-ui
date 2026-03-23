@@ -52,6 +52,7 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import com.theoplayer.android.api.source.SourceDescription
+import com.theoplayer.android.ui.util.supportsPictureInPictureMode
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
@@ -507,8 +508,12 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     val fullscreenListener =
         FullscreenHandler.OnFullscreenChangeListener { updateFullscreen() }
 
-    override var pictureInPicture: Boolean by mutableStateOf(false)
-        private set
+    internal var activityInPipMode: Boolean by mutableStateOf(false)
+    private var pipManagerInPipMode: Boolean by mutableStateOf(false)
+
+    override val pictureInPicture: Boolean by derivedStateOf {
+        activityInPipMode || pipManagerInPipMode
+    }
 
     override val pictureInPictureSupported: Boolean by lazy {
         val theoplayerView = theoplayerView ?: return@lazy false
@@ -530,7 +535,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
     }
 
     private fun updatePictureInPicture() {
-        pictureInPicture = theoplayerView?.piPManager?.isInPiP ?: false
+        pipManagerInPipMode = theoplayerView?.piPManager?.isInPiP == true
     }
 
     val presentationModeChangeListener =

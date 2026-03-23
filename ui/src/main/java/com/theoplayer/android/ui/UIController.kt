@@ -50,6 +50,7 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.theme.THEOplayerTheme
+import com.theoplayer.android.ui.util.rememberIsInPipMode
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -171,19 +172,18 @@ fun UIController(
     val uiState by remember {
         derivedStateOf {
             val currentMenu = scope.currentMenu
-            if (player.error != null) {
-                UIState.Error
-            } else if (currentMenu != null) {
-                UIState.Menu(currentMenu)
-            } else {
-                UIState.Controls
+            when {
+                player.pictureInPicture -> UIState.Hidden
+                player.error != null -> UIState.Error
+                currentMenu != null -> UIState.Menu(currentMenu)
+                else -> UIState.Controls
             }
         }
     }
-    val backgroundVisible = if (uiState is UIState.Controls) {
-        controlsVisible.value
-    } else {
-        true
+    val backgroundVisible = when (uiState) {
+        is UIState.Controls -> controlsVisible.value
+        is UIState.Hidden -> false
+        else -> true
     }
     val background by animateColorAsState(
         label = "BackgroundAnimation",
@@ -270,6 +270,8 @@ fun UIController(
                             bottomChrome = bottomChrome
                         )
                     }
+
+                    is UIState.Hidden -> {}
                 }
             }
         }
@@ -311,6 +313,7 @@ private sealed class UIState {
     object Error : UIState()
     data class Menu(val menu: MenuContent) : UIState()
     object Controls : UIState()
+    object Hidden
 }
 
 @Composable
@@ -499,6 +502,8 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
             player.dispose()
         }
     }
+
+    player.activityInPipMode = rememberIsInPipMode()
 
     return player
 }

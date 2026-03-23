@@ -80,7 +80,7 @@ fun DefaultUI(
             }
         },
         topChrome = {
-            if (player.firstPlay && !player.pictureInPicture) {
+            if (player.firstPlay) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
                         Text(

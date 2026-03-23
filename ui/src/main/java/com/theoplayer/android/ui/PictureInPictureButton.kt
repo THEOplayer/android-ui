@@ -41,21 +41,19 @@ fun PictureInPictureButton(
         )
     }
 ) {
-    val player = Player.current
-    if (player?.pictureInPictureSupported != true) return
+    val player = Player.current ?: return
+    if (!player.pictureInPictureSupported) return
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = {
-            player?.let {
-                if (it.pictureInPicture) {
-                    it.exitPictureInPicture()
-                } else {
-                    it.enterPictureInPicture(pipType)
-                }
+            if (player.pictureInPicture) {
+                player.exitPictureInPicture()
+            } else {
+                player.enterPictureInPicture(pipType)
             }
         }) {
-        if (player?.pictureInPicture == true) {
+        if (player.pictureInPicture) {
             exit()
         } else {
             enter()

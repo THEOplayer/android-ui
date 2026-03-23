@@ -6,7 +6,7 @@ gradle = "8.13.0"
 kotlin = "2.2.10"
 ktx = "1.17.0"
 lifecycle-compose = "2.9.3"
-activity-compose = "1.10.1"
+activity-compose = "1.13.0"
 appcompat = "1.7.1"
 compose-bom = "2025.08.01"
 junit4 = "4.13.2"
@@ -16,7 +16,10 @@ androidx-junit = "1.3.0"
 androidx-espresso = "3.7.0"
 androidx-mediarouter = "1.8.1"
 dokka = "2.0.0"
-theoplayer = { prefer="10.11.0", strictly = "[5.0, 11.0)" }
+theoplayer = { prefer="10.11.0", strictly = "[7.6.0, 11.0)" }
+theoplayer-min = { strictly = "7.6.0" }
+core = "1.18.0"
+core-pip = "1.0.0-alpha02"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
@@ -35,6 +38,8 @@ androidx-compose-ui-toolingPreview = { group = "androidx.compose.ui", name = "ui
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-junit" }
 androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso" }
 androidx-mediarouter = { group = "androidx.mediarouter", name = "mediarouter", version.ref = "androidx-mediarouter" }
+androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
+androidx-core-pip = { group = "androidx.core", name = "core-pip", version.ref = "core-pip" }
 playServices-castFramework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "playServices-castFramework" }
 gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
 dokka-base = { group = "org.jetbrains.dokka", name = "dokka-base", version.ref = "dokka" }
@@ -44,6 +49,9 @@ junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 theoplayer = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer" }
 theoplayer-ads-ima = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads-ima", version.ref = "theoplayer" }
 theoplayer-cast = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-cast", version.ref = "theoplayer" }
+theoplayer-min = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer-min" }
+theoplayer-min-ads-ima = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads-ima", version.ref = "theoplayer-min" }
+theoplayer-min-cast = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-cast", version.ref = "theoplayer-min" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
