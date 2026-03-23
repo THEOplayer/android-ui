@@ -11,7 +11,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.core.app.OnPictureInPictureModeChangedProvider
+import androidx.core.app.OnPictureInPictureUiStateChangedProvider
 import androidx.core.app.PictureInPictureModeChangedInfo
+import androidx.core.app.PictureInPictureUiStateCompat
 import androidx.core.util.Consumer
 
 /**
@@ -30,7 +32,7 @@ internal fun Activity.supportsPictureInPictureMode(): Boolean {
 }
 
 /**
- * Returns whether the activity is in picture-in-picture mode.
+ * Returns whether the activity is in (or transitioning to) picture-in-picture mode.
  */
 @Composable
 internal fun rememberIsInPipMode(): Boolean {
@@ -47,5 +49,15 @@ internal fun rememberIsInPipMode(): Boolean {
             onDispose { activity.removeOnPictureInPictureModeChangedListener(observer) }
         }
     }
-    return pipMode
+    var transitioningToPip by remember { mutableStateOf(false) }
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && activity is OnPictureInPictureUiStateChangedProvider) {
+        DisposableEffect(activity) {
+            val observer = Consumer<PictureInPictureUiStateCompat> { info ->
+                transitioningToPip = info.isTransitioningToPip
+            }
+            activity.addOnPictureInPictureUiStateChangedListener(observer)
+            onDispose { activity.addOnPictureInPictureUiStateChangedListener(observer) }
+        }
+    }
+    return pipMode || transitioningToPip
 }
