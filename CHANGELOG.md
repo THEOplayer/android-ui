@@ -14,6 +14,7 @@
 * 🐛 Changed the minimum supported THEOplayer version to 7.6.0. ([#85](https://github.com/THEOplayer/android-ui/pull/85))
   * This was effectively already the minimum version as of Open Video UI for Android version 1.7.2, but it wasn't noticed until now.
   * Future versions will be properly tested with the minimum supported THEOplayer version to avoid similar compatibility issues.
+* 🐛 `Player.pictureInPicture` now also checks whether the `Activity` itself is in picture-in-picture mode, in case the activity has custom picture-in-picture logic (that does not use THEOplayer's `PiPManager` API). ([#89](https://github.com/THEOplayer/android-ui/pull/89/))
 
 ## v1.13.2 (2026-03-03)
 
