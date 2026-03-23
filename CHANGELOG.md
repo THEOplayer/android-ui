@@ -9,7 +9,7 @@
 > - 🏠 Internal
 > - 💅 Polish
 
-## Unreleased
+## v1.13.3 (2026-03-23)
 
 * 🐛 Changed the minimum supported THEOplayer version to 7.6.0. ([#85](https://github.com/THEOplayer/android-ui/pull/85))
   * This was effectively already the minimum version as of Open Video UI for Android version 1.7.2, but it wasn't noticed until now.
