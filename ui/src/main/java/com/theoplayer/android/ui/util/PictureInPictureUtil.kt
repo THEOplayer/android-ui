@@ -38,8 +38,8 @@ internal fun Activity.supportsPictureInPictureMode(): Boolean {
 internal fun rememberIsInPipMode(): Boolean {
     // https://developer.android.com/develop/ui/compose/system/picture-in-picture#handle-ui
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false
-    val activity = LocalActivity.current
-    var pipMode by remember { mutableStateOf(activity?.isInPictureInPictureMode ?: false) }
+    val activity = LocalActivity.current ?: return false
+    var pipMode by remember { mutableStateOf(activity.isInPictureInPictureMode) }
     if (activity is OnPictureInPictureModeChangedProvider) {
         DisposableEffect(activity) {
             val observer = Consumer<PictureInPictureModeChangedInfo> { info ->
