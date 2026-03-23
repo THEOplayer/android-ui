@@ -172,14 +172,11 @@ fun UIController(
     val uiState by remember {
         derivedStateOf {
             val currentMenu = scope.currentMenu
-            if (player.pictureInPicture) {
-                UIState.Hidden
-            } else if (player.error != null) {
-                UIState.Error
-            } else if (currentMenu != null) {
-                UIState.Menu(currentMenu)
-            } else {
-                UIState.Controls
+            when {
+                player.pictureInPicture -> UIState.Hidden
+                player.error != null -> UIState.Error
+                currentMenu != null -> UIState.Menu(currentMenu)
+                else -> UIState.Controls
             }
         }
     }
