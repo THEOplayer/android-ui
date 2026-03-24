@@ -25,9 +25,9 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          cache-read-only: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/develop' }}
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
+          cache-disabled: true
       - name: Run tests
-        run: ./gradlew test --configuration-cache
+        run: ./gradlew test
       - name: Assemble
-        run: ./gradlew assembleRelease --configuration-cache
+        run: ./gradlew assembleRelease

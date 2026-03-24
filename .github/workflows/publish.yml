@@ -42,10 +42,10 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v6
         with:
-          cache-read-only: true
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
+          cache-disabled: true
       - name: Publish package
-        run: ./gradlew publish --configuration-cache
+        run: ./gradlew publish
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSILITE_USERNAME: ${{ secrets.REPOSILITE_USERNAME }}
