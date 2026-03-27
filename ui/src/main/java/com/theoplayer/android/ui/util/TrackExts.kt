@@ -23,8 +23,8 @@ internal val Track.localizedLanguageName: String?
             ?.takeUnless { it.isBlank() || it == LANGUAGE_UNDEFINED }
             ?: return null
         val locale = Locale.forLanguageTag(languageCode)
-        val localisedLanguage: String? = locale.getDisplayName(locale)
-        return localisedLanguage?.takeUnless { it.isBlank() }
+        val localisedLanguage = locale.getDisplayName(locale).orEmpty()
+        return localisedLanguage.takeUnless { it.isBlank() }
     }
 
 /**

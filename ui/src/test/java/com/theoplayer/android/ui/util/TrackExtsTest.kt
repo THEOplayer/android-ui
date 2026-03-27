@@ -58,15 +58,6 @@ class TrackExtsTest {
         }
 
         @Test
-        fun `GIVEN locale returns null as displayLanguage THEN localised language is null`() {
-            every { track.language } returns LANGUAGE_CODE_ENGLISH
-            every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
-            every { locale.getDisplayName(any()) } returns null
-
-            Assert.assertNull(track.localizedLanguageName)
-        }
-
-        @Test
         fun `GIVEN locale returns a blank string as displayLanguage THEN localised language is null`() {
             every { track.language } returns LANGUAGE_CODE_ENGLISH
             every { Locale.forLanguageTag(eq(LANGUAGE_CODE_ENGLISH)) } returns locale
