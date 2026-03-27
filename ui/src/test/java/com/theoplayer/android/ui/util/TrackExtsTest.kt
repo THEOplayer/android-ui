@@ -129,8 +129,8 @@ class TrackExtsTest {
 
         private companion object {
 
-            const val TEST_PLAYER_VERSION_10 = "10.1.1"
-            const val TEST_PLAYER_VERSION_11 = "11.0.10"
+            const val TEST_PLAYER_VERSION_10_0 = "10.0.0"
+            const val TEST_PLAYER_VERSION_11_0 = "11.0.0"
 
             @JvmStatic
             @Parameterized.Parameters(name = "{0}")
@@ -145,13 +145,13 @@ class TrackExtsTest {
                     expectedLabel = null,
                 ),
 
-                // v10 checks.
+                // v10.0 checks.
                 Args(
                     label = "Hello world",
                     language = null,
                     localizedLanguageName = null,
                     captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10,
+                    playerVersion = TEST_PLAYER_VERSION_10_0,
                     expectedLabel = "Hello world",
                 ),
                 Args(
@@ -159,7 +159,7 @@ class TrackExtsTest {
                     language = "en",
                     localizedLanguageName = "English",
                     captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10,
+                    playerVersion = TEST_PLAYER_VERSION_10_0,
                     expectedLabel = "English",
                 ),
                 Args(
@@ -167,7 +167,7 @@ class TrackExtsTest {
                     language = "en",
                     localizedLanguageName = "English",
                     captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10,
+                    playerVersion = TEST_PLAYER_VERSION_10_0,
                     expectedLabel = "English",
                 ),
                 Args(
@@ -175,7 +175,7 @@ class TrackExtsTest {
                     language = null,
                     localizedLanguageName = null,
                     captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10,
+                    playerVersion = TEST_PLAYER_VERSION_10_0,
                     expectedLabel = "en",
                 ),
                 Args(
@@ -183,7 +183,7 @@ class TrackExtsTest {
                     language = "en",
                     localizedLanguageName = "English",
                     captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10,
+                    playerVersion = TEST_PLAYER_VERSION_10_0,
                     expectedLabel = "English",
                 ),
                 Args(
@@ -191,17 +191,17 @@ class TrackExtsTest {
                     language = null,
                     localizedLanguageName = null,
                     captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_10,
+                    playerVersion = TEST_PLAYER_VERSION_10_0,
                     expectedLabel = "CC1",
                 ),
 
-                // v11 checks.
+                // v11.0 checks.
                 Args(
                     label = "Hello world",
                     language = null,
                     localizedLanguageName = null,
                     captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_11,
+                    playerVersion = TEST_PLAYER_VERSION_11_0,
                     expectedLabel = "Hello world",
                 ),
                 Args(
@@ -209,7 +209,7 @@ class TrackExtsTest {
                     language = "en",
                     localizedLanguageName = "English",
                     captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_11,
+                    playerVersion = TEST_PLAYER_VERSION_11_0,
                     expectedLabel = "en",
                 ),
                 Args(
@@ -217,7 +217,7 @@ class TrackExtsTest {
                     language = null,
                     localizedLanguageName = null,
                     captionChannel = 4,
-                    playerVersion = TEST_PLAYER_VERSION_11,
+                    playerVersion = TEST_PLAYER_VERSION_11_0,
                     expectedLabel = "CC4",
                 ),
             )
