@@ -18,6 +18,7 @@ androidx-espresso = "3.7.0"
 androidx-mediarouter = "1.8.1"
 dokka = "2.0.0"
 theoplayer = { prefer="10.13.0", strictly = "[7.6.0, 11.0)" }
+theoplayer-compile = { prefer = "10.+", strictly = "[10.13.0, 11.0)" }
 theoplayer-min = { strictly = "7.6.0" }
 core = "1.18.0"
 core-pip = "1.0.0-alpha02"
@@ -54,6 +55,7 @@ theoplayer-cast = { group = "com.theoplayer.theoplayer-sdk-android", name = "int
 theoplayer-min = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer-min" }
 theoplayer-min-ads-ima = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads-ima", version.ref = "theoplayer-min" }
 theoplayer-min-cast = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-cast", version.ref = "theoplayer-min" }
+theoplayer-compile = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer-compile" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "gradle" }
