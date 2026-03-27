@@ -1,9 +1,8 @@
 package com.theoplayer.android.ui
 
-import android.content.res.Resources
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
@@ -67,16 +66,14 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
  * @param track the media track or text track
  */
 @Composable
-fun rememberTrackLabel(
-    track: Track,
-    resources: Resources = LocalResources.current,
-): String = remember(track.id, track.uid) {
-    val label = when (track) {
-        is TextTrack -> constructLabel(track)
-        is MediaTrack<*> -> constructLabel(track)
-        else -> null
-    }
-    label ?: resources.getString(R.string.theoplayer_ui_track_unknown)
+fun rememberTrackLabel(track: Track): String {
+    return remember(track.id, track.uid) {
+        when (track) {
+            is TextTrack -> constructLabel(track)
+            is MediaTrack<*> -> constructLabel(track)
+            else -> null
+        }
+    } ?: stringResource(R.string.theoplayer_ui_track_unknown)
 }
 
 /**
@@ -85,11 +82,9 @@ fun rememberTrackLabel(
  * @param track the media track
  */
 @Composable
-fun rememberTrackLabel(
-    track: MediaTrack<*>,
-    resources: Resources = LocalResources.current,
-): String = remember(track.id, track.uid) {
-    constructLabel(track) ?: resources.getString(R.string.theoplayer_ui_track_unknown)
+fun rememberTrackLabel(track: MediaTrack<*>): String {
+    return remember(track.id, track.uid) { constructLabel(track) }
+        ?: stringResource(R.string.theoplayer_ui_track_unknown)
 }
 
 /**
@@ -98,9 +93,7 @@ fun rememberTrackLabel(
  * @param track the text track
  */
 @Composable
-fun rememberTrackLabel(
-    track: TextTrack,
-    resources: Resources = LocalResources.current,
-): String = remember(track.id, track.uid) {
-    constructLabel(track) ?: resources.getString(R.string.theoplayer_ui_track_unknown)
+fun rememberTrackLabel(track: TextTrack): String {
+    return remember(track.id, track.uid) { constructLabel(track) }
+        ?: stringResource(R.string.theoplayer_ui_track_unknown)
 }
