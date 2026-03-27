@@ -29,7 +29,7 @@ fun AudioTrackList(
         ) {
             val audioTrack = audioTracks[it]
             ListItem(
-                headlineContent = { Text(text = rememberTrackLabel(audioTrack)) },
+                headlineContent = { Text(text = formatTrackLabel(audioTrack)) },
                 leadingContent = {
                     RadioButton(
                         selected = (activeAudioTrack == audioTrack),

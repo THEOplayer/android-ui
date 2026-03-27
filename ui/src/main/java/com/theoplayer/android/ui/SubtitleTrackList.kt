@@ -45,7 +45,7 @@ fun SubtitleTrackList(
         ) {
             val subtitleTrack = subtitleTracks[it]
             ListItem(
-                headlineContent = { Text(text = rememberTrackLabel(subtitleTrack)) },
+                headlineContent = { Text(text = formatTrackLabel(subtitleTrack)) },
                 leadingContent = {
                     RadioButton(
                         selected = (activeSubtitleTrack == subtitleTrack),

@@ -66,7 +66,7 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
  * @param track the media track or text track
  */
 @Composable
-fun rememberTrackLabel(track: Track): String {
+fun formatTrackLabel(track: Track): String {
     return remember(track.id, track.uid) {
         when (track) {
             is TextTrack -> constructLabel(track)
@@ -82,7 +82,7 @@ fun rememberTrackLabel(track: Track): String {
  * @param track the media track
  */
 @Composable
-fun rememberTrackLabel(track: MediaTrack<*>): String {
+fun formatTrackLabel(track: MediaTrack<*>): String {
     return remember(track.id, track.uid) { constructLabel(track) }
         ?: stringResource(R.string.theoplayer_ui_track_unknown)
 }
@@ -93,7 +93,7 @@ fun rememberTrackLabel(track: MediaTrack<*>): String {
  * @param track the text track
  */
 @Composable
-fun rememberTrackLabel(track: TextTrack): String {
+fun formatTrackLabel(track: TextTrack): String {
     return remember(track.id, track.uid) { constructLabel(track) }
         ?: stringResource(R.string.theoplayer_ui_track_unknown)
 }
