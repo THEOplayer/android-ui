@@ -2,6 +2,7 @@ package com.theoplayer.android.ui.util
 
 import androidx.annotation.CheckResult
 import com.theoplayer.android.api.player.track.Track
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
 import java.util.Locale
@@ -28,7 +29,19 @@ internal val Track.localizedLanguageName: String?
     }
 
 /**
- * Constructs a label for the given [Track] instance.
+ * Constructs a label for the given [MediaTrack] instance.
+ *
+ * This returns the first non-empty entry from the list:
+ * 1. Track label
+ * 2. Track language display name
+ */
+internal fun constructLabel(track: MediaTrack<*>): String? {
+    return track.label?.takeUnless { it.isBlank() }
+        ?: track.localizedLanguageName
+}
+
+/**
+ * Constructs a label for the given [TextTrack] instance.
  * The method works slightly different for different player version.
  *
  * On version 10 and below the logic checks the following and condition
@@ -47,11 +60,8 @@ internal val Track.localizedLanguageName: String?
  * 2. Track language display name
  * 3. Track caption channel
  */
-internal fun constructLabel(
-    track: Track,
-): String? {
+internal fun constructLabel(track: TextTrack): String? {
     val label: String? = if (
-        (track is TextTrack) &&
         THEOplayerGlobalExt.version.major < 11 &&
         (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
     ) {
@@ -74,7 +84,7 @@ internal fun constructLabel(
 
     track.localizedLanguageName?.let { return it }
 
-    if ((track is TextTrack) && track.type == TextTrackType.CEA608) {
+    if (track.type == TextTrackType.CEA608) {
         track.captionChannelCompat
             ?.let { getLabelForChannelNumber(it) }
             ?.let { return it }

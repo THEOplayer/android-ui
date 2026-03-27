@@ -5,6 +5,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalResources
 import com.theoplayer.android.api.player.track.Track
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
+import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.ui.util.constructLabel
 import kotlin.math.absoluteValue
 
@@ -67,6 +69,37 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
 @Composable
 fun rememberTrackLabel(
     track: Track,
+    resources: Resources = LocalResources.current,
+): String = remember(track.id, track.uid) {
+    val label = when (track) {
+        is TextTrack -> constructLabel(track)
+        is MediaTrack<*> -> constructLabel(track)
+        else -> null
+    }
+    label ?: resources.getString(R.string.theoplayer_ui_track_unknown)
+}
+
+/**
+ * Return a human-readable label for the given media track.
+ *
+ * @param track the media track
+ */
+@Composable
+fun rememberTrackLabel(
+    track: MediaTrack<*>,
+    resources: Resources = LocalResources.current,
+): String = remember(track.id, track.uid) {
+    constructLabel(track) ?: resources.getString(R.string.theoplayer_ui_track_unknown)
+}
+
+/**
+ * Return a human-readable label for the given text track.
+ *
+ * @param track the text track
+ */
+@Composable
+fun rememberTrackLabel(
+    track: TextTrack,
     resources: Resources = LocalResources.current,
 ): String = remember(track.id, track.uid) {
     constructLabel(track) ?: resources.getString(R.string.theoplayer_ui_track_unknown)
