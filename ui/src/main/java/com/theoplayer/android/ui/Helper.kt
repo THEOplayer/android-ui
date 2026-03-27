@@ -68,6 +68,6 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
 fun rememberTrackLabel(
     track: Track,
     resources: Resources = LocalResources.current,
-): String = remember(key1 = track.id, key2 = track.uid) {
+): String = remember(track.id, track.uid) {
     constructLabel(track) ?: resources.getString(R.string.theoplayer_ui_track_unknown)
 }
