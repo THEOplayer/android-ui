@@ -131,7 +131,6 @@ class TrackExtsTest {
 
             const val TEST_PLAYER_VERSION_10_0 = "10.0.0"
             const val TEST_PLAYER_VERSION_10_13 = "10.13.0"
-            const val TEST_PLAYER_VERSION_11_0 = "11.0.0"
 
             @JvmStatic
             @Parameterized.Parameters(name = "{0}")
@@ -247,34 +246,6 @@ class TrackExtsTest {
                     localizedLanguageName = null,
                     captionChannel = 4,
                     playerVersion = TEST_PLAYER_VERSION_10_13,
-                    expectedLabel = "CC4",
-                ),
-
-                // v11.0 checks.
-                // - Track.captionChannel is always set
-                // - Track.label must not be "CC1" or "CC2"
-                Args(
-                    label = "Hello world",
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_11_0,
-                    expectedLabel = "Hello world",
-                ),
-                Args(
-                    label = "en",
-                    language = "en",
-                    localizedLanguageName = "English",
-                    captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_11_0,
-                    expectedLabel = "en",
-                ),
-                Args(
-                    label = null,
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = 4,
-                    playerVersion = TEST_PLAYER_VERSION_11_0,
                     expectedLabel = "CC4",
                 ),
             )

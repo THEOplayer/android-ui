@@ -30,10 +30,6 @@ internal val Track.localizedLanguageName: String?
 
 /**
  * Constructs a label for the given [MediaTrack] instance.
- *
- * This returns the first non-empty entry from the list:
- * 1. Track label
- * 2. Track language display name
  */
 internal fun constructLabel(track: MediaTrack<*>): String? {
     return track.label?.takeUnless { it.isBlank() }
@@ -42,45 +38,21 @@ internal fun constructLabel(track: MediaTrack<*>): String? {
 
 /**
  * Constructs a label for the given [TextTrack] instance.
- * The method works slightly different for different player version.
- *
- * On version 10 and below the logic checks the following and condition
- * and the first not `null` entry from the list:
- * 1. Track label if is not a language code
- * or a CEA-prefixed string.
- * 2. Track language display name
- * 3. Track caption channel if a text CEA-608 track
- * 4. Track label if was either a language code or a CEA-prefixed string
- *
- * If none of the above is satisfied, returns `null`.
- *
- * On version 11 and later the logic has slightly changed as
- * the player no longer constructs the [Track.getLabel] internally:
- * 1. Track label
- * 2. Track language display name
- * 3. Track caption channel
  */
 internal fun constructLabel(track: TextTrack): String? {
-    val label: String? = if (
-        THEOplayerGlobalExt.version.major < 11 &&
-        (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
-    ) {
-        // If we are below 11th major release
-        // and the label is CEA-formatted we
-        // can safely assume it was the last resort
-        // option to produce a meaningful label, given
-        // we cannot localize the language code in the player.
-        null
-    } else {
-        // With 11 release, the player will no longer
-        // prefix text tracks with "CC" for CEA-608 and CEA-708,
-        // if [Track.label] is `null`.
-        track.label
+    val label = track.label?.takeIf {
+        when {
+            // Ignore empty labels.
+            it.isBlank() -> false
+            // Ignore default label with just the language code.
+            it == track.language -> false
+            // Ignore default label with just the caption channel.
+            (track.type == TextTrackType.CEA608 && isLabelCeaFormatted(it)) -> false
+            else -> true
+        }
     }
 
-    if (!label.isNullOrBlank()) {
-        return label
-    }
+    label?.let { return it }
 
     track.localizedLanguageName?.let { return it }
 
