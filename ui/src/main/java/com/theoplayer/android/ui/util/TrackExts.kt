@@ -47,7 +47,7 @@ internal fun constructLabel(track: TextTrack): String? {
             // Ignore default label with just the language code.
             it == track.language -> false
             // Ignore default label with just the caption channel.
-            isLabelCeaFormatted(it) -> false
+            (track.type == TextTrackType.CEA608 && isLabelCeaFormatted(it)) -> false
             else -> true
         }
     }
