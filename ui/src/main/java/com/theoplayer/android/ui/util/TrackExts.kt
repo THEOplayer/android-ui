@@ -30,10 +30,6 @@ internal val Track.localizedLanguageName: String?
 
 /**
  * Constructs a label for the given [MediaTrack] instance.
- *
- * This returns the first non-empty entry from the list:
- * 1. Track label
- * 2. Track language display name
  */
 internal fun constructLabel(track: MediaTrack<*>): String? {
     return track.label?.takeUnless { it.isBlank() }
@@ -42,27 +38,9 @@ internal fun constructLabel(track: MediaTrack<*>): String? {
 
 /**
  * Constructs a label for the given [TextTrack] instance.
- * The method works slightly different for different player version.
- *
- * On version 10 and below the logic checks the following and condition
- * and the first not `null` entry from the list:
- * 1. Track label if is not a language code
- * or a CEA-prefixed string.
- * 2. Track language display name
- * 3. Track caption channel if a text CEA-608 track
- * 4. Track label if was either a language code or a CEA-prefixed string
- *
- * If none of the above is satisfied, returns `null`.
- *
- * On version 11 and later the logic has slightly changed as
- * the player no longer constructs the [Track.getLabel] internally:
- * 1. Track label
- * 2. Track language display name
- * 3. Track caption channel
  */
 internal fun constructLabel(track: TextTrack): String? {
     val label: String? = if (
-        THEOplayerGlobalExt.version.major < 11 &&
         (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
     ) {
         // If we are below 11th major release
