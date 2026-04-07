@@ -11,7 +11,7 @@
 
 ## Unreleased
 
-* 🐛 The language menu now prefers to show CEA-608/708 closed caption tracks with their localized language name (if available) instead of their language code (e.g. "en") or channel number (e.g. "CC1"). ([#84](https://github.com/THEOplayer/android-ui/pull/84))
+* 🐛 The language menu now prefers to show CEA-608/708 closed caption tracks with their localized language name (if available) instead of their language code (e.g. "en") or channel number (e.g. "CC1"). ([#84](https://github.com/THEOplayer/android-ui/pull/84), [#95](https://github.com/THEOplayer/android-ui/pull/95))
 
 ## v1.13.3 (2026-03-23)
 
