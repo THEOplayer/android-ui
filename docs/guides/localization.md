@@ -9,10 +9,10 @@ enabling you to reach audiences from different regions of the world.
 
 Localization works
 by [providing alternative resources](https://developer.android.com/guide/topics/resources/providing-resources#AlternativeResources)
-in one or more languages. You can choose to [change the text of the default language](#change-default-language)
+in one or more languages. You can choose to [change the text of the default language](#changing-the-default-language)
 to target a single audience, or [add alternative languages](#add-alternative-languages) to target many audiences.
 
-## Changing the default language {#change-default-language}
+## Changing the default language
 
 By default, the Open Video UI ships with English texts only. If your app targets a non-English speaking audience,
 you can override these texts with translations for another language.
@@ -38,7 +38,7 @@ you can override these texts with translations for another language.
 
 3. Build and run your app. The translated texts should now appear in your player UI.
 
-## Add alternative languages {#add-alternative-languages}
+## Add alternative languages
 
 If your app targets many audiences speaking different languages, you can add multiple translations using
 locale-specific resources.
