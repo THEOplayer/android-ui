@@ -40,25 +40,19 @@ internal fun constructLabel(track: MediaTrack<*>): String? {
  * Constructs a label for the given [TextTrack] instance.
  */
 internal fun constructLabel(track: TextTrack): String? {
-    val label: String? = if (
-        (isLabelCeaFormatted(track.label) || (track.label != null && track.language == track.label))
-    ) {
-        // If we are below 11th major release
-        // and the label is CEA-formatted we
-        // can safely assume it was the last resort
-        // option to produce a meaningful label, given
-        // we cannot localize the language code in the player.
-        null
-    } else {
-        // With 11 release, the player will no longer
-        // prefix text tracks with "CC" for CEA-608 and CEA-708,
-        // if [Track.label] is `null`.
-        track.label
+    val label = track.label?.takeIf {
+        when {
+            // Ignore empty labels.
+            it.isBlank() -> false
+            // Ignore default label with just the language code.
+            it == track.language -> false
+            // Ignore default label with just the caption channel.
+            isLabelCeaFormatted(it) -> false
+            else -> true
+        }
     }
 
-    if (!label.isNullOrBlank()) {
-        return label
-    }
+    label?.let { return it }
 
     track.localizedLanguageName?.let { return it }
 
