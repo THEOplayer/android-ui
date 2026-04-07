@@ -131,7 +131,6 @@ class TrackExtsTest {
 
             const val TEST_PLAYER_VERSION_10_0 = "10.0.0"
             const val TEST_PLAYER_VERSION_10_13 = "10.13.0"
-            const val TEST_PLAYER_VERSION_11_0 = "11.0.0"
 
             @JvmStatic
             @Parameterized.Parameters(name = "{0}")
