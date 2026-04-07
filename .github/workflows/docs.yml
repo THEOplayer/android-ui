@@ -27,19 +27,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
       - name: Setup Java
         uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v5
+        uses: gradle/actions/setup-gradle@v6
         with:
-          cache-read-only: true
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+          # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
+          cache-disabled: true
       - name: Build API documentation with Dokka
-        run: ./gradlew ui:dokkaGeneratePublicationHtml --configuration-cache
+        run: ./gradlew ui:dokkaGeneratePublicationHtml
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
@@ -58,4 +58,4 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

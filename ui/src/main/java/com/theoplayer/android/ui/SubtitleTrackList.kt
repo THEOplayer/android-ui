@@ -43,17 +43,17 @@ fun SubtitleTrackList(
             count = subtitleTracks.size,
             key = { subtitleTracks[it].uid }
         ) {
-            val audioTrack = subtitleTracks[it]
+            val subtitleTrack = subtitleTracks[it]
             ListItem(
-                headlineContent = { Text(text = formatTrackLabel(audioTrack)) },
+                headlineContent = { Text(text = formatTrackLabel(subtitleTrack)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (activeSubtitleTrack == audioTrack),
+                        selected = (activeSubtitleTrack == subtitleTrack),
                         onClick = null
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    player?.activeSubtitleTrack = audioTrack
+                    player?.activeSubtitleTrack = subtitleTrack
                     onClick?.let { it() }
                 })
             )

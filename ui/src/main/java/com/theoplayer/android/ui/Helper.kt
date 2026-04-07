@@ -1,9 +1,12 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
 import com.theoplayer.android.api.player.track.Track
-import java.util.Locale
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
+import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.ui.util.constructLabel
 import kotlin.math.absoluteValue
 
 /**
@@ -64,18 +67,33 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
  */
 @Composable
 fun formatTrackLabel(track: Track): String {
-    val label = track.label
-    if (!label.isNullOrEmpty()) {
-        return label
-    }
-    val languageCode = track.language
-    if (!languageCode.isNullOrEmpty()) {
-        val locale = Locale.forLanguageTag(languageCode)
-        val languageName = locale.getDisplayName(locale)
-        if (languageName.isNotEmpty()) {
-            return languageName
+    return remember(track.id, track.uid) {
+        when (track) {
+            is TextTrack -> constructLabel(track)
+            is MediaTrack<*> -> constructLabel(track)
+            else -> null
         }
-        return languageCode
-    }
-    return stringResource(R.string.theoplayer_ui_track_unknown)
+    } ?: stringResource(R.string.theoplayer_ui_track_unknown)
+}
+
+/**
+ * Return a human-readable label for the given media track.
+ *
+ * @param track the media track
+ */
+@Composable
+fun formatTrackLabel(track: MediaTrack<*>): String {
+    return remember(track.id, track.uid) { constructLabel(track) }
+        ?: stringResource(R.string.theoplayer_ui_track_unknown)
+}
+
+/**
+ * Return a human-readable label for the given text track.
+ *
+ * @param track the text track
+ */
+@Composable
+fun formatTrackLabel(track: TextTrack): String {
+    return remember(track.id, track.uid) { constructLabel(track) }
+        ?: stringResource(R.string.theoplayer_ui_track_unknown)
 }
