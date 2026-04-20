@@ -9,6 +9,10 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🐛 Fixed the menu background disappearing after opening. ([#100](https://github.com/THEOplayer/android-ui/pull/100))
+
 ## v1.14.0 (2026-04-20)
 
 * 🚀 Added support for THEOplayer 11.0. ([#98](https://github.com/THEOplayer/android-ui/pull/98))
