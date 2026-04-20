@@ -97,7 +97,7 @@ dependencies {
 dokka {
     moduleName = rootProject.name
 
-    dokkaSourceSets.main {
+    dokkaSourceSets.configureEach {
         sourceLink {
             localDirectory = file("src/main/java")
             remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui/src/main/java")
