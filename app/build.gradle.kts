@@ -54,6 +54,9 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
+
+        // Required by Google IMA SDK v3.37.0+
+        isCoreLibraryDesugaringEnabled = true
     }
     kotlin {
         compilerOptions {
@@ -75,6 +78,8 @@ dependencies {
     val mavenImplementation = configurations.getByName("mavenImplementation")
     val latestPlayerImplementation = configurations.getByName("latestPlayerImplementation")
     val minPlayerImplementation = configurations.getByName("minPlayerImplementation")
+
+    coreLibraryDesugaring(libs.androidTools.desugarJdkLibs)
 
     implementation(platform(libs.androidx.compose.bom))
 
