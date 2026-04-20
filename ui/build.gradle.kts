@@ -11,7 +11,6 @@ buildscript {
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     alias(libs.plugins.dokka.javadoc)
@@ -44,12 +43,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlin {
-        compilerOptions {
-            apiVersion = KotlinVersion.KOTLIN_2_0
-            jvmTarget = JvmTarget.JVM_1_8
-        }
-    }
     buildFeatures {
         compose = true
     }
@@ -64,6 +57,13 @@ android {
             // We use Dokka for JavaDoc generation, see dokkaJavadocJar below
             // withJavadocJar()
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        apiVersion = KotlinVersion.KOTLIN_2_0
+        jvmTarget = JvmTarget.JVM_1_8
     }
 }
 
@@ -97,7 +97,7 @@ dependencies {
 dokka {
     moduleName = rootProject.name
 
-    dokkaSourceSets.main {
+    dokkaSourceSets.configureEach {
         sourceLink {
             localDirectory = file("src/main/java")
             remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui/src/main/java")
@@ -106,8 +106,8 @@ dokka {
 
         externalDocumentationLinks {
             register("com.theoplayer.android.api") {
-                url("https://optiview.dolby.com/docs/theoplayer/v10/api-reference/android/")
-                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v10/api-reference/android/package-list")
+                url("https://optiview.dolby.com/docs/theoplayer/v11/api-reference/android/")
+                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v11/api-reference/android/package-list")
             }
         }
     }

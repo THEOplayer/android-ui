@@ -9,6 +9,11 @@
 > - 🏠 Internal
 > - 💅 Polish
 
+## Unreleased
+
+* 🚀 Added support for THEOplayer 11.0. ([#98](https://github.com/THEOplayer/android-ui/pull/98))
+* 🚀 Updated to Jetpack Compose version 1.10.6 ([BOM](https://developer.android.com/jetpack/compose/bom) 2026.03.01).
+
 ## v1.13.4 (2026-04-07)
 
 * 🐛 The language menu now prefers to show CEA-608/708 closed caption tracks with their localized language name (if available) instead of their language code (e.g. "en") or channel number (e.g. "CC1"). ([#84](https://github.com/THEOplayer/android-ui/pull/84), [#95](https://github.com/THEOplayer/android-ui/pull/95))
