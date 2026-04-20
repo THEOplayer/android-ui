@@ -12,6 +12,7 @@
 ## Unreleased
 
 * 🚀 Added support for THEOplayer 11.0. ([#98](https://github.com/THEOplayer/android-ui/pull/98))
+* 🚀 Updated to Jetpack Compose version 1.10.6 ([BOM](https://developer.android.com/jetpack/compose/bom) 2026.03.01).
 
 ## v1.13.4 (2026-04-07)
 
