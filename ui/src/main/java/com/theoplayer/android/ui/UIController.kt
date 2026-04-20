@@ -224,6 +224,7 @@ fun UIController(
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
+                    .fillMaxSize()
                     .background(background),
                 targetState = uiState,
                 transitionSpec = {
