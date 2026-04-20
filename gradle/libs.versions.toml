@@ -17,8 +17,8 @@ androidx-junit = "1.3.0"
 androidx-espresso = "3.7.0"
 androidx-mediarouter = "1.8.1"
 dokka = "2.0.0"
-theoplayer = { prefer = "10.+", strictly = "[7.6.0, 11.0)" }
-theoplayer-compile = { prefer = "10.+", strictly = "[10.13.0, 11.0)" }
+theoplayer = { prefer = "11.+", strictly = "[7.6.0, 12.0)" }
+theoplayer-compile = { prefer = "11.+", strictly = "[10.13.0, 12.0)" }
 theoplayer-min = { strictly = "7.6.0" }
 core = "1.18.0"
 core-pip = "1.0.0-alpha02"
