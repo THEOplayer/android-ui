@@ -63,7 +63,7 @@ jobs:
       - name: Create GitHub release
         # language=bash
         run: |
-          notes=$(./gradlew --console=plain --quiet :getChangelog --no-header --project-version="$version")
+          notes=$(./gradlew --no-daemon --console=plain --quiet :getChangelog --no-header --project-version="$version")
           gh release create "v$version" --verify-tag --latest \
             --title "$version" \
             --notes "$notes"

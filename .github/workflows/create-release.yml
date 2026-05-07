@@ -59,7 +59,7 @@ jobs:
         shell: bash
         # language=bash
         run: |
-          changelog=$(./gradlew --console=plain --quiet :getChangelog --no-links)
+          changelog=$(./gradlew --no-daemon --console=plain --quiet :getChangelog --no-links)
           gh pr create \
             --base main \
             --head "release/${{ inputs.version }}" \
