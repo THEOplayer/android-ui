@@ -31,11 +31,24 @@ jobs:
         run: |
           git config user.name 'theoplayer-bot[bot]'
           git config user.email '873105+theoplayer-bot[bot]@users.noreply.github.com'
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v6
+        with:
+          # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
+          cache-disabled: true
       - name: Bump version
         shell: bash
         # language=bash
         run: |
-          node ./scripts/set_version.js ${{ inputs.version }}
+          sed -i 's|version=.*|version='"$VERSION"'|' gradle.properties
+          ./gradlew :patchChangelog
+        env:
+          VERSION: ${{ inputs.version }}
       - name: Push to release branch
         shell: bash
         # language=bash
@@ -46,10 +59,11 @@ jobs:
         shell: bash
         # language=bash
         run: |
+          changelog=$(./gradlew --console=plain --quiet :getChangelog --no-links)
           gh pr create \
             --base main \
             --head "release/${{ inputs.version }}" \
             --title "Release ${{ inputs.version }}" \
-            --body "$(node ./scripts/github_changelog.js ${{ inputs.version }})"
+            --body "$changelog"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

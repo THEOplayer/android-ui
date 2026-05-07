@@ -63,8 +63,9 @@ jobs:
       - name: Create GitHub release
         # language=bash
         run: |
+          notes=$(./gradlew --console=plain --quiet :getChangelog --no-header --project-version="$version")
           gh release create "v$version" --verify-tag --latest \
             --title "$version" \
-            --notes "$(node ./scripts/github_changelog.js $version)"
+            --notes "$notes"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
