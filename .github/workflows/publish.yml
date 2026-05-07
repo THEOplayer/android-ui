@@ -52,13 +52,16 @@ jobs:
           REPOSILITE_PASSWORD: ${{ secrets.REPOSILITE_PASSWORD }}
       - name: Get version
         shell: bash
+        # language=bash
         run: |
           echo "version=$(./gradlew :ui:properties --no-daemon --console=plain --quiet | awk '/^version:/ {print $2}')" >> "$GITHUB_ENV"
       - name: Push tag
+        # language=bash
         run: |
           git tag "v$version" -m "$version"
           git push origin "v$version"
       - name: Create GitHub release
+        # language=bash
         run: |
           gh release create "v$version" --verify-tag --latest \
             --title "$version" \

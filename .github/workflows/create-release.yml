@@ -33,15 +33,18 @@ jobs:
           git config user.email '873105+theoplayer-bot[bot]@users.noreply.github.com'
       - name: Bump version
         shell: bash
+        # language=bash
         run: |
           node ./scripts/set_version.js ${{ inputs.version }}
       - name: Push to release branch
         shell: bash
+        # language=bash
         run: |
           git commit -a -m ${{ inputs.version }}
           git push origin "HEAD:release/${{ inputs.version }}"
       - name: Create pull request
         shell: bash
+        # language=bash
         run: |
           gh pr create \
             --base main \
