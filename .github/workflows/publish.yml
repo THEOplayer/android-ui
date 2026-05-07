@@ -54,7 +54,7 @@ jobs:
         shell: bash
         # language=bash
         run: |
-          echo "version=$(./gradlew :ui:properties --no-daemon --console=plain --quiet | awk '/^version:/ {print $2}')" >> "$GITHUB_ENV"
+          echo "version=$(yq '.version' ./gradle.properties)" >> "$GITHUB_ENV"
       - name: Push tag
         # language=bash
         run: |
