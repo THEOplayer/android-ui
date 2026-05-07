@@ -45,7 +45,7 @@ jobs:
         shell: bash
         # language=bash
         run: |
-          sed -i 's|version=.*|version='"$VERSION"'|' gradle.properties
+          yq -i '.version="'"$VERSION"'"' --properties-separator="=" ./gradle.properties
           ./gradlew :patchChangelog
         env:
           VERSION: ${{ inputs.version }}
