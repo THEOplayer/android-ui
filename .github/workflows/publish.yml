@@ -52,16 +52,20 @@ jobs:
           REPOSILITE_PASSWORD: ${{ secrets.REPOSILITE_PASSWORD }}
       - name: Get version
         shell: bash
+        # language=bash
         run: |
-          echo "version=$(./gradlew :ui:properties --no-daemon --console=plain --quiet | awk '/^version:/ {print $2}')" >> "$GITHUB_ENV"
+          echo "version=$(yq '.version' ./gradle.properties)" >> "$GITHUB_ENV"
       - name: Push tag
+        # language=bash
         run: |
           git tag "v$version" -m "$version"
           git push origin "v$version"
       - name: Create GitHub release
+        # language=bash
         run: |
+          notes=$(./gradlew --no-daemon --console=plain --quiet :getChangelog --no-header --project-version="$version")
           gh release create "v$version" --verify-tag --latest \
             --title "$version" \
-            --notes "$(node ./scripts/github_changelog.js $version)"
+            --notes "$notes"
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
