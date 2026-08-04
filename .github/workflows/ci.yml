@@ -23,7 +23,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v6
+        uses: gradle/actions/setup-gradle@v6.2.0
         with:
           # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
           cache-disabled: true
