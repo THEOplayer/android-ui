@@ -15,6 +15,7 @@ import androidx.core.app.OnPictureInPictureUiStateChangedProvider
 import androidx.core.app.PictureInPictureModeChangedInfo
 import androidx.core.app.PictureInPictureUiStateCompat
 import androidx.core.util.Consumer
+import com.theoplayer.android.ui.InternalUiApi
 
 /**
  * From [android.content.pm.ActivityInfo]
@@ -34,8 +35,9 @@ internal fun Activity.supportsPictureInPictureMode(): Boolean {
 /**
  * Returns whether the activity is in (or transitioning to) picture-in-picture mode.
  */
+@InternalUiApi
 @Composable
-internal fun rememberIsInPipMode(): Boolean {
+fun rememberIsInPipMode(): Boolean {
     // https://developer.android.com/develop/ui/compose/system/picture-in-picture#handle-ui
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false
     val activity = LocalActivity.current ?: return false

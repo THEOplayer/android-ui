@@ -19,3 +19,4 @@ dependencyResolutionManagement {
 rootProject.name = "THEOplayer Open Video UI for Android"
 include(":app")
 include(":ui")
+include(":ui-common")

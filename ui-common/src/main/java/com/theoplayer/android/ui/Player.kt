@@ -66,7 +66,8 @@ import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as
 import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 import com.theoplayer.android.api.player.Player as THEOplayer
 
-internal val LocalPlayer = staticCompositionLocalOf<Player?> { null }
+@InternalUiApi
+val LocalPlayer = staticCompositionLocalOf<Player?> { null }
 
 /**
  * A player holding a [THEOplayer] instance that can be hosted by a [DefaultUI] or [UIController].
@@ -326,7 +327,8 @@ enum class StreamType {
     Dvr
 }
 
-internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
+@InternalUiApi
+class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
     override val ads = theoplayerView?.player?.ads
     override var currentTime by mutableDoubleStateOf(0.0)
@@ -505,10 +507,10 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         }
     }
 
-    val fullscreenListener =
+    internal val fullscreenListener =
         FullscreenHandler.OnFullscreenChangeListener { updateFullscreen() }
 
-    internal var activityInPipMode: Boolean by mutableStateOf(false)
+    var activityInPipMode: Boolean by mutableStateOf(false)
     private var pipManagerInPipMode: Boolean by mutableStateOf(false)
 
     override val pictureInPicture: Boolean by derivedStateOf {
@@ -538,7 +540,7 @@ internal class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player
         pipManagerInPipMode = theoplayerView?.piPManager?.isInPiP == true
     }
 
-    val presentationModeChangeListener =
+    internal val presentationModeChangeListener =
         EventListener<PresentationModeChange> { updatePictureInPicture() }
 
     override val loading by derivedStateOf {

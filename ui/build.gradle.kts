@@ -67,10 +67,13 @@ kotlin {
     compilerOptions {
         apiVersion = KotlinVersion.KOTLIN_2_0
         jvmTarget = JvmTarget.JVM_1_8
+        optIn.add("com.theoplayer.android.ui.InternalUiApi")
     }
 }
 
 dependencies {
+    api(project(":ui-common"))
+
     implementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.androidx.ktx)
@@ -103,9 +106,16 @@ dokka {
     moduleName = rootProject.name
 
     dokkaSourceSets.configureEach {
+        sourceRoots.from(rootProject.file("ui-common/src/main/java"))
+
         sourceLink {
             localDirectory = file("src/main/java")
             remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui/src/main/java")
+            remoteLineSuffix = "#L"
+        }
+        sourceLink {
+            localDirectory = rootProject.file("ui-common/src/main/java")
+            remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui-common/src/main/java")
             remoteLineSuffix = "#L"
         }
 
