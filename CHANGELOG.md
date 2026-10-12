@@ -11,7 +11,7 @@
 
 ## [Unreleased]
 
-* 🏠 Moved `Player` and its helpers into a new `android-ui-common` artifact. `android-ui` depends on it, so apps don't need any changes.
+* 🏠 Moved `Player` and its helpers into a new `android-ui-common` artifact. `android-ui` depends on it, so apps don't need any changes. ([#107](https://github.com/THEOplayer/android-ui/pull/107))
 
 ## [1.14.2] (2026-10-13)
 
