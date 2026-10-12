@@ -31,21 +31,21 @@ private class MockPlayer(
     var seekableRanges: List<Pair<Double, Double>> = listOf(0.0 to 100.0),
     var adPlaying: Boolean = false,
 ) {
-    val playerListeners = mutableListOf<EventListener<*>>()
-    val adListeners = mutableListOf<EventListener<*>>()
+    val playerListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
+    val adListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
 
     val ads: Ads = mockk {
         every { isPlaying } answers { this@MockPlayer.adPlaying }
         every {
             addEventListener(any<EventType<out AdEvent<*>>>(), any())
         } answers {
-            adListeners.add(secondArg<EventListener<in AdEvent<*>>>())
+            adListeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
             Unit
         }
         every {
             removeEventListener(any<EventType<out AdEvent<*>>>(), any())
         } answers {
-            adListeners.remove(secondArg<EventListener<in AdEvent<*>>>())
+            adListeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
             Unit
         }
     }
@@ -63,28 +63,36 @@ private class MockPlayer(
         every {
             addEventListener(any<EventType<out PlayerEvent<*>>>(), any())
         } answers {
-            playerListeners.add(secondArg<EventListener<in PlayerEvent<*>>>())
+            playerListeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
             Unit
         }
         every {
             removeEventListener(any<EventType<out PlayerEvent<*>>>(), any())
         } answers {
-            playerListeners.remove(secondArg<EventListener<in PlayerEvent<*>>>())
+            playerListeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
             Unit
         }
     }
 
-    fun firePlayerEvent() {
-        playerListeners.toList().forEach {
-            @Suppress("UNCHECKED_CAST")
-            (it as EventListener<PlayerEvent<*>>).handleEvent(mockk())
+    val playerEventTypes: Set<EventType<*>>
+        get() = playerListeners.map { it.first }.toSet()
+
+    val adEventTypes: Set<EventType<*>>
+        get() = adListeners.map { it.first }.toSet()
+
+    fun firePlayerEvent(type: EventType<*>? = null) {
+        playerListeners.toList().forEach { (eventType, listener) ->
+            if (type == null || eventType == type) {
+                @Suppress("UNCHECKED_CAST")
+                (listener as EventListener<PlayerEvent<*>>).handleEvent(mockk())
+            }
         }
     }
 
     fun fireAdEvent() {
-        adListeners.toList().forEach {
+        adListeners.toList().forEach { (_, listener) ->
             @Suppress("UNCHECKED_CAST")
-            (it as EventListener<AdEvent<*>>).handleEvent(mockk())
+            (listener as EventListener<AdEvent<*>>).handleEvent(mockk())
         }
     }
 }
@@ -100,7 +108,45 @@ private fun mockTimeRanges(ranges: List<Pair<Double, Double>>): TimeRanges = moc
     }
 }
 
+private val playbackEventTypes = setOf(
+    PlayerEventTypes.TIMEUPDATE,
+    PlayerEventTypes.PLAY,
+    PlayerEventTypes.PAUSE,
+    PlayerEventTypes.ENDED,
+    PlayerEventTypes.SEEKING,
+    PlayerEventTypes.SEEKED,
+    PlayerEventTypes.READYSTATECHANGE,
+    PlayerEventTypes.SOURCECHANGE,
+    PlayerEventTypes.ERROR
+)
+
+private val adEventTypes = setOf(
+    AdsEventTypes.AD_BREAK_BEGIN,
+    AdsEventTypes.AD_SKIP,
+    AdsEventTypes.AD_BREAK_END
+)
+
 class PlayButtonStateTest {
+    @Test
+    fun `registers the playback events`() {
+        val mock = MockPlayer()
+        PlayButtonState(mock.player).observe()
+        assertEquals(playbackEventTypes - PlayerEventTypes.TIMEUPDATE, mock.playerEventTypes)
+    }
+
+    @Test
+    fun `a seeked event clears ended`() {
+        val mock = MockPlayer(paused = true, ended = true)
+        val state = PlayButtonState(mock.player)
+        state.observe()
+        assertTrue(state.ended)
+
+        mock.ended = false
+        mock.firePlayerEvent(PlayerEventTypes.SEEKED)
+        assertFalse(state.ended)
+        assertTrue(state.paused)
+    }
+
     @Test
     fun `seeds state and reacts to playback events`() {
         val mock = MockPlayer(paused = true, ended = false)
@@ -149,6 +195,25 @@ class PlayButtonStateTest {
     }
 
     @Test
+    fun `dispose removes the identical listener instances`() {
+        val mock = MockPlayer()
+        val state = PlayButtonState(mock.player)
+        state.observe()
+        val added = mock.playerListeners.toList()
+
+        state.dispose()
+        added.forEach { (type, listener) ->
+            @Suppress("UNCHECKED_CAST")
+            verify {
+                mock.player.removeEventListener(
+                    type as EventType<PlayerEvent<*>>,
+                    listener as EventListener<PlayerEvent<*>>
+                )
+            }
+        }
+    }
+
+    @Test
     fun `null player gives defaults and no listeners`() {
         val state = PlayButtonState(null)
         state.observe()
@@ -159,6 +224,30 @@ class PlayButtonStateTest {
 }
 
 class SeekBarStateTest {
+    @Test
+    fun `registers the playback and ad events`() {
+        val mock = MockPlayer()
+        SeekBarState(mock.player).observe()
+        assertEquals(
+            playbackEventTypes + PlayerEventTypes.DURATIONCHANGE,
+            mock.playerEventTypes
+        )
+        assertEquals(adEventTypes, mock.adEventTypes)
+    }
+
+    @Test
+    fun `an error event re-reads playingAd`() {
+        val mock = MockPlayer(adPlaying = false)
+        val state = SeekBarState(mock.player)
+        state.observe()
+        assertTrue(state.showThumb)
+
+        mock.adPlaying = true
+        mock.firePlayerEvent(PlayerEventTypes.ERROR)
+        assertFalse(state.enabled)
+        assertFalse(state.showThumb)
+    }
+
     @Test
     fun `computes value within zero-based range`() {
         val mock = MockPlayer(currentTime = 30.0, duration = 100.0)
@@ -244,6 +333,42 @@ class SeekBarStateTest {
 
 class PlaybackTimeStateTest {
     @Test
+    fun `registers the playback events`() {
+        val mock = MockPlayer()
+        PlaybackTimeState(mock.player).observe()
+        assertEquals(
+            playbackEventTypes + PlayerEventTypes.DURATIONCHANGE,
+            mock.playerEventTypes
+        )
+    }
+
+    @Test
+    fun `streamTypeOf classifies vod, live and dvr`() {
+        assertEquals(
+            StreamType.Vod,
+            streamTypeOf(100.0, com.theoplayer.android.ui.TimeRanges(listOf(0.0..100.0)))
+        )
+        assertEquals(
+            StreamType.Vod,
+            streamTypeOf(Double.NaN, com.theoplayer.android.ui.TimeRanges.empty())
+        )
+        assertEquals(
+            StreamType.Live,
+            streamTypeOf(
+                Double.POSITIVE_INFINITY,
+                com.theoplayer.android.ui.TimeRanges(listOf(0.0..30.0))
+            )
+        )
+        assertEquals(
+            StreamType.Dvr,
+            streamTypeOf(
+                Double.POSITIVE_INFINITY,
+                com.theoplayer.android.ui.TimeRanges(listOf(0.0..60.0))
+            )
+        )
+    }
+
+    @Test
     fun `seeds and updates on time events`() {
         val mock = MockPlayer(currentTime = 5.0, duration = 100.0)
         val state = PlaybackTimeState(mock.player)
@@ -282,6 +407,16 @@ class PlaybackTimeStateTest {
 }
 
 class LiveButtonStateTest {
+    @Test
+    fun `registers the playback events`() {
+        val mock = MockPlayer()
+        LiveButtonState(mock.player, liveThreshold = 10.0).observe()
+        assertEquals(
+            playbackEventTypes + PlayerEventTypes.DURATIONCHANGE,
+            mock.playerEventTypes
+        )
+    }
+
     @Test
     fun `visible for live but not for vod`() {
         val live = MockPlayer(duration = Double.POSITIVE_INFINITY, seekableRanges = listOf(0.0 to 30.0))
@@ -322,6 +457,14 @@ class LiveButtonStateTest {
 }
 
 class SeekButtonStateTest {
+    @Test
+    fun `registers the playback and ad events`() {
+        val mock = MockPlayer()
+        SeekButtonState(mock.player, seekOffset = 10).observe()
+        assertEquals(playbackEventTypes, mock.playerEventTypes)
+        assertEquals(adEventTypes, mock.adEventTypes)
+    }
+
     @Test
     fun `onClick seeks by offset and clamps to duration`() {
         val mock = MockPlayer(currentTime = 95.0, duration = 100.0)

@@ -332,6 +332,20 @@ enum class StreamType {
     Dvr
 }
 
+// TODO Make DVR threshold configurable?
+private const val DVR_WINDOW_THRESHOLD = 60.0
+
+/**
+ * Returns the [StreamType] for a stream with the given duration and seekable range.
+ */
+internal fun streamTypeOf(duration: Double, seekable: TimeRanges): StreamType {
+    if (duration.isInfinite()) {
+        val slidingWindow = seekable.bounds?.let { it.endInclusive - it.start } ?: 0.0
+        return if (slidingWindow >= DVR_WINDOW_THRESHOLD) StreamType.Dvr else StreamType.Live
+    }
+    return StreamType.Vod
+}
+
 /**
  * Internal implementation of [Player].
  *
@@ -558,17 +572,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     }
 
     override val streamType by derivedStateOf {
-        if (duration.isInfinite()) {
-            val slidingWindow = seekable.bounds?.let { it.endInclusive - it.start } ?: 0.0
-            // TODO Make DVR threshold configurable?
-            if (slidingWindow >= 60) {
-                StreamType.Dvr
-            } else {
-                StreamType.Live
-            }
-        } else {
-            StreamType.Vod
-        }
+        streamTypeOf(duration, seekable)
     }
 
     private var activeVideoTrack: MediaTrack<VideoQuality>? = null

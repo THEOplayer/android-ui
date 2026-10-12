@@ -45,7 +45,14 @@ class SeekButtonState(
         update()
         listeners.run {
             player.add(PlayerEventTypes.TIMEUPDATE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.PLAY, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.PAUSE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.ENDED, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.SEEKING, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.SEEKED, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.READYSTATECHANGE, EventListener<PlayerEvent<*>> { update() })
             player.add(PlayerEventTypes.SOURCECHANGE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.ERROR, EventListener<PlayerEvent<*>> { update() })
             player.ads?.let { ads ->
                 val adListener = EventListener<AdEvent<*>> { update() }
                 ads.add(AdsEventTypes.AD_BREAK_BEGIN, adListener)

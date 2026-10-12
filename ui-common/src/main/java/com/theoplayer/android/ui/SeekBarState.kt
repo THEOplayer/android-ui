@@ -63,36 +63,29 @@ class SeekBarState(private val player: Player?) {
             0.0..(if (duration.isFinite()) duration.coerceAtLeast(0.0) else 0.0)
         }
 
-    private fun updateCurrentTime() {
+    private fun update() {
         currentTime = player?.currentTime ?: 0.0
         seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges.empty()
-    }
-
-    private fun updateDuration() {
         duration = player?.duration ?: Double.NaN
-    }
-
-    private fun updatePlayingAd() {
         playingAd = player?.ads?.isPlaying ?: false
     }
 
     internal fun observe() {
         val player = player ?: return
-        updateCurrentTime()
-        updateDuration()
-        updatePlayingAd()
+        update()
         listeners.run {
-            player.add(PlayerEventTypes.TIMEUPDATE, EventListener<PlayerEvent<*>> { updateCurrentTime() })
-            player.add(PlayerEventTypes.DURATIONCHANGE, EventListener<PlayerEvent<*>> { updateDuration() })
-            player.add(PlayerEventTypes.SEEKING, EventListener<PlayerEvent<*>> { updateCurrentTime() })
-            player.add(PlayerEventTypes.SEEKED, EventListener<PlayerEvent<*>> { updateCurrentTime() })
-            player.add(PlayerEventTypes.SOURCECHANGE, EventListener<PlayerEvent<*>> {
-                updateCurrentTime()
-                updateDuration()
-                updatePlayingAd()
-            })
+            player.add(PlayerEventTypes.TIMEUPDATE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.PLAY, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.PAUSE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.ENDED, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.SEEKING, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.SEEKED, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.READYSTATECHANGE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.DURATIONCHANGE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.SOURCECHANGE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.ERROR, EventListener<PlayerEvent<*>> { update() })
             player.ads?.let { ads ->
-                val adListener = EventListener<AdEvent<*>> { updatePlayingAd() }
+                val adListener = EventListener<AdEvent<*>> { update() }
                 ads.add(AdsEventTypes.AD_BREAK_BEGIN, adListener)
                 ads.add(AdsEventTypes.AD_SKIP, adListener)
                 ads.add(AdsEventTypes.AD_BREAK_END, adListener)

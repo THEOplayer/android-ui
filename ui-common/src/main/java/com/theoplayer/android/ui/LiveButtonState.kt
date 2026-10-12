@@ -11,8 +11,6 @@ import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
 
-private const val DVR_WINDOW_THRESHOLD = 60.0
-
 /**
  * State holder for a "live" button, such as [LiveButton].
  *
@@ -43,17 +41,7 @@ class LiveButtonState(
     private var duration by mutableStateOf(Double.NaN)
 
     private val streamType: StreamType
-        get() = if (duration.isInfinite()) {
-            val slidingWindow = seekable.bounds?.let { it.endInclusive - it.start } ?: 0.0
-            // TODO Make DVR threshold configurable?
-            if (slidingWindow >= DVR_WINDOW_THRESHOLD) {
-                StreamType.Dvr
-            } else {
-                StreamType.Live
-            }
-        } else {
-            StreamType.Vod
-        }
+        get() = streamTypeOf(duration, seekable)
 
     private fun updatePlaybackState() {
         paused = player?.isPaused ?: true
@@ -71,12 +59,15 @@ class LiveButtonState(
         update()
         listeners.run {
             player.add(PlayerEventTypes.TIMEUPDATE, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.DURATIONCHANGE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.PLAY, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.PAUSE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.ENDED, EventListener<PlayerEvent<*>> { update() })
             player.add(PlayerEventTypes.SEEKING, EventListener<PlayerEvent<*>> { update() })
             player.add(PlayerEventTypes.SEEKED, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.PLAY, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.PAUSE, EventListener<PlayerEvent<*>> { updatePlaybackState() })
+            player.add(PlayerEventTypes.READYSTATECHANGE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.DURATIONCHANGE, EventListener<PlayerEvent<*>> { update() })
             player.add(PlayerEventTypes.SOURCECHANGE, EventListener<PlayerEvent<*>> { update() })
+            player.add(PlayerEventTypes.ERROR, EventListener<PlayerEvent<*>> { update() })
         }
     }
 
