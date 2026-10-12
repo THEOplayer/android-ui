@@ -20,9 +20,34 @@ fun CurrentTimeDisplay(
     showRemaining: Boolean = false,
     showDuration: Boolean = false,
 ) {
-    val player = Player.current
-    val currentTime = player?.currentTime ?: 0.0
-    val duration = player?.seekable?.lastEnd ?: player?.duration ?: Double.NaN
+    CurrentTimeDisplay(
+        state = rememberPlaybackTimeState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        showRemaining = showRemaining,
+        showDuration = showDuration
+    )
+}
+
+/**
+ * A text display that shows the player's current time.
+ *
+ * @param state the [PlaybackTimeState] to read
+ * @param modifier the [Modifier] to be applied to this text
+ * @param showRemaining if set, shows the remaining time of the stream as a negative value
+ * (e.g. "-01:23")
+ * @param showDuration if set, also shows the duration of the stream
+ * (e.g. "01:23 / 10:00")
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun CurrentTimeDisplay(
+    state: PlaybackTimeState,
+    modifier: Modifier = Modifier,
+    showRemaining: Boolean = false,
+    showDuration: Boolean = false,
+) {
+    val currentTime = state.currentTime
+    val duration = state.duration
 
     val time = if (showRemaining) {
         -(duration - currentTime)

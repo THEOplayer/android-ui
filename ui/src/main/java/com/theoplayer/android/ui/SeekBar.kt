@@ -19,11 +19,8 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -39,44 +36,51 @@ import androidx.compose.ui.unit.dp
  * @param colors [SliderColors] that will be used to resolve the colors used for this seek bar in
  * different states. See [SliderDefaults.colors].
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SeekBar(
     modifier: Modifier = Modifier,
     colors: SliderColors = SliderDefaults.colors()
 ) {
-    val player = Player.current
-    val currentTime = player?.currentTime ?: 0.0
-    val seekable = player?.seekable ?: TimeRanges.empty()
-    val duration = player?.duration ?: Double.NaN
-    val enabled = player?.canSeek ?: false
-    val playingAd = player?.playingAd ?: false
+    SeekBar(
+        state = rememberSeekBarState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        colors = colors
+    )
+}
 
-    val seekableRange = remember(seekable, duration) {
-        seekable.bounds ?: run {
-            0.0..(if (duration.isFinite()) duration.coerceAtLeast(0.0) else 0.0)
-        }
-    }
-    var seekTime by remember { mutableStateOf<Float?>(null) }
-    var wasPlayingBeforeSeek by remember { mutableStateOf(false) }
-
+/**
+ * A seek bar showing the current time of the player, and which seeks the player when clicked or dragged.
+ *
+ * While the user is dragging the seek bar, the player is temporarily paused.
+ *
+ * @param state the [SeekBarState] to read and control
+ * @param modifier the [Modifier] to be applied to this seek bar
+ * @param colors [SliderColors] that will be used to resolve the colors used for this seek bar in
+ * different states. See [SliderDefaults.colors].
+ */
+@ExperimentalPlayerStateApi
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SeekBar(
+    state: SeekBarState,
+    modifier: Modifier = Modifier,
+    colors: SliderColors = SliderDefaults.colors()
+) {
     val interactionSource = remember { MutableInteractionSource() }
 
     Slider(
         modifier = modifier.systemGestureExclusion(),
         colors = colors,
-        // Seekable start can be very large (e.g. a Unix timestamp), which can lead to precision loss
-        // when converted to a float. Instead, make the slider always start at zero.
-        value = seekTime ?: (currentTime - seekableRange.start).toFloat(),
-        valueRange = 0f..(seekableRange.endInclusive - seekableRange.start).toFloat(),
-        enabled = enabled,
+        value = state.value,
+        valueRange = state.valueRange,
+        enabled = state.enabled,
         interactionSource = interactionSource,
         thumb = {
-            if (!playingAd) {
+            if (state.showThumb) {
                 SeekBarThumb(
                     interactionSource = interactionSource,
                     colors = colors,
-                    enabled = enabled
+                    enabled = state.enabled
                 )
             }
         },
@@ -84,7 +88,7 @@ fun SeekBar(
             SliderDefaults.Track(
                 modifier = Modifier.height(4.dp),
                 colors = colors,
-                enabled = enabled,
+                enabled = state.enabled,
                 sliderState = sliderState,
                 // Don't draw the stop indicator at the end of the track
                 drawStopIndicator = {},
@@ -92,23 +96,8 @@ fun SeekBar(
                 thumbTrackGapSize = 0.dp
             )
         },
-        onValueChange = { time ->
-            seekTime = time
-            player?.player?.let {
-                if (!it.isPaused) {
-                    wasPlayingBeforeSeek = true
-                    it.pause()
-                }
-                it.currentTime = seekableRange.start + time.toDouble()
-            }
-        },
-        onValueChangeFinished = {
-            seekTime = null
-            if (wasPlayingBeforeSeek) {
-                player?.player?.play()
-                wasPlayingBeforeSeek = false
-            }
-        }
+        onValueChange = state::onValueChange,
+        onValueChangeFinished = state::onValueChangeFinished
     )
 }
 
