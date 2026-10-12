@@ -11,7 +11,7 @@
 
 ## [Unreleased]
 
-* 🚀 Added experimental state holders (such as `rememberPlayButtonState` and `rememberSeekBarState`) for the play button, seek bar, time displays, live button and seek buttons, so custom UIs can reuse their logic. Also added `LocalTHEOplayerView`.
+* 🚀 Added experimental state holders (such as `rememberPlayButtonState` and `rememberSeekBarState`) for the play button, seek bar, time displays, live button and seek buttons, so custom UIs can reuse their logic. Also added `LocalTHEOplayerView`. ([#108](https://github.com/THEOplayer/android-ui/pull/108))
 * 🏠 Moved `Player` and its helpers into a new `android-ui-common` artifact. `android-ui` depends on it, so apps don't need any changes. ([#107](https://github.com/THEOplayer/android-ui/pull/107))
 
 ## [1.14.2] (2026-10-13)
