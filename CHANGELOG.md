@@ -11,6 +11,8 @@
 
 ## [Unreleased]
 
+* 🏠 Moved `Player` and its helpers into a new `android-ui-common` artifact. `android-ui` depends on it, so apps don't need any changes.
+
 ## [1.14.2] (2026-10-13)
 
 * 🐛 Fixed a listener leak in picture-in-picture mode detection on Android 15 and higher. ([#113](https://github.com/THEOplayer/android-ui/pull/113))
