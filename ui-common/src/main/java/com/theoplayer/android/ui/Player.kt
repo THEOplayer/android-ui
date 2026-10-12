@@ -370,8 +370,8 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
             false
         } else {
             seekable.isNotEmpty() || run {
-                // `player.seekable` is (incorrectly) empty while casting, see #35
-                // Temporary fix: always allow seeking while casting.
+                // On THEOplayer 7.11 and lower, `player.seekable` is (incorrectly) empty while casting, see #35.
+                // Always allow seeking while casting. This is no longer needed on THEOplayer 7.12.0 or higher.
                 castState == PlayerCastState.CONNECTED
             }
         }
