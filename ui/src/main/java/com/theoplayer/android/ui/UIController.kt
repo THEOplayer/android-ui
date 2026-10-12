@@ -220,7 +220,10 @@ fun UIController(
                 }
             )
     ) {
-        CompositionLocalProvider(LocalPlayer provides player) {
+        CompositionLocalProvider(
+            LocalPlayer provides player,
+            LocalTHEOplayerView provides player.theoplayerView
+        ) {
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
