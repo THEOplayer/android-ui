@@ -34,6 +34,8 @@ internal fun Activity.supportsPictureInPictureMode(): Boolean {
 
 /**
  * Returns whether the activity is in (or transitioning to) picture-in-picture mode.
+ *
+ * @suppress
  */
 @InternalUiApi
 @Composable

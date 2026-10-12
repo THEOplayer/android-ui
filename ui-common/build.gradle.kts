@@ -21,10 +21,6 @@ android {
 
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
-
-        vectorDrawables {
-            useSupportLibrary = true
-        }
     }
 
     buildTypes {

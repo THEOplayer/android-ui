@@ -66,6 +66,11 @@ import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as
 import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 import com.theoplayer.android.api.player.Player as THEOplayer
 
+/**
+ * The [Player] provided by the enclosing [UIController].
+ *
+ * @suppress
+ */
 @InternalUiApi
 val LocalPlayer = staticCompositionLocalOf<Player?> { null }
 
@@ -327,6 +332,11 @@ enum class StreamType {
     Dvr
 }
 
+/**
+ * Internal implementation of [Player].
+ *
+ * @suppress
+ */
 @InternalUiApi
 class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val player = theoplayerView?.player
