@@ -195,14 +195,17 @@ class PlayButtonStateTest {
     }
 
     @Test
-    fun `dispose removes the identical listener instances`() {
+    fun `shares one listener instance and removes it for every type`() {
         val mock = MockPlayer()
         val state = PlayButtonState(mock.player)
         state.observe()
+
         val added = mock.playerListeners.toList()
+        val listener = added.first().second
+        assertTrue(added.all { it.second === listener })
 
         state.dispose()
-        added.forEach { (type, listener) ->
+        added.forEach { (type, _) ->
             @Suppress("UNCHECKED_CAST")
             verify {
                 mock.player.removeEventListener(

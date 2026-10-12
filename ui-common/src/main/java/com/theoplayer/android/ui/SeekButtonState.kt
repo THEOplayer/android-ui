@@ -44,15 +44,16 @@ class SeekButtonState(
         val player = player ?: return
         update()
         listeners.run {
-            player.add(PlayerEventTypes.TIMEUPDATE, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.PLAY, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.PAUSE, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.ENDED, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.SEEKING, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.SEEKED, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.READYSTATECHANGE, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.SOURCECHANGE, EventListener<PlayerEvent<*>> { update() })
-            player.add(PlayerEventTypes.ERROR, EventListener<PlayerEvent<*>> { update() })
+            val listener = EventListener<PlayerEvent<*>> { update() }
+            player.add(PlayerEventTypes.TIMEUPDATE, listener)
+            player.add(PlayerEventTypes.PLAY, listener)
+            player.add(PlayerEventTypes.PAUSE, listener)
+            player.add(PlayerEventTypes.ENDED, listener)
+            player.add(PlayerEventTypes.SEEKING, listener)
+            player.add(PlayerEventTypes.SEEKED, listener)
+            player.add(PlayerEventTypes.READYSTATECHANGE, listener)
+            player.add(PlayerEventTypes.SOURCECHANGE, listener)
+            player.add(PlayerEventTypes.ERROR, listener)
             player.ads?.let { ads ->
                 val adListener = EventListener<AdEvent<*>> { update() }
                 ads.add(AdsEventTypes.AD_BREAK_BEGIN, adListener)

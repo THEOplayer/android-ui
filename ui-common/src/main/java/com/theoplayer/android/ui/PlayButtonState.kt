@@ -41,14 +41,15 @@ class PlayButtonState(private val player: Player?) {
         val player = player ?: return
         updatePlaybackState()
         listeners.run {
-            player.add(PlayerEventTypes.PLAY, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.PAUSE, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.ENDED, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.SEEKING, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.SEEKED, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.READYSTATECHANGE, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.SOURCECHANGE, EventListener<PlayerEvent<*>> { updatePlaybackState() })
-            player.add(PlayerEventTypes.ERROR, EventListener<PlayerEvent<*>> { updatePlaybackState() })
+            val listener = EventListener<PlayerEvent<*>> { updatePlaybackState() }
+            player.add(PlayerEventTypes.PLAY, listener)
+            player.add(PlayerEventTypes.PAUSE, listener)
+            player.add(PlayerEventTypes.ENDED, listener)
+            player.add(PlayerEventTypes.SEEKING, listener)
+            player.add(PlayerEventTypes.SEEKED, listener)
+            player.add(PlayerEventTypes.READYSTATECHANGE, listener)
+            player.add(PlayerEventTypes.SOURCECHANGE, listener)
+            player.add(PlayerEventTypes.ERROR, listener)
         }
     }
 
