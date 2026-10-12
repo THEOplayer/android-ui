@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId = "com.theoplayer.android.ui.demo"
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        minSdk = libs.versions.android.app.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1
         versionName = "1.0"
