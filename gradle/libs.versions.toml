@@ -1,5 +1,6 @@
 [versions]
 android-minSdk = "23"
+android-app-minSdk = "24"
 android-compileSdk = "36"
 android-targetSdk = "36"
 gradle = "9.1.1"
