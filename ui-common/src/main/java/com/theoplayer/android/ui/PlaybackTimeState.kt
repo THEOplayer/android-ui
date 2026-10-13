@@ -17,7 +17,7 @@ import com.theoplayer.android.api.player.Player
  * Create an instance with [rememberPlaybackTimeState].
  */
 @ExperimentalPlayerStateApi
-class PlaybackTimeState(private val player: Player?) {
+class PlaybackTimeState internal constructor(private val player: Player?) {
     private val listeners = PlayerStateListeners()
 
     /**

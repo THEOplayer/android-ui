@@ -17,7 +17,7 @@ import com.theoplayer.android.api.player.Player
  * Create an instance with [rememberLiveButtonState].
  */
 @ExperimentalPlayerStateApi
-class LiveButtonState(
+class LiveButtonState internal constructor(
     private val player: Player?,
     private val liveThreshold: Double
 ) {

@@ -22,7 +22,7 @@ import com.theoplayer.android.api.player.Player
  * Create an instance with [rememberSeekBarState].
  */
 @ExperimentalPlayerStateApi
-class SeekBarState(private val player: Player?) {
+class SeekBarState internal constructor(private val player: Player?) {
     private val listeners = PlayerStateListeners()
 
     /**

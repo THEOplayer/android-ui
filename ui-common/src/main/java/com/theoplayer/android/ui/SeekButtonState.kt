@@ -20,7 +20,7 @@ import com.theoplayer.android.api.player.Player
  * Create an instance with [rememberSeekButtonState].
  */
 @ExperimentalPlayerStateApi
-class SeekButtonState(
+class SeekButtonState internal constructor(
     private val player: Player?,
     private val seekOffset: Int
 ) {
