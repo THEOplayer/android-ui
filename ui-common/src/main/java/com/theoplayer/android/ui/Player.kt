@@ -507,9 +507,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
 
     private val rateChangeListener = EventListener<RateChangeEvent> { updatePlaybackRate() }
 
-    private val fullscreenHandler: FullscreenHandler? =
-        theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
-            ?.let { FullscreenHandlerImpl(it) }
+    private val fullscreenHandler: FullscreenHandler? = theoplayerView?.fullscreenHandler
     private var _fullscreen by mutableStateOf(false)
     private var onExitFullscreen: (() -> Unit)? = null
     override var fullscreen: Boolean
@@ -829,7 +827,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         ads?.addEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.addEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.addEventListener(AdsEventTypes.AD_BREAK_END, adListener)
-        fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
+        fullscreenHandler?.addOnFullscreenChangeListener(fullscreenListener)
     }
 
     fun dispose() {
@@ -895,6 +893,6 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         ads?.removeEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.removeEventListener(AdsEventTypes.AD_BREAK_END, adListener)
         updateCast(null)
-        fullscreenHandler?.onFullscreenChangeListener = null
+        fullscreenHandler?.removeOnFullscreenChangeListener(fullscreenListener)
     }
 }
