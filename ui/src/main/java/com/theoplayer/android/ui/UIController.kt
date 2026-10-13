@@ -371,6 +371,7 @@ private fun PlayerContainer(
             onDispose {
                 if (container != null && view != null) {
                     container.removeView(view)
+                    view.disposeComposition()
                     theoplayerView.postInvalidate()
                 }
             }
