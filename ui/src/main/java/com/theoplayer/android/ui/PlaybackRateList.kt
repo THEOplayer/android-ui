@@ -12,6 +12,11 @@ import androidx.compose.ui.res.stringResource
 import java.text.DecimalFormat
 
 /**
+ * The default playback rates shown in a [PlaybackRateList].
+ */
+private val defaultPlaybackRates = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0)
+
+/**
  * A list of playback rates, from which the user can choose a desired playback rate.
  *
  * @param modifier the [Modifier] to be applied to this menu
@@ -21,7 +26,7 @@ import java.text.DecimalFormat
 @Composable
 fun PlaybackRateList(
     modifier: Modifier = Modifier,
-    playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
+    playbackRates: List<Double> = defaultPlaybackRates,
     onClick: (() -> Unit)? = null
 ) {
     PlaybackRateList(
@@ -45,7 +50,7 @@ fun PlaybackRateList(
 fun PlaybackRateList(
     state: PlaybackRateState,
     modifier: Modifier = Modifier,
-    playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
+    playbackRates: List<Double> = defaultPlaybackRates,
     onClick: (() -> Unit)? = null
 ) {
     LazyColumn(modifier = modifier) {
