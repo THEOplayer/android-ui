@@ -647,10 +647,13 @@ class ErrorStateTest {
     }
 
     @Test
-    fun `null player with initial error stays null`() {
-        val state = ErrorState(null, initialError = mockk())
+    fun `null player keeps initial error and registers no listeners`() {
+        val exception = mockk<THEOplayerException>()
+        val mock = MockPlayer()
+        val state = ErrorState(null, initialError = exception)
         state.observe()
-        assertEquals(null, state.error)
+        assertEquals(exception, state.error)
+        assertTrue(mock.playerListeners.isEmpty())
         state.dispose()
     }
 }

@@ -26,19 +26,18 @@ import com.theoplayer.android.api.player.Player
 @ExperimentalPlayerStateApi
 class ErrorState internal constructor(
     private val player: Player?,
-    private val initialError: THEOplayerException? = null
+    initialError: THEOplayerException? = null
 ) {
     private val listeners = PlayerStateListeners()
 
     /**
      * The fatal error the player has encountered, if any.
      */
-    var error by mutableStateOf<THEOplayerException?>(null)
+    var error by mutableStateOf(initialError)
         private set
 
     internal fun observe() {
         val player = player ?: return
-        error = initialError
         listeners.run {
             val listener = EventListener<PlayerEvent<*>> { event ->
                 error = (event as? ErrorEvent)?.errorObject
