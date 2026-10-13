@@ -11,6 +11,7 @@
 
 ## [Unreleased]
 
+* 🚀 Added experimental state holders for picture-in-picture and Chromecast, along with state overloads for `PictureInPictureButton`, `ChromecastButton` and `ChromecastDisplay`.
 * 🚀 Added an experimental state holder for the fullscreen button, sharing a single fullscreen handler per `THEOplayerView`. ([#114](https://github.com/THEOplayer/android-ui/pull/114))
 * 🚀 Added experimental state holders for audio tracks, subtitle tracks, video qualities and playback rate, along with state overloads for the track, quality and playback rate lists and the language and settings menus. ([#111](https://github.com/THEOplayer/android-ui/pull/111))
 * 🚀 Added experimental state holders for the mute button, loading spinner, error display, first play, video size and ad playback. ([#110](https://github.com/THEOplayer/android-ui/pull/110))
