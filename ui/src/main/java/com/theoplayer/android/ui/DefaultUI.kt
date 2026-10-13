@@ -71,6 +71,7 @@ fun DefaultUI(
     player: Player = rememberPlayer(),
     title: String? = null
 ) {
+    val errorState = rememberErrorState(player.player)
     UIController(
         modifier = modifier,
         player = player,
@@ -135,7 +136,7 @@ fun DefaultUI(
         },
         errorOverlay = {
             Box(contentAlignment = Alignment.Center) {
-                ErrorDisplay()
+                ErrorDisplay(errorState)
                 // Ensure the user can still exit fullscreen
                 if (player.fullscreen) {
                     FullscreenButton(modifier = Modifier.align(Alignment.BottomEnd))
