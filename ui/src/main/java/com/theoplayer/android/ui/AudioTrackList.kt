@@ -19,25 +19,43 @@ fun AudioTrackList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val player = Player.current
-    val audioTracks = player?.audioTracks ?: listOf()
-    val activeAudioTrack = player?.activeAudioTrack
+    AudioTrackList(
+        state = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        onClick = onClick
+    )
+}
+
+/**
+ * A list of audio tracks, from which the user can choose an active audio track.
+ *
+ * @param state the [AudioTrackState] to read and control
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param onClick called when an audio track in the list is clicked
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun AudioTrackList(
+    state: AudioTrackState,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
     LazyColumn(modifier = modifier) {
         items(
-            count = audioTracks.size,
-            key = { audioTracks[it].uid }
+            count = state.audioTracks.size,
+            key = { state.audioTracks[it].uid }
         ) {
-            val audioTrack = audioTracks[it]
+            val audioTrack = state.audioTracks[it]
             ListItem(
                 headlineContent = { Text(text = formatTrackLabel(audioTrack)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (activeAudioTrack == audioTrack),
+                        selected = (state.activeAudioTrack == audioTrack),
                         onClick = null
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    player?.activeAudioTrack = audioTrack
+                    state.select(audioTrack)
                     onClick?.let { it() }
                 })
             )

@@ -24,8 +24,30 @@ fun PlaybackRateList(
     playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
     onClick: (() -> Unit)? = null
 ) {
-    val player = Player.current
-    val currentPlaybackRate = player?.playbackRate ?: 1
+    PlaybackRateList(
+        state = rememberPlaybackRateState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        playbackRates = playbackRates,
+        onClick = onClick
+    )
+}
+
+/**
+ * A list of playback rates, from which the user can choose a desired playback rate.
+ *
+ * @param state the [PlaybackRateState] to read and control
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param playbackRates the list of possible playback rates
+ * @param onClick called when a playback rate in the list is clicked
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun PlaybackRateList(
+    state: PlaybackRateState,
+    modifier: Modifier = Modifier,
+    playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
+    onClick: (() -> Unit)? = null
+) {
     LazyColumn(modifier = modifier) {
         items(
             count = playbackRates.size,
@@ -36,12 +58,12 @@ fun PlaybackRateList(
                 headlineContent = { Text(text = formatPlaybackRate(playbackRate)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (currentPlaybackRate == playbackRate),
+                        selected = (state.playbackRate == playbackRate),
                         onClick = null
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    player?.playbackRate = playbackRate
+                    state.select(playbackRate)
                     onClick?.let { it() }
                 })
             )

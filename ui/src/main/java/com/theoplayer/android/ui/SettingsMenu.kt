@@ -24,6 +24,29 @@ import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
  */
 @Composable
 fun MenuScope.SettingsMenu() {
+    SettingsMenu(
+        videoQualityState = rememberVideoQualityState(LocalTHEOplayerView.current?.player),
+        playbackRateState = rememberPlaybackRateState(LocalTHEOplayerView.current?.player)
+    )
+}
+
+/**
+ * A [Menu] to change the settings of the player, such as the video quality or the playback rate.
+ *
+ * Remember the states inside the `openMenu { }` block that opens this menu, not where
+ * the opening button is, because the button leaves the composition while the menu is shown.
+ *
+ * @param videoQualityState the [VideoQualityState] to read
+ * @param playbackRateState the [PlaybackRateState] to read
+ * @see QualityMenu
+ * @see PlaybackRateMenu
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun MenuScope.SettingsMenu(
+    videoQualityState: VideoQualityState,
+    playbackRateState: PlaybackRateState
+) {
     Menu(
         title = { Text(text = stringResource(R.string.theoplayer_ui_menu_settings)) },
         backIcon = {
@@ -33,7 +56,6 @@ fun MenuScope.SettingsMenu() {
             )
         },
     ) {
-        val player = Player.current
         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Row {
                 Text(
@@ -51,8 +73,8 @@ fun MenuScope.SettingsMenu() {
                     Text(
                         modifier = Modifier.weight(1f),
                         text = formatActiveQualityLabel(
-                            player?.targetVideoQuality,
-                            player?.activeVideoQuality
+                            videoQualityState.targetVideoQuality,
+                            videoQualityState.activeVideoQuality
                         ),
                         textAlign = TextAlign.Center
                     )
@@ -77,7 +99,7 @@ fun MenuScope.SettingsMenu() {
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = formatPlaybackRate(player?.playbackRate ?: 1.0),
+                        text = formatPlaybackRate(playbackRateState.playbackRate),
                         textAlign = TextAlign.Center
                     )
                     Icon(
@@ -97,10 +119,27 @@ fun MenuScope.SettingsMenu() {
  */
 @Composable
 fun MenuScope.QualityMenu() {
+    QualityMenu(
+        state = rememberVideoQualityState(LocalTHEOplayerView.current?.player)
+    )
+}
+
+/**
+ * A [Menu] to change the video quality of the stream.
+ *
+ * Remember the state inside the `openMenu { }` block that opens this menu, not where
+ * the opening button is, because the button leaves the composition while the menu is shown.
+ *
+ * @param state the [VideoQualityState] to read and control
+ * @see QualityList
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun MenuScope.QualityMenu(state: VideoQualityState) {
     Menu(
         title = { Text(text = stringResource(R.string.theoplayer_ui_menu_quality)) }
     ) {
-        QualityList(onClick = { closeCurrentMenu() })
+        QualityList(state, onClick = { closeCurrentMenu() })
     }
 }
 
@@ -111,10 +150,27 @@ fun MenuScope.QualityMenu() {
  */
 @Composable
 fun MenuScope.PlaybackRateMenu() {
+    PlaybackRateMenu(
+        state = rememberPlaybackRateState(LocalTHEOplayerView.current?.player)
+    )
+}
+
+/**
+ * A [Menu] to change the playback rate of the player.
+ *
+ * Remember the state inside the `openMenu { }` block that opens this menu, not where
+ * the opening button is, because the button leaves the composition while the menu is shown.
+ *
+ * @param state the [PlaybackRateState] to read and control
+ * @see PlaybackRateList
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun MenuScope.PlaybackRateMenu(state: PlaybackRateState) {
     Menu(
         title = { Text(text = stringResource(R.string.theoplayer_ui_menu_playback_rate)) }
     ) {
-        PlaybackRateList(onClick = { closeCurrentMenu() })
+        PlaybackRateList(state, onClick = { closeCurrentMenu() })
     }
 }
 
