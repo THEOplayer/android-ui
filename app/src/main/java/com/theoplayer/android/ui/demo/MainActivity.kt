@@ -54,10 +54,10 @@ import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.pip.PiPType
 import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.ui.DefaultUI
-import com.theoplayer.android.ui.Player
+import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
-import com.theoplayer.android.ui.rememberPlayer
+import com.theoplayer.android.ui.rememberPictureInPictureState
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 import androidx.compose.material3.Icon as Material3Icon
 
@@ -161,21 +161,21 @@ fun MainContent(
     var stream by rememberSaveable(stateSaver = StreamSaver) { mutableStateOf(streams.first()) }
     var streamMenuOpen by remember { mutableStateOf(false) }
 
-    val player = rememberPlayer(theoplayerView)
-    LaunchedEffect(player, stream) {
-        player.source = stream.source
+    LaunchedEffect(theoplayerView, stream) {
+        theoplayerView.player.source = stream.source
     }
 
     var themeMenuOpen by remember { mutableStateOf(false) }
     var theme by rememberSaveable { mutableStateOf(PlayerTheme.Default) }
     val activity = LocalActivity.current as? ComponentActivity
+    val pictureInPictureState = rememberPictureInPictureState(theoplayerView)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity?.isInPictureInPictureMode == true) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && pictureInPictureState.pictureInPicture) {
         // Only show player while in picture-in-picture mode
         Surface(modifier = Modifier.fillMaxSize()) {
             PlayerContent(
                 modifier = Modifier.fillMaxSize(),
-                player = player,
+                theoplayerView = theoplayerView,
                 stream = stream,
                 theme = theme
             )
@@ -201,8 +201,8 @@ fun MainContent(
                         }
                     }
                     IconButton(onClick = {
-                        player.source = stream.source
-                        player.play()
+                        theoplayerView.player.source = stream.source
+                        theoplayerView.player.play()
                     }) {
                         Material3Icon(Icons.Rounded.Refresh, contentDescription = "Reload")
                     }
@@ -220,7 +220,7 @@ fun MainContent(
             modifier = Modifier
                 .padding(padding)
                 .fillMaxSize(1f),
-            player = player,
+            theoplayerView = theoplayerView,
             stream = stream,
             theme = theme
         )
@@ -249,10 +249,11 @@ fun MainContent(
     }
 }
 
+@OptIn(ExperimentalPlayerStateApi::class)
 @Composable
 fun PlayerContent(
     modifier: Modifier = Modifier,
-    player: Player,
+    theoplayerView: THEOplayerView,
     stream: Stream,
     theme: PlayerTheme
 ) {
@@ -260,7 +261,7 @@ fun PlayerContent(
         PlayerTheme.Default -> {
             DefaultUI(
                 modifier = modifier,
-                player = player,
+                theoplayerView = theoplayerView,
                 title = stream.title
             )
         }
@@ -269,7 +270,7 @@ fun PlayerContent(
             NitflexTheme(useDarkTheme = true) {
                 NitflexUI(
                     modifier = modifier,
-                    player = player,
+                    theoplayerView = theoplayerView,
                     title = stream.title
                 )
             }

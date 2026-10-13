@@ -19,28 +19,34 @@ import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
+import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.CurrentTimeDisplay
 import com.theoplayer.android.ui.ErrorDisplay
+import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.FullscreenButton
 import com.theoplayer.android.ui.LanguageMenu
 import com.theoplayer.android.ui.LoadingSpinner
 import com.theoplayer.android.ui.PlaybackRateMenu
-import com.theoplayer.android.ui.Player
 import com.theoplayer.android.ui.UIController
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
-import com.theoplayer.android.ui.rememberPlayer
+import com.theoplayer.android.ui.rememberFirstPlayState
+import com.theoplayer.android.ui.rememberFullscreenState
 
+@OptIn(ExperimentalPlayerStateApi::class)
 @Composable
 fun NitflexUI(
     modifier: Modifier = Modifier,
@@ -48,31 +54,40 @@ fun NitflexUI(
     source: SourceDescription? = null,
     title: String? = null
 ) {
-    val player = rememberPlayer(config)
-    LaunchedEffect(player, source) {
-        player.source = source
+    val context = LocalContext.current
+    val theoplayerView = remember { THEOplayerView(context, config) }
+    DisposableEffect(theoplayerView) {
+        onDispose {
+            theoplayerView.onDestroy()
+        }
+    }
+    LaunchedEffect(theoplayerView, source) {
+        theoplayerView.player.source = source
     }
 
-    NitflexUI(modifier = modifier, player = player, title = title)
+    NitflexUI(modifier = modifier, theoplayerView = theoplayerView, title = title)
 }
 
+@OptIn(ExperimentalPlayerStateApi::class)
 @Composable
 fun NitflexUI(
     modifier: Modifier = Modifier,
-    player: Player = rememberPlayer(),
+    theoplayerView: THEOplayerView,
     title: String? = null
 ) {
+    val firstPlayState = rememberFirstPlayState(theoplayerView.player)
+    val fullscreenState = rememberFullscreenState(theoplayerView)
     ProvideTextStyle(value = TextStyle(color = Color.White)) {
         UIController(
             modifier = modifier,
-            player = player,
+            theoplayerView = theoplayerView,
             centerOverlay = {
-                if (player.firstPlay) {
+                if (firstPlayState.firstPlay) {
                     LoadingSpinner()
                 }
             },
             topChrome = {
-                if (player.firstPlay) {
+                if (firstPlayState.firstPlay) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -94,7 +109,7 @@ fun NitflexUI(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    if (player.firstPlay) {
+                    if (firstPlayState.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = -10,
                             iconSize = 48.dp,
@@ -105,7 +120,7 @@ fun NitflexUI(
                         iconModifier = Modifier.size(48.dp),
                         contentPadding = PaddingValues(8.dp)
                     )
-                    if (player.firstPlay) {
+                    if (firstPlayState.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = 10,
                             iconSize = 48.dp,
@@ -115,7 +130,7 @@ fun NitflexUI(
                 }
             },
             bottomChrome = {
-                if (player.firstPlay) {
+                if (firstPlayState.firstPlay) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -168,7 +183,7 @@ fun NitflexUI(
                 Box(contentAlignment = Alignment.Center) {
                     ErrorDisplay()
                     // Ensure the user can still exit fullscreen
-                    if (player.fullscreen) {
+                    if (fullscreenState.fullscreen) {
                         FullscreenButton(modifier = Modifier.align(Alignment.BottomEnd))
                     }
                 }
