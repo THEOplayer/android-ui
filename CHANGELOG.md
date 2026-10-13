@@ -11,7 +11,7 @@
 
 ## [Unreleased]
 
-* 🚀 Added an experimental state holder for the fullscreen button, sharing a single fullscreen handler per `THEOplayerView`.
+* 🚀 Added an experimental state holder for the fullscreen button, sharing a single fullscreen handler per `THEOplayerView`. ([#114](https://github.com/THEOplayer/android-ui/pull/114))
 * 🚀 Added experimental state holders for audio tracks, subtitle tracks, video qualities and playback rate, along with state overloads for the track, quality and playback rate lists and the language and settings menus. ([#111](https://github.com/THEOplayer/android-ui/pull/111))
 * 🚀 Added experimental state holders for the mute button, loading spinner, error display, first play, video size and ad playback. ([#110](https://github.com/THEOplayer/android-ui/pull/110))
 * 🚀 Added experimental state holders (such as `rememberPlayButtonState` and `rememberSeekBarState`) for the play button, seek bar, time displays, live button and seek buttons, so custom UIs can reuse their logic. Also added `LocalTHEOplayerView`. ([#108](https://github.com/THEOplayer/android-ui/pull/108))
