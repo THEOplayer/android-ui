@@ -36,16 +36,55 @@ fun FullscreenButton(
         )
     }
 ) {
-    val player = Player.current
+    FullscreenButton(
+        state = rememberFullscreenState(LocalTHEOplayerView.current),
+        modifier = modifier,
+        contentPadding = contentPadding,
+        enter = enter,
+        exit = exit
+    )
+}
+
+/**
+ * A button that toggles fullscreen.
+ *
+ * @param state the [FullscreenState] to read and control
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ * @param enter button content when the player is not fullscreen, typically an "enter fullscreen" icon
+ * @param exit button content when the player is fullscreen, typically an "exit fullscreen" icon
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun FullscreenButton(
+    state: FullscreenState,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    enter: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.Fullscreen,
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_enter)
+        )
+    },
+    exit: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.FullscreenExit,
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_exit)
+        )
+    }
+) {
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = {
-            player?.let {
-                it.fullscreen = !it.fullscreen
+            if (state.fullscreen) {
+                state.exitFullscreen()
+            } else {
+                state.enterFullscreen()
             }
         }) {
-        if (player?.fullscreen == true) {
+        if (state.fullscreen) {
             exit()
         } else {
             enter()
