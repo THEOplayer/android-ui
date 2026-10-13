@@ -9,6 +9,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.common.R
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -46,7 +47,7 @@ internal val THEOplayerView.fullscreenHandler: FullscreenHandler?
 internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler {
     override var fullscreen: Boolean = false
         private set
-    private val listeners = mutableListOf<FullscreenHandler.OnFullscreenChangeListener>()
+    private val listeners = CopyOnWriteArrayList<FullscreenHandler.OnFullscreenChangeListener>()
 
     override fun addOnFullscreenChangeListener(listener: FullscreenHandler.OnFullscreenChangeListener) {
         listeners.add(listener)
@@ -102,7 +103,7 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         }
 
         fullscreen = true
-        listeners.toList().forEach { it.onFullscreenChange(fullscreen) }
+        listeners.forEach { it.onFullscreenChange(fullscreen) }
     }
 
     override fun exitFullscreen() {
@@ -135,7 +136,7 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         previousViewIndex = 0
 
         fullscreen = false
-        listeners.toList().forEach { it.onFullscreenChange(fullscreen) }
+        listeners.forEach { it.onFullscreenChange(fullscreen) }
     }
 }
 
