@@ -56,7 +56,7 @@ internal fun rememberIsInPipMode(): Boolean {
                 transitioningToPip = info.isTransitioningToPip
             }
             activity.addOnPictureInPictureUiStateChangedListener(observer)
-            onDispose { activity.addOnPictureInPictureUiStateChangedListener(observer) }
+            onDispose { activity.removeOnPictureInPictureUiStateChangedListener(observer) }
         }
     }
     return pipMode || transitioningToPip
