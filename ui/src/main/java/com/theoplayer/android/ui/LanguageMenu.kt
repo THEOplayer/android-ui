@@ -38,8 +38,7 @@ fun MenuScope.LanguageMenu() {
  * Depending on the available screen width, this shows either [compact][LanguageMenuCompact]
  * or [expanded][LanguageMenuExpanded] contents.
  *
- * Remember the states inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the states inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
  * @param audioTrackState the [AudioTrackState] to read and control
  * @param subtitleTrackState the [SubtitleTrackState] to read and control
@@ -103,8 +102,7 @@ fun MenuScope.LanguageMenuCompact() {
  * In this form, the currently selected audio and subtitle track are shown inside buttons.
  * Click these buttons opens a separate menu to change the audio track or subtitle track.
  *
- * Remember the states inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the states inside the `openMenu` block that opens the enclosing menu, see [MenuScope.openMenu].
  *
  * @param audioTrackState the [AudioTrackState] to read and control
  * @param subtitleTrackState the [SubtitleTrackState] to read and control
@@ -199,8 +197,7 @@ fun MenuScope.LanguageMenuExpanded() {
  *
  * In this form, the list of audio and subtitle tracks are shown side-by-side.
  *
- * Remember the states inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the states inside the `openMenu` block that opens the enclosing menu, see [MenuScope.openMenu].
  *
  * @param audioTrackState the [AudioTrackState] to read and control
  * @param subtitleTrackState the [SubtitleTrackState] to read and control
@@ -258,8 +255,7 @@ fun MenuScope.AudioTrackMenu() {
 /**
  * A [Menu] to change the spoken language of the stream.
  *
- * Remember the state inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
  * @param state the [AudioTrackState] to read and control
  * @see AudioTrackList
@@ -289,8 +285,7 @@ fun MenuScope.SubtitleMenu() {
 /**
  * A [Menu] to change the subtitles of the stream.
  *
- * Remember the state inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
  * @param state the [SubtitleTrackState] to read and control
  * @see SubtitleTrackList

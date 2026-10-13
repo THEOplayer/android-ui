@@ -33,8 +33,7 @@ fun MenuScope.SettingsMenu() {
 /**
  * A [Menu] to change the settings of the player, such as the video quality or the playback rate.
  *
- * Remember the states inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the states inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
  * @param videoQualityState the [VideoQualityState] to read
  * @param playbackRateState the [PlaybackRateState] to read
@@ -127,8 +126,7 @@ fun MenuScope.QualityMenu() {
 /**
  * A [Menu] to change the video quality of the stream.
  *
- * Remember the state inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
  * @param state the [VideoQualityState] to read and control
  * @see QualityList
@@ -158,8 +156,7 @@ fun MenuScope.PlaybackRateMenu() {
 /**
  * A [Menu] to change the playback rate of the player.
  *
- * Remember the state inside the `openMenu { }` block that opens this menu, not where
- * the opening button is, because the button leaves the composition while the menu is shown.
+ * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
  * @param state the [PlaybackRateState] to read and control
  * @see PlaybackRateList
