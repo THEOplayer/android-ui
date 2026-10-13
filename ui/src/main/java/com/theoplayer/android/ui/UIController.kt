@@ -238,7 +238,8 @@ internal fun UIControllerImpl(
 
     // Wait a little bit before showing the controls and enabling animations,
     // so we can hide the UI immediately in case of autoplay.
-    var isReady by remember { mutableStateOf(false) }
+    val inspectionMode = LocalInspectionMode.current
+    var isReady by remember { mutableStateOf(inspectionMode) }
     LaunchedEffect(Unit) {
         delay(50.milliseconds)
         isReady = true
