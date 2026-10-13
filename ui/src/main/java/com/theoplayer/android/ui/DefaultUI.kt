@@ -43,7 +43,6 @@ fun DefaultUI(
     title: String? = null
 ) {
     val theoplayerView = rememberTHEOplayerViewInternal(config)
-    theoplayerView?.let { setupTHEOplayerView(it) }
     LaunchedEffect(theoplayerView, source) {
         theoplayerView?.player?.source = source
     }
@@ -90,9 +89,11 @@ fun DefaultUI(
  *
  * No [Player] is created unless [UIControllerScope.player] is accessed, so
  * [Player.current] is `null` inside this UI: use [LocalTHEOplayerView] and the experimental
- * state holders instead. Like [rememberPlayer] on a [THEOplayerView], this couples the
- * lifecycle of the view to the current activity, and does not destroy the view when the
- * composition is disposed.
+ * state holders instead.
+ *
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
+ * create a view owned by the composition, or forward [THEOplayerView.onPause],
+ * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  * For more extensive customizations, we recommend defining your own custom UI using
@@ -110,8 +111,12 @@ fun DefaultUI(
     theoplayerView: THEOplayerView,
     title: String? = null
 ) {
-    setupTHEOplayerView(theoplayerView)
-    DefaultUIImpl(modifier = modifier, theoplayerView = theoplayerView, player = null, title = title)
+    DefaultUIImpl(
+        modifier = modifier,
+        theoplayerView = theoplayerView.takeUnless { it.isInEditMode },
+        player = null,
+        title = title
+    )
 }
 
 @OptIn(ExperimentalPlayerStateApi::class)

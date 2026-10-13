@@ -91,7 +91,6 @@ fun UIController(
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
     val theoplayerView = rememberTHEOplayerViewInternal(config)
-    theoplayerView?.let { setupTHEOplayerView(it) }
     LaunchedEffect(theoplayerView, source) {
         theoplayerView?.player?.source = source
     }
@@ -159,8 +158,9 @@ fun UIController(
  * so [Player.current] is `null` inside this UI: use [LocalTHEOplayerView] and the
  * experimental state holders instead.
  *
- * Like [rememberPlayer] on a [THEOplayerView], this couples the lifecycle of the view to the
- * current activity, and does not destroy the view when the composition is disposed.
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
+ * create a view owned by the composition, or forward [THEOplayerView.onPause],
+ * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
@@ -187,10 +187,9 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    setupTHEOplayerView(theoplayerView)
     UIControllerImpl(
         modifier = modifier,
-        theoplayerView = theoplayerView,
+        theoplayerView = theoplayerView.takeUnless { it.isInEditMode },
         player = null,
         color = color,
         centerOverlay = centerOverlay,
@@ -574,11 +573,6 @@ private fun UIControllerScope.PlayerControls(
  */
 @Composable
 fun rememberPlayer(config: THEOplayerConfig? = null): Player {
-    return rememberPlayerInternal(rememberTHEOplayerViewInternal(config))
-}
-
-@Composable
-internal fun rememberTHEOplayerViewInternal(config: THEOplayerConfig?): THEOplayerView? {
     val theoplayerView = if (LocalInspectionMode.current) {
         null
     } else {
@@ -591,7 +585,40 @@ internal fun rememberTHEOplayerViewInternal(config: THEOplayerConfig?): THEOplay
             theoplayerView?.onDestroy()
         }
     }
+
+    return rememberPlayerInternal(theoplayerView)
+}
+
+/**
+ * Creates and remembers a [THEOplayerView] owned by the composition.
+ *
+ * This couples the lifecycle of the view to the current activity: it automatically calls
+ * [THEOplayerView.onPause] and [THEOplayerView.onResume] whenever the current activity is
+ * [paused][Activity.onPause] or [resumed][Activity.onResume] (resuming an ad that was
+ * interrupted), and it destroys the view when it leaves the composition.
+ *
+ * In previews, the SDK does not initialize the view ([View.isInEditMode]), so do not
+ * access its [THEOplayerView.player] there. [UIController] and [DefaultUI] handle this
+ * automatically.
+ *
+ * @param config the player configuration
+ */
+@Composable
+fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
+    val context = LocalContext.current
+    val theoplayerView = remember { THEOplayerView(context, config) }
+    setupTHEOplayerView(theoplayerView, destroyOnLifecycleDestroy = false)
+    DisposableEffect(theoplayerView) {
+        onDispose {
+            theoplayerView.onDestroy()
+        }
+    }
     return theoplayerView
+}
+
+@Composable
+internal fun rememberTHEOplayerViewInternal(config: THEOplayerConfig?): THEOplayerView? {
+    return if (LocalInspectionMode.current) null else rememberTHEOplayerView(config)
 }
 
 /**
@@ -649,7 +676,10 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
 }
 
 @Composable
-internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView {
+internal fun setupTHEOplayerView(
+    theoplayerView: THEOplayerView,
+    destroyOnLifecycleDestroy: Boolean = true
+): THEOplayerView {
     var wasPlayingAd by remember { mutableStateOf(false) }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -669,7 +699,11 @@ internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView
                     theoplayerView.onPause()
                 }
 
-                Lifecycle.Event.ON_DESTROY -> theoplayerView.onDestroy()
+                Lifecycle.Event.ON_DESTROY -> {
+                    if (destroyOnLifecycleDestroy) {
+                        theoplayerView.onDestroy()
+                    }
+                }
                 else -> {}
             }
         }
