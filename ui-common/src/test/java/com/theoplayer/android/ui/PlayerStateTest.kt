@@ -6,9 +6,13 @@ import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.EventType
 import com.theoplayer.android.api.event.ads.AdEvent
 import com.theoplayer.android.api.event.ads.AdsEventTypes
+import com.theoplayer.android.api.error.THEOplayerException
+import com.theoplayer.android.api.event.player.ErrorEvent
 import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.event.player.SourceChangeEvent
 import com.theoplayer.android.api.player.Player
+import com.theoplayer.android.api.player.ReadyState
 import com.theoplayer.android.api.timerange.TimeRange
 import com.theoplayer.android.api.timerange.TimeRanges
 import io.mockk.every
@@ -30,7 +34,14 @@ private class MockPlayer(
     var duration: Double = 100.0,
     var seekableRanges: List<Pair<Double, Double>> = listOf(0.0 to 100.0),
     var adPlaying: Boolean = false,
+    var muted: Boolean = false,
+    var seeking: Boolean = false,
+    var readyState: ReadyState = ReadyState.HAVE_NOTHING,
+    var videoWidth: Int = 0,
+    var videoHeight: Int = 0,
+    var playedLength: Int = 0,
 ) {
+    var errorObject: THEOplayerException = mockk()
     val playerListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
     val adListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
 
@@ -60,6 +71,15 @@ private class MockPlayer(
         every { setCurrentTime(any()) } answers { this@MockPlayer.currentTime = firstArg() }
         every { play() } answers { this@MockPlayer.paused = false }
         every { pause() } answers { this@MockPlayer.paused = true }
+        every { isMuted } answers { this@MockPlayer.muted }
+        every { setMuted(any()) } answers { this@MockPlayer.muted = firstArg() }
+        every { isSeeking } answers { this@MockPlayer.seeking }
+        every { getReadyState() } answers { this@MockPlayer.readyState }
+        every { getVideoWidth() } answers { this@MockPlayer.videoWidth }
+        every { getVideoHeight() } answers { this@MockPlayer.videoHeight }
+        every { getPlayed() } answers {
+            mockk { every { length() } returns this@MockPlayer.playedLength }
+        }
         every {
             addEventListener(any<EventType<out PlayerEvent<*>>>(), any())
         } answers {
@@ -80,13 +100,23 @@ private class MockPlayer(
     val adEventTypes: Set<EventType<*>>
         get() = adListeners.map { it.first }.toSet()
 
-    fun firePlayerEvent(type: EventType<*>? = null) {
+    fun firePlayerEvent(type: EventType<*>? = null, event: PlayerEvent<*>? = null) {
         playerListeners.toList().forEach { (eventType, listener) ->
             if (type == null || eventType == type) {
                 @Suppress("UNCHECKED_CAST")
-                (listener as EventListener<PlayerEvent<*>>).handleEvent(mockk())
+                (listener as EventListener<PlayerEvent<*>>).handleEvent(
+                    event ?: mockEvent(eventType)
+                )
             }
         }
+    }
+
+    private fun mockEvent(type: EventType<*>): PlayerEvent<*> = when (type) {
+        PlayerEventTypes.ERROR -> mockk<ErrorEvent> {
+            every { errorObject } returns this@MockPlayer.errorObject
+        }
+        PlayerEventTypes.SOURCECHANGE -> mockk<SourceChangeEvent>()
+        else -> mockk()
     }
 
     fun fireAdEvent() {
@@ -514,5 +544,227 @@ class SeekButtonStateTest {
         assertFalse(state.enabled)
         state.onClick()
         state.dispose()
+    }
+}
+
+class MuteButtonStateTest {
+    @Test
+    fun `registers only the volume change event`() {
+        val mock = MockPlayer()
+        MuteButtonState(mock.player).observe()
+        assertEquals(setOf(PlayerEventTypes.VOLUMECHANGE), mock.playerEventTypes)
+    }
+
+    @Test
+    fun `seeds muted and updates on volume change`() {
+        val mock = MockPlayer(muted = true)
+        val state = MuteButtonState(mock.player)
+        state.observe()
+        assertTrue(state.muted)
+
+        mock.muted = false
+        mock.firePlayerEvent(PlayerEventTypes.VOLUMECHANGE)
+        assertFalse(state.muted)
+    }
+
+    @Test
+    fun `onClick toggles player and state`() {
+        val mock = MockPlayer(muted = false)
+        val state = MuteButtonState(mock.player)
+        state.observe()
+
+        state.onClick()
+        verify { mock.player.isMuted = true }
+        assertTrue(state.muted)
+    }
+
+    @Test
+    fun `null player gives defaults and onClick does nothing`() {
+        val state = MuteButtonState(null)
+        state.observe()
+        assertFalse(state.muted)
+        state.onClick()
+        state.dispose()
+    }
+}
+
+class LoadingStateTest {
+    @Test
+    fun `registers the playback events`() {
+        val mock = MockPlayer()
+        LoadingState(mock.player).observe()
+        assertEquals(playbackEventTypes - PlayerEventTypes.TIMEUPDATE, mock.playerEventTypes)
+    }
+
+    @Test
+    fun `loading truth table`() {
+        fun state(paused: Boolean, ended: Boolean = false, seeking: Boolean = false, readyState: ReadyState) =
+            LoadingState(MockPlayer(paused = paused, ended = ended, seeking = seeking, readyState = readyState).player)
+                .apply { observe() }.loading
+
+        assertFalse(state(paused = false, readyState = ReadyState.HAVE_ENOUGH_DATA))
+        assertTrue(state(paused = false, readyState = ReadyState.HAVE_CURRENT_DATA))
+        assertTrue(state(paused = false, seeking = true, readyState = ReadyState.HAVE_ENOUGH_DATA))
+        assertFalse(state(paused = true, readyState = ReadyState.HAVE_CURRENT_DATA))
+        assertFalse(state(paused = false, ended = true, readyState = ReadyState.HAVE_CURRENT_DATA))
+    }
+}
+
+class ErrorStateTest {
+    @Test
+    fun `registers error and sourcechange`() {
+        val mock = MockPlayer()
+        ErrorState(mock.player).observe()
+        assertEquals(setOf(PlayerEventTypes.ERROR, PlayerEventTypes.SOURCECHANGE), mock.playerEventTypes)
+    }
+
+    @Test
+    fun `error event sets error and sourcechange clears it`() {
+        val exception = mockk<THEOplayerException>()
+        val mock = MockPlayer()
+        val state = ErrorState(mock.player)
+        state.observe()
+        assertEquals(null, state.error)
+
+        mock.errorObject = exception
+        mock.firePlayerEvent(PlayerEventTypes.ERROR)
+        assertEquals(exception, state.error)
+
+        mock.firePlayerEvent(PlayerEventTypes.SOURCECHANGE)
+        assertEquals(null, state.error)
+    }
+
+    @Test
+    fun `seeds initial error and sourcechange clears it`() {
+        val exception = mockk<THEOplayerException>()
+        val mock = MockPlayer()
+        val state = ErrorState(mock.player, initialError = exception)
+        state.observe()
+        assertEquals(exception, state.error)
+
+        mock.firePlayerEvent(PlayerEventTypes.SOURCECHANGE)
+        assertEquals(null, state.error)
+    }
+
+    @Test
+    fun `null player with initial error stays null`() {
+        val state = ErrorState(null, initialError = mockk())
+        state.observe()
+        assertEquals(null, state.error)
+        state.dispose()
+    }
+}
+
+class FirstPlayStateTest {
+    @Test
+    fun `seeds false when paused with empty played`() {
+        val mock = MockPlayer(paused = true, playedLength = 0)
+        val state = FirstPlayState(mock.player)
+        state.observe()
+        assertFalse(state.firstPlay)
+    }
+
+    @Test
+    fun `seeds true when paused with non-empty played`() {
+        val mock = MockPlayer(paused = true, playedLength = 1)
+        val state = FirstPlayState(mock.player)
+        state.observe()
+        assertTrue(state.firstPlay)
+    }
+
+    @Test
+    fun `seeds true when playing`() {
+        val mock = MockPlayer(paused = false)
+        val state = FirstPlayState(mock.player)
+        state.observe()
+        assertTrue(state.firstPlay)
+    }
+
+    @Test
+    fun `play sets firstPlay`() {
+        val mock = MockPlayer(paused = true)
+        val state = FirstPlayState(mock.player)
+        state.observe()
+
+        mock.paused = false
+        mock.firePlayerEvent(PlayerEventTypes.PLAY)
+        assertTrue(state.firstPlay)
+    }
+
+    @Test
+    fun `sourcechange resets firstPlay while paused`() {
+        val mock = MockPlayer(paused = false)
+        val state = FirstPlayState(mock.player)
+        state.observe()
+        assertTrue(state.firstPlay)
+
+        mock.paused = true
+        mock.playedLength = 0
+        mock.firePlayerEvent(PlayerEventTypes.SOURCECHANGE)
+        assertFalse(state.firstPlay)
+    }
+
+    @Test
+    fun `sourcechange keeps firstPlay while playing`() {
+        val mock = MockPlayer(paused = false)
+        val state = FirstPlayState(mock.player)
+        state.observe()
+        assertTrue(state.firstPlay)
+
+        mock.firePlayerEvent(PlayerEventTypes.SOURCECHANGE)
+        assertTrue(state.firstPlay)
+    }
+}
+
+class VideoSizeStateTest {
+    @Test
+    fun `registers resize sourcechange and error`() {
+        val mock = MockPlayer()
+        VideoSizeState(mock.player).observe()
+        assertEquals(
+            setOf(PlayerEventTypes.RESIZE, PlayerEventTypes.SOURCECHANGE, PlayerEventTypes.ERROR),
+            mock.playerEventTypes
+        )
+    }
+
+    @Test
+    fun `seeds size and updates on resize`() {
+        val mock = MockPlayer(videoWidth = 1920, videoHeight = 1080)
+        val state = VideoSizeState(mock.player)
+        state.observe()
+        assertEquals(1920, state.videoWidth)
+        assertEquals(1080, state.videoHeight)
+
+        mock.videoWidth = 1280
+        mock.videoHeight = 720
+        mock.firePlayerEvent(PlayerEventTypes.RESIZE)
+        assertEquals(1280, state.videoWidth)
+        assertEquals(720, state.videoHeight)
+    }
+}
+
+class AdStateTest {
+    @Test
+    fun `registers sourcechange error and ad events`() {
+        val mock = MockPlayer()
+        AdState(mock.player).observe()
+        assertEquals(setOf(PlayerEventTypes.SOURCECHANGE, PlayerEventTypes.ERROR), mock.playerEventTypes)
+        assertEquals(adEventTypes, mock.adEventTypes)
+    }
+
+    @Test
+    fun `seeds playingAd and updates on ad events and sourcechange`() {
+        val mock = MockPlayer(adPlaying = true)
+        val state = AdState(mock.player)
+        state.observe()
+        assertTrue(state.playingAd)
+
+        mock.adPlaying = false
+        mock.fireAdEvent()
+        assertFalse(state.playingAd)
+
+        mock.adPlaying = true
+        mock.firePlayerEvent(PlayerEventTypes.SOURCECHANGE)
+        assertTrue(state.playingAd)
     }
 }
