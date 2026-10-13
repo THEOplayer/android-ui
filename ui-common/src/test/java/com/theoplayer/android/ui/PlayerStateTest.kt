@@ -2,6 +2,7 @@ package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.event.Event
+import com.theoplayer.android.api.event.EventDispatcher
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.EventType
 import com.theoplayer.android.api.event.ads.AdEvent
@@ -11,8 +12,18 @@ import com.theoplayer.android.api.event.player.ErrorEvent
 import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.SourceChangeEvent
+import com.theoplayer.android.api.event.track.TrackEvent
+import com.theoplayer.android.api.event.track.tracklist.TrackListEvent
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.ReadyState
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrackList
+import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
+import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
+import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
+import com.theoplayer.android.api.player.track.texttrack.TextTrackList
+import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import com.theoplayer.android.api.timerange.TimeRange
 import com.theoplayer.android.api.timerange.TimeRanges
 import io.mockk.every
@@ -40,10 +51,17 @@ private class MockPlayer(
     var videoWidth: Int = 0,
     var videoHeight: Int = 0,
     var playedLength: Int = 0,
+    var playbackRate: Double = 1.0,
 ) {
     var errorObject: THEOplayerException = mockk()
     val playerListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
     val adListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
+    val audioTrackListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
+    val textTrackListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
+    val videoTrackListeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
+    val audioTrackList = mutableListOf<MediaTrack<AudioQuality>>()
+    val textTrackList = mutableListOf<TextTrack>()
+    val videoTrackList = mutableListOf<MediaTrack<VideoQuality>>()
 
     val ads: Ads = mockk {
         every { isPlaying } answers { this@MockPlayer.adPlaying }
@@ -60,6 +78,21 @@ private class MockPlayer(
             Unit
         }
     }
+
+    val audioTracks: MediaTrackList<AudioQuality> = mockTrackList(
+        { audioTrackList.toMutableList().listIterator() },
+        audioTrackListeners
+    )
+
+    val textTracks: TextTrackList = mockTrackList(
+        { textTrackList.toMutableList().listIterator() },
+        textTrackListeners
+    )
+
+    val videoTracks: MediaTrackList<VideoQuality> = mockTrackList(
+        { videoTrackList.toMutableList().listIterator() },
+        videoTrackListeners
+    )
 
     val player: Player = mockk {
         every { isPaused } answers { this@MockPlayer.paused }
@@ -80,6 +113,11 @@ private class MockPlayer(
         every { getPlayed() } answers {
             mockk { every { length() } returns this@MockPlayer.playedLength }
         }
+        every { getPlaybackRate() } answers { this@MockPlayer.playbackRate }
+        every { setPlaybackRate(any()) } answers { this@MockPlayer.playbackRate = firstArg() }
+        every { getAudioTracks() } returns this@MockPlayer.audioTracks
+        every { getTextTracks() } returns this@MockPlayer.textTracks
+        every { getVideoTracks() } returns this@MockPlayer.videoTracks
         every {
             addEventListener(any<EventType<out PlayerEvent<*>>>(), any())
         } answers {
@@ -135,6 +173,110 @@ private fun mockTimeRanges(ranges: List<Pair<Double, Double>>): TimeRanges = moc
                 every { this@mockk.end } returns end
             }
         }.toMutableList().listIterator()
+    }
+}
+
+private var nextTrackUid = 0
+
+/**
+ * A mocked track list that records the listeners added to it.
+ */
+private inline fun <reified L> mockTrackList(
+    noinline items: () -> MutableIterator<*>,
+    listeners: MutableList<Pair<EventType<*>, EventListener<*>>>
+): L where L : EventDispatcher<TrackListEvent<*, *>>, L : Iterable<*> = mockk<L> {
+    every { iterator() } answers { items() }
+    every { addEventListener(any<EventType<out TrackListEvent<*, *>>>(), any()) } answers {
+        listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+        Unit
+    }
+    every { removeEventListener(any<EventType<out TrackListEvent<*, *>>>(), any()) } answers {
+        listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+        Unit
+    }
+}
+
+/**
+ * A mocked [MediaTrack] of [AudioQuality] with a mutable [MediaTrack.isEnabled].
+ */
+private class MockAudioTrack(var enabled: Boolean = false) {
+    val uid = nextTrackUid++
+    val track: MediaTrack<AudioQuality> = mockk {
+        every { isEnabled } answers { this@MockAudioTrack.enabled }
+        every { setEnabled(any()) } answers { this@MockAudioTrack.enabled = firstArg() }
+        every { this@mockk.uid } returns this@MockAudioTrack.uid
+    }
+}
+
+/**
+ * A mocked [TextTrack] with a fixed [TextTrack.getKind] and a mutable [TextTrack.getMode].
+ */
+private class MockTextTrack(kind: TextTrackKind, var mode: TextTrackMode) {
+    val uid = nextTrackUid++
+    private val kindType = kind.type
+    val track: TextTrack = mockk {
+        every { this@mockk.kind } returns kindType
+        every { this@mockk.mode } answers { this@MockTextTrack.mode }
+        every { setMode(any()) } answers { this@MockTextTrack.mode = firstArg() }
+        every { this@mockk.uid } returns this@MockTextTrack.uid
+    }
+}
+
+private fun mockVideoQuality(): VideoQuality {
+    val qualityUid = nextTrackUid++
+    return mockk {
+        every { this@mockk.uid } returns qualityUid
+        every { this@mockk.height } returns 1080
+        every { this@mockk.bandwidth } returns 5_000_000L
+    }
+}
+
+/**
+ * A mocked [MediaTrack] of [VideoQuality] that records its own event listeners.
+ */
+private class MockVideoTrack(
+    var enabled: Boolean = false,
+    var activeQuality: VideoQuality? = null,
+    var targetQuality: VideoQuality? = null,
+    val qualities: List<VideoQuality> = listOf()
+) {
+    val uid = nextTrackUid++
+    val listeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
+
+    val track: MediaTrack<VideoQuality> = mockk {
+        every { isEnabled } answers { this@MockVideoTrack.enabled }
+        every { setEnabled(any()) } answers { this@MockVideoTrack.enabled = firstArg() }
+        every { this@mockk.uid } returns this@MockVideoTrack.uid
+        every { getActiveQuality() } answers { this@MockVideoTrack.activeQuality }
+        every { getTargetQuality() } answers { this@MockVideoTrack.targetQuality }
+        every { setTargetQuality(any()) } answers { this@MockVideoTrack.targetQuality = firstArg() }
+        every { getQualities() } answers {
+            mockk<com.theoplayer.android.api.player.track.mediatrack.quality.QualityList<VideoQuality>> {
+                every { iterator() } answers { this@MockVideoTrack.qualities.toMutableList().listIterator() }
+            }
+        }
+        every { addEventListener(any<EventType<out TrackEvent<*>>>(), any()) } answers {
+            listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+            Unit
+        }
+        every { removeEventListener(any<EventType<out TrackEvent<*>>>(), any()) } answers {
+            listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+            Unit
+        }
+    }
+
+    fun fireEvent() {
+        listeners.toList().forEach { (_, listener) ->
+            @Suppress("UNCHECKED_CAST")
+            (listener as EventListener<Event<*>>).handleEvent(mockk())
+        }
+    }
+}
+
+private fun MutableList<Pair<EventType<*>, EventListener<*>>>.fireTrackListEvent() {
+    toList().forEach { (_, listener) ->
+        @Suppress("UNCHECKED_CAST")
+        (listener as EventListener<Event<*>>).handleEvent(mockk())
     }
 }
 
@@ -769,5 +911,308 @@ class AdStateTest {
         mock.adPlaying = true
         mock.firePlayerEvent(PlayerEventTypes.SOURCECHANGE)
         assertTrue(state.playingAd)
+    }
+}
+
+class PlaybackRateStateTest {
+    @Test
+    fun `registers only the ratechange event`() {
+        val mock = MockPlayer()
+        PlaybackRateState(mock.player).observe()
+        assertEquals(setOf(PlayerEventTypes.RATECHANGE), mock.playerEventTypes)
+    }
+
+    @Test
+    fun `seeds rate and updates on ratechange`() {
+        val mock = MockPlayer(playbackRate = 1.5)
+        val state = PlaybackRateState(mock.player)
+        state.observe()
+        assertEquals(1.5, state.playbackRate, 0.0)
+
+        mock.playbackRate = 2.0
+        mock.firePlayerEvent(PlayerEventTypes.RATECHANGE)
+        assertEquals(2.0, state.playbackRate, 0.0)
+    }
+
+    @Test
+    fun `select sets player rate and state`() {
+        val mock = MockPlayer()
+        val state = PlaybackRateState(mock.player)
+        state.observe()
+
+        state.select(2.0)
+        verify { mock.player.playbackRate = 2.0 }
+        assertEquals(2.0, state.playbackRate, 0.0)
+    }
+
+    @Test
+    fun `null player gives defaults and no listeners`() {
+        val state = PlaybackRateState(null)
+        state.observe()
+        assertEquals(1.0, state.playbackRate, 0.0)
+        state.select(2.0)
+        state.dispose()
+    }
+}
+
+class AudioTrackStateTest {
+    private fun playerWithTracks(vararg tracks: MockAudioTrack): MockPlayer {
+        return MockPlayer().also { mock ->
+            mock.audioTrackList.addAll(tracks.map { it.track })
+        }
+    }
+
+    @Test
+    fun `registers the track list events with one listener`() {
+        val mock = playerWithTracks(MockAudioTrack(enabled = true))
+        val state = AudioTrackState(mock.player)
+        state.observe()
+
+        val listener = mock.audioTrackListeners.first().second
+        assertTrue(mock.audioTrackListeners.all { it.second === listener })
+        assertEquals(3, mock.audioTrackListeners.size)
+
+        state.dispose()
+        assertTrue(mock.audioTrackListeners.isEmpty())
+    }
+
+    @Test
+    fun `seeds tracks and active track`() {
+        val disabled = MockAudioTrack(enabled = false)
+        val enabled = MockAudioTrack(enabled = true)
+        val mock = playerWithTracks(disabled, enabled)
+        val state = AudioTrackState(mock.player)
+        state.observe()
+
+        assertEquals(listOf(disabled.track, enabled.track), state.audioTracks)
+        assertEquals(enabled.track, state.activeAudioTrack)
+    }
+
+    @Test
+    fun `addtrack updates the list`() {
+        val mock = playerWithTracks(MockAudioTrack(enabled = true))
+        val state = AudioTrackState(mock.player)
+        state.observe()
+        assertEquals(1, state.audioTracks.size)
+
+        val added = MockAudioTrack(enabled = false)
+        mock.audioTrackList.add(added.track)
+        mock.audioTrackListeners.fireTrackListEvent()
+        assertEquals(2, state.audioTracks.size)
+    }
+
+    @Test
+    fun `tracklistchange updates the active track`() {
+        val first = MockAudioTrack(enabled = true)
+        val second = MockAudioTrack(enabled = false)
+        val mock = playerWithTracks(first, second)
+        val state = AudioTrackState(mock.player)
+        state.observe()
+        assertEquals(first.track, state.activeAudioTrack)
+
+        first.enabled = false
+        second.enabled = true
+        mock.audioTrackListeners.fireTrackListEvent()
+        assertEquals(second.track, state.activeAudioTrack)
+    }
+
+    @Test
+    fun `select enables the track and updates the state`() {
+        val first = MockAudioTrack(enabled = true)
+        val second = MockAudioTrack(enabled = false)
+        val mock = playerWithTracks(first, second)
+        val state = AudioTrackState(mock.player)
+        state.observe()
+
+        state.select(second.track)
+        assertTrue(second.enabled)
+        assertEquals(second.track, state.activeAudioTrack)
+    }
+
+    @Test
+    fun `select null disables all tracks`() {
+        val enabled = MockAudioTrack(enabled = true)
+        val mock = playerWithTracks(enabled)
+        val state = AudioTrackState(mock.player)
+        state.observe()
+
+        state.select(null)
+        assertFalse(enabled.enabled)
+        assertEquals(null, state.activeAudioTrack)
+    }
+
+    @Test
+    fun `null player gives defaults and no listeners`() {
+        val state = AudioTrackState(null)
+        state.observe()
+        assertTrue(state.audioTracks.isEmpty())
+        assertEquals(null, state.activeAudioTrack)
+        state.dispose()
+    }
+}
+
+class SubtitleTrackStateTest {
+    private fun playerWithTracks(vararg tracks: MockTextTrack): MockPlayer {
+        return MockPlayer().also { mock ->
+            mock.textTrackList.addAll(tracks.map { it.track })
+        }
+    }
+
+    @Test
+    fun `registers the track list events with one listener`() {
+        val mock = playerWithTracks(MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.SHOWING))
+        val state = SubtitleTrackState(mock.player)
+        state.observe()
+
+        val listener = mock.textTrackListeners.first().second
+        assertTrue(mock.textTrackListeners.all { it.second === listener })
+        assertEquals(3, mock.textTrackListeners.size)
+
+        state.dispose()
+        assertTrue(mock.textTrackListeners.isEmpty())
+    }
+
+    @Test
+    fun `filters out non-subtitle tracks`() {
+        val subtitles = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.DISABLED)
+        val captions = MockTextTrack(TextTrackKind.CAPTIONS, TextTrackMode.SHOWING)
+        val metadata = MockTextTrack(TextTrackKind.METADATA, TextTrackMode.DISABLED)
+        val mock = playerWithTracks(subtitles, captions, metadata)
+        val state = SubtitleTrackState(mock.player)
+        state.observe()
+
+        assertEquals(listOf(subtitles.track, captions.track), state.subtitleTracks)
+        assertEquals(captions.track, state.activeSubtitleTrack)
+    }
+
+    @Test
+    fun `select shows the track and disables the other subtitles`() {
+        val first = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.SHOWING)
+        val second = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.DISABLED)
+        val metadata = MockTextTrack(TextTrackKind.METADATA, TextTrackMode.DISABLED)
+        val mock = playerWithTracks(first, second, metadata)
+        val state = SubtitleTrackState(mock.player)
+        state.observe()
+
+        state.select(second.track)
+        assertEquals(TextTrackMode.DISABLED, first.mode)
+        assertEquals(TextTrackMode.SHOWING, second.mode)
+        assertEquals(TextTrackMode.DISABLED, metadata.mode)
+        assertEquals(second.track, state.activeSubtitleTrack)
+    }
+
+    @Test
+    fun `select null disables all subtitle tracks`() {
+        val showing = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.SHOWING)
+        val mock = playerWithTracks(showing)
+        val state = SubtitleTrackState(mock.player)
+        state.observe()
+
+        state.select(null)
+        assertEquals(TextTrackMode.DISABLED, showing.mode)
+        assertEquals(null, state.activeSubtitleTrack)
+    }
+
+    @Test
+    fun `null player gives defaults and no listeners`() {
+        val state = SubtitleTrackState(null)
+        state.observe()
+        assertTrue(state.subtitleTracks.isEmpty())
+        assertEquals(null, state.activeSubtitleTrack)
+        state.dispose()
+    }
+}
+
+class VideoQualityStateTest {
+    private fun playerWithTracks(vararg tracks: MockVideoTrack): MockPlayer {
+        return MockPlayer().also { mock ->
+            mock.videoTrackList.addAll(tracks.map { it.track })
+        }
+    }
+
+    @Test
+    fun `registers list events plus quality events on the enabled track`() {
+        val enabled = MockVideoTrack(enabled = true)
+        val mock = playerWithTracks(enabled)
+        val state = VideoQualityState(mock.player)
+        state.observe()
+
+        assertEquals(3, mock.videoTrackListeners.size)
+        assertEquals(2, enabled.listeners.size)
+
+        state.dispose()
+        assertTrue(mock.videoTrackListeners.isEmpty())
+        assertTrue(enabled.listeners.isEmpty())
+    }
+
+    @Test
+    fun `seeds qualities from the enabled track`() {
+        val quality = mockVideoQuality()
+        val enabled = MockVideoTrack(enabled = true, activeQuality = quality, qualities = listOf(quality))
+        val mock = playerWithTracks(enabled)
+        val state = VideoQualityState(mock.player)
+        state.observe()
+
+        assertEquals(listOf(quality), state.videoQualities)
+        assertEquals(quality, state.activeVideoQuality)
+    }
+
+    @Test
+    fun `quality events update active and target`() {
+        val old = mockVideoQuality()
+        val new = mockVideoQuality()
+        val enabled = MockVideoTrack(enabled = true, activeQuality = old, qualities = listOf(old, new))
+        val mock = playerWithTracks(enabled)
+        val state = VideoQualityState(mock.player)
+        state.observe()
+
+        enabled.activeQuality = new
+        enabled.targetQuality = new
+        enabled.fireEvent()
+        assertEquals(new, state.activeVideoQuality)
+        assertEquals(new, state.targetVideoQuality)
+    }
+
+    @Test
+    fun `select sets the track target quality`() {
+        val quality = mockVideoQuality()
+        val enabled = MockVideoTrack(enabled = true, qualities = listOf(quality))
+        val mock = playerWithTracks(enabled)
+        val state = VideoQualityState(mock.player)
+        state.observe()
+
+        state.select(quality)
+        assertEquals(quality, enabled.targetQuality)
+        assertEquals(quality, state.targetVideoQuality)
+
+        state.select(null)
+        assertEquals(null, enabled.targetQuality)
+    }
+
+    @Test
+    fun `switching the enabled track moves the quality listeners`() {
+        val first = MockVideoTrack(enabled = true)
+        val second = MockVideoTrack(enabled = false)
+        val mock = playerWithTracks(first, second)
+        val state = VideoQualityState(mock.player)
+        state.observe()
+        assertEquals(2, first.listeners.size)
+
+        first.enabled = false
+        second.enabled = true
+        mock.videoTrackListeners.fireTrackListEvent()
+
+        assertEquals(0, first.listeners.size)
+        assertEquals(2, second.listeners.size)
+    }
+
+    @Test
+    fun `null player gives defaults and no listeners`() {
+        val state = VideoQualityState(null)
+        state.observe()
+        assertTrue(state.videoQualities.isEmpty())
+        assertEquals(null, state.activeVideoQuality)
+        assertEquals(null, state.targetVideoQuality)
+        state.dispose()
     }
 }
