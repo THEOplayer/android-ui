@@ -31,16 +31,32 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 fun ChromecastDisplay(
     modifier: Modifier = Modifier
 ) {
-    val player = Player.current
-    if (player?.castState != PlayerCastState.CONNECTED) {
-        // Hide when not connected to Chromecast
-        return
-    }
+    ChromecastDisplay(
+        state = rememberCastState(LocalTHEOplayerView.current),
+        modifier = modifier
+    )
+}
+
+/**
+ * A display for the state of an active Chromecast session.
+ *
+ * Depending on the available screen height, this shows either [compact][ChromecastDisplayCompact]
+ * or [expanded][ChromecastDisplayExpanded] contents.
+ *
+ * @param state the [CastState] to read
+ * @param modifier the [Modifier] to be applied to this display
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun ChromecastDisplay(
+    state: CastState,
+    modifier: Modifier = Modifier
+) {
     BoxWithConstraints {
         if (maxHeight < 100.dp) {
-            ChromecastDisplayCompact(modifier = modifier)
+            ChromecastDisplayCompact(state = state, modifier = modifier)
         } else {
-            ChromecastDisplayExpanded(modifier = modifier)
+            ChromecastDisplayExpanded(state = state, modifier = modifier)
         }
     }
 }
@@ -54,8 +70,25 @@ fun ChromecastDisplay(
 fun ChromecastDisplayCompact(
     modifier: Modifier = Modifier
 ) {
-    val player = Player.current
-    if (player?.castState != PlayerCastState.CONNECTED) {
+    ChromecastDisplayCompact(
+        state = rememberCastState(LocalTHEOplayerView.current),
+        modifier = modifier
+    )
+}
+
+/**
+ * A compact display for the state of an active Chromecast session.
+ *
+ * @param state the [CastState] to read
+ * @param modifier the [Modifier] to be applied to this display
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun ChromecastDisplayCompact(
+    state: CastState,
+    modifier: Modifier = Modifier
+) {
+    if (state.castState != PlayerCastState.CONNECTED) {
         // Hide when not connected to Chromecast
         return
     }
@@ -69,7 +102,7 @@ fun ChromecastDisplayCompact(
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Text(
-            text = player.castReceiverName?.let {
+            text = state.castReceiverName?.let {
                 stringResource(
                     R.string.theoplayer_ui_chromecast_playing_on_receiver,
                     it
@@ -89,8 +122,25 @@ fun ChromecastDisplayCompact(
 fun ChromecastDisplayExpanded(
     modifier: Modifier = Modifier
 ) {
-    val player = Player.current
-    if (player?.castState != PlayerCastState.CONNECTED) {
+    ChromecastDisplayExpanded(
+        state = rememberCastState(LocalTHEOplayerView.current),
+        modifier = modifier
+    )
+}
+
+/**
+ * An expanded display for the state of an active Chromecast session.
+ *
+ * @param state the [CastState] to read
+ * @param modifier the [Modifier] to be applied to this display
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun ChromecastDisplayExpanded(
+    state: CastState,
+    modifier: Modifier = Modifier
+) {
+    if (state.castState != PlayerCastState.CONNECTED) {
         // Hide when not connected to Chromecast
         return
     }
@@ -108,7 +158,7 @@ fun ChromecastDisplayExpanded(
         }
         Column {
             Text(
-                text = player.castReceiverName?.let {
+                text = state.castReceiverName?.let {
                     stringResource(
                         R.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line,
                         it
@@ -118,7 +168,7 @@ fun ChromecastDisplayExpanded(
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = player.castReceiverName?.let {
+                text = state.castReceiverName?.let {
                     stringResource(
                         R.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line,
                         it
