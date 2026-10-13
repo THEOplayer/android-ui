@@ -69,19 +69,20 @@ fun NitflexUI(
     theoplayerView: THEOplayerView,
     title: String? = null
 ) {
+    val view = theoplayerView.takeUnless { it.isInEditMode }
+    val firstPlayState = rememberFirstPlayState(view?.player)
+    val fullscreenState = rememberFullscreenState(view)
     ProvideTextStyle(value = TextStyle(color = Color.White)) {
         UIController(
             modifier = modifier,
             theoplayerView = theoplayerView,
             centerOverlay = {
-                val firstPlay = theoplayerView?.let { rememberFirstPlayState(it.player) }?.firstPlay
-                if (firstPlay == true) {
+                if (firstPlayState.firstPlay) {
                     LoadingSpinner()
                 }
             },
             topChrome = {
-                val firstPlay = theoplayerView?.let { rememberFirstPlayState(it.player) }?.firstPlay
-                if (firstPlay == true) {
+                if (firstPlayState.firstPlay) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
@@ -99,12 +100,11 @@ fun NitflexUI(
                 }
             },
             centerChrome = {
-                val firstPlay = theoplayerView?.let { rememberFirstPlayState(it.player) }?.firstPlay
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    if (firstPlay == true) {
+                    if (firstPlayState.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = -10,
                             iconSize = 48.dp,
@@ -115,7 +115,7 @@ fun NitflexUI(
                         iconModifier = Modifier.size(48.dp),
                         contentPadding = PaddingValues(8.dp)
                     )
-                    if (firstPlay == true) {
+                    if (firstPlayState.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = 10,
                             iconSize = 48.dp,
@@ -125,8 +125,7 @@ fun NitflexUI(
                 }
             },
             bottomChrome = {
-                val firstPlay = theoplayerView?.let { rememberFirstPlayState(it.player) }?.firstPlay
-                if (firstPlay == true) {
+                if (firstPlayState.firstPlay) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -179,9 +178,8 @@ fun NitflexUI(
                 Box(contentAlignment = Alignment.Center) {
                     ErrorDisplay()
                     // Ensure the user can still exit fullscreen
-                    val fullscreen = theoplayerView?.let { rememberFullscreenState(it) }
-                    if (fullscreen?.fullscreen == true) {
-                        FullscreenButton(fullscreen, modifier = Modifier.align(Alignment.BottomEnd))
+                    if (fullscreenState.fullscreen) {
+                        FullscreenButton(fullscreenState, modifier = Modifier.align(Alignment.BottomEnd))
                     }
                 }
             }

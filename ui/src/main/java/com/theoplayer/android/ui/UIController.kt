@@ -607,10 +607,12 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
 fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
     val context = LocalContext.current
     val theoplayerView = remember { THEOplayerView(context, config) }
-    setupTHEOplayerView(theoplayerView, destroyOnLifecycleDestroy = false)
-    DisposableEffect(theoplayerView) {
-        onDispose {
-            theoplayerView.onDestroy()
+    if (!theoplayerView.isInEditMode) {
+        setupTHEOplayerView(theoplayerView, destroyOnLifecycleDestroy = false)
+        DisposableEffect(theoplayerView) {
+            onDispose {
+                theoplayerView.onDestroy()
+            }
         }
     }
     return theoplayerView
