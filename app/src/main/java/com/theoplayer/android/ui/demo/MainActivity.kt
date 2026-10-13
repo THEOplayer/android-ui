@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Rational
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -162,7 +161,7 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPlayerStateApi::class)
 @Composable
 fun MainContent(
     theoplayerView: THEOplayerView,
@@ -177,7 +176,6 @@ fun MainContent(
 
     var themeMenuOpen by remember { mutableStateOf(false) }
     var theme by rememberSaveable { mutableStateOf(PlayerTheme.Default) }
-    val activity = LocalActivity.current as? ComponentActivity
     val pictureInPictureState = rememberPictureInPictureState(theoplayerView)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && pictureInPictureState.pictureInPicture) {
@@ -259,7 +257,6 @@ fun MainContent(
     }
 }
 
-@OptIn(ExperimentalPlayerStateApi::class)
 @Composable
 fun PlayerContent(
     modifier: Modifier = Modifier,

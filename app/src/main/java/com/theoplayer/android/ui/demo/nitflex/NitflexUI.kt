@@ -44,7 +44,6 @@ import com.theoplayer.android.ui.rememberFirstPlayState
 import com.theoplayer.android.ui.rememberFullscreenState
 import com.theoplayer.android.ui.rememberTHEOplayerView
 
-@OptIn(ExperimentalPlayerStateApi::class)
 @Composable
 fun NitflexUI(
     modifier: Modifier = Modifier,
