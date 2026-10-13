@@ -28,7 +28,8 @@ fun ErrorDisplay(
     modifier: Modifier = Modifier,
 ) {
     ErrorDisplay(
-        state = rememberErrorState(LocalTHEOplayerView.current?.player, Player.current?.error),
+        state = LocalUIControllerErrorState.current
+            ?: rememberErrorState(LocalTHEOplayerView.current?.player, Player.current?.error),
         modifier = modifier
     )
 }

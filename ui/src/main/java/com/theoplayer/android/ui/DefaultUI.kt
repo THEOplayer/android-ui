@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
@@ -41,12 +42,13 @@ fun DefaultUI(
     source: SourceDescription? = null,
     title: String? = null
 ) {
-    val player = rememberPlayer(config)
-    LaunchedEffect(player, source) {
-        player.source = source
+    val theoplayerView = rememberTHEOplayerViewInternal(config)
+    theoplayerView?.let { setupTHEOplayerView(it) }
+    LaunchedEffect(theoplayerView, source) {
+        theoplayerView?.player?.source = source
     }
 
-    DefaultUI(modifier = modifier, player = player, title = title)
+    DefaultUIImpl(modifier = modifier, theoplayerView = theoplayerView, player = null, title = title)
 }
 
 /**
@@ -71,14 +73,64 @@ fun DefaultUI(
     player: Player = rememberPlayer(),
     title: String? = null
 ) {
-    val errorState = rememberErrorState(player.player)
-    val firstPlayState = rememberFirstPlayState(player.player)
-    val adState = rememberAdState(player.player)
-    val playbackTimeState = rememberPlaybackTimeState(player.player)
-    val fullscreenState = rememberFullscreenState(player.theoplayerView)
-    UIController(
+    DefaultUIImpl(
         modifier = modifier,
+        theoplayerView = player.theoplayerView,
         player = player,
+        title = title
+    )
+}
+
+/**
+ * A default THEOplayer UI component.
+ *
+ * This component provides a great player experience out-of-the-box, that works for all types
+ * of streams. It provides all the common playback controls for playing, seeking, changing
+ * languages and qualities.
+ *
+ * No [Player] is created unless [UIControllerScope.player] is accessed, so
+ * [Player.current] is `null` inside this UI: use [LocalTHEOplayerView] and the experimental
+ * state holders instead. Like [rememberPlayer] on a [THEOplayerView], this couples the
+ * lifecycle of the view to the current activity, and does not destroy the view when the
+ * composition is disposed.
+ *
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
+ * For more extensive customizations, we recommend defining your own custom UI using
+ * a [UIController].
+ *
+ * @param modifier the [Modifier] to be applied to this UI
+ * @param theoplayerView the THEOplayer view to host in this UI
+ * @param title the stream's title, shown at the top of the player
+ * @see UIController
+ */
+@OptIn(ExperimentalPlayerStateApi::class)
+@Composable
+fun DefaultUI(
+    modifier: Modifier = Modifier,
+    theoplayerView: THEOplayerView,
+    title: String? = null
+) {
+    setupTHEOplayerView(theoplayerView)
+    DefaultUIImpl(modifier = modifier, theoplayerView = theoplayerView, player = null, title = title)
+}
+
+@OptIn(ExperimentalPlayerStateApi::class)
+@Composable
+private fun DefaultUIImpl(
+    modifier: Modifier,
+    theoplayerView: THEOplayerView?,
+    player: Player?,
+    title: String?
+) {
+    val firstPlayState = rememberFirstPlayState(theoplayerView?.player)
+    val adState = rememberAdState(theoplayerView?.player)
+    val playbackTimeState = rememberPlaybackTimeState(theoplayerView?.player)
+    val fullscreenState = rememberFullscreenState(theoplayerView)
+    UIControllerImpl(
+        modifier = modifier,
+        theoplayerView = theoplayerView,
+        player = player,
+        color = Color.Black.copy(alpha = 0.5f),
         centerOverlay = {
             if (firstPlayState.firstPlay) {
                 LoadingSpinner()
@@ -140,7 +192,7 @@ fun DefaultUI(
         },
         errorOverlay = {
             Box(contentAlignment = Alignment.Center) {
-                ErrorDisplay(errorState)
+                ErrorDisplay()
                 // Ensure the user can still exit fullscreen
                 if (fullscreenState.fullscreen) {
                     FullscreenButton(fullscreenState, modifier = Modifier.align(Alignment.BottomEnd))
