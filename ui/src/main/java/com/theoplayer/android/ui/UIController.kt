@@ -1,6 +1,9 @@
 package com.theoplayer.android.ui
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
+import android.content.ContextWrapper
 import android.view.ViewGroup
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -606,7 +609,10 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
 @Composable
 fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
     val context = LocalContext.current
-    val theoplayerView = remember { THEOplayerView(context, config) }
+    val inspectionMode = LocalInspectionMode.current
+    val theoplayerView = remember {
+        THEOplayerView(if (inspectionMode) PreviewContext(context) else context, config)
+    }
     if (!theoplayerView.isInEditMode) {
         setupTHEOplayerView(theoplayerView, destroyOnLifecycleDestroy = false)
         DisposableEffect(theoplayerView) {
@@ -616,6 +622,24 @@ fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
         }
     }
     return theoplayerView
+}
+
+/**
+ * A context for creating a [THEOplayerView] in a preview.
+ *
+ * The [THEOplayerView] constructor casts the application context to [Application],
+ * but layoutlib's application context is not an [Application].
+ */
+private class PreviewContext(base: Context) : ContextWrapper(base) {
+    private val application = PreviewApplication(base.applicationContext)
+
+    override fun getApplicationContext(): Context = application
+}
+
+private class PreviewApplication(base: Context) : Application() {
+    init {
+        attachBaseContext(base)
+    }
 }
 
 @Composable
