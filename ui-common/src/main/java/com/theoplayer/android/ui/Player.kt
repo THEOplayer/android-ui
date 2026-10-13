@@ -898,11 +898,3 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         fullscreenHandler?.onFullscreenChangeListener = null
     }
 }
-
-private fun isSubtitleTrack(track: TextTrack): Boolean {
-    return when (track.kind) {
-        TextTrackKind.SUBTITLES.type -> true
-        TextTrackKind.CAPTIONS.type -> true
-        else -> false
-    }
-}
