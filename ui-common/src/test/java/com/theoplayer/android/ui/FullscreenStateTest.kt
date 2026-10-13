@@ -16,7 +16,7 @@ import org.junit.Test
  * A [FullscreenHandler] that records its listeners and request calls,
  * so tests can fire fullscreen changes at them.
  */
-private class FakeFullscreenHandler : FullscreenHandler {
+internal class FakeFullscreenHandler : FullscreenHandler {
     override var fullscreen: Boolean = false
         private set
     val listeners = mutableListOf<FullscreenHandler.OnFullscreenChangeListener>()
