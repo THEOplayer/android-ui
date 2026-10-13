@@ -11,6 +11,7 @@
 
 ## [Unreleased]
 
+* 🐛 Fixed the player controls not being disposed when `UIController` leaves the composition.
 * 🐛 Fixed a listener leak in picture-in-picture mode detection on Android 15 and higher. ([#113](https://github.com/THEOplayer/android-ui/pull/113))
 
 ## [1.14.1] (2026-04-20)
