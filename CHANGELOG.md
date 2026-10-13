@@ -11,7 +11,7 @@
 
 ## [Unreleased]
 
-* 🐛 Fixed a listener leak in picture-in-picture mode detection on Android 15 and higher.
+* 🐛 Fixed a listener leak in picture-in-picture mode detection on Android 15 and higher. ([#113](https://github.com/THEOplayer/android-ui/pull/113))
 
 ## [1.14.1] (2026-04-20)
 
