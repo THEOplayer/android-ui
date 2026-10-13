@@ -145,6 +145,16 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        theoplayerView.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        theoplayerView.onResume()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         pip.close()
