@@ -9,6 +9,7 @@ import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 import kotlin.time.Duration
@@ -66,5 +67,13 @@ fun LoadingSpinner(
         exit = ExitTransition.None
     ) {
         CircularProgressIndicator(modifier = modifier, color = color, strokeWidth = strokeWidth)
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+private fun CircularProgressIndicatorPreview() {
+    THEOplayerTheme(useDarkTheme = true) {
+        CircularProgressIndicator()
     }
 }
