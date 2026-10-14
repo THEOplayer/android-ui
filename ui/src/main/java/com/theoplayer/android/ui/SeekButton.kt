@@ -87,19 +87,35 @@ fun SeekButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit
 ) {
-    val player = Player.current
-    val enabled = player?.canSeek ?: false
+    SeekButton(
+        state = rememberSeekButtonState(LocalTHEOplayerView.current?.player, seekOffset),
+        modifier = modifier,
+        contentPadding = contentPadding,
+        content = content
+    )
+}
+
+/**
+ * A button that seeks forward or backward by a fixed offset.
+ *
+ * @param state the [SeekButtonState] to read and control
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun SeekButton(
+    state: SeekButtonState,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    content: @Composable () -> Unit
+) {
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
-        enabled = enabled,
-        onClick = {
-            player?.player?.let {
-                if (!it.duration.isNaN()) {
-                    it.currentTime = (it.currentTime + seekOffset).coerceIn(0.0, it.duration)
-                }
-            }
-        },
+        enabled = state.enabled,
+        onClick = { state.onClick() },
         content = content
     )
 }

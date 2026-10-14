@@ -22,30 +22,48 @@ fun QualityList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val player = Player.current
-    val videoQualities = player?.videoQualities ?: listOf()
-    val targetVideoQuality = player?.targetVideoQuality
+    QualityList(
+        state = rememberVideoQualityState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        onClick = onClick
+    )
+}
+
+/**
+ * A list of video qualities, from which the user can choose a target video quality.
+ *
+ * @param state the [VideoQualityState] to read and control
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param onClick called when a video quality in the list is clicked
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun QualityList(
+    state: VideoQualityState,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
     LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.theoplayer_ui_quality_automatic)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (targetVideoQuality == null),
+                        selected = (state.targetVideoQuality == null),
                         onClick = null
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    player?.targetVideoQuality = null
+                    state.select(null)
                     onClick?.let { it() }
                 })
             )
         }
         items(
-            count = videoQualities.size,
-            key = { videoQualities[it].uid }
+            count = state.videoQualities.size,
+            key = { state.videoQualities[it].uid }
         ) {
-            val quality = videoQualities[it]
+            val quality = state.videoQualities[it]
             ListItem(
                 headlineContent = {
                     Text(
@@ -58,12 +76,12 @@ fun QualityList(
                 supportingContent = { Text(text = formatBandwidth(quality.bandwidth)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (targetVideoQuality == quality),
+                        selected = (state.targetVideoQuality == quality),
                         onClick = null
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    player?.targetVideoQuality = quality
+                    state.select(quality)
                     onClick?.let { it() }
                 })
             )

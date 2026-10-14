@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.ui.common.R
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +18,8 @@ import kotlin.coroutines.suspendCoroutine
 
 internal interface FullscreenHandler {
     val fullscreen: Boolean
-    var onFullscreenChangeListener: OnFullscreenChangeListener?
+    fun addOnFullscreenChangeListener(listener: OnFullscreenChangeListener)
+    fun removeOnFullscreenChangeListener(listener: OnFullscreenChangeListener)
     fun requestFullscreen()
     fun exitFullscreen()
 
@@ -24,10 +28,34 @@ internal interface FullscreenHandler {
     }
 }
 
+/**
+ * The [FullscreenHandler] shared by everything that controls fullscreen for this view.
+ *
+ * A fullscreen handler moves the view within the activity, so there can only be one per
+ * [THEOplayerView]. The shared instance is stored in the view's tag.
+ */
+internal val THEOplayerView.fullscreenHandler: FullscreenHandler?
+    get() {
+        (getTag(R.id.theoplayer_ui_fullscreen_handler) as? FullscreenHandler)?.let { return it }
+        val container = findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
+            ?: return null
+        return FullscreenHandlerImpl(container).also {
+            setTag(R.id.theoplayer_ui_fullscreen_handler, it)
+        }
+    }
+
 internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler {
     override var fullscreen: Boolean = false
         private set
-    override var onFullscreenChangeListener: FullscreenHandler.OnFullscreenChangeListener? = null
+    private val listeners = CopyOnWriteArrayList<FullscreenHandler.OnFullscreenChangeListener>()
+
+    override fun addOnFullscreenChangeListener(listener: FullscreenHandler.OnFullscreenChangeListener) {
+        listeners.add(listener)
+    }
+
+    override fun removeOnFullscreenChangeListener(listener: FullscreenHandler.OnFullscreenChangeListener) {
+        listeners.remove(listener)
+    }
 
     private var previousSystemBarsBehavior: Int = WindowInsetsControllerCompat.BEHAVIOR_DEFAULT
     private var previousRequestedOrientation: Int = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
@@ -41,6 +69,7 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
     }
 
     suspend fun requestFullscreenAsync() {
+        if (fullscreen) return
         val activity = view.context as? Activity ?: return
         val window = activity.window
 
@@ -74,7 +103,7 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         }
 
         fullscreen = true
-        onFullscreenChangeListener?.onFullscreenChange(fullscreen)
+        listeners.forEach { it.onFullscreenChange(fullscreen) }
     }
 
     override fun exitFullscreen() {
@@ -82,6 +111,7 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
     }
 
     private suspend fun exitFullscreenAsync() {
+        if (!fullscreen) return
         val activity = view.context as? Activity ?: return
         val window = activity.window
 
@@ -106,7 +136,7 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
         previousViewIndex = 0
 
         fullscreen = false
-        onFullscreenChangeListener?.onFullscreenChange(fullscreen)
+        listeners.forEach { it.onFullscreenChange(fullscreen) }
     }
 }
 

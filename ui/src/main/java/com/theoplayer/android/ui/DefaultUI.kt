@@ -71,16 +71,21 @@ fun DefaultUI(
     player: Player = rememberPlayer(),
     title: String? = null
 ) {
+    val errorState = rememberErrorState(player.player)
+    val firstPlayState = rememberFirstPlayState(player.player)
+    val adState = rememberAdState(player.player)
+    val playbackTimeState = rememberPlaybackTimeState(player.player)
+    val fullscreenState = rememberFullscreenState(player.theoplayerView)
     UIController(
         modifier = modifier,
         player = player,
         centerOverlay = {
-            if (player.firstPlay) {
+            if (firstPlayState.firstPlay) {
                 LoadingSpinner()
             }
         },
         topChrome = {
-            if (player.firstPlay) {
+            if (firstPlayState.firstPlay) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
                         Text(
@@ -89,7 +94,7 @@ fun DefaultUI(
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
-                    if (!player.playingAd) {
+                    if (!adState.playingAd) {
                         LanguageMenuButton()
                         SettingsMenuButton()
                     }
@@ -98,32 +103,32 @@ fun DefaultUI(
             }
         },
         centerChrome = {
-            if (player.firstPlay && !player.playingAd) {
+            if (firstPlayState.firstPlay && !adState.playingAd) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
             PlayButton(iconModifier = Modifier.size(96.dp), contentPadding = PaddingValues(8.dp))
-            if (player.firstPlay && !player.playingAd) {
+            if (firstPlayState.firstPlay && !adState.playingAd) {
                 SeekButton(seekOffset = 10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
         },
         bottomChrome = {
-            if (player.firstPlay) {
+            if (firstPlayState.firstPlay) {
                 ChromecastDisplay(modifier = Modifier.padding(8.dp))
-                if (!player.playingAd && player.streamType != StreamType.Live) {
+                if (!adState.playingAd && playbackTimeState.streamType != StreamType.Live) {
                     SeekBar()
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     MuteButton()
-                    if (player.playingAd) {
-                        if (player.streamType != StreamType.Live) {
+                    if (adState.playingAd) {
+                        if (playbackTimeState.streamType != StreamType.Live) {
                             SeekBar()
                         }
                     } else {
                         LiveButton()
-                        if (player.streamType != StreamType.Live) {
+                        if (playbackTimeState.streamType != StreamType.Live) {
                             CurrentTimeDisplay(
-                                showRemaining = player.streamType == StreamType.Dvr,
-                                showDuration = player.streamType == StreamType.Vod
+                                showRemaining = playbackTimeState.streamType == StreamType.Dvr,
+                                showDuration = playbackTimeState.streamType == StreamType.Vod
                             )
                         }
                     }
@@ -135,10 +140,10 @@ fun DefaultUI(
         },
         errorOverlay = {
             Box(contentAlignment = Alignment.Center) {
-                ErrorDisplay()
+                ErrorDisplay(errorState)
                 // Ensure the user can still exit fullscreen
-                if (player.fullscreen) {
-                    FullscreenButton(modifier = Modifier.align(Alignment.BottomEnd))
+                if (fullscreenState.fullscreen) {
+                    FullscreenButton(fullscreenState, modifier = Modifier.align(Alignment.BottomEnd))
                 }
             }
         }

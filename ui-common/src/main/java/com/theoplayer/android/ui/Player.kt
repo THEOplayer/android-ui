@@ -332,6 +332,20 @@ enum class StreamType {
     Dvr
 }
 
+// TODO Make DVR threshold configurable?
+private const val DVR_WINDOW_THRESHOLD = 60.0
+
+/**
+ * Returns the [StreamType] for a stream with the given duration and seekable range.
+ */
+internal fun streamTypeOf(duration: Double, seekable: TimeRanges): StreamType {
+    if (duration.isInfinite()) {
+        val slidingWindow = seekable.bounds?.let { it.endInclusive - it.start } ?: 0.0
+        return if (slidingWindow >= DVR_WINDOW_THRESHOLD) StreamType.Dvr else StreamType.Live
+    }
+    return StreamType.Vod
+}
+
 /**
  * Internal implementation of [Player].
  *
@@ -370,8 +384,8 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
             false
         } else {
             seekable.isNotEmpty() || run {
-                // `player.seekable` is (incorrectly) empty while casting, see #35
-                // Temporary fix: always allow seeking while casting.
+                // On THEOplayer 7.11 and lower, `player.seekable` is (incorrectly) empty while casting, see #35.
+                // Always allow seeking while casting. This is no longer needed on THEOplayer 7.12.0 or higher.
                 castState == PlayerCastState.CONNECTED
             }
         }
@@ -493,9 +507,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
 
     private val rateChangeListener = EventListener<RateChangeEvent> { updatePlaybackRate() }
 
-    private val fullscreenHandler: FullscreenHandler? =
-        theoplayerView?.findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
-            ?.let { FullscreenHandlerImpl(it) }
+    private val fullscreenHandler: FullscreenHandler? = theoplayerView?.fullscreenHandler
     private var _fullscreen by mutableStateOf(false)
     private var onExitFullscreen: (() -> Unit)? = null
     override var fullscreen: Boolean
@@ -558,17 +570,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     }
 
     override val streamType by derivedStateOf {
-        if (duration.isInfinite()) {
-            val slidingWindow = seekable.bounds?.let { it.endInclusive - it.start } ?: 0.0
-            // TODO Make DVR threshold configurable?
-            if (slidingWindow >= 60) {
-                StreamType.Dvr
-            } else {
-                StreamType.Live
-            }
-        } else {
-            StreamType.Vod
-        }
+        streamTypeOf(duration, seekable)
     }
 
     private var activeVideoTrack: MediaTrack<VideoQuality>? = null
@@ -825,7 +827,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         ads?.addEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.addEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.addEventListener(AdsEventTypes.AD_BREAK_END, adListener)
-        fullscreenHandler?.onFullscreenChangeListener = fullscreenListener
+        fullscreenHandler?.addOnFullscreenChangeListener(fullscreenListener)
     }
 
     fun dispose() {
@@ -891,14 +893,6 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         ads?.removeEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.removeEventListener(AdsEventTypes.AD_BREAK_END, adListener)
         updateCast(null)
-        fullscreenHandler?.onFullscreenChangeListener = null
-    }
-}
-
-private fun isSubtitleTrack(track: TextTrack): Boolean {
-    return when (track.kind) {
-        TextTrackKind.SUBTITLES.type -> true
-        TextTrackKind.CAPTIONS.type -> true
-        else -> false
+        fullscreenHandler?.removeOnFullscreenChangeListener(fullscreenListener)
     }
 }

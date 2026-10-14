@@ -20,40 +20,58 @@ fun SubtitleTrackList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    val player = Player.current
-    val subtitleTracks = player?.subtitleTracks ?: listOf()
-    val activeSubtitleTrack = player?.activeSubtitleTrack
+    SubtitleTrackList(
+        state = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        onClick = onClick
+    )
+}
+
+/**
+ * A list of subtitle tracks, from which the user can choose an active subtitle track.
+ *
+ * @param state the [SubtitleTrackState] to read and control
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param onClick called when a subtitle track in the list is clicked
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun SubtitleTrackList(
+    state: SubtitleTrackState,
+    modifier: Modifier = Modifier,
+    onClick: (() -> Unit)? = null
+) {
     LazyColumn(modifier = modifier) {
         item(key = null) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.theoplayer_ui_subtitles_off)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (activeSubtitleTrack == null),
+                        selected = (state.activeSubtitleTrack == null),
                         onClick = null
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    player?.activeSubtitleTrack = null
+                    state.select(null)
                     onClick?.let { it() }
                 })
             )
         }
         items(
-            count = subtitleTracks.size,
-            key = { subtitleTracks[it].uid }
+            count = state.subtitleTracks.size,
+            key = { state.subtitleTracks[it].uid }
         ) {
-            val subtitleTrack = subtitleTracks[it]
+            val subtitleTrack = state.subtitleTracks[it]
             ListItem(
                 headlineContent = { Text(text = formatTrackLabel(subtitleTrack)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (activeSubtitleTrack == subtitleTrack),
+                        selected = (state.activeSubtitleTrack == subtitleTrack),
                         onClick = null
                     )
                 },
                 modifier = Modifier.clickable(onClick = {
-                    player?.activeSubtitleTrack = subtitleTrack
+                    state.select(subtitleTrack)
                     onClick?.let { it() }
                 })
             )

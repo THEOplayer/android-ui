@@ -41,19 +41,64 @@ fun PictureInPictureButton(
         )
     }
 ) {
-    val player = Player.current ?: return
-    if (!player.pictureInPictureSupported) return
+    PictureInPictureButton(
+        state = rememberPictureInPictureState(LocalTHEOplayerView.current),
+        modifier = modifier,
+        contentPadding = contentPadding,
+        pipType = pipType,
+        enter = enter,
+        exit = exit
+    )
+}
+
+/**
+ * A button that toggles picture-in-picture mode.
+ *
+ * @param state the [PictureInPictureState] to read and control
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container
+ *        and the content
+ * @param pipType the type of the picture-in-picture window when entering
+ * @param enter button content when the player is not in picture-in-picture mode,
+ *        typically an "enter picture-in-picture" icon
+ * @param exit button content when the player is in picture-in-picture mode,
+ *        typically an "exit picture-in-picture" icon
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun PictureInPictureButton(
+    state: PictureInPictureState,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    pipType: PiPType = PiPType.ACTIVITY,
+    enter: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.PictureInPictureAlt,
+            contentDescription = stringResource(R.string.theoplayer_ui_pip_enter),
+        )
+    },
+    exit: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.Fullscreen,
+            contentDescription = stringResource(R.string.theoplayer_ui_pip_exit)
+        )
+    }
+) {
+    if (!state.pictureInPictureSupported) {
+        // Hide when picture-in-picture is not supported
+        return
+    }
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         onClick = {
-            if (player.pictureInPicture) {
-                player.exitPictureInPicture()
+            if (state.pictureInPicture) {
+                state.exitPictureInPicture()
             } else {
-                player.enterPictureInPicture(pipType)
+                state.enterPictureInPicture(pipType)
             }
         }) {
-        if (player.pictureInPicture) {
+        if (state.pictureInPicture) {
             exit()
         } else {
             enter()

@@ -58,6 +58,7 @@ kotlin {
         apiVersion = KotlinVersion.KOTLIN_2_0
         jvmTarget = JvmTarget.JVM_1_8
         optIn.add("com.theoplayer.android.ui.InternalUiApi")
+        optIn.add("com.theoplayer.android.ui.ExperimentalPlayerStateApi")
     }
 }
 
@@ -69,6 +70,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.ui)
 
     testImplementation(libs.junit4)
+    testImplementation(libs.mockk)
 
     compileOnly(libs.theoplayer.compile)
     api(libs.theoplayer)

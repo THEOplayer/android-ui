@@ -134,6 +134,16 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
+    val theoplayerView = player.theoplayerView
+    val nativePlayer = player.player
+    val firstPlayState = rememberFirstPlayState(nativePlayer)
+    val castState = rememberCastState(theoplayerView)
+    val playButtonState = rememberPlayButtonState(nativePlayer)
+    val pictureInPictureState = rememberPictureInPictureState(theoplayerView)
+    val errorState = rememberErrorState(nativePlayer, player.error)
+    val adState = rememberAdState(nativePlayer)
+    val videoSizeState = rememberVideoSizeState(nativePlayer)
+
     var tapCount by remember { mutableIntStateOf(0) }
     var isRecentlyTapped by remember { mutableStateOf(false) }
     LaunchedEffect(tapCount) {
@@ -153,28 +163,28 @@ fun UIController(
         isReady = true
     }
 
-    val controlsVisible = remember {
+    val controlsVisible = remember(firstPlayState, castState, playButtonState) {
         derivedStateOf {
             if (!isReady) {
                 false
-            } else if (!player.firstPlay || player.castState == PlayerCastState.CONNECTED) {
+            } else if (!firstPlayState.firstPlay || castState.castState == PlayerCastState.CONNECTED) {
                 true
             } else if (forceControlsHidden) {
                 false
             } else {
-                isRecentlyTapped || player.paused
+                isRecentlyTapped || playButtonState.paused
             }
         }
     }
 
     val scope = remember(player) { UIControllerScopeImpl(player) }
 
-    val uiState by remember {
+    val uiState by remember(scope, pictureInPictureState, errorState) {
         derivedStateOf {
             val currentMenu = scope.currentMenu
             when {
-                player.pictureInPicture -> UIState.Hidden
-                player.error != null -> UIState.Error
+                pictureInPictureState.pictureInPicture -> UIState.Hidden
+                errorState.error != null -> UIState.Error
                 currentMenu != null -> UIState.Menu(currentMenu)
                 else -> UIState.Controls
             }
@@ -207,7 +217,7 @@ fun UIController(
         modifier = Modifier
             .background(Color.Black)
             .then(modifier)
-            .playerAspectRatio(player)
+            .playerAspectRatio(videoSizeState)
             .toggleControlsOnTap(
                 controlsVisible = controlsVisible,
                 showControlsTemporarily = {
@@ -220,7 +230,10 @@ fun UIController(
                 }
             )
     ) {
-        CompositionLocalProvider(LocalPlayer provides player) {
+        CompositionLocalProvider(
+            LocalPlayer provides player,
+            LocalTHEOplayerView provides player.theoplayerView
+        ) {
             AnimatedContent(
                 label = "ContentAnimation",
                 modifier = Modifier
@@ -264,7 +277,7 @@ fun UIController(
                     is UIState.Controls -> {
                         scope.PlayerControls(
                             controlsVisible = controlsVisible.value,
-                            animationsActive = isReady && !player.playingAd,
+                            animationsActive = isReady && !adState.playingAd,
                             centerOverlay = centerOverlay,
                             topChrome = topChrome,
                             centerChrome = centerChrome,
@@ -544,10 +557,10 @@ internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView
     return theoplayerView
 }
 
-internal fun Modifier.playerAspectRatio(player: Player): Modifier {
+internal fun Modifier.playerAspectRatio(videoSizeState: VideoSizeState): Modifier {
     return this.constrainedAspectRatio(
-        if (player.videoWidth != 0 && player.videoHeight != 0) {
-            player.videoWidth.toFloat() / player.videoHeight.toFloat()
+        if (videoSizeState.videoWidth != 0 && videoSizeState.videoHeight != 0) {
+            videoSizeState.videoWidth.toFloat() / videoSizeState.videoHeight.toFloat()
         } else {
             16f / 9f
         }
