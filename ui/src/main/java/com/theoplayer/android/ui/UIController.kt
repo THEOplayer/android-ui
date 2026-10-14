@@ -306,6 +306,14 @@ internal fun UIControllerImpl(
                     tapCount++
                 }
             )
+            .handlePlayerKeys(
+                player = nativePlayer,
+                controlsVisible = { controlsVisible.value },
+                showControls = {
+                    forceControlsHidden = false
+                    tapCount++
+                }
+            )
     ) {
         CompositionLocalProvider(
             LocalPlayer provides player,
