@@ -3,6 +3,8 @@ package com.theoplayer.android.ui
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class AudioTrackStateTest {
@@ -13,36 +15,36 @@ class AudioTrackStateTest {
     }
 
     @Test
-    fun `registers the track list events with one listener`() {
+    fun `registers the track list events with one listener`() = runTest {
         val mock = playerWithTracks(MockAudioTrack(enabled = true))
         val state = AudioTrackState(mock.player)
-        state.observe()
+        val job = launchObserve { state.observe() }
 
         val listener = mock.audioTrackListeners.first().second
         assertTrue(mock.audioTrackListeners.all { it.second === listener })
         assertEquals(3, mock.audioTrackListeners.size)
 
-        state.dispose()
+        job.cancelAndJoin()
         assertTrue(mock.audioTrackListeners.isEmpty())
     }
 
     @Test
-    fun `seeds tracks and active track`() {
+    fun `seeds tracks and active track`() = runTest {
         val disabled = MockAudioTrack(enabled = false)
         val enabled = MockAudioTrack(enabled = true)
         val mock = playerWithTracks(disabled, enabled)
         val state = AudioTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         assertEquals(listOf(disabled.track, enabled.track), state.audioTracks)
         assertEquals(enabled.track, state.activeAudioTrack)
     }
 
     @Test
-    fun `addtrack updates the list`() {
+    fun `addtrack updates the list`() = runTest {
         val mock = playerWithTracks(MockAudioTrack(enabled = true))
         val state = AudioTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
         assertEquals(1, state.audioTracks.size)
 
         val added = MockAudioTrack(enabled = false)
@@ -52,12 +54,12 @@ class AudioTrackStateTest {
     }
 
     @Test
-    fun `tracklistchange updates the active track`() {
+    fun `tracklistchange updates the active track`() = runTest {
         val first = MockAudioTrack(enabled = true)
         val second = MockAudioTrack(enabled = false)
         val mock = playerWithTracks(first, second)
         val state = AudioTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
         assertEquals(first.track, state.activeAudioTrack)
 
         first.enabled = false
@@ -67,12 +69,12 @@ class AudioTrackStateTest {
     }
 
     @Test
-    fun `select enables the track and updates the state`() {
+    fun `select enables the track and updates the state`() = runTest {
         val first = MockAudioTrack(enabled = true)
         val second = MockAudioTrack(enabled = false)
         val mock = playerWithTracks(first, second)
         val state = AudioTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         state.select(second.track)
         assertTrue(second.enabled)
@@ -80,11 +82,11 @@ class AudioTrackStateTest {
     }
 
     @Test
-    fun `select null disables all tracks`() {
+    fun `select null disables all tracks`() = runTest {
         val enabled = MockAudioTrack(enabled = true)
         val mock = playerWithTracks(enabled)
         val state = AudioTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         state.select(null)
         assertFalse(enabled.enabled)
@@ -92,11 +94,11 @@ class AudioTrackStateTest {
     }
 
     @Test
-    fun `null player gives defaults and no listeners`() {
+    fun `null player gives defaults and no listeners`() = runTest {
         val state = AudioTrackState(null)
-        state.observe()
+        val job = launchObserve { state.observe() }
         assertTrue(state.audioTracks.isEmpty())
         assertEquals(null, state.activeAudioTrack)
-        state.dispose()
+        job.cancelAndJoin()
     }
 }

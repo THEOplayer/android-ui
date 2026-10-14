@@ -11,6 +11,8 @@ import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class PictureInPictureStateTest {
@@ -26,36 +28,36 @@ class PictureInPictureStateTest {
     }
 
     @Test
-    fun `null view gives defaults and does not throw`() {
+    fun `null view gives defaults and does not throw`() = runTest {
         val state = PictureInPictureState(null)
-        state.observe()
+        val job = launchObserve { state.observe() }
         assertFalse(state.pictureInPictureSupported)
         assertFalse(state.pictureInPicture)
         state.enterPictureInPicture(PiPType.ACTIVITY)
         state.exitPictureInPicture()
-        state.dispose()
+        job.cancelAndJoin()
     }
 
     @Test
-    fun `observe registers presentationmodechange and dispose removes it`() {
+    fun `observe registers presentationmodechange and dispose removes it`() = runTest {
         val mock = MockPlayer()
         val state = PictureInPictureState(mockView(player = mock))
-        state.observe()
+        val job = launchObserve { state.observe() }
 
         assertEquals(setOf(PlayerEventTypes.PRESENTATIONMODECHANGE), mock.playerEventTypes)
 
-        state.dispose()
+        job.cancelAndJoin()
         assertTrue(mock.playerListeners.isEmpty())
     }
 
     @Test
-    fun `seeds and updates pip mode on presentationmodechange`() {
+    fun `seeds and updates pip mode on presentationmodechange`() = runTest {
         val piPManager = mockk<PiPManager> {
             every { isInPiP } returns true
         }
         val mock = MockPlayer()
         val state = PictureInPictureState(mockView(player = mock, piPManager = piPManager))
-        state.observe()
+        val job = launchObserve { state.observe() }
         assertTrue(state.pictureInPicture)
 
         every { piPManager.isInPiP } returns false
@@ -64,14 +66,14 @@ class PictureInPictureStateTest {
     }
 
     @Test
-    fun `activityInPipMode alone counts as pictureInPicture`() {
+    fun `activityInPipMode alone counts as pictureInPicture`() = runTest {
         val state = PictureInPictureState(mockView())
         state.activityInPipMode = true
         assertTrue(state.pictureInPicture)
     }
 
     @Test
-    fun `enter when not fullscreen calls enterPiP directly`() {
+    fun `enter when not fullscreen calls enterPiP directly`() = runTest {
         val piPManager = mockk<PiPManager>(relaxed = true)
         val handler = FakeFullscreenHandler()
         val state = PictureInPictureState(
@@ -84,7 +86,7 @@ class PictureInPictureStateTest {
     }
 
     @Test
-    fun `enter while fullscreen waits for the exit notification`() {
+    fun `enter while fullscreen waits for the exit notification`() = runTest {
         val piPManager = mockk<PiPManager>(relaxed = true)
         val handler = FakeFullscreenHandler().also { it.fire(true) }
         val state = PictureInPictureState(
@@ -102,15 +104,16 @@ class PictureInPictureStateTest {
     }
 
     @Test
-    fun `dispose cancels a pending enterPiP`() {
+    fun `dispose cancels a pending enterPiP`() = runTest {
         val piPManager = mockk<PiPManager>(relaxed = true)
         val handler = FakeFullscreenHandler().also { it.fire(true) }
         val state = PictureInPictureState(
             mockView(piPManager = piPManager, fullscreenHandler = handler)
         )
+        val job = launchObserve { state.observe() }
 
         state.enterPictureInPicture(PiPType.ACTIVITY)
-        state.dispose()
+        job.cancelAndJoin()
         assertTrue(handler.listeners.isEmpty())
 
         handler.fire(false)

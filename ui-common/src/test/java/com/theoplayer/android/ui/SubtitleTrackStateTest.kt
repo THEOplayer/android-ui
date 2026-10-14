@@ -4,6 +4,8 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class SubtitleTrackStateTest {
@@ -14,40 +16,40 @@ class SubtitleTrackStateTest {
     }
 
     @Test
-    fun `registers the track list events with one listener`() {
+    fun `registers the track list events with one listener`() = runTest {
         val mock = playerWithTracks(MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.SHOWING))
         val state = SubtitleTrackState(mock.player)
-        state.observe()
+        val job = launchObserve { state.observe() }
 
         val listener = mock.textTrackListeners.first().second
         assertTrue(mock.textTrackListeners.all { it.second === listener })
         assertEquals(3, mock.textTrackListeners.size)
 
-        state.dispose()
+        job.cancelAndJoin()
         assertTrue(mock.textTrackListeners.isEmpty())
     }
 
     @Test
-    fun `filters out non-subtitle tracks`() {
+    fun `filters out non-subtitle tracks`() = runTest {
         val subtitles = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.DISABLED)
         val captions = MockTextTrack(TextTrackKind.CAPTIONS, TextTrackMode.SHOWING)
         val metadata = MockTextTrack(TextTrackKind.METADATA, TextTrackMode.DISABLED)
         val mock = playerWithTracks(subtitles, captions, metadata)
         val state = SubtitleTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         assertEquals(listOf(subtitles.track, captions.track), state.subtitleTracks)
         assertEquals(captions.track, state.activeSubtitleTrack)
     }
 
     @Test
-    fun `select shows the track and disables the other subtitles`() {
+    fun `select shows the track and disables the other subtitles`() = runTest {
         val first = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.SHOWING)
         val second = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.DISABLED)
         val metadata = MockTextTrack(TextTrackKind.METADATA, TextTrackMode.DISABLED)
         val mock = playerWithTracks(first, second, metadata)
         val state = SubtitleTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         state.select(second.track)
         assertEquals(TextTrackMode.DISABLED, first.mode)
@@ -57,11 +59,11 @@ class SubtitleTrackStateTest {
     }
 
     @Test
-    fun `select null disables all subtitle tracks`() {
+    fun `select null disables all subtitle tracks`() = runTest {
         val showing = MockTextTrack(TextTrackKind.SUBTITLES, TextTrackMode.SHOWING)
         val mock = playerWithTracks(showing)
         val state = SubtitleTrackState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         state.select(null)
         assertEquals(TextTrackMode.DISABLED, showing.mode)
@@ -69,11 +71,11 @@ class SubtitleTrackStateTest {
     }
 
     @Test
-    fun `null player gives defaults and no listeners`() {
+    fun `null player gives defaults and no listeners`() = runTest {
         val state = SubtitleTrackState(null)
-        state.observe()
+        val job = launchObserve { state.observe() }
         assertTrue(state.subtitleTracks.isEmpty())
         assertEquals(null, state.activeSubtitleTrack)
-        state.dispose()
+        job.cancelAndJoin()
     }
 }

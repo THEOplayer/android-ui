@@ -5,13 +5,15 @@ import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class SeekBarStateTest {
     @Test
-    fun `registers the playback and ad events`() {
+    fun `registers the playback and ad events`() = runTest {
         val mock = MockPlayer()
-        SeekBarState(mock.player).observe()
+        launchObserve { SeekBarState(mock.player).observe() }
         assertEquals(
             playbackEventTypes + PlayerEventTypes.DURATIONCHANGE,
             mock.playerEventTypes
@@ -20,10 +22,10 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `an error event re-reads playingAd`() {
+    fun `an error event re-reads playingAd`() = runTest {
         val mock = MockPlayer(adPlaying = false)
         val state = SeekBarState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
         assertTrue(state.showThumb)
 
         mock.adPlaying = true
@@ -33,10 +35,10 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `computes value within zero-based range`() {
+    fun `computes value within zero-based range`() = runTest {
         val mock = MockPlayer(currentTime = 30.0, duration = 100.0)
         val state = SeekBarState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         assertEquals(0f..100f, state.valueRange)
         assertEquals(30f, state.value)
@@ -45,14 +47,14 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `huge seekable start maps to zero-based range`() {
+    fun `huge seekable start maps to zero-based range`() = runTest {
         val mock = MockPlayer(
             currentTime = 1.7e9 + 30.0,
             duration = 1.7e9 + 100.0,
             seekableRanges = listOf(1.7e9 to 1.7e9 + 100.0)
         )
         val state = SeekBarState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         assertEquals(0f, state.valueRange.start)
         assertEquals(100f, state.valueRange.endInclusive, 0.001f)
@@ -60,10 +62,10 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `scrubbing pauses a playing player and resumes on finish`() {
+    fun `scrubbing pauses a playing player and resumes on finish`() = runTest {
         val mock = MockPlayer(paused = false, currentTime = 10.0)
         val state = SeekBarState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         state.onValueChange(50f)
         verify(exactly = 1) { mock.player.pause() }
@@ -75,10 +77,10 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `scrubbing a paused player does not resume it`() {
+    fun `scrubbing a paused player does not resume it`() = runTest {
         val mock = MockPlayer(paused = true, currentTime = 10.0)
         val state = SeekBarState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         state.onValueChange(50f)
         state.onValueChangeFinished()
@@ -86,10 +88,10 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `disabled during ads and thumb hidden`() {
+    fun `disabled during ads and thumb hidden`() = runTest {
         val mock = MockPlayer(adPlaying = true)
         val state = SeekBarState(mock.player)
-        state.observe()
+        launchObserve { state.observe() }
 
         assertFalse(state.enabled)
         assertFalse(state.showThumb)
@@ -101,15 +103,15 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `dispose removes all listeners`() {
+    fun `dispose removes all listeners`() = runTest {
         val mock = MockPlayer()
         val state = SeekBarState(mock.player)
-        state.observe()
+        val job = launchObserve { state.observe() }
         val added = mock.playerListeners.toList()
         assertTrue(added.isNotEmpty())
         assertTrue(mock.adListeners.isNotEmpty())
 
-        state.dispose()
+        job.cancelAndJoin()
         assertTrue(mock.playerListeners.isEmpty())
         assertTrue(mock.adListeners.isEmpty())
     }
