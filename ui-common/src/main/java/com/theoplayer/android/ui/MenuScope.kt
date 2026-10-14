@@ -5,7 +5,7 @@ import androidx.compose.runtime.Composable
 /**
  * The content for a new menu, typically this should draw a single [Menu].
  */
-typealias MenuContent = @Composable MenuScope.() -> Unit;
+typealias MenuContent = @Composable MenuScope.() -> Unit
 
 /**
  * Scope for the contents of a [Menu].
