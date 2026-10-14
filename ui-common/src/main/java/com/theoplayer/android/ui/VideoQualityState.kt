@@ -48,17 +48,10 @@ class VideoQualityState internal constructor(private val player: Player?) {
     private fun findActiveVideoTrack() = player?.videoTracks?.find { it.isEnabled }
 
     private fun setActiveVideoTrack(videoTrack: MediaTrack<VideoQuality>?) {
-        if (activeVideoTrack == videoTrack) {
-            return
-        }
         activeVideoTrack = videoTrack
         videoQualities = videoTrack?.qualities?.toList() ?: listOf()
         activeVideoQuality = videoTrack?.activeQuality
         targetVideoQuality = videoTrack?.targetQuality
-    }
-
-    init {
-        setActiveVideoTrack(findActiveVideoTrack())
     }
 
     init {
