@@ -1,17 +1,17 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.ads.AdEvent
 import com.theoplayer.android.api.event.ads.AdsEventTypes
-import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * State holder for a button that seeks forward or backward by a fixed offset,
@@ -24,7 +24,6 @@ class SeekButtonState internal constructor(
     private val player: Player?,
     private val seekOffset: Int
 ) {
-    private val listeners = PlayerStateListeners()
 
     /**
      * Whether the button can be interacted with.
@@ -40,31 +39,31 @@ class SeekButtonState internal constructor(
         playingAd = player?.ads?.isPlaying ?: false
     }
 
-    internal fun observe() {
+    internal suspend fun observe() {
         val player = player ?: return
         update()
-        listeners.run {
-            val listener = EventListener<PlayerEvent<*>> { update() }
-            player.add(PlayerEventTypes.TIMEUPDATE, listener)
-            player.add(PlayerEventTypes.PLAY, listener)
-            player.add(PlayerEventTypes.PAUSE, listener)
-            player.add(PlayerEventTypes.ENDED, listener)
-            player.add(PlayerEventTypes.SEEKING, listener)
-            player.add(PlayerEventTypes.SEEKED, listener)
-            player.add(PlayerEventTypes.READYSTATECHANGE, listener)
-            player.add(PlayerEventTypes.SOURCECHANGE, listener)
-            player.add(PlayerEventTypes.ERROR, listener)
+        coroutineScope {
             player.ads?.let { ads ->
-                val adListener = EventListener<AdEvent<*>> { update() }
-                ads.add(AdsEventTypes.AD_BREAK_BEGIN, adListener)
-                ads.add(AdsEventTypes.AD_SKIP, adListener)
-                ads.add(AdsEventTypes.AD_BREAK_END, adListener)
+                launch(start = CoroutineStart.UNDISPATCHED) {
+                    ads.listen(
+                        AdsEventTypes.AD_BREAK_BEGIN,
+                        AdsEventTypes.AD_SKIP,
+                        AdsEventTypes.AD_BREAK_END
+                    ) { update() }
+                }
             }
+            player.listen(
+                PlayerEventTypes.TIMEUPDATE,
+                PlayerEventTypes.PLAY,
+                PlayerEventTypes.PAUSE,
+                PlayerEventTypes.ENDED,
+                PlayerEventTypes.SEEKING,
+                PlayerEventTypes.SEEKED,
+                PlayerEventTypes.READYSTATECHANGE,
+                PlayerEventTypes.SOURCECHANGE,
+                PlayerEventTypes.ERROR
+            ) { update() }
         }
-    }
-
-    internal fun dispose() {
-        listeners.removeAll()
     }
 
     /**
@@ -90,9 +89,6 @@ class SeekButtonState internal constructor(
 @Composable
 fun rememberSeekButtonState(player: Player?, seekOffset: Int): SeekButtonState {
     val state = remember(player, seekOffset) { SeekButtonState(player, seekOffset) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     return state
 }

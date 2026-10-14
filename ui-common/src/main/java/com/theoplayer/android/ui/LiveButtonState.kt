@@ -1,13 +1,11 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
 
@@ -21,8 +19,6 @@ class LiveButtonState internal constructor(
     private val player: Player?,
     private val liveThreshold: Double
 ) {
-    private val listeners = PlayerStateListeners()
-
     /**
      * Whether the button should be shown. Only live and DVR streams have a live point.
      */
@@ -54,26 +50,21 @@ class LiveButtonState internal constructor(
         updatePlaybackState()
     }
 
-    internal fun observe() {
+    internal suspend fun observe() {
         val player = player ?: return
         update()
-        listeners.run {
-            val listener = EventListener<PlayerEvent<*>> { update() }
-            player.add(PlayerEventTypes.TIMEUPDATE, listener)
-            player.add(PlayerEventTypes.PLAY, listener)
-            player.add(PlayerEventTypes.PAUSE, listener)
-            player.add(PlayerEventTypes.ENDED, listener)
-            player.add(PlayerEventTypes.SEEKING, listener)
-            player.add(PlayerEventTypes.SEEKED, listener)
-            player.add(PlayerEventTypes.READYSTATECHANGE, listener)
-            player.add(PlayerEventTypes.DURATIONCHANGE, listener)
-            player.add(PlayerEventTypes.SOURCECHANGE, listener)
-            player.add(PlayerEventTypes.ERROR, listener)
-        }
-    }
-
-    internal fun dispose() {
-        listeners.removeAll()
+        player.listen(
+            PlayerEventTypes.TIMEUPDATE,
+            PlayerEventTypes.PLAY,
+            PlayerEventTypes.PAUSE,
+            PlayerEventTypes.ENDED,
+            PlayerEventTypes.SEEKING,
+            PlayerEventTypes.SEEKED,
+            PlayerEventTypes.READYSTATECHANGE,
+            PlayerEventTypes.DURATIONCHANGE,
+            PlayerEventTypes.SOURCECHANGE,
+            PlayerEventTypes.ERROR
+        ) { update() }
     }
 
     /**
@@ -97,9 +88,6 @@ class LiveButtonState internal constructor(
 @Composable
 fun rememberLiveButtonState(player: Player?, liveThreshold: Double): LiveButtonState {
     val state = remember(player, liveThreshold) { LiveButtonState(player, liveThreshold) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     return state
 }

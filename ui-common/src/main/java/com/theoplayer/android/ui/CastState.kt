@@ -1,17 +1,17 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.Cast
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
-import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.chromecast.ChromecastEvent
 import com.theoplayer.android.api.event.chromecast.ChromecastEventTypes
+import kotlinx.coroutines.flow.collectLatest
 
 /**
  * State holder for Chromecast controls, such as [ChromecastButton] and [ChromecastDisplay].
@@ -23,16 +23,14 @@ import com.theoplayer.android.api.event.chromecast.ChromecastEventTypes
  */
 @ExperimentalPlayerStateApi
 class CastState internal constructor(private val theoplayerView: THEOplayerView?) {
-    private val listeners = PlayerStateListeners()
-    private var cast: Cast? = null
-    private var observing = false
+    private var cast: Cast? by mutableStateOf(null)
 
     /**
      * The current cast state of the player.
      */
     val castState: PlayerCastState
         get() {
-            if (observing) updateCast(theoplayerView?.cast)
+            refreshCast()
             return _castState
         }
     private var _castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
@@ -42,7 +40,7 @@ class CastState internal constructor(private val theoplayerView: THEOplayerView?
      */
     val castReceiverName: String?
         get() {
-            if (observing) updateCast(theoplayerView?.cast)
+            refreshCast()
             return _castReceiverName
         }
     private var _castReceiverName: String? by mutableStateOf(null)
@@ -52,40 +50,29 @@ class CastState internal constructor(private val theoplayerView: THEOplayerView?
      */
     val casting: Boolean
         get() {
-            if (observing) updateCast(theoplayerView?.cast)
+            refreshCast()
             return _casting
         }
     private var _casting: Boolean by mutableStateOf(false)
 
-    private fun update() {
+    private fun update(cast: Cast?) {
         _castState = cast?.chromecast?.state ?: PlayerCastState.UNAVAILABLE
         _castReceiverName = cast?.chromecast?.receiverName
         _casting = cast?.chromecast?.isCasting == true
     }
 
-    private fun updateCast(newCast: Cast?) {
-        if (newCast === cast) return
-        listeners.removeAll()
-        cast = newCast
-        newCast?.chromecast?.let { chromecast ->
-            listeners.run {
-                val listener = EventListener<ChromecastEvent<*>> { update() }
-                chromecast.add(ChromecastEventTypes.STATECHANGE, listener)
-                chromecast.add(ChromecastEventTypes.ERROR, listener)
+    internal fun refreshCast() {
+        cast = theoplayerView?.cast
+    }
+
+    internal suspend fun observe() {
+        refreshCast()
+        snapshotFlow { cast }.collectLatest { cast ->
+            update(cast)
+            cast?.chromecast?.listen(ChromecastEventTypes.STATECHANGE, ChromecastEventTypes.ERROR) {
+                update(cast)
             }
         }
-        update()
-    }
-
-    internal fun observe() {
-        observing = true
-        updateCast(theoplayerView?.cast)
-    }
-
-    internal fun dispose() {
-        observing = false
-        listeners.removeAll()
-        cast = null
     }
 
     /**
@@ -110,9 +97,7 @@ class CastState internal constructor(private val theoplayerView: THEOplayerView?
 @Composable
 fun rememberCastState(theoplayerView: THEOplayerView?): CastState {
     val state = remember(theoplayerView) { CastState(theoplayerView) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
+    state.refreshCast()
     return state
 }

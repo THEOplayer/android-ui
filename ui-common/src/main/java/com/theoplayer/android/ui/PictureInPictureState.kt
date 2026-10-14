@@ -2,18 +2,17 @@ package com.theoplayer.android.ui
 
 import android.app.Activity
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.theoplayer.android.api.THEOplayerView
-import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.pip.PiPType
 import com.theoplayer.android.ui.util.rememberIsInPipMode
 import com.theoplayer.android.ui.util.supportsPictureInPictureMode
+import kotlinx.coroutines.awaitCancellation
 
 /**
  * State holder for a picture-in-picture button, such as [PictureInPictureButton].
@@ -22,7 +21,6 @@ import com.theoplayer.android.ui.util.supportsPictureInPictureMode
  */
 @ExperimentalPlayerStateApi
 class PictureInPictureState internal constructor(private val theoplayerView: THEOplayerView?) {
-    private val listeners = PlayerStateListeners()
     private var pendingPiPListener: FullscreenHandler.OnFullscreenChangeListener? = null
 
     /**
@@ -47,19 +45,17 @@ class PictureInPictureState internal constructor(private val theoplayerView: THE
         pipManagerInPipMode = theoplayerView?.piPManager?.isInPiP == true
     }
 
-    internal fun observe() {
-        val player = theoplayerView?.player ?: return
-        update()
-        listeners.run {
-            val listener = EventListener<PlayerEvent<*>> { update() }
-            player.add(PlayerEventTypes.PRESENTATIONMODECHANGE, listener)
+    internal suspend fun observe() {
+        try {
+            val player = theoplayerView?.player ?: awaitCancellation()
+            update()
+            player.listen(PlayerEventTypes.PRESENTATIONMODECHANGE) { update() }
+        } finally {
+            pendingPiPListener?.let {
+                theoplayerView?.fullscreenHandler?.removeOnFullscreenChangeListener(it)
+            }
+            pendingPiPListener = null
         }
-    }
-
-    internal fun dispose() {
-        listeners.removeAll()
-        pendingPiPListener?.let { theoplayerView?.fullscreenHandler?.removeOnFullscreenChangeListener(it) }
-        pendingPiPListener = null
     }
 
     /**
@@ -100,10 +96,7 @@ class PictureInPictureState internal constructor(private val theoplayerView: THE
 @Composable
 fun rememberPictureInPictureState(theoplayerView: THEOplayerView?): PictureInPictureState {
     val state = remember(theoplayerView) { PictureInPictureState(theoplayerView) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     state.activityInPipMode = rememberIsInPipMode()
     return state
 }
