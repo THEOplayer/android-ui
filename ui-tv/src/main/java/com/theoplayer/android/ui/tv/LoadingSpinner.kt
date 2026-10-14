@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
@@ -16,6 +17,7 @@ import com.theoplayer.android.ui.LoadingState
 import com.theoplayer.android.ui.LocalTHEOplayerView
 import com.theoplayer.android.ui.rememberLoadingState
 import com.theoplayer.android.ui.theme.LocalPlayerAnimations
+import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 
@@ -75,5 +77,14 @@ fun LoadingSpinner(
         exit = ExitTransition.None
     ) {
         CircularProgressIndicator(modifier = modifier, color = color, strokeWidth = strokeWidth)
+    }
+}
+
+@OptIn(ExperimentalTvUiApi::class)
+@Preview(showBackground = true, backgroundColor = 0xFF000000)
+@Composable
+private fun CircularProgressIndicatorPreview() {
+    THEOplayerTvTheme {
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.primary, strokeWidth = 4.dp)
     }
 }
