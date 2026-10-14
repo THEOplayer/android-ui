@@ -98,7 +98,7 @@ class PlayerKeysTest {
     }
 
     @Test
-    fun mediaPlayPauseReplaysWhenPausedAndEnded() {
+    fun mediaPlayPauseCallsPlayWhenPausedAndEnded() {
         val player = mockPlayer(paused = true, ended = true)
         setContent(player = player)
 
@@ -108,7 +108,7 @@ class PlayerKeysTest {
     }
 
     @Test
-    fun mediaPlayReplaysWhenEnded() {
+    fun mediaPlayCallsPlayWhenEnded() {
         val player = mockPlayer(paused = true, ended = true)
         setContent(player = player)
 

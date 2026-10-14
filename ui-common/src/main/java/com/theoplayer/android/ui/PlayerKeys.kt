@@ -49,36 +49,21 @@ private fun Int.isMediaKey(): Boolean = when (this) {
 private fun handleMediaKey(player: Player?, keyCode: Int, seekOffset: Int) {
     when (keyCode) {
         NativeKeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> togglePlayPause(player)
-        NativeKeyEvent.KEYCODE_MEDIA_PLAY -> playOrReplay(player)
+        NativeKeyEvent.KEYCODE_MEDIA_PLAY -> player?.play()
         NativeKeyEvent.KEYCODE_MEDIA_PAUSE -> player?.pause()
         NativeKeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> seekBy(player, seekOffset)
         NativeKeyEvent.KEYCODE_MEDIA_REWIND -> seekBy(player, -seekOffset)
     }
 }
 
-/** Toggles playback, replaying when paused at the end. */
+/** Toggles between play and pause. */
 private fun togglePlayPause(player: Player?) {
     if (player == null) return
     if (player.isPaused) {
-        playOrReplay(player)
+        player.play()
     } else {
         player.pause()
     }
-}
-
-/** Starts playback or replays ended media. */
-private fun playOrReplay(player: Player?) {
-    if (player == null) return
-    if (player.isEnded) {
-        replay(player)
-    } else {
-        player.play()
-    }
-}
-
-/** Starts playback from the ended state, like [PlayButtonState.onClick]. */
-private fun replay(player: Player) {
-    player.play()
 }
 
 /** Seeks by [seekOffset], clamped to the media duration. */
