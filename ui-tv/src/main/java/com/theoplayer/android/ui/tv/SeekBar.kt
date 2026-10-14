@@ -123,6 +123,9 @@ private fun Modifier.seekBarKeyEvents(state: SeekBarState, seekOffset: Int): Mod
 
         when (event.type) {
             KeyEventType.KeyDown -> {
+                // The first key down is a single press: skip by seekOffset and keep the play state.
+                // Holding the key auto-repeats key down events (repeatCount > 0): scrub instead,
+                // pausing playback until the key is released.
                 if (event.nativeKeyEvent.repeatCount == 0) {
                     state.seekTo((state.value + direction * seekOffset).coerceIn(range))
                 } else {
