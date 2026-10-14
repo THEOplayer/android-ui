@@ -1,26 +1,12 @@
 package com.theoplayer.android.ui.tv
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.size
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.fadeIn
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
@@ -31,10 +17,16 @@ import com.theoplayer.android.ui.LocalTHEOplayerView
 import com.theoplayer.android.ui.rememberLoadingState
 import com.theoplayer.android.ui.theme.LocalPlayerAnimations
 import kotlin.time.Duration
-import kotlinx.coroutines.delay as delayMillis
+import kotlin.time.DurationUnit
 
 /**
- * Shows a spinner while the player is loading.
+ * An indicator that shows whether the player is currently waiting for more data to resume playback.
+ *
+ * @param modifier the [Modifier] to be applied to this indicator
+ * @param color color of this progress indicator
+ * @param strokeWidth stroke width of this progress indicator
+ * @param delay delay for the progress indicator to become visible after the player starts buffering.
+ * In general, it's less jarring to *not* show the indicator for very short buffering periods.
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class, InternalUiApi::class)
@@ -55,7 +47,14 @@ fun LoadingSpinner(
 }
 
 /**
- * Shows a spinner while [state] is loading.
+ * An indicator that shows whether the player is currently waiting for more data to resume playback.
+ *
+ * @param state the [LoadingState] to read
+ * @param modifier the [Modifier] to be applied to this indicator
+ * @param color color of this progress indicator
+ * @param strokeWidth stroke width of this progress indicator
+ * @param delay delay for the progress indicator to become visible after the player starts buffering.
+ * In general, it's less jarring to *not* show the indicator for very short buffering periods.
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi
@@ -68,39 +67,13 @@ fun LoadingSpinner(
     strokeWidth: Dp = 4.dp,
     delay: Duration = LocalPlayerAnimations.current.loadingSpinnerDelay
 ) {
-    val inspectionMode = LocalInspectionMode.current
-    var delayElapsed by remember(state, delay) { mutableStateOf(false) }
-    LaunchedEffect(state.loading, delay) {
-        delayElapsed = false
-        if (state.loading && !inspectionMode) {
-            delayMillis(delay.inWholeMilliseconds.coerceAtLeast(0))
-            delayElapsed = true
-        }
-    }
-
-    if (state.loading && (inspectionMode || delayElapsed)) {
-        val transition = rememberInfiniteTransition(label = "loading-spinner")
-        val rotation by transition.animateFloat(
-            initialValue = 0f,
-            targetValue = 360f,
-            animationSpec = infiniteRepeatable(
-                animation = tween(durationMillis = 1_000, easing = LinearEasing),
-                repeatMode = RepeatMode.Restart
-            ),
-            label = "rotation"
-        )
-        Canvas(modifier = modifier.size(40.dp)) {
-            val stroke = strokeWidth.toPx()
-            val inset = stroke / 2
-            drawArc(
-                color = color,
-                startAngle = rotation - 90f,
-                sweepAngle = 270f,
-                useCenter = false,
-                topLeft = Offset(inset, inset),
-                size = Size(size.width - stroke, size.height - stroke),
-                style = Stroke(width = stroke, cap = StrokeCap.Round)
-            )
-        }
+    AnimatedVisibility(
+        visible = state.loading,
+        // Show the loading spinner only after a small delay
+        enter = fadeIn(snap(delayMillis = delay.toInt(DurationUnit.MILLISECONDS))),
+        // Hide the loading spinner immediately when loaded
+        exit = ExitTransition.None
+    ) {
+        CircularProgressIndicator(modifier = modifier, color = color, strokeWidth = strokeWidth)
     }
 }
