@@ -16,6 +16,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.theoplayer.android.ui.common.R as CommonR
 import kotlin.math.absoluteValue
 
 /**
@@ -52,9 +53,9 @@ fun SeekButton(
                     .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
                 contentDescription = pluralStringResource(
                     if (seekOffset >= 0) {
-                        R.plurals.theoplayer_ui_btn_seek_forward
+                        CommonR.plurals.theoplayer_ui_btn_seek_forward
                     } else {
-                        R.plurals.theoplayer_ui_btn_seek_backward
+                        CommonR.plurals.theoplayer_ui_btn_seek_backward
                     },
                     seekOffset.absoluteValue,
                     seekOffset.absoluteValue

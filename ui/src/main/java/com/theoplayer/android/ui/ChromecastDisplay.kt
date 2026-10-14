@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -104,11 +105,11 @@ fun ChromecastDisplayCompact(
         Text(
             text = state.castReceiverName?.let {
                 stringResource(
-                    R.string.theoplayer_ui_chromecast_playing_on_receiver,
+                    CommonR.string.theoplayer_ui_chromecast_playing_on_receiver,
                     it
                 )
             }
-                ?: stringResource(R.string.theoplayer_ui_chromecast_playing_on_unknown_receiver)
+                ?: stringResource(CommonR.string.theoplayer_ui_chromecast_playing_on_unknown_receiver)
         )
     }
 }
@@ -160,21 +161,21 @@ fun ChromecastDisplayExpanded(
             Text(
                 text = state.castReceiverName?.let {
                     stringResource(
-                        R.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line,
+                        CommonR.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line,
                         it
                     )
                 }
-                    ?: stringResource(R.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line),
+                    ?: stringResource(CommonR.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
                 text = state.castReceiverName?.let {
                     stringResource(
-                        R.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line,
+                        CommonR.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line,
                         it
                     )
                 }
-                    ?: stringResource(R.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_second_line),
+                    ?: stringResource(CommonR.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_second_line),
                 style = MaterialTheme.typography.headlineSmall
             )
         }

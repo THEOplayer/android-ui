@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Cast
@@ -32,19 +33,19 @@ fun ChromecastButton(
     availableIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_start)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_chromecast_start)
         )
     },
     connectingIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_stop)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_chromecast_stop)
         )
     },
     connectedIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.CastConnected,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_stop)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_chromecast_stop)
         )
     }
 ) {
@@ -81,19 +82,19 @@ fun ChromecastButton(
     availableIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_start)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_chromecast_start)
         )
     },
     connectingIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Cast,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_stop)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_chromecast_stop)
         )
     },
     connectedIcon: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.CastConnected,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_chromecast_stop)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_chromecast_stop)
         )
     }
 ) {

@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -56,7 +57,7 @@ fun QualityList(
     ) {
         item(key = null) {
             ListItem(
-                headlineContent = { Text(text = stringResource(R.string.theoplayer_ui_quality_automatic)) },
+                headlineContent = { Text(text = stringResource(CommonR.string.theoplayer_ui_quality_automatic)) },
                 leadingContent = {
                     RadioButton(
                         selected = (state.targetVideoQuality == null),
@@ -82,7 +83,7 @@ fun QualityList(
                 headlineContent = {
                     Text(
                         text = stringResource(
-                            R.string.theoplayer_ui_quality_with_height,
+                            CommonR.string.theoplayer_ui_quality_with_height,
                             quality.height
                         )
                     )
@@ -111,11 +112,11 @@ fun QualityList(
 internal fun formatBandwidth(bandwidth: Long): String {
     val format = stringResource(
         if (bandwidth >= 1e7) {
-            R.string.theoplayer_ui_bandwidth_format_10mbps
+            CommonR.string.theoplayer_ui_bandwidth_format_10mbps
         } else if (bandwidth >= 1e6) {
-            R.string.theoplayer_ui_bandwidth_format_1mbps
+            CommonR.string.theoplayer_ui_bandwidth_format_1mbps
         } else {
-            R.string.theoplayer_ui_bandwidth_format_kbps
+            CommonR.string.theoplayer_ui_bandwidth_format_kbps
         }
     )
     val decimalFormat = remember(format) { DecimalFormat(format) }
