@@ -77,6 +77,30 @@ class SeekBarStateTest {
     }
 
     @Test
+    fun `seekTo seeks without changing playback state`() {
+        val mock = MockPlayer(paused = false, currentTime = 50.0)
+        val state = SeekBarState(mock.player)
+
+        state.seekTo(60f)
+
+        verify { mock.player.currentTime = 60.0 }
+        verify(exactly = 0) { mock.player.pause() }
+        verify(exactly = 0) { mock.player.play() }
+    }
+
+    @Test
+    fun `seekTo does nothing when disabled or player is missing`() {
+        val mock = MockPlayer(seekableRanges = emptyList())
+
+        SeekBarState(mock.player).seekTo(60f)
+        SeekBarState(null).seekTo(60f)
+
+        verify(exactly = 0) { mock.player.currentTime = any() }
+        verify(exactly = 0) { mock.player.pause() }
+        verify(exactly = 0) { mock.player.play() }
+    }
+
+    @Test
     fun `scrubbing a paused player does not resume it`() = runTest {
         val mock = MockPlayer(paused = true, currentTime = 10.0)
         val state = SeekBarState(mock.player)

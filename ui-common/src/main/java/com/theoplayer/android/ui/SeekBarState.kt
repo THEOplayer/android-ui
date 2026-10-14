@@ -117,6 +117,14 @@ class SeekBarState internal constructor(private val player: Player?) {
     }
 
     /**
+     * Seeks to a position within [valueRange] without changing playback state.
+     */
+    fun seekTo(value: Float) {
+        if (!enabled) return
+        player?.currentTime = seekableRange.start + value.toDouble()
+    }
+
+    /**
      * Called when the user stops dragging the seek bar. Resumes playback if the player was
      * playing before the drag started.
      */
