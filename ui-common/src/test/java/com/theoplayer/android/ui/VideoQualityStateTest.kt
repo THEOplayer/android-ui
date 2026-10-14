@@ -41,6 +41,22 @@ class VideoQualityStateTest {
     }
 
     @Test
+    fun `observe refreshes qualities changed since construction`() = runTest {
+        val first = mockVideoQuality()
+        val second = mockVideoQuality()
+        val enabled = MockVideoTrack(enabled = true, activeQuality = first, qualities = listOf(first))
+        val mock = playerWithTracks(enabled)
+        val state = VideoQualityState(mock.player)
+
+        enabled.activeQuality = second
+        enabled.qualities = listOf(second)
+        launchObserve { state.observe() }
+
+        assertEquals(listOf(second), state.videoQualities)
+        assertEquals(second, state.activeVideoQuality)
+    }
+
+    @Test
     fun `quality events update active and target`() = runTest {
         val old = mockVideoQuality()
         val new = mockVideoQuality()

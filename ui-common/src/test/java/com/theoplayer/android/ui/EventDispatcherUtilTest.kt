@@ -1,8 +1,10 @@
 package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.EventListener
+import com.theoplayer.android.api.event.player.PlayEvent
 import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
+import io.mockk.mockk
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -60,7 +62,7 @@ class EventDispatcherUtilTest {
         assertEquals(1, calls)
 
         job.cancelAndJoin()
-        captured.handleEvent(io.mockk.mockk<com.theoplayer.android.api.event.player.PlayEvent>())
+        captured.handleEvent(mockk<PlayEvent>())
         assertEquals(1, calls)
     }
 }

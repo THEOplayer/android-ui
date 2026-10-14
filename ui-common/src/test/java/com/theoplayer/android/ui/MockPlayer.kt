@@ -28,12 +28,28 @@ import com.theoplayer.android.api.event.player.SourceChangeEvent
 import com.theoplayer.android.api.event.player.TimeUpdateEvent
 import com.theoplayer.android.api.event.player.VolumeChangeEvent
 import com.theoplayer.android.api.event.track.TrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.TargetQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes
+import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent as VideoAddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent as VideoRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent as VideoTrackListChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes
+import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as TextAddTrackEvent
+import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
+import com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes
+import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 import com.theoplayer.android.api.event.track.tracklist.TrackListEvent
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.ReadyState
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrackList
 import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
+import com.theoplayer.android.api.player.track.mediatrack.quality.QualityList
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
@@ -267,9 +283,8 @@ internal class MockVideoTrack(
     var enabled: Boolean = false,
     var activeQuality: VideoQuality? = null,
     var targetQuality: VideoQuality? = null,
-    val qualities: List<VideoQuality> = listOf()
+    var qualities: List<VideoQuality> = listOf()
 ) {
-    // Fires at all listeners with an event matching their registered event type.
     val uid = nextTrackUid++
     val listeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
 
@@ -281,7 +296,7 @@ internal class MockVideoTrack(
         every { getTargetQuality() } answers { this@MockVideoTrack.targetQuality }
         every { setTargetQuality(any()) } answers { this@MockVideoTrack.targetQuality = firstArg() }
         every { getQualities() } answers {
-            mockk<com.theoplayer.android.api.player.track.mediatrack.quality.QualityList<VideoQuality>> {
+            mockk<QualityList<VideoQuality>> {
                 every { iterator() } answers { this@MockVideoTrack.qualities.toMutableList().listIterator() }
             }
         }
@@ -295,15 +310,16 @@ internal class MockVideoTrack(
         }
     }
 
+    // Fires at all listeners with an event matching their registered event type.
     fun fireEvent() {
         listeners.toList().forEach { (type, listener) ->
             @Suppress("UNCHECKED_CAST")
             (listener as EventListener<Event<*>>).handleEvent(
                 when (type) {
-                    com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT ->
-                        mockk<com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent>()
-                    com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT ->
-                        mockk<com.theoplayer.android.api.event.track.mediatrack.video.TargetQualityChangedEvent>()
+                    VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT ->
+                        mockk<ActiveQualityChangedEvent>()
+                    VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT ->
+                        mockk<TargetQualityChangedEvent>()
                     else -> mockk()
                 }
             )
@@ -316,24 +332,15 @@ internal fun MutableList<Pair<EventType<*>, EventListener<*>>>.fireTrackListEven
         @Suppress("UNCHECKED_CAST")
         (listener as EventListener<Event<*>>).handleEvent(
             when (type) {
-                com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes.ADDTRACK ->
-                    mockk<com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent>()
-                com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes.REMOVETRACK ->
-                    mockk<com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent>()
-                com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes.TRACKLISTCHANGE ->
-                    mockk<com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent>()
-                com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes.ADDTRACK ->
-                    mockk<com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent>()
-                com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes.REMOVETRACK ->
-                    mockk<com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent>()
-                com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes.TRACKLISTCHANGE ->
-                    mockk<com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent>()
-                com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes.ADDTRACK ->
-                    mockk<com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent>()
-                com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes.REMOVETRACK ->
-                    mockk<com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent>()
-                com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes.TRACKLISTCHANGE ->
-                    mockk<com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent>()
+                AudioTrackListEventTypes.ADDTRACK -> mockk<AudioAddTrackEvent>()
+                AudioTrackListEventTypes.REMOVETRACK -> mockk<AudioRemoveTrackEvent>()
+                AudioTrackListEventTypes.TRACKLISTCHANGE -> mockk<AudioTrackListChangeEvent>()
+                VideoTrackListEventTypes.ADDTRACK -> mockk<VideoAddTrackEvent>()
+                VideoTrackListEventTypes.REMOVETRACK -> mockk<VideoRemoveTrackEvent>()
+                VideoTrackListEventTypes.TRACKLISTCHANGE -> mockk<VideoTrackListChangeEvent>()
+                TextTrackListEventTypes.ADDTRACK -> mockk<TextAddTrackEvent>()
+                TextTrackListEventTypes.REMOVETRACK -> mockk<TextRemoveTrackEvent>()
+                TextTrackListEventTypes.TRACKLISTCHANGE -> mockk<TextTrackListChangeEvent>()
                 else -> mockk()
             }
         )

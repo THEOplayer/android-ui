@@ -74,7 +74,7 @@ class FullscreenStateTest {
     }
 
     @Test
-    fun `dispose removes the listener`() = runTest {
+    fun `cancelling removes the listener`() = runTest {
         val handler = FakeFullscreenHandler()
         val state = FullscreenState(mockViewWithHandler(handler))
         val job = launchObserve { state.observe() }

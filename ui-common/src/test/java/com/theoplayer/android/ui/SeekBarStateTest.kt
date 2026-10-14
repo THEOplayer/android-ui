@@ -103,7 +103,7 @@ class SeekBarStateTest {
     }
 
     @Test
-    fun `dispose removes all listeners`() = runTest {
+    fun `cancelling removes all listeners`() = runTest {
         val mock = MockPlayer()
         val state = SeekBarState(mock.player)
         val job = launchObserve { state.observe() }

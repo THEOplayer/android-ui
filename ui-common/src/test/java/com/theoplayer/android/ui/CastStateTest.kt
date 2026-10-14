@@ -1,11 +1,14 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.runtime.snapshots.Snapshot
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.Cast
 import com.theoplayer.android.api.cast.chromecast.Chromecast
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.EventType
+import com.theoplayer.android.api.event.chromecast.CastErrorEvent
+import com.theoplayer.android.api.event.chromecast.CastStateChangeEvent
 import com.theoplayer.android.api.event.chromecast.ChromecastEvent
 import com.theoplayer.android.api.event.chromecast.ChromecastEventTypes
 import io.mockk.every
@@ -68,7 +71,7 @@ class CastStateTest {
     }
 
     @Test
-    fun `observe registers both events with one listener and dispose removes them`() = runTest {
+    fun `observe registers both events with one listener and cancelling removes them`() = runTest {
         val (cast, listeners, _) = mockCast()
         val view = mockView(cast)
         val state = CastState(view)
@@ -100,8 +103,8 @@ class CastStateTest {
             @Suppress("UNCHECKED_CAST")
             (listener as EventListener<ChromecastEvent<*>>).handleEvent(
                 when (type) {
-                    ChromecastEventTypes.STATECHANGE -> mockk<com.theoplayer.android.api.event.chromecast.CastStateChangeEvent>()
-                    else -> mockk<com.theoplayer.android.api.event.chromecast.CastErrorEvent>()
+                    ChromecastEventTypes.STATECHANGE -> mockk<CastStateChangeEvent>()
+                    else -> mockk<CastErrorEvent>()
                 }
             )
         }
@@ -135,7 +138,7 @@ class CastStateTest {
 
         currentCast = newCast
         state.castState
-        androidx.compose.runtime.snapshots.Snapshot.sendApplyNotifications()
+        Snapshot.sendApplyNotifications()
         testScheduler.runCurrent()
         assertEquals(PlayerCastState.CONNECTED, state.castState)
         assertTrue(oldListeners.isEmpty())

@@ -39,7 +39,7 @@ class PictureInPictureStateTest {
     }
 
     @Test
-    fun `observe registers presentationmodechange and dispose removes it`() = runTest {
+    fun `observe registers presentationmodechange and cancelling removes it`() = runTest {
         val mock = MockPlayer()
         val state = PictureInPictureState(mockView(player = mock))
         val job = launchObserve { state.observe() }
@@ -104,7 +104,7 @@ class PictureInPictureStateTest {
     }
 
     @Test
-    fun `dispose cancels a pending enterPiP`() = runTest {
+    fun `cancelling cancels a pending enterPiP`() = runTest {
         val piPManager = mockk<PiPManager>(relaxed = true)
         val handler = FakeFullscreenHandler().also { it.fire(true) }
         val state = PictureInPictureState(
