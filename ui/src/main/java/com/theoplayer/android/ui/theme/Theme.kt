@@ -9,10 +9,6 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.graphics.Color
-import com.theoplayer.android.ui.LiveButton
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -78,23 +74,6 @@ private val DarkColors = darkColorScheme(
     outlineVariant = md_theme_dark_outlineVariant,
     scrim = md_theme_dark_scrim,
 )
-
-/**
- * Additional colors used by THEOplayer UI components.
- */
-@Immutable
-data class PlayerColors(
-    /**
-     * The color of the circle icon of a [LiveButton] when playing at the live point.
-     */
-    val liveButtonLive: Color = Color.Red,
-    /**
-     * The color of the circle icon of a [LiveButton] when playing behind the live point.
-     */
-    val liveButtonDvr: Color = Color.Gray
-)
-
-private val LocalPlayerColors = staticCompositionLocalOf { PlayerColors() }
 
 /**
  * Provides theme colors, shapes and fonts to be used by the player.
