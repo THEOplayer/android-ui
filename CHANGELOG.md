@@ -16,6 +16,7 @@
 * 🏠 `UIController` and `DefaultUI` now use the experimental state holders internally. ([#116](https://github.com/THEOplayer/android-ui/pull/116))
 * 🚀 Added `UIController(theoplayerView)` and `DefaultUI(theoplayerView)`, which use the experimental state holders and don't create a `Player`. `UIControllerScope.player` is only created when accessed. Use `rememberTHEOplayerView(config)` to create a `THEOplayerView` that follows the lifecycle of the composition. `UIController(config)` and `DefaultUI(config)` no longer create a `Player` either. ([#119](https://github.com/THEOplayer/android-ui/pull/119))
 * 🐛 Fixed `AudioTrackList`, `SubtitleTrackList`, `QualityList` and `PlaybackRateList` not scrolling to the selected item, and not announcing it to accessibility services. ([#127](https://github.com/THEOplayer/android-ui/pull/127))
+* 🚀 Pressing a key now shows the controls in `UIController`, which helps on tablets with a keyboard. Media keys (play/pause, fast-forward and rewind) control playback, even while the controls are hidden. ([#122](https://github.com/THEOplayer/android-ui/pull/122))
 
 ## [1.14.2] (2026-10-13)
 
