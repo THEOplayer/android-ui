@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Replay
@@ -28,23 +29,23 @@ fun PlayButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     play: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.play),
+            painter = painterResource(id = CommonR.drawable.play),
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_play)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_play)
         )
     },
     pause: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.pause),
+            painter = painterResource(id = CommonR.drawable.pause),
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_pause)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_pause)
         )
     },
     replay: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Replay,
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_replay)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_replay)
         )
     }
 ) {
@@ -80,23 +81,23 @@ fun PlayButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     play: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.play),
+            painter = painterResource(id = CommonR.drawable.play),
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_play)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_play)
         )
     },
     pause: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.pause),
+            painter = painterResource(id = CommonR.drawable.pause),
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_pause)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_pause)
         )
     },
     replay: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Replay,
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_replay)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_replay)
         )
     }
 ) {

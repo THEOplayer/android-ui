@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -21,8 +22,8 @@ fun MenuScope.LanguageMenuButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.language),
-            contentDescription = stringResource(R.string.theoplayer_ui_menu_language)
+            painter = painterResource(id = CommonR.drawable.language),
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_language)
         )
     }
 ) {
@@ -57,8 +58,8 @@ fun MenuScope.LanguageMenuButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     content: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.language),
-            contentDescription = stringResource(R.string.theoplayer_ui_menu_language)
+            painter = painterResource(id = CommonR.drawable.language),
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_language)
         )
     }
 ) {

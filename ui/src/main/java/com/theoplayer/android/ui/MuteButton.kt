@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
@@ -26,13 +27,13 @@ fun MuteButton(
     mute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeUp,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_mute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_mute)
         )
     },
     unmute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeOff,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_unmute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_unmute)
         )
     }
 ) {
@@ -64,13 +65,13 @@ fun MuteButton(
     mute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeUp,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_mute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_mute)
         )
     },
     unmute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeOff,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_unmute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_unmute)
         )
     }
 ) {

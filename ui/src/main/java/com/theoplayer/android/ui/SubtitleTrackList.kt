@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -54,7 +55,7 @@ fun SubtitleTrackList(
     ) {
         item(key = null) {
             ListItem(
-                headlineContent = { Text(text = stringResource(R.string.theoplayer_ui_subtitles_off)) },
+                headlineContent = { Text(text = stringResource(CommonR.string.theoplayer_ui_subtitles_off)) },
                 leadingContent = {
                     RadioButton(
                         selected = (state.activeSubtitleTrack == null),

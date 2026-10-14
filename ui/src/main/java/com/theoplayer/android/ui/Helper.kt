@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
@@ -7,7 +8,6 @@ import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.ui.util.constructLabel
-import kotlin.math.absoluteValue
 
 /**
  * Return the given time in a human-readable format, such as `"0:10"` or `"01:23:45"`.
@@ -21,43 +21,7 @@ import kotlin.math.absoluteValue
  * for example because it represents the time remaining in the video.
  */
 fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = false): String {
-    val isNegative = time < 0 || (preferNegative && time == 0.0)
-    val absoluteTime = time.absoluteValue.toInt()
-
-    val guideMinutes = ((guide / 60) % 60).toInt()
-    val guideHours = (guide / 3600).toInt()
-
-    val result = StringBuilder()
-    if (isNegative) {
-        result.append('-')
-    }
-    if (time.isNaN() || time.isInfinite()) {
-        if (guideHours > 0) {
-            result.append("--:")
-        }
-        result.append("--:--")
-    } else {
-        val seconds = absoluteTime % 60
-        val minutes = (absoluteTime / 60) % 60
-        val hours = absoluteTime / 3600
-        // Check if we need to show hours.
-        val showHours = hours > 0 || guideHours > 0
-        if (showHours) {
-            result.append(hours)
-            result.append(':')
-        }
-        // If hours are showing, we may need to add a leading zero to minutes.
-        // Always show at least one digit of minutes.
-        val showMinutesLeadingZero = (showHours || guideMinutes >= 0)
-        if (showMinutesLeadingZero) {
-            result.append(minutes.toString().padStart(2, '0'))
-        } else {
-            result.append(minutes)
-        }
-        result.append(':')
-        result.append(seconds.toString().padStart(2, '0'))
-    }
-    return result.toString()
+    return formatPlaybackTime(time, guide, preferNegative)
 }
 
 /**
@@ -73,7 +37,7 @@ fun formatTrackLabel(track: Track): String {
             is MediaTrack<*> -> constructLabel(track)
             else -> null
         }
-    } ?: stringResource(R.string.theoplayer_ui_track_unknown)
+    } ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
 }
 
 /**
@@ -84,7 +48,7 @@ fun formatTrackLabel(track: Track): String {
 @Composable
 fun formatTrackLabel(track: MediaTrack<*>): String {
     return remember(track.id, track.uid) { constructLabel(track) }
-        ?: stringResource(R.string.theoplayer_ui_track_unknown)
+        ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
 }
 
 /**
@@ -95,5 +59,5 @@ fun formatTrackLabel(track: MediaTrack<*>): String {
 @Composable
 fun formatTrackLabel(track: TextTrack): String {
     return remember(track.id, track.uid) { constructLabel(track) }
-        ?: stringResource(R.string.theoplayer_ui_track_unknown)
+        ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
 }

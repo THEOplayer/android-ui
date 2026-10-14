@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -58,7 +59,7 @@ fun LiveButton(
         )
         Text(
             modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(R.string.theoplayer_ui_btn_live)
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live)
         )
     },
     dvr: @Composable RowScope. () -> Unit = {
@@ -76,7 +77,7 @@ fun LiveButton(
         )
         Text(
             modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(R.string.theoplayer_ui_btn_live)
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live)
         )
     }
 ) {
@@ -127,7 +128,7 @@ fun LiveButton(
         )
         Text(
             modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(R.string.theoplayer_ui_btn_live)
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live)
         )
     },
     dvr: @Composable RowScope. () -> Unit = {
@@ -145,7 +146,7 @@ fun LiveButton(
         )
         Text(
             modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(R.string.theoplayer_ui_btn_live)
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live)
         )
     }
 ) {

@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -47,11 +48,11 @@ fun MenuScope.SettingsMenu(
     playbackRateState: PlaybackRateState
 ) {
     Menu(
-        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_settings)) },
+        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_settings)) },
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
-                contentDescription = stringResource(R.string.theoplayer_ui_btn_menu_close)
+                contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_menu_close)
             )
         },
     ) {
@@ -61,7 +62,7 @@ fun MenuScope.SettingsMenu(
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    text = stringResource(R.string.theoplayer_ui_menu_quality)
+                    text = stringResource(CommonR.string.theoplayer_ui_menu_quality)
                 )
                 TextButton(
                     modifier = Modifier
@@ -88,7 +89,7 @@ fun MenuScope.SettingsMenu(
                     modifier = Modifier
                         .weight(1f)
                         .alignByBaseline(),
-                    text = stringResource(R.string.theoplayer_ui_menu_playback_rate)
+                    text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate)
                 )
                 TextButton(
                     modifier = Modifier
@@ -135,7 +136,7 @@ fun MenuScope.QualityMenu() {
 @Composable
 fun MenuScope.QualityMenu(state: VideoQualityState) {
     Menu(
-        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_quality)) }
+        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_quality)) }
     ) {
         QualityList(state, onClick = { closeCurrentMenu() })
     }
@@ -165,7 +166,7 @@ fun MenuScope.PlaybackRateMenu() {
 @Composable
 fun MenuScope.PlaybackRateMenu(state: PlaybackRateState) {
     Menu(
-        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_playback_rate)) }
+        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate)) }
     ) {
         PlaybackRateList(state, onClick = { closeCurrentMenu() })
     }
@@ -178,15 +179,15 @@ internal fun formatActiveQualityLabel(
 ): String {
     return if (targetVideoQuality != null) {
         stringResource(
-            R.string.theoplayer_ui_quality_with_height,
+            CommonR.string.theoplayer_ui_quality_with_height,
             targetVideoQuality.height
         )
     } else if (activeVideoQuality != null) {
         stringResource(
-            R.string.theoplayer_ui_quality_automatic_with_height,
+            CommonR.string.theoplayer_ui_quality_automatic_with_height,
             activeVideoQuality.height
         )
     } else {
-        stringResource(R.string.theoplayer_ui_quality_automatic)
+        stringResource(CommonR.string.theoplayer_ui_quality_automatic)
     }
 }

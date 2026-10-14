@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -72,7 +73,7 @@ private fun ErrorDisplayContent(error: THEOplayerException, modifier: Modifier) 
                 contentAlignment = Alignment.CenterStart
             ) {
                 Text(
-                    text = stringResource(R.string.theoplayer_ui_error_title),
+                    text = stringResource(CommonR.string.theoplayer_ui_error_title),
                     style = MaterialTheme.typography.headlineMedium
                 )
             }

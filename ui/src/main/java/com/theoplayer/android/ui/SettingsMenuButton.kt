@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
@@ -23,7 +24,7 @@ fun MenuScope.SettingsMenuButton(
     content: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Settings,
-            contentDescription = stringResource(R.string.theoplayer_ui_menu_settings)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_settings)
         )
     }
 ) {
