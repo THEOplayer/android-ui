@@ -1,6 +1,9 @@
 package com.theoplayer.android.ui
 
 import android.app.Activity
+import android.app.Application
+import android.content.Context
+import android.content.ContextWrapper
 import android.view.ViewGroup
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -32,8 +35,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -88,14 +93,15 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    val player = rememberPlayer(config)
-    LaunchedEffect(player, source) {
-        player.source = source
+    val theoplayerView = rememberTHEOplayerViewInternal(config)
+    LaunchedEffect(theoplayerView, source) {
+        theoplayerView?.player?.source = source
     }
 
-    UIController(
+    UIControllerImpl(
         modifier = modifier,
-        player = player,
+        theoplayerView = theoplayerView,
+        player = null,
         color = color,
         centerOverlay = centerOverlay,
         errorOverlay = errorOverlay,
@@ -134,13 +140,88 @@ fun UIController(
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
 ) {
-    val theoplayerView = player.theoplayerView
-    val nativePlayer = player.player
+    UIControllerImpl(
+        modifier = modifier,
+        theoplayerView = player.theoplayerView,
+        player = player,
+        color = color,
+        centerOverlay = centerOverlay,
+        errorOverlay = errorOverlay,
+        topChrome = topChrome,
+        centerChrome = centerChrome,
+        bottomChrome = bottomChrome
+    )
+}
+
+/**
+ * A container component for a THEOplayer UI.
+ *
+ * This component provides a basic layout structure for a player UI using the given
+ * [theoplayerView]. No [Player] is created unless [UIControllerScope.player] is accessed,
+ * so [Player.current] is `null` inside this UI: use [LocalTHEOplayerView] and the
+ * experimental state holders instead.
+ *
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
+ * create a view owned by the composition, or forward [THEOplayerView.onPause],
+ * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
+ *
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
+ *
+ * @param modifier the [Modifier] to be applied to this container
+ * @param theoplayerView the THEOplayer view to host in this container
+ * @param color the background color for the overlay while showing the UI controls
+ * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
+ * @param errorOverlay content to show when the player encountered a fatal error,
+ * typically an [ErrorDisplay].
+ * @param topChrome controls to show at the top of the player, for example the stream's title.
+ * @param centerChrome controls to show in the center of the player, for example a large [PlayButton].
+ * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
+ * or a [Row] containing a [MuteButton] and a [FullscreenButton].
+ */
+@OptIn(ExperimentalPlayerStateApi::class)
+@Composable
+fun UIController(
+    modifier: Modifier = Modifier,
+    theoplayerView: THEOplayerView,
+    color: Color = Color.Black.copy(alpha = 0.5f),
+    centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+) {
+    UIControllerImpl(
+        modifier = modifier,
+        theoplayerView = theoplayerView.takeUnless { it.isInEditMode },
+        player = null,
+        color = color,
+        centerOverlay = centerOverlay,
+        errorOverlay = errorOverlay,
+        topChrome = topChrome,
+        centerChrome = centerChrome,
+        bottomChrome = bottomChrome
+    )
+}
+
+@OptIn(ExperimentalPlayerStateApi::class)
+@Composable
+internal fun UIControllerImpl(
+    modifier: Modifier,
+    theoplayerView: THEOplayerView?,
+    player: Player?,
+    color: Color,
+    centerOverlay: (@Composable UIControllerScope.() -> Unit)?,
+    errorOverlay: (@Composable UIControllerScope.() -> Unit)?,
+    topChrome: (@Composable UIControllerScope.() -> Unit)?,
+    centerChrome: (@Composable UIControllerScope.() -> Unit)?,
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)?
+) {
+    val nativePlayer = theoplayerView?.player
     val firstPlayState = rememberFirstPlayState(nativePlayer)
     val castState = rememberCastState(theoplayerView)
     val playButtonState = rememberPlayButtonState(nativePlayer)
     val pictureInPictureState = rememberPictureInPictureState(theoplayerView)
-    val errorState = rememberErrorState(nativePlayer, player.error)
+    val errorState = rememberErrorState(nativePlayer, player?.error)
     val adState = rememberAdState(nativePlayer)
     val videoSizeState = rememberVideoSizeState(nativePlayer)
 
@@ -157,7 +238,8 @@ fun UIController(
 
     // Wait a little bit before showing the controls and enabling animations,
     // so we can hide the UI immediately in case of autoplay.
-    var isReady by remember { mutableStateOf(false) }
+    val inspectionMode = LocalInspectionMode.current
+    var isReady by remember { mutableStateOf(inspectionMode) }
     LaunchedEffect(Unit) {
         delay(50.milliseconds)
         isReady = true
@@ -177,7 +259,14 @@ fun UIController(
         }
     }
 
-    val scope = remember(player) { UIControllerScopeImpl(player) }
+    val scope = remember(theoplayerView, player) { UIControllerScopeImpl(theoplayerView, player) }
+    if (player == null) {
+        val isInPipMode = rememberIsInPipMode()
+        SideEffect { scope.activityInPipMode = isInPipMode }
+    }
+    DisposableEffect(scope) {
+        onDispose { scope.dispose() }
+    }
 
     val uiState by remember(scope, pictureInPictureState, errorState) {
         derivedStateOf {
@@ -213,7 +302,7 @@ fun UIController(
     )
 
     PlayerContainer(
-        player = player,
+        theoplayerView = theoplayerView,
         modifier = Modifier
             .background(Color.Black)
             .then(modifier)
@@ -232,7 +321,8 @@ fun UIController(
     ) {
         CompositionLocalProvider(
             LocalPlayer provides player,
-            LocalTHEOplayerView provides player.theoplayerView
+            LocalTHEOplayerView provides theoplayerView,
+            LocalUIControllerErrorState provides errorState
         ) {
             AnimatedContent(
                 label = "ContentAnimation",
@@ -298,18 +388,51 @@ fun UIController(
 interface UIControllerScope : MenuScope {
     /**
      * The player hosted in this [UIController].
+     *
+     * If the UIController was created from a [THEOplayerView], the [Player] is created on
+     * first access (and only then adds its listeners). Prefer [theoplayerView] with the
+     * experimental state holders instead.
      */
     val player: Player
+
+    /**
+     * The THEOplayer view hosted in this [UIController], or `null` in inspection mode.
+     */
+    val theoplayerView: THEOplayerView?
+        get() = player.theoplayerView
 }
 
-private class UIControllerScopeImpl(override val player: Player) :
-    UIControllerScope {
+private class UIControllerScopeImpl(
+    override val theoplayerView: THEOplayerView?,
+    private val providedPlayer: Player?
+) : UIControllerScope {
     private var menuStack = mutableStateListOf<MenuContent>()
 
     val currentMenu: MenuContent?
         get() = menuStack.lastOrNull()
     var lastWasClosed: Boolean = false
         private set
+
+    var activityInPipMode: Boolean = false
+        set(value) {
+            field = value
+            if (lazyPlayer.isInitialized()) {
+                lazyPlayer.value.activityInPipMode = value
+            }
+        }
+
+    private val lazyPlayer = lazy {
+        PlayerImpl(theoplayerView).also { it.activityInPipMode = activityInPipMode }
+    }
+
+    override val player: Player
+        get() = providedPlayer ?: lazyPlayer.value
+
+    fun dispose() {
+        if (lazyPlayer.isInitialized()) {
+            lazyPlayer.value.dispose()
+        }
+    }
 
     override fun openMenu(menu: MenuContent) {
         menuStack.add(menu)
@@ -323,6 +446,8 @@ private class UIControllerScopeImpl(override val player: Player) :
     }
 }
 
+internal val LocalUIControllerErrorState = staticCompositionLocalOf<ErrorState?> { null }
+
 private sealed class UIState {
     object Error : UIState()
     data class Menu(val menu: MenuContent) : UIState()
@@ -333,10 +458,9 @@ private sealed class UIState {
 @Composable
 private fun PlayerContainer(
     modifier: Modifier = Modifier,
-    player: Player,
+    theoplayerView: THEOplayerView?,
     ui: @Composable () -> Unit
 ) {
-    val theoplayerView = player.theoplayerView
     if (theoplayerView == null) {
         Box(
             modifier = modifier
@@ -470,6 +594,61 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
 }
 
 /**
+ * Creates and remembers a [THEOplayerView] owned by the composition.
+ *
+ * This couples the lifecycle of the view to the current activity: it automatically calls
+ * [THEOplayerView.onPause] and [THEOplayerView.onResume] whenever the current activity is
+ * [paused][Activity.onPause] or [resumed][Activity.onResume] (resuming an ad that was
+ * interrupted), and it destroys the view when it leaves the composition.
+ *
+ * In previews, the SDK does not initialize the view ([View.isInEditMode]), so do not
+ * access its [THEOplayerView.player] there. [UIController] and [DefaultUI] handle this
+ * automatically.
+ *
+ * @param config the player configuration
+ */
+@Composable
+fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
+    val context = LocalContext.current
+    val inspectionMode = LocalInspectionMode.current
+    val theoplayerView = remember {
+        THEOplayerView(if (inspectionMode) PreviewContext(context) else context, config)
+    }
+    if (!theoplayerView.isInEditMode) {
+        setupTHEOplayerView(theoplayerView, destroyOnLifecycleDestroy = false)
+        DisposableEffect(theoplayerView) {
+            onDispose {
+                theoplayerView.onDestroy()
+            }
+        }
+    }
+    return theoplayerView
+}
+
+/**
+ * A context for creating a [THEOplayerView] in a preview.
+ *
+ * The [THEOplayerView] constructor casts the application context to [Application],
+ * but layoutlib's application context is not an [Application].
+ */
+private class PreviewContext(base: Context) : ContextWrapper(base) {
+    private val application = PreviewApplication(base.applicationContext)
+
+    override fun getApplicationContext(): Context = application
+}
+
+private class PreviewApplication(base: Context) : Application() {
+    init {
+        attachBaseContext(base)
+    }
+}
+
+@Composable
+internal fun rememberTHEOplayerViewInternal(config: THEOplayerConfig?): THEOplayerView? {
+    return if (LocalInspectionMode.current) null else rememberTHEOplayerView(config)
+}
+
+/**
  * Create a [Player] wrapping an existing [THEOplayerView].
  *
  * The [THEOplayerView] should be [remembered][remember] so it's not re-created on every
@@ -524,7 +703,10 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
 }
 
 @Composable
-internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView {
+internal fun setupTHEOplayerView(
+    theoplayerView: THEOplayerView,
+    destroyOnLifecycleDestroy: Boolean = true
+): THEOplayerView {
     var wasPlayingAd by remember { mutableStateOf(false) }
 
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -544,7 +726,11 @@ internal fun setupTHEOplayerView(theoplayerView: THEOplayerView): THEOplayerView
                     theoplayerView.onPause()
                 }
 
-                Lifecycle.Event.ON_DESTROY -> theoplayerView.onDestroy()
+                Lifecycle.Event.ON_DESTROY -> {
+                    if (destroyOnLifecycleDestroy) {
+                        theoplayerView.onDestroy()
+                    }
+                }
                 else -> {}
             }
         }
