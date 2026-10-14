@@ -13,9 +13,6 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.theoplayer.android.ui.LiveButton
-import com.theoplayer.android.ui.LoadingSpinner
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
 
 private val LightColors = lightColorScheme(
     primary = md_theme_light_primary,
@@ -98,27 +95,6 @@ data class PlayerColors(
 )
 
 private val LocalPlayerColors = staticCompositionLocalOf { PlayerColors() }
-
-/**
- * Animation settings used by THEOplayer UI components.
- */
-@Immutable
-data class PlayerAnimations(
-    /**
-     * The animation duration when fading in the player controls.
-     */
-    val controlsEnterDuration: Duration = 0.milliseconds,
-    /**
-     * The animation duration when fading out the player controls.
-     */
-    val controlsExitDuration: Duration = 500.milliseconds,
-    /**
-     * The delay for the [LoadingSpinner] to become visible after the player starts buffering.
-     */
-    val loadingSpinnerDelay: Duration = 500.milliseconds,
-)
-
-private val LocalPlayerAnimations = staticCompositionLocalOf { PlayerAnimations() }
 
 /**
  * Provides theme colors, shapes and fonts to be used by the player.
