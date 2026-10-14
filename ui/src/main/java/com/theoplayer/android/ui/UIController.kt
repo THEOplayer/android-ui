@@ -256,7 +256,7 @@ internal fun UIControllerImpl(
         onDispose { scope.dispose() }
     }
 
-    val uiState by remember(scope, pictureInPictureState, errorState) {
+    val uiState = remember(scope, pictureInPictureState, errorState) {
         derivedStateOf {
             val currentMenu = scope.currentMenu
             when {
@@ -267,11 +267,7 @@ internal fun UIControllerImpl(
             }
         }
     }
-    val backgroundVisible = when (uiState) {
-        is UIState.Controls -> controlsVisible.value
-        is UIState.Hidden -> false
-        else -> true
-    }
+    val backgroundVisible = uiState.value.isVisible(controlsVisible.value)
     val background by animateColorAsState(
         label = "BackgroundAnimation",
         targetValue = if (backgroundVisible) color else color.copy(alpha = 0f),
@@ -308,7 +304,7 @@ internal fun UIControllerImpl(
             )
             .handlePlayerKeys(
                 player = nativePlayer,
-                controlsVisible = { controlsVisible.value },
+                controlsVisible = { uiState.value.isVisible(controlsVisible.value) },
                 showControls = {
                     forceControlsHidden = false
                     tapCount++
@@ -325,7 +321,7 @@ internal fun UIControllerImpl(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(background),
-                targetState = uiState,
+                targetState = uiState.value,
                 transitionSpec = {
                     if (targetState is UIState.Error) {
                         // Show errors immediately
@@ -384,7 +380,13 @@ private sealed class UIState {
     object Error : UIState()
     data class Menu(val menu: MenuContent) : UIState()
     object Controls : UIState()
-    object Hidden
+    object Hidden : UIState()
+}
+
+private fun UIState.isVisible(controlsVisible: Boolean): Boolean = when (this) {
+    is UIState.Controls -> controlsVisible
+    is UIState.Hidden -> false
+    else -> true
 }
 
 @Composable
