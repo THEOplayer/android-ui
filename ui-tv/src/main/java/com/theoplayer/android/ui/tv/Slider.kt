@@ -47,6 +47,9 @@ private const val ThumbLayoutId = "thumb"
 
 /**
  * Holds the value and range for a TV slider.
+ *
+ * @param value the initial slider value, constrained to [valueRange]
+ * @param valueRange the range of values available to the slider
  */
 @ExperimentalTvUiApi
 @Stable
@@ -82,6 +85,22 @@ class SliderState(
 
 /**
  * Displays a focusable slider controlled by D-pad keys.
+ *
+ * A single Left or Right press changes the value by [keyStep]. Holding a key changes it by
+ * [keyRepeatStep] for each repeat.
+ *
+ * @param value the current slider value, constrained to [valueRange]
+ * @param onValueChange called with each value change
+ * @param modifier the [Modifier] to be applied to this slider
+ * @param enabled whether the slider responds to user input
+ * @param valueRange the range of values available to the slider
+ * @param keyStep the value change for a single Left or Right press
+ * @param keyRepeatStep the value change for each key repeat while Left or Right is held
+ * @param onValueChangeFinished called on key-up, when focus is lost, or when the slider is disabled
+ * @param colors the colors used for enabled and disabled states. See [SliderDefaults.colors].
+ * @param interactionSource the [MutableInteractionSource] used to observe focus interactions
+ * @param thumb the thumb slot, which receives the current [SliderState]
+ * @param track the track slot, which receives the current [SliderState]
  */
 @ExperimentalTvUiApi
 @Composable
@@ -97,10 +116,14 @@ fun Slider(
     colors: SliderColors = SliderDefaults.colors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     thumb: @Composable (SliderState) -> Unit = {
-        SliderDefaults.Thumb(interactionSource = interactionSource, colors = colors)
+        SliderDefaults.Thumb(
+            interactionSource = interactionSource,
+            colors = colors,
+            enabled = enabled
+        )
     },
     track: @Composable (SliderState) -> Unit = { sliderState ->
-        SliderDefaults.Track(sliderState = sliderState, colors = colors)
+        SliderDefaults.Track(sliderState = sliderState, colors = colors, enabled = enabled)
     }
 ) {
     val state = rememberSyncedSliderState(value, valueRange)
@@ -120,7 +143,22 @@ fun Slider(
 }
 
 /**
- * Displays a slider backed by [state].
+ * Displays a slider backed by [state] and controlled by D-pad keys.
+ *
+ * A single Left or Right press changes the value by [keyStep]. Holding a key changes it by
+ * [keyRepeatStep] for each repeat.
+ *
+ * @param state the [SliderState] that holds the slider value and range
+ * @param onValueChange called with each value change
+ * @param modifier the [Modifier] to be applied to this slider
+ * @param enabled whether the slider responds to user input
+ * @param keyStep the value change for a single Left or Right press
+ * @param keyRepeatStep the value change for each key repeat while Left or Right is held
+ * @param onValueChangeFinished called on key-up, when focus is lost, or when the slider is disabled
+ * @param colors the colors used for enabled and disabled states. See [SliderDefaults.colors].
+ * @param interactionSource the [MutableInteractionSource] used to observe focus interactions
+ * @param thumb the thumb slot, which receives the current [SliderState]
+ * @param track the track slot, which receives the current [SliderState]
  */
 @ExperimentalTvUiApi
 @Composable
@@ -135,10 +173,14 @@ fun Slider(
     colors: SliderColors = SliderDefaults.colors(),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
     thumb: @Composable (SliderState) -> Unit = {
-        SliderDefaults.Thumb(interactionSource = interactionSource, colors = colors)
+        SliderDefaults.Thumb(
+            interactionSource = interactionSource,
+            colors = colors,
+            enabled = enabled
+        )
     },
     track: @Composable (SliderState) -> Unit = { sliderState ->
-        SliderDefaults.Track(sliderState = sliderState, colors = colors)
+        SliderDefaults.Track(sliderState = sliderState, colors = colors, enabled = enabled)
     }
 ) {
     val range = state.valueRange
@@ -192,18 +234,36 @@ internal fun rememberSyncedSliderState(
 }
 
 /**
- * Colors used to draw a TV slider.
+ * Colors used to draw a TV slider in enabled and disabled states.
  */
 @ExperimentalTvUiApi
 @Immutable
 class SliderColors(
-    /** Thumb color. */
+    /** Thumb color when enabled. */
     val thumbColor: Color,
-    /** Active track color. */
+    /** Active track color when enabled. */
     val activeTrackColor: Color,
-    /** Inactive track color. */
-    val inactiveTrackColor: Color
-)
+    /** Inactive track color when enabled. */
+    val inactiveTrackColor: Color,
+    /** Thumb color when disabled. */
+    val disabledThumbColor: Color,
+    /** Active track color when disabled. */
+    val disabledActiveTrackColor: Color,
+    /** Inactive track color when disabled. */
+    val disabledInactiveTrackColor: Color
+) {
+    /** Returns the thumb color for [enabled]. */
+    internal fun thumbColor(enabled: Boolean): Color =
+        if (enabled) thumbColor else disabledThumbColor
+
+    /** Returns the active track color for [enabled]. */
+    internal fun activeTrackColor(enabled: Boolean): Color =
+        if (enabled) activeTrackColor else disabledActiveTrackColor
+
+    /** Returns the inactive track color for [enabled]. */
+    internal fun inactiveTrackColor(enabled: Boolean): Color =
+        if (enabled) inactiveTrackColor else disabledInactiveTrackColor
+}
 
 /**
  * Creates slider colors and default slider content.
@@ -212,27 +272,49 @@ class SliderColors(
 object SliderDefaults {
     /**
      * Creates a slider color set from the current TV theme.
+     *
+     * @param thumbColor thumb color when enabled
+     * @param activeTrackColor active track color when enabled
+     * @param inactiveTrackColor inactive track color when enabled
+     * @param disabledThumbColor thumb color when disabled
+     * @param disabledActiveTrackColor active track color when disabled
+     * @param disabledInactiveTrackColor inactive track color when disabled
      */
     @Composable
     fun colors(
         thumbColor: Color = MaterialTheme.colorScheme.primary,
         activeTrackColor: Color = MaterialTheme.colorScheme.primary,
         inactiveTrackColor: Color =
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f)
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+        disabledThumbColor: Color =
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        disabledActiveTrackColor: Color =
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        disabledInactiveTrackColor: Color =
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
     ): SliderColors = SliderColors(
         thumbColor = thumbColor,
         activeTrackColor = activeTrackColor,
-        inactiveTrackColor = inactiveTrackColor
+        inactiveTrackColor = inactiveTrackColor,
+        disabledThumbColor = disabledThumbColor,
+        disabledActiveTrackColor = disabledActiveTrackColor,
+        disabledInactiveTrackColor = disabledInactiveTrackColor
     )
 
     /**
      * Displays a slider thumb that grows when focused.
+     *
+     * @param interactionSource the interaction source used to observe focus
+     * @param modifier the [Modifier] to be applied to the thumb
+     * @param colors the colors used for the thumb in enabled and disabled states
+     * @param enabled whether the slider is enabled
      */
     @Composable
     fun Thumb(
         interactionSource: MutableInteractionSource,
         modifier: Modifier = Modifier,
-        colors: SliderColors = colors()
+        colors: SliderColors = colors(),
+        enabled: Boolean = true
     ) {
         val focused by interactionSource.collectIsFocusedAsState()
         val radius by animateDpAsState(
@@ -242,7 +324,7 @@ object SliderDefaults {
 
         Canvas(modifier.size(ThumbSize)) {
             drawCircle(
-                color = colors.thumbColor,
+                color = colors.thumbColor(enabled),
                 radius = radius.toPx()
             )
         }
@@ -250,26 +332,32 @@ object SliderDefaults {
 
     /**
      * Displays a slider track with active and inactive sections.
+     *
+     * @param sliderState the state used to determine the active track length
+     * @param modifier the [Modifier] to be applied to the track
+     * @param colors the colors used for the track in enabled and disabled states
+     * @param enabled whether the slider is enabled
      */
     @Composable
     fun Track(
         sliderState: SliderState,
         modifier: Modifier = Modifier,
-        colors: SliderColors = colors()
+        colors: SliderColors = colors(),
+        enabled: Boolean = true
     ) {
         Canvas(modifier.fillMaxWidth().height(4.dp)) {
             val centerY = size.height / 2
             val end = Offset(size.width, centerY)
             val strokeWidth = 4.dp.toPx()
             drawLine(
-                color = colors.inactiveTrackColor,
+                color = colors.inactiveTrackColor(enabled),
                 start = Offset(0f, centerY),
                 end = end,
                 strokeWidth = strokeWidth,
                 cap = StrokeCap.Round
             )
             drawLine(
-                color = colors.activeTrackColor,
+                color = colors.activeTrackColor(enabled),
                 start = Offset(0f, centerY),
                 end = Offset(size.width * sliderState.coercedValueAsFraction, centerY),
                 strokeWidth = strokeWidth,

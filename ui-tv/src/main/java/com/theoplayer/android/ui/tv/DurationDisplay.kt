@@ -11,7 +11,9 @@ import com.theoplayer.android.ui.formatPlaybackTime
 import com.theoplayer.android.ui.rememberPlaybackTimeState
 
 /**
- * Displays the player's duration.
+ * A text display that shows the player's duration.
+ *
+ * @param modifier the [Modifier] to be applied to this text
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class, InternalUiApi::class)
@@ -24,7 +26,10 @@ fun DurationDisplay(modifier: Modifier = Modifier) {
 }
 
 /**
- * Displays the duration from [state].
+ * A text display that shows the player's duration.
+ *
+ * @param state the [PlaybackTimeState] to read
+ * @param modifier the [Modifier] to be applied to this text
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi
