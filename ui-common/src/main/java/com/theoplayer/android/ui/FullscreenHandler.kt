@@ -32,8 +32,16 @@ internal interface FullscreenHandler {
 }
 
 /**
- * Calls [onChange] on every fullscreen change until the calling coroutine is cancelled.
- * If [onChange] throws, the listener is removed and the exception is rethrown.
+ * Continuously listens to fullscreen changes, passing the new fullscreen state to [onChange].
+ *
+ * If [onChange] throws an exception, listening is terminated: the listener is removed,
+ * and the exception is rethrown from this function.
+ *
+ * See [EventDispatcher.listen][com.theoplayer.android.ui.listen] for why this uses
+ * [suspendCancellableCoroutine] rather than a [callbackFlow][kotlinx.coroutines.flow.callbackFlow].
+ *
+ * @return Nothing. This function never returns normally: it either keeps listening indefinitely,
+ *   or terminates due to an exception or cancellation.
  */
 internal suspend fun FullscreenHandler.listen(onChange: (Boolean) -> Unit): Nothing {
     var continuation: CancellableContinuation<Nothing>? = null
