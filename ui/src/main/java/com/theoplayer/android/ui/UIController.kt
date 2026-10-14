@@ -256,7 +256,7 @@ internal fun UIControllerImpl(
         onDispose { scope.dispose() }
     }
 
-    val uiState = remember(scope, pictureInPictureState, errorState) {
+    val uiState by remember(scope, pictureInPictureState, errorState) {
         derivedStateOf {
             val currentMenu = scope.currentMenu
             when {
@@ -267,7 +267,7 @@ internal fun UIControllerImpl(
             }
         }
     }
-    val backgroundVisible = uiState.value.isVisible(controlsVisible.value)
+    val backgroundVisible = uiState.isVisible(controlsVisible.value)
     val background by animateColorAsState(
         label = "BackgroundAnimation",
         targetValue = if (backgroundVisible) color else color.copy(alpha = 0f),
@@ -304,7 +304,7 @@ internal fun UIControllerImpl(
             )
             .handlePlayerKeys(
                 player = nativePlayer,
-                controlsVisible = { uiState.value.isVisible(controlsVisible.value) },
+                controlsVisible = { uiState.isVisible(controlsVisible.value) },
                 showControls = {
                     forceControlsHidden = false
                     tapCount++
@@ -321,7 +321,7 @@ internal fun UIControllerImpl(
                 modifier = Modifier
                     .fillMaxSize()
                     .background(background),
-                targetState = uiState.value,
+                targetState = uiState,
                 transitionSpec = {
                     if (targetState is UIState.Error) {
                         // Show errors immediately
@@ -383,6 +383,7 @@ private sealed class UIState {
     object Hidden : UIState()
 }
 
+/** Returns whether this UI state is visible. */
 private fun UIState.isVisible(controlsVisible: Boolean): Boolean = when (this) {
     is UIState.Controls -> controlsVisible
     is UIState.Hidden -> false
