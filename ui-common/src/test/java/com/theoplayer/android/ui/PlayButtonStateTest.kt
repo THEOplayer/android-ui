@@ -14,6 +14,13 @@ import org.junit.Test
 
 class PlayButtonStateTest {
     @Test
+    fun `exposes the player state before observe`() {
+        assertTrue(PlayButtonState(MockPlayer(paused = true).player).paused)
+        assertFalse(PlayButtonState(MockPlayer(paused = false, ended = false).player).paused)
+        assertTrue(PlayButtonState(MockPlayer(paused = false, ended = true).player).ended)
+    }
+
+    @Test
     fun `registers the playback events`() = runTest {
         val mock = MockPlayer()
         launchObserve { PlayButtonState(mock.player).observe() }

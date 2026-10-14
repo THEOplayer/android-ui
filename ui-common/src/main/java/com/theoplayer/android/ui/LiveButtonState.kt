@@ -50,6 +50,10 @@ class LiveButtonState internal constructor(
         updatePlaybackState()
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

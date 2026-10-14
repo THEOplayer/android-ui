@@ -39,6 +39,10 @@ class SubtitleTrackState internal constructor(private val player: Player?) {
         activeSubtitleTrack = subtitleTracks.find { it.mode == TextTrackMode.SHOWING }
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

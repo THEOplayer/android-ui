@@ -61,6 +61,10 @@ class VideoQualityState internal constructor(private val player: Player?) {
         setActiveVideoTrack(findActiveVideoTrack())
     }
 
+    init {
+        setActiveVideoTrack(findActiveVideoTrack())
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         val activeTrack = MutableStateFlow(findActiveVideoTrack())

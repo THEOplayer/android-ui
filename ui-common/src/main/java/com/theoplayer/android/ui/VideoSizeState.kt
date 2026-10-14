@@ -34,6 +34,10 @@ class VideoSizeState internal constructor(private val player: Player?) {
         videoHeight = player?.videoHeight ?: 0
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

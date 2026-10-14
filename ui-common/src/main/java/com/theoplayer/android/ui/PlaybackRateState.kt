@@ -26,6 +26,10 @@ class PlaybackRateState internal constructor(private val player: Player?) {
         playbackRate = player?.playbackRate ?: 1.0
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

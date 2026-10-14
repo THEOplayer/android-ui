@@ -33,6 +33,10 @@ class PlayButtonState internal constructor(private val player: Player?) {
         ended = player?.isEnded ?: false
     }
 
+    init {
+        updatePlaybackState()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         updatePlaybackState()

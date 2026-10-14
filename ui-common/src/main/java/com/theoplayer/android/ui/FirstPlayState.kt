@@ -33,6 +33,10 @@ class FirstPlayState internal constructor(private val player: Player?) {
         firstPlay = player?.let { !it.isPaused || (it.played?.length() ?: 0) > 0 } == true
     }
 
+    init {
+        updateFirstPlay()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         updateFirstPlay()

@@ -38,6 +38,10 @@ class AudioTrackState internal constructor(private val player: Player?) {
         activeAudioTrack = audioTracks.find { it.isEnabled }
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

@@ -36,6 +36,10 @@ class LoadingState internal constructor(private val player: Player?) {
         readyState = player?.readyState ?: ReadyState.HAVE_NOTHING
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

@@ -29,6 +29,10 @@ class FullscreenState internal constructor(private val theoplayerView: THEOplaye
         fullscreen = handler?.fullscreen ?: false
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val handler = handler ?: return
         update()

@@ -46,6 +46,10 @@ class PlaybackTimeState internal constructor(private val player: Player?) {
         duration = seekable.lastEnd ?: rawDuration
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

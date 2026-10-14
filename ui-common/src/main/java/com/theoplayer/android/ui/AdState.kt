@@ -30,6 +30,10 @@ class AdState internal constructor(private val player: Player?) {
         playingAd = player?.ads?.isPlaying ?: false
     }
 
+    init {
+        update()
+    }
+
     internal suspend fun observe() {
         val player = player ?: return
         update()

@@ -7,6 +7,14 @@ import org.junit.Test
 
 class PlaybackTimeStateTest {
     @Test
+    fun `exposes the player state before observe`() {
+        val state = PlaybackTimeState(MockPlayer(currentTime = 5.0, duration = 100.0).player)
+        assertEquals(5.0, state.currentTime, 0.0)
+        assertEquals(100.0, state.duration, 0.0)
+        assertEquals(StreamType.Vod, state.streamType)
+    }
+
+    @Test
     fun `registers the playback events`() = runTest {
         val mock = MockPlayer()
         launchObserve { PlaybackTimeState(mock.player).observe() }
