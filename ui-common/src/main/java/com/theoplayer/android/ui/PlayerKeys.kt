@@ -48,16 +48,17 @@ private fun Int.isMediaKey(): Boolean = when (this) {
 /** Performs the action for a media transport key. */
 private fun handleMediaKey(player: Player?, keyCode: Int, seekOffset: Int) {
     when (keyCode) {
-        NativeKeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> togglePlayPause(player)
+        NativeKeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> togglePlayerPlayPause(player)
         NativeKeyEvent.KEYCODE_MEDIA_PLAY -> player?.play()
         NativeKeyEvent.KEYCODE_MEDIA_PAUSE -> player?.pause()
-        NativeKeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> seekBy(player, seekOffset)
-        NativeKeyEvent.KEYCODE_MEDIA_REWIND -> seekBy(player, -seekOffset)
+        NativeKeyEvent.KEYCODE_MEDIA_FAST_FORWARD -> seekPlayerBy(player, seekOffset)
+        NativeKeyEvent.KEYCODE_MEDIA_REWIND -> seekPlayerBy(player, -seekOffset)
     }
 }
 
-/** Toggles between play and pause. */
-private fun togglePlayPause(player: Player?) {
+/** Toggles playback between play and pause. */
+@InternalUiApi
+fun togglePlayerPlayPause(player: Player?) {
     if (player == null) return
     if (player.isPaused) {
         player.play()
@@ -66,8 +67,9 @@ private fun togglePlayPause(player: Player?) {
     }
 }
 
-/** Seeks by [seekOffset], clamped to the media duration. */
-private fun seekBy(player: Player?, seekOffset: Int) {
+/** Seeks by [seekOffset], skipping ads and clamping to the media duration. */
+@InternalUiApi
+fun seekPlayerBy(player: Player?, seekOffset: Int) {
     if (player == null || player.ads.isPlaying) return
     val duration = player.duration
     if (!duration.isNaN()) {
