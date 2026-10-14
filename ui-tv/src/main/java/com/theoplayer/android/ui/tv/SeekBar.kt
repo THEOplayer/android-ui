@@ -10,7 +10,15 @@ import com.theoplayer.android.ui.SeekBarState
 import com.theoplayer.android.ui.rememberSeekBarState
 
 /**
- * Displays the player's seek bar.
+ * A seek bar showing the player's current time and allowing D-pad seeking.
+ *
+ * Press Left or Right to seek by [seekOffset] seconds. Hold either key to scrub through the
+ * timeline; playback pauses while scrubbing.
+ *
+ * @param modifier the [Modifier] to be applied to this seek bar
+ * @param colors [SliderColors] that resolve the seek bar colors for enabled and disabled states.
+ * See [SliderDefaults.colors].
+ * @param seekOffset the number of seconds to seek on a single Left or Right press
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class)
@@ -29,7 +37,16 @@ fun SeekBar(
 }
 
 /**
- * Displays the seek bar from [state].
+ * A seek bar showing the current time from [state] and allowing D-pad seeking.
+ *
+ * Press Left or Right to seek by [seekOffset] seconds. Hold either key to scrub through the
+ * timeline; playback pauses while scrubbing.
+ *
+ * @param state the [SeekBarState] to read and control
+ * @param modifier the [Modifier] to be applied to this seek bar
+ * @param colors [SliderColors] that resolve the seek bar colors for enabled and disabled states.
+ * See [SliderDefaults.colors].
+ * @param seekOffset the number of seconds to seek on a single Left or Right press
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi
@@ -60,11 +77,19 @@ fun SeekBar(
         interactionSource = interactionSource,
         thumb = {
             if (state.showThumb) {
-                SliderDefaults.Thumb(interactionSource = interactionSource, colors = colors)
+                SliderDefaults.Thumb(
+                    interactionSource = interactionSource,
+                    colors = colors,
+                    enabled = state.enabled
+                )
             }
         },
         track = { sliderState ->
-            SliderDefaults.Track(sliderState = sliderState, colors = colors)
+            SliderDefaults.Track(
+                sliderState = sliderState,
+                colors = colors,
+                enabled = state.enabled
+            )
         }
     )
 }

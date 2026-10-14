@@ -27,7 +27,9 @@ import com.theoplayer.android.ui.common.R
 import com.theoplayer.android.ui.rememberErrorState
 
 /**
- * Displays a fatal player error, if one occurs.
+ * A display for a fatal error, if the player encounters one.
+ *
+ * @param modifier the [Modifier] to be applied to this display
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class, InternalUiApi::class)
@@ -41,7 +43,14 @@ fun ErrorDisplay(modifier: Modifier = Modifier) {
 }
 
 /**
- * Displays the error held by [state].
+ * A display for a fatal error, if the player encounters one.
+ *
+ * The error is only captured from the player's `error` event, so create the [ErrorState]
+ * *before* an error can happen: at the top of your UI instead of inside the error overlay
+ * that is only shown once there's an error.
+ *
+ * @param state the [ErrorState] to read
+ * @param modifier the [Modifier] to be applied to this display
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi

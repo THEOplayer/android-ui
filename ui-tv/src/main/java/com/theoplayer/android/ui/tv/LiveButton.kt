@@ -27,7 +27,20 @@ import com.theoplayer.android.ui.rememberLiveButtonState
 import com.theoplayer.android.ui.theme.LocalPlayerColors
 
 /**
- * Shows live status and seeks to the live point when clicked.
+ * A button that shows whether the player is currently playing at the live point,
+ * and seeks to the live point when clicked.
+ *
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ * @param colors [ButtonColors] that resolve the colors for this button in different states. See
+ * [ButtonDefaults.colors].
+ * @param liveThreshold the maximum distance (in seconds) from the live point that the player's
+ * current time can be for it to still be considered "at the live point"
+ * @param live button content when the player is playing at the live point,
+ * typically a red circle icon followed by the text "LIVE"
+ * @param dvr button content when the player is playing behind the live point,
+ * typically a gray circle icon followed by the text "LIVE"
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class, InternalUiApi::class)
@@ -55,7 +68,19 @@ fun LiveButton(
 }
 
 /**
- * Shows live status from [state] and seeks to the live point when clicked.
+ * A button that shows whether the player is currently playing at the live point,
+ * and seeks to the live point when clicked.
+ *
+ * @param state the [LiveButtonState] to read and control
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ * content
+ * @param colors [ButtonColors] that resolve the colors for this button in different states. See
+ * [ButtonDefaults.colors].
+ * @param live button content when the player is playing at the live point,
+ * typically a red circle icon followed by the text "LIVE"
+ * @param dvr button content when the player is playing behind the live point,
+ * typically a gray circle icon followed by the text "LIVE"
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi

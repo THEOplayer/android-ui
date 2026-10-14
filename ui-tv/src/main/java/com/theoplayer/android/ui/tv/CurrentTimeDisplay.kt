@@ -13,7 +13,13 @@ import com.theoplayer.android.ui.formatPlaybackTime
 import com.theoplayer.android.ui.rememberPlaybackTimeState
 
 /**
- * Displays the player's current time.
+ * A text display that shows the player's current time.
+ *
+ * @param modifier the [Modifier] to be applied to this text
+ * @param showRemaining if set, shows the remaining time of the stream as a negative value
+ * (e.g. "-01:23")
+ * @param showDuration if set, also shows the duration of the stream
+ * (e.g. "01:23 / 10:00")
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class, InternalUiApi::class)
@@ -32,7 +38,14 @@ fun CurrentTimeDisplay(
 }
 
 /**
- * Displays playback time from [state].
+ * A text display that shows the player's current time.
+ *
+ * @param state the [PlaybackTimeState] to read
+ * @param modifier the [Modifier] to be applied to this text
+ * @param showRemaining if set, shows the remaining time of the stream as a negative value
+ * (e.g. "-01:23")
+ * @param showDuration if set, also shows the duration of the stream
+ * (e.g. "01:23 / 10:00")
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi
