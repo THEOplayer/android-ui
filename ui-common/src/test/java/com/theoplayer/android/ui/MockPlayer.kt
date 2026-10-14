@@ -5,20 +5,51 @@ import com.theoplayer.android.api.event.Event
 import com.theoplayer.android.api.event.EventDispatcher
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.EventType
+import com.theoplayer.android.api.event.ads.AdBreakBeginEvent
+import com.theoplayer.android.api.event.ads.AdBreakEndEvent
 import com.theoplayer.android.api.event.ads.AdEvent
+import com.theoplayer.android.api.event.ads.AdSkipEvent
 import com.theoplayer.android.api.event.ads.AdsEventTypes
 import com.theoplayer.android.api.error.THEOplayerException
+import com.theoplayer.android.api.event.player.DurationChangeEvent
+import com.theoplayer.android.api.event.player.EndedEvent
 import com.theoplayer.android.api.event.player.ErrorEvent
+import com.theoplayer.android.api.event.player.PauseEvent
+import com.theoplayer.android.api.event.player.PlayEvent
 import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.event.player.PresentationModeChange
+import com.theoplayer.android.api.event.player.RateChangeEvent
+import com.theoplayer.android.api.event.player.ReadyStateChangeEvent
+import com.theoplayer.android.api.event.player.ResizeEvent
+import com.theoplayer.android.api.event.player.SeekedEvent
+import com.theoplayer.android.api.event.player.SeekingEvent
 import com.theoplayer.android.api.event.player.SourceChangeEvent
+import com.theoplayer.android.api.event.player.TimeUpdateEvent
+import com.theoplayer.android.api.event.player.VolumeChangeEvent
 import com.theoplayer.android.api.event.track.TrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.TargetQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes
+import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent as VideoAddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent as VideoRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent as VideoTrackListChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes
+import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as TextAddTrackEvent
+import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
+import com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes
+import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 import com.theoplayer.android.api.event.track.tracklist.TrackListEvent
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.ReadyState
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrackList
 import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
+import com.theoplayer.android.api.player.track.mediatrack.quality.QualityList
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
@@ -145,17 +176,36 @@ internal class MockPlayer(
     }
 
     private fun mockEvent(type: EventType<*>): PlayerEvent<*> = when (type) {
+        PlayerEventTypes.PLAY -> mockk<PlayEvent>()
+        PlayerEventTypes.PAUSE -> mockk<PauseEvent>()
+        PlayerEventTypes.ENDED -> mockk<EndedEvent>()
+        PlayerEventTypes.SEEKING -> mockk<SeekingEvent>()
+        PlayerEventTypes.SEEKED -> mockk<SeekedEvent>()
+        PlayerEventTypes.READYSTATECHANGE -> mockk<ReadyStateChangeEvent>()
+        PlayerEventTypes.SOURCECHANGE -> mockk<SourceChangeEvent>()
         PlayerEventTypes.ERROR -> mockk<ErrorEvent> {
             every { errorObject } returns this@MockPlayer.errorObject
         }
-        PlayerEventTypes.SOURCECHANGE -> mockk<SourceChangeEvent>()
+        PlayerEventTypes.TIMEUPDATE -> mockk<TimeUpdateEvent>()
+        PlayerEventTypes.DURATIONCHANGE -> mockk<DurationChangeEvent>()
+        PlayerEventTypes.VOLUMECHANGE -> mockk<VolumeChangeEvent>()
+        PlayerEventTypes.RESIZE -> mockk<ResizeEvent>()
+        PlayerEventTypes.RATECHANGE -> mockk<RateChangeEvent>()
+        PlayerEventTypes.PRESENTATIONMODECHANGE -> mockk<PresentationModeChange>()
         else -> mockk()
     }
 
     fun fireAdEvent() {
-        adListeners.toList().forEach { (_, listener) ->
+        adListeners.toList().forEach { (type, listener) ->
             @Suppress("UNCHECKED_CAST")
-            (listener as EventListener<AdEvent<*>>).handleEvent(mockk())
+            (listener as EventListener<AdEvent<*>>).handleEvent(
+                when (type) {
+                    AdsEventTypes.AD_BREAK_BEGIN -> mockk<AdBreakBeginEvent>()
+                    AdsEventTypes.AD_SKIP -> mockk<AdSkipEvent>()
+                    AdsEventTypes.AD_BREAK_END -> mockk<AdBreakEndEvent>()
+                    else -> mockk()
+                }
+            )
         }
     }
 }
@@ -233,7 +283,7 @@ internal class MockVideoTrack(
     var enabled: Boolean = false,
     var activeQuality: VideoQuality? = null,
     var targetQuality: VideoQuality? = null,
-    val qualities: List<VideoQuality> = listOf()
+    var qualities: List<VideoQuality> = listOf()
 ) {
     val uid = nextTrackUid++
     val listeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
@@ -246,7 +296,7 @@ internal class MockVideoTrack(
         every { getTargetQuality() } answers { this@MockVideoTrack.targetQuality }
         every { setTargetQuality(any()) } answers { this@MockVideoTrack.targetQuality = firstArg() }
         every { getQualities() } answers {
-            mockk<com.theoplayer.android.api.player.track.mediatrack.quality.QualityList<VideoQuality>> {
+            mockk<QualityList<VideoQuality>> {
                 every { iterator() } answers { this@MockVideoTrack.qualities.toMutableList().listIterator() }
             }
         }
@@ -260,18 +310,40 @@ internal class MockVideoTrack(
         }
     }
 
+    // Fires at all listeners with an event matching their registered event type.
     fun fireEvent() {
-        listeners.toList().forEach { (_, listener) ->
+        listeners.toList().forEach { (type, listener) ->
             @Suppress("UNCHECKED_CAST")
-            (listener as EventListener<Event<*>>).handleEvent(mockk())
+            (listener as EventListener<Event<*>>).handleEvent(
+                when (type) {
+                    VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT ->
+                        mockk<ActiveQualityChangedEvent>()
+                    VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT ->
+                        mockk<TargetQualityChangedEvent>()
+                    else -> mockk()
+                }
+            )
         }
     }
 }
 
 internal fun MutableList<Pair<EventType<*>, EventListener<*>>>.fireTrackListEvent() {
-    toList().forEach { (_, listener) ->
+    toList().forEach { (type, listener) ->
         @Suppress("UNCHECKED_CAST")
-        (listener as EventListener<Event<*>>).handleEvent(mockk())
+        (listener as EventListener<Event<*>>).handleEvent(
+            when (type) {
+                AudioTrackListEventTypes.ADDTRACK -> mockk<AudioAddTrackEvent>()
+                AudioTrackListEventTypes.REMOVETRACK -> mockk<AudioRemoveTrackEvent>()
+                AudioTrackListEventTypes.TRACKLISTCHANGE -> mockk<AudioTrackListChangeEvent>()
+                VideoTrackListEventTypes.ADDTRACK -> mockk<VideoAddTrackEvent>()
+                VideoTrackListEventTypes.REMOVETRACK -> mockk<VideoRemoveTrackEvent>()
+                VideoTrackListEventTypes.TRACKLISTCHANGE -> mockk<VideoTrackListChangeEvent>()
+                TextTrackListEventTypes.ADDTRACK -> mockk<TextAddTrackEvent>()
+                TextTrackListEventTypes.REMOVETRACK -> mockk<TextRemoveTrackEvent>()
+                TextTrackListEventTypes.TRACKLISTCHANGE -> mockk<TextTrackListChangeEvent>()
+                else -> mockk()
+            }
+        )
     }
 }
 

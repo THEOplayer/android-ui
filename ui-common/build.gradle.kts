@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.ui)
 
     testImplementation(libs.junit4)
+    testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.mockk)
 
     compileOnly(libs.theoplayer.compile)

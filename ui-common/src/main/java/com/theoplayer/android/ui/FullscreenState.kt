@@ -1,7 +1,7 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +18,6 @@ import com.theoplayer.android.api.THEOplayerView
 @ExperimentalPlayerStateApi
 class FullscreenState internal constructor(private val theoplayerView: THEOplayerView?) {
     private val handler: FullscreenHandler? = theoplayerView?.fullscreenHandler
-    private val listener = FullscreenHandler.OnFullscreenChangeListener { update() }
 
     /**
      * Whether the player is shown in fullscreen mode.
@@ -30,14 +29,14 @@ class FullscreenState internal constructor(private val theoplayerView: THEOplaye
         fullscreen = handler?.fullscreen ?: false
     }
 
-    internal fun observe() {
-        val handler = handler ?: return
+    init {
         update()
-        handler.addOnFullscreenChangeListener(listener)
     }
 
-    internal fun dispose() {
-        handler?.removeOnFullscreenChangeListener(listener)
+    internal suspend fun observe() {
+        val handler = handler ?: return
+        update()
+        handler.listen { update() }
     }
 
     /**
@@ -64,9 +63,6 @@ class FullscreenState internal constructor(private val theoplayerView: THEOplaye
 @Composable
 fun rememberFullscreenState(theoplayerView: THEOplayerView?): FullscreenState {
     val state = remember(theoplayerView) { FullscreenState(theoplayerView) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     return state
 }

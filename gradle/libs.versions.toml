@@ -12,6 +12,7 @@ appcompat = "1.7.1"
 compose-bom = "2026.03.01"
 junit4 = "4.13.2"
 mockk = "1.14.9"
+kotlinx-coroutines = "1.9.0"
 robolectric = "4.14.1"
 playServices-castFramework = "22.3.1"
 ui-test-junit4 = "1.10.6" # ...not in BOM for some reason?
@@ -54,6 +55,7 @@ dokka-plugin = { group = "org.jetbrains.dokka", name = "android-documentation-pl
 kotlin-gradle-plugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 junit4 = { group = "junit", name = "junit", version.ref = "junit4" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 theoplayer = { group = "com.theoplayer.theoplayer-sdk-android", name = "core", version.ref = "theoplayer" }
 theoplayer-ads-ima = { group = "com.theoplayer.theoplayer-sdk-android", name = "integration-ads-ima", version.ref = "theoplayer" }

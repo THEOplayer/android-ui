@@ -10,10 +10,13 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.common.R
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 internal interface FullscreenHandler {
@@ -25,6 +28,37 @@ internal interface FullscreenHandler {
 
     fun interface OnFullscreenChangeListener {
         fun onFullscreenChange(isFullscreen: Boolean)
+    }
+}
+
+/**
+ * Continuously listens to fullscreen changes, passing the new fullscreen state to [onChange].
+ *
+ * If [onChange] throws an exception, listening is terminated: the listener is removed,
+ * and the exception is rethrown from this function.
+ *
+ * See [EventDispatcher.listen][com.theoplayer.android.ui.listen] for why this uses
+ * [suspendCancellableCoroutine] rather than a [callbackFlow][kotlinx.coroutines.flow.callbackFlow].
+ *
+ * @return Nothing. This function never returns normally: it either keeps listening indefinitely,
+ *   or terminates due to an exception or cancellation.
+ */
+internal suspend fun FullscreenHandler.listen(onChange: (Boolean) -> Unit): Nothing {
+    var continuation: CancellableContinuation<Nothing>? = null
+    val listener = FullscreenHandler.OnFullscreenChangeListener { isFullscreen ->
+        val cont = continuation
+        if (cont == null || !cont.isActive) return@OnFullscreenChangeListener
+        try {
+            onChange(isFullscreen)
+        } catch (t: Throwable) {
+            cont.resumeWithException(t)
+        }
+    }
+    addOnFullscreenChangeListener(listener)
+    try {
+        suspendCancellableCoroutine<Nothing> { continuation = it }
+    } finally {
+        removeOnFullscreenChangeListener(listener)
     }
 }
 

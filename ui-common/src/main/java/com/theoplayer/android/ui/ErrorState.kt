@@ -1,15 +1,13 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.theoplayer.android.api.error.THEOplayerException
-import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.ErrorEvent
-import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
 
@@ -28,27 +26,17 @@ class ErrorState internal constructor(
     private val player: Player?,
     initialError: THEOplayerException? = null
 ) {
-    private val listeners = PlayerStateListeners()
-
     /**
      * The fatal error the player has encountered, if any.
      */
     var error by mutableStateOf(initialError)
         private set
 
-    internal fun observe() {
+    internal suspend fun observe() {
         val player = player ?: return
-        listeners.run {
-            val listener = EventListener<PlayerEvent<*>> { event ->
-                error = (event as? ErrorEvent)?.errorObject
-            }
-            player.add(PlayerEventTypes.ERROR, listener)
-            player.add(PlayerEventTypes.SOURCECHANGE, listener)
+        player.listen(PlayerEventTypes.ERROR, PlayerEventTypes.SOURCECHANGE) { event ->
+            error = (event as? ErrorEvent)?.errorObject
         }
-    }
-
-    internal fun dispose() {
-        listeners.removeAll()
     }
 }
 
@@ -75,9 +63,6 @@ fun rememberErrorState(player: Player?): ErrorState =
 @Composable
 fun rememberErrorState(player: Player?, initialError: THEOplayerException?): ErrorState {
     val state = remember(player) { ErrorState(player, initialError) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     return state
 }

@@ -1,11 +1,14 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.runtime.snapshots.Snapshot
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.Cast
 import com.theoplayer.android.api.cast.chromecast.Chromecast
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.EventType
+import com.theoplayer.android.api.event.chromecast.CastErrorEvent
+import com.theoplayer.android.api.event.chromecast.CastStateChangeEvent
 import com.theoplayer.android.api.event.chromecast.ChromecastEvent
 import com.theoplayer.android.api.event.chromecast.ChromecastEventTypes
 import io.mockk.every
@@ -14,6 +17,8 @@ import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class CastStateTest {
@@ -54,23 +59,23 @@ class CastStateTest {
     }
 
     @Test
-    fun `null view and null cast give defaults`() {
+    fun `null view and null cast give defaults`() = runTest {
         val state = CastState(null)
-        state.observe()
+        val job = launchObserve { state.observe() }
         assertEquals(PlayerCastState.UNAVAILABLE, state.castState)
         assertEquals(null, state.castReceiverName)
         assertFalse(state.casting)
         state.startCasting()
         state.stopCasting()
-        state.dispose()
+        job.cancelAndJoin()
     }
 
     @Test
-    fun `observe registers both events with one listener and dispose removes them`() {
+    fun `observe registers both events with one listener and cancelling removes them`() = runTest {
         val (cast, listeners, _) = mockCast()
         val view = mockView(cast)
         val state = CastState(view)
-        state.observe()
+        val job = launchObserve { state.observe() }
 
         assertEquals(2, listeners.size)
         assertEquals(
@@ -79,34 +84,39 @@ class CastStateTest {
         )
         assertTrue(listeners.all { it.second === listeners.first().second })
 
-        state.dispose()
+        job.cancelAndJoin()
         assertTrue(listeners.isEmpty())
     }
 
     @Test
-    fun `seeds and updates on events`() {
+    fun `seeds and updates on events`() = runTest {
         val (cast, listeners, _) = mockCast(state = PlayerCastState.CONNECTED, casting = true)
         val view = mockView(cast)
         val state = CastState(view)
-        state.observe()
+        launchObserve { state.observe() }
 
         assertEquals(PlayerCastState.CONNECTED, state.castState)
         assertEquals("Receiver", state.castReceiverName)
         assertTrue(state.casting)
 
-        listeners.toList().forEach { (_, listener) ->
+        listeners.toList().forEach { (type, listener) ->
             @Suppress("UNCHECKED_CAST")
-            (listener as EventListener<ChromecastEvent<*>>).handleEvent(mockk())
+            (listener as EventListener<ChromecastEvent<*>>).handleEvent(
+                when (type) {
+                    ChromecastEventTypes.STATECHANGE -> mockk<CastStateChangeEvent>()
+                    else -> mockk<CastErrorEvent>()
+                }
+            )
         }
         assertEquals(PlayerCastState.CONNECTED, state.castState)
     }
 
     @Test
-    fun `start and stop delegate to the chromecast`() {
+    fun `start and stop delegate to the chromecast`() = runTest {
         val (cast, _, chromecast) = mockCast()
         val view = mockView(cast)
         val state = CastState(view)
-        state.observe()
+        launchObserve { state.observe() }
 
         state.startCasting()
         verify { chromecast.start() }
@@ -115,7 +125,7 @@ class CastStateTest {
     }
 
     @Test
-    fun `replacing the cast integration moves the listeners`() {
+    fun `replacing the cast integration moves the listeners`() = runTest {
         val (oldCast, oldListeners, _) = mockCast()
         val (newCast, newListeners, _) = mockCast(state = PlayerCastState.CONNECTED)
         var currentCast: Cast = oldCast
@@ -123,17 +133,20 @@ class CastStateTest {
             every { this@mockk.cast } answers { currentCast }
         }
         val state = CastState(view)
-        state.observe()
+        launchObserve { state.observe() }
         assertEquals(2, oldListeners.size)
 
         currentCast = newCast
+        state.castState
+        Snapshot.sendApplyNotifications()
+        testScheduler.runCurrent()
         assertEquals(PlayerCastState.CONNECTED, state.castState)
         assertTrue(oldListeners.isEmpty())
         assertEquals(2, newListeners.size)
     }
 
     @Test
-    fun `getters before observe register nothing`() {
+    fun `getters before observe register nothing`() = runTest {
         val (cast, listeners, _) = mockCast()
         val view = mockView(cast)
         val state = CastState(view)

@@ -1,13 +1,11 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.theoplayer.android.api.event.Event
-import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
@@ -20,7 +18,6 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
  */
 @ExperimentalPlayerStateApi
 class SubtitleTrackState internal constructor(private val player: Player?) {
-    private val listeners = PlayerStateListeners()
 
     /**
      * The available subtitle tracks.
@@ -42,19 +39,18 @@ class SubtitleTrackState internal constructor(private val player: Player?) {
         activeSubtitleTrack = subtitleTracks.find { it.mode == TextTrackMode.SHOWING }
     }
 
-    internal fun observe() {
-        val player = player ?: return
+    init {
         update()
-        listeners.run {
-            val listener = EventListener<Event<*>> { update() }
-            player.textTracks.add(TextTrackListEventTypes.ADDTRACK, listener)
-            player.textTracks.add(TextTrackListEventTypes.REMOVETRACK, listener)
-            player.textTracks.add(TextTrackListEventTypes.TRACKLISTCHANGE, listener)
-        }
     }
 
-    internal fun dispose() {
-        listeners.removeAll()
+    internal suspend fun observe() {
+        val player = player ?: return
+        update()
+        player.textTracks.listen(
+            TextTrackListEventTypes.ADDTRACK,
+            TextTrackListEventTypes.REMOVETRACK,
+            TextTrackListEventTypes.TRACKLISTCHANGE
+        ) { update() }
     }
 
     /**
@@ -78,9 +74,6 @@ class SubtitleTrackState internal constructor(private val player: Player?) {
 @Composable
 fun rememberSubtitleTrackState(player: Player?): SubtitleTrackState {
     val state = remember(player) { SubtitleTrackState(player) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     return state
 }

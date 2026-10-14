@@ -10,6 +10,8 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 /**
@@ -51,42 +53,42 @@ private fun mockViewWithHandler(handler: FullscreenHandler?): THEOplayerView = m
 
 class FullscreenStateTest {
     @Test
-    fun `null view gives defaults and does not throw`() {
+    fun `null view gives defaults and does not throw`() = runTest {
         val state = FullscreenState(null)
-        state.observe()
+        val job = launchObserve { state.observe() }
         assertFalse(state.fullscreen)
         state.enterFullscreen()
         state.exitFullscreen()
         assertTrue(state.fullscreen.not())
-        state.dispose()
+        job.cancelAndJoin()
     }
 
     @Test
-    fun `observe seeds fullscreen and adds one listener`() {
+    fun `observe seeds fullscreen and adds one listener`() = runTest {
         val handler = FakeFullscreenHandler().also { it.fire(true) }
         val state = FullscreenState(mockViewWithHandler(handler))
-        state.observe()
+        launchObserve { state.observe() }
 
         assertTrue(state.fullscreen)
         assertEquals(1, handler.listeners.size)
     }
 
     @Test
-    fun `dispose removes the listener`() {
+    fun `cancelling removes the listener`() = runTest {
         val handler = FakeFullscreenHandler()
         val state = FullscreenState(mockViewWithHandler(handler))
-        state.observe()
+        val job = launchObserve { state.observe() }
         assertEquals(1, handler.listeners.size)
 
-        state.dispose()
+        job.cancelAndJoin()
         assertTrue(handler.listeners.isEmpty())
     }
 
     @Test
-    fun `handler notification updates fullscreen`() {
+    fun `handler notification updates fullscreen`() = runTest {
         val handler = FakeFullscreenHandler()
         val state = FullscreenState(mockViewWithHandler(handler))
-        state.observe()
+        launchObserve { state.observe() }
         assertFalse(state.fullscreen)
 
         handler.fire(true)
@@ -94,10 +96,10 @@ class FullscreenStateTest {
     }
 
     @Test
-    fun `enterFullscreen updates state and calls the handler once`() {
+    fun `enterFullscreen updates state and calls the handler once`() = runTest {
         val handler = FakeFullscreenHandler()
         val state = FullscreenState(mockViewWithHandler(handler))
-        state.observe()
+        launchObserve { state.observe() }
 
         state.enterFullscreen()
         assertTrue(state.fullscreen)
@@ -105,10 +107,10 @@ class FullscreenStateTest {
     }
 
     @Test
-    fun `exitFullscreen updates state and calls the handler once`() {
+    fun `exitFullscreen updates state and calls the handler once`() = runTest {
         val handler = FakeFullscreenHandler().also { it.fire(true) }
         val state = FullscreenState(mockViewWithHandler(handler))
-        state.observe()
+        launchObserve { state.observe() }
 
         state.exitFullscreen()
         assertFalse(state.fullscreen)
@@ -116,13 +118,13 @@ class FullscreenStateTest {
     }
 
     @Test
-    fun `two states on the same view share the handler`() {
+    fun `two states on the same view share the handler`() = runTest {
         val handler = FakeFullscreenHandler()
         val view = mockViewWithHandler(handler)
         val first = FullscreenState(view)
         val second = FullscreenState(view)
-        first.observe()
-        second.observe()
+        launchObserve { first.observe() }
+        launchObserve { second.observe() }
         assertEquals(2, handler.listeners.size)
 
         handler.fire(true)
@@ -131,7 +133,7 @@ class FullscreenStateTest {
     }
 
     @Test
-    fun `fullscreenHandler returns the tagged handler without findViewById`() {
+    fun `fullscreenHandler returns the tagged handler without findViewById`() = runTest {
         val handler = FakeFullscreenHandler()
         val view = mockViewWithHandler(handler)
 
@@ -142,7 +144,7 @@ class FullscreenStateTest {
     }
 
     @Test
-    fun `fullscreenHandler returns null without a container`() {
+    fun `fullscreenHandler returns null without a container`() = runTest {
         val view = mockk<THEOplayerView> {
             every { getTag(R.id.theoplayer_ui_fullscreen_handler) } returns null
             every { findViewById<View>(com.theoplayer.android.R.id.theo_player_container) } returns null

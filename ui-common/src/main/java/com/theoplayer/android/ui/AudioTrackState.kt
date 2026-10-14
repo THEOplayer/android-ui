@@ -1,13 +1,11 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.theoplayer.android.api.event.Event
-import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
@@ -20,8 +18,6 @@ import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
  */
 @ExperimentalPlayerStateApi
 class AudioTrackState internal constructor(private val player: Player?) {
-    private val listeners = PlayerStateListeners()
-
     /**
      * The available audio tracks.
      */
@@ -42,19 +38,18 @@ class AudioTrackState internal constructor(private val player: Player?) {
         activeAudioTrack = audioTracks.find { it.isEnabled }
     }
 
-    internal fun observe() {
-        val player = player ?: return
+    init {
         update()
-        listeners.run {
-            val listener = EventListener<Event<*>> { update() }
-            player.audioTracks.add(AudioTrackListEventTypes.ADDTRACK, listener)
-            player.audioTracks.add(AudioTrackListEventTypes.REMOVETRACK, listener)
-            player.audioTracks.add(AudioTrackListEventTypes.TRACKLISTCHANGE, listener)
-        }
     }
 
-    internal fun dispose() {
-        listeners.removeAll()
+    internal suspend fun observe() {
+        val player = player ?: return
+        update()
+        player.audioTracks.listen(
+            AudioTrackListEventTypes.ADDTRACK,
+            AudioTrackListEventTypes.REMOVETRACK,
+            AudioTrackListEventTypes.TRACKLISTCHANGE
+        ) { update() }
     }
 
     /**
@@ -77,9 +72,6 @@ class AudioTrackState internal constructor(private val player: Player?) {
 @Composable
 fun rememberAudioTrackState(player: Player?): AudioTrackState {
     val state = remember(player) { AudioTrackState(player) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     return state
 }

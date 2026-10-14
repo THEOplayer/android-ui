@@ -1,17 +1,17 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import com.theoplayer.android.api.event.EventListener
-import com.theoplayer.android.api.event.ads.AdEvent
 import com.theoplayer.android.api.event.ads.AdsEventTypes
-import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * State holder for a seek bar, such as [SeekBar].
@@ -23,7 +23,6 @@ import com.theoplayer.android.api.player.Player
  */
 @ExperimentalPlayerStateApi
 class SeekBarState internal constructor(private val player: Player?) {
-    private val listeners = PlayerStateListeners()
 
     /**
      * The current scrub position of the seek bar, relative to the start of [seekableRange].
@@ -70,32 +69,36 @@ class SeekBarState internal constructor(private val player: Player?) {
         playingAd = player?.ads?.isPlaying ?: false
     }
 
-    internal fun observe() {
-        val player = player ?: return
+    init {
         update()
-        listeners.run {
-            val listener = EventListener<PlayerEvent<*>> { update() }
-            player.add(PlayerEventTypes.TIMEUPDATE, listener)
-            player.add(PlayerEventTypes.PLAY, listener)
-            player.add(PlayerEventTypes.PAUSE, listener)
-            player.add(PlayerEventTypes.ENDED, listener)
-            player.add(PlayerEventTypes.SEEKING, listener)
-            player.add(PlayerEventTypes.SEEKED, listener)
-            player.add(PlayerEventTypes.READYSTATECHANGE, listener)
-            player.add(PlayerEventTypes.DURATIONCHANGE, listener)
-            player.add(PlayerEventTypes.SOURCECHANGE, listener)
-            player.add(PlayerEventTypes.ERROR, listener)
-            player.ads?.let { ads ->
-                val adListener = EventListener<AdEvent<*>> { update() }
-                ads.add(AdsEventTypes.AD_BREAK_BEGIN, adListener)
-                ads.add(AdsEventTypes.AD_SKIP, adListener)
-                ads.add(AdsEventTypes.AD_BREAK_END, adListener)
-            }
-        }
     }
 
-    internal fun dispose() {
-        listeners.removeAll()
+    internal suspend fun observe() {
+        val player = player ?: return
+        update()
+        coroutineScope {
+            player.ads?.let { ads ->
+                launch(start = CoroutineStart.UNDISPATCHED) {
+                    ads.listen(
+                        AdsEventTypes.AD_BREAK_BEGIN,
+                        AdsEventTypes.AD_SKIP,
+                        AdsEventTypes.AD_BREAK_END
+                    ) { update() }
+                }
+            }
+            player.listen(
+                PlayerEventTypes.TIMEUPDATE,
+                PlayerEventTypes.PLAY,
+                PlayerEventTypes.PAUSE,
+                PlayerEventTypes.ENDED,
+                PlayerEventTypes.SEEKING,
+                PlayerEventTypes.SEEKED,
+                PlayerEventTypes.READYSTATECHANGE,
+                PlayerEventTypes.DURATIONCHANGE,
+                PlayerEventTypes.SOURCECHANGE,
+                PlayerEventTypes.ERROR
+            ) { update() }
+        }
     }
 
     /**
@@ -133,9 +136,6 @@ class SeekBarState internal constructor(private val player: Player?) {
 @Composable
 fun rememberSeekBarState(player: Player?): SeekBarState {
     val state = remember(player) { SeekBarState(player) }
-    DisposableEffect(state) {
-        state.observe()
-        onDispose { state.dispose() }
-    }
+    LaunchedEffect(state) { state.observe() }
     return state
 }
