@@ -17,6 +17,9 @@
 * 🚀 Added `UIController(theoplayerView)` and `DefaultUI(theoplayerView)`, which use the experimental state holders and don't create a `Player`. `UIControllerScope.player` is only created when accessed. Use `rememberTHEOplayerView(config)` to create a `THEOplayerView` that follows the lifecycle of the composition. `UIController(config)` and `DefaultUI(config)` no longer create a `Player` either. ([#119](https://github.com/THEOplayer/android-ui/pull/119))
 * 🐛 Fixed `AudioTrackList`, `SubtitleTrackList`, `QualityList` and `PlaybackRateList` not scrolling to the selected item, and not announcing it to accessibility services. ([#127](https://github.com/THEOplayer/android-ui/pull/127))
 * 🚀 Pressing a key now shows the controls in `UIController`, which helps on tablets with a keyboard. Media keys (play/pause, fast-forward and rewind) control playback, even while the controls are hidden. ([#122](https://github.com/THEOplayer/android-ui/pull/122))
+* 🚀 Pressing Back now closes an open menu in `UIController`. ([#124](https://github.com/THEOplayer/android-ui/pull/124))
+* 🚀 Added `PlayerAnimations.controlsHideDelay` to configure how long the controls stay visible after user interaction. ([#124](https://github.com/THEOplayer/android-ui/pull/124))
+* 🚀 Added `android-ui-tv`, an experimental UI library for Android TV built on Compose for TV. ([#121](https://github.com/THEOplayer/android-ui/pull/121), [#124](https://github.com/THEOplayer/android-ui/pull/124))
 
 ## [1.14.2] (2026-10-13)
 
