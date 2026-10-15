@@ -1,7 +1,9 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import java.text.DecimalFormat
 
 /**
@@ -53,7 +56,11 @@ fun PlaybackRateList(
     playbackRates: List<Double> = defaultPlaybackRates,
     onClick: (() -> Unit)? = null
 ) {
-    LazyColumn(modifier = modifier) {
+    val selectedIndex = playbackRates.indexOf(state.playbackRate).coerceAtLeast(0)
+    LazyColumn(
+        modifier = modifier.selectableGroup(),
+        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+    ) {
         items(
             count = playbackRates.size,
             key = { playbackRates[it] }
@@ -67,10 +74,14 @@ fun PlaybackRateList(
                         onClick = null
                     )
                 },
-                modifier = Modifier.clickable(onClick = {
-                    state.select(playbackRate)
-                    onClick?.let { it() }
-                })
+                modifier = Modifier.selectable(
+                    selected = state.playbackRate == playbackRate,
+                    onClick = {
+                        state.select(playbackRate)
+                        onClick?.let { it() }
+                    },
+                    role = Role.RadioButton
+                )
             )
         }
     }

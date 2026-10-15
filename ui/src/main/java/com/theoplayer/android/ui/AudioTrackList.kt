@@ -1,12 +1,15 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
 
 /**
  * A list of audio tracks, from which the user can choose an active audio track.
@@ -40,7 +43,11 @@ fun AudioTrackList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    LazyColumn(modifier = modifier) {
+    val selectedIndex = state.audioTracks.indexOf(state.activeAudioTrack).coerceAtLeast(0)
+    LazyColumn(
+        modifier = modifier.selectableGroup(),
+        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+    ) {
         items(
             count = state.audioTracks.size,
             key = { state.audioTracks[it].uid }
@@ -54,10 +61,14 @@ fun AudioTrackList(
                         onClick = null
                     )
                 },
-                modifier = Modifier.clickable(onClick = {
-                    state.select(audioTrack)
-                    onClick?.let { it() }
-                })
+                modifier = Modifier.selectable(
+                    selected = state.activeAudioTrack == audioTrack,
+                    onClick = {
+                        state.select(audioTrack)
+                        onClick?.let { it() }
+                    },
+                    role = Role.RadioButton
+                )
             )
         }
     }
