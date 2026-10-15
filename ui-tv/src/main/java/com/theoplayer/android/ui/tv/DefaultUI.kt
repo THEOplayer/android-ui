@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.MaterialTheme
+import androidx.tv.material3.Surface
 import androidx.tv.material3.Text
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
@@ -216,9 +217,11 @@ private val safeAreaVerticalPadding = 27.dp
 @Composable
 private fun DefaultUIPreview() {
     THEOplayerTvTheme {
-        DefaultUI(
-            theoplayerView = rememberTHEOplayerView(),
-            title = "Big Buck Bunny"
-        )
+        Surface {
+            DefaultUI(
+                theoplayerView = rememberTHEOplayerView(),
+                title = "Big Buck Bunny"
+            )
+        }
     }
 }
