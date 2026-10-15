@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
+import androidx.tv.material3.Surface
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.ui.tv.DefaultUI
 import com.theoplayer.android.ui.tv.ExperimentalTvUiApi
@@ -21,12 +22,14 @@ class TvActivity : ComponentActivity() {
         val stream = streams.first()
         setContent {
             THEOplayerTvTheme {
-                DefaultUI(
-                    modifier = Modifier.fillMaxSize(),
-                    config = THEOplayerConfig.Builder().build(),
-                    source = stream.source,
-                    title = stream.title
-                )
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    DefaultUI(
+                        modifier = Modifier.fillMaxSize(),
+                        config = THEOplayerConfig.Builder().build(),
+                        source = stream.source,
+                        title = stream.title
+                    )
+                }
             }
         }
     }
