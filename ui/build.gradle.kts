@@ -104,19 +104,13 @@ dependencies {
 }
 
 dokka {
-    moduleName = rootProject.name
+    moduleName = "android-ui"
+    modulePath = "android-ui"
 
     dokkaSourceSets.configureEach {
-        sourceRoots.from(rootProject.file("ui-common/src/main/java"))
-
         sourceLink {
             localDirectory = file("src/main/java")
             remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui/src/main/java")
-            remoteLineSuffix = "#L"
-        }
-        sourceLink {
-            localDirectory = rootProject.file("ui-common/src/main/java")
-            remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui-common/src/main/java")
             remoteLineSuffix = "#L"
         }
 
@@ -131,10 +125,6 @@ dokka {
     pluginsConfiguration.html {
         customAssets.from("assets/logo-icon.svg")
         footerMessage = "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
-    }
-
-    dokkaPublications.html {
-        outputDirectory = rootDir.resolve("site/api")
     }
 
     dokkaPublications.javadoc {

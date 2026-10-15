@@ -67,6 +67,13 @@ android {
     }
 }
 
+androidComponents {
+    // TODO Re-enable once android-ui-tv is published to Maven
+    beforeVariants(selector().withBuildType("maven")) { variantBuilder ->
+        variantBuilder.enable = false
+    }
+}
+
 kotlin {
     compilerOptions {
         apiVersion = KotlinVersion.KOTLIN_2_0
@@ -104,6 +111,10 @@ dependencies {
 
     debugImplementation(project(":ui"))
     releaseImplementation(project(":ui"))
+    debugImplementation(project(":ui-tv"))
+    releaseImplementation(project(":ui-tv"))
+    debugImplementation(libs.androidx.tv.material)
+    releaseImplementation(libs.androidx.tv.material)
     mavenImplementation("com.theoplayer.android-ui:android-ui:1.+")
 
     latestPlayerImplementation(libs.theoplayer)

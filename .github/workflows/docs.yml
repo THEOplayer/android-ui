@@ -39,7 +39,7 @@ jobs:
           # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
           cache-disabled: true
       - name: Build API documentation with Dokka
-        run: ./gradlew ui:dokkaGeneratePublicationHtml
+        run: ./gradlew :dokkaGeneratePublicationHtml
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1
         with:
