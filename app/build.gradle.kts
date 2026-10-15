@@ -111,6 +111,8 @@ dependencies {
 
     debugImplementation(project(":ui"))
     releaseImplementation(project(":ui"))
+    debugImplementation(project(":ui-tv"))
+    releaseImplementation(project(":ui-tv"))
     mavenImplementation("com.theoplayer.android-ui:android-ui:1.+")
 
     latestPlayerImplementation(libs.theoplayer)
