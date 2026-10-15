@@ -12,6 +12,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
@@ -131,6 +133,9 @@ private fun DefaultUIImpl(
     val adState = rememberAdState(theoplayerView?.player)
     val playbackTimeState = rememberPlaybackTimeState(theoplayerView?.player)
     val fullscreenState = rememberFullscreenState(theoplayerView)
+
+    // Show all controls in previews, which never start playing.
+    val firstPlay = firstPlayState.firstPlay || LocalInspectionMode.current
     UIControllerImpl(
         modifier = modifier,
         theoplayerView = theoplayerView,
@@ -142,7 +147,7 @@ private fun DefaultUIImpl(
             }
         },
         topChrome = {
-            if (firstPlayState.firstPlay) {
+            if (firstPlay) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     title?.let {
                         Text(
@@ -160,16 +165,16 @@ private fun DefaultUIImpl(
             }
         },
         centerChrome = {
-            if (firstPlayState.firstPlay && !adState.playingAd) {
+            if (firstPlay && !adState.playingAd) {
                 SeekButton(seekOffset = -10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
             PlayButton(iconModifier = Modifier.size(96.dp), contentPadding = PaddingValues(8.dp))
-            if (firstPlayState.firstPlay && !adState.playingAd) {
+            if (firstPlay && !adState.playingAd) {
                 SeekButton(seekOffset = 10, iconSize = 48.dp, contentPadding = PaddingValues(8.dp))
             }
         },
         bottomChrome = {
-            if (firstPlayState.firstPlay) {
+            if (firstPlay) {
                 ChromecastDisplay(modifier = Modifier.padding(8.dp))
                 if (!adState.playingAd && playbackTimeState.streamType != StreamType.Live) {
                     SeekBar()
@@ -205,4 +210,19 @@ private fun DefaultUIImpl(
             }
         }
     )
+}
+
+@Preview(
+    showBackground = true,
+    backgroundColor = 0xFF000000,
+    device = "spec:width=411dp,height=891dp,orientation=landscape"
+)
+@Composable
+private fun DefaultUIPreview() {
+    THEOplayerTheme(useDarkTheme = true) {
+        DefaultUI(
+            theoplayerView = rememberTHEOplayerView(),
+            title = "Big Buck Bunny"
+        )
+    }
 }
