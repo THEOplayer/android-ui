@@ -1,7 +1,9 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -9,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import java.text.DecimalFormat
 
 /**
@@ -43,7 +46,14 @@ fun QualityList(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null
 ) {
-    LazyColumn(modifier = modifier) {
+    val selectedIndex = state.targetVideoQuality
+        ?.let { state.videoQualities.indexOf(it) + 1 }
+        ?.coerceAtLeast(0)
+        ?: 0
+    LazyColumn(
+        modifier = modifier.selectableGroup(),
+        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+    ) {
         item(key = null) {
             ListItem(
                 headlineContent = { Text(text = stringResource(R.string.theoplayer_ui_quality_automatic)) },
@@ -53,10 +63,14 @@ fun QualityList(
                         onClick = null
                     )
                 },
-                modifier = Modifier.clickable(onClick = {
-                    state.select(null)
-                    onClick?.let { it() }
-                })
+                modifier = Modifier.selectable(
+                    selected = state.targetVideoQuality == null,
+                    onClick = {
+                        state.select(null)
+                        onClick?.let { it() }
+                    },
+                    role = Role.RadioButton
+                )
             )
         }
         items(
@@ -80,10 +94,14 @@ fun QualityList(
                         onClick = null
                     )
                 },
-                modifier = Modifier.clickable(onClick = {
-                    state.select(quality)
-                    onClick?.let { it() }
-                })
+                modifier = Modifier.selectable(
+                    selected = state.targetVideoQuality == quality,
+                    onClick = {
+                        state.select(quality)
+                        onClick?.let { it() }
+                    },
+                    role = Role.RadioButton
+                )
             )
         }
     }
