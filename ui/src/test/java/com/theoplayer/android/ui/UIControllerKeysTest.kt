@@ -3,6 +3,7 @@ package com.theoplayer.android.ui
 import android.content.Context
 import android.view.KeyEvent
 import androidx.activity.ComponentActivity
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.player.Player as NativePlayer
 import io.mockk.every
 import io.mockk.mockk
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
@@ -99,6 +101,72 @@ class UIControllerKeysTest {
             )
         )
         assertTrue(menuItemSawKey)
+    }
+
+    @Test
+    fun backClosesMenuBeforeFallingThroughToActivity() {
+        val nativePlayer = mockPlayingPlayer()
+        val theoplayerView = PlayerBackedTHEOplayerView(composeRule.activity, nativePlayer)
+        var activityBackCalls = 0
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                activityBackCalls++
+            }
+        }
+        composeRule.activity.onBackPressedDispatcher.addCallback(callback)
+        lateinit var uiControllerScope: UIControllerScope
+
+        composeRule.setContent {
+            UIController(
+                theoplayerView = theoplayerView,
+                centerOverlay = { uiControllerScope = this }
+            )
+        }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            uiControllerScope.openMenu {
+                Box(Modifier.size(20.dp).testTag("menu"))
+            }
+        }
+        composeRule.waitUntil(10_000) {
+            composeRule.onAllNodesWithTag("menu").fetchSemanticsNodes().isNotEmpty()
+        }
+
+        composeRule.runOnIdle {
+            composeRule.activity.onBackPressedDispatcher.onBackPressed()
+        }
+        composeRule.waitForIdle()
+
+        assertTrue(composeRule.onAllNodesWithTag("menu").fetchSemanticsNodes().isEmpty())
+        assertEquals(0, activityBackCalls)
+        composeRule.runOnIdle {
+            composeRule.activity.onBackPressedDispatcher.onBackPressed()
+        }
+        composeRule.waitForIdle()
+        assertEquals(1, activityBackCalls)
+    }
+
+    @Test
+    fun backFallsThroughWhenNoMenuIsOpen() {
+        val nativePlayer = mockPlayingPlayer()
+        val theoplayerView = PlayerBackedTHEOplayerView(composeRule.activity, nativePlayer)
+        var activityBackCalls = 0
+        val callback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                activityBackCalls++
+            }
+        }
+        composeRule.activity.onBackPressedDispatcher.addCallback(callback)
+
+        composeRule.setContent {
+            UIController(theoplayerView = theoplayerView)
+        }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            composeRule.activity.onBackPressedDispatcher.onBackPressed()
+        }
+
+        assertEquals(1, activityBackCalls)
     }
 
     private fun mockPlayingPlayer(): NativePlayer {

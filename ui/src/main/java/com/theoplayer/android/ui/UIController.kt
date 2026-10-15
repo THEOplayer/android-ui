@@ -1,13 +1,10 @@
 package com.theoplayer.android.ui
 
 import android.app.Activity
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
-import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -15,25 +12,10 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -44,10 +26,6 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 import com.theoplayer.android.ui.util.rememberIsInPipMode
-import kotlinx.coroutines.delay
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
-import kotlin.time.DurationUnit
 
 /**
  * A container component for a THEOplayer UI.
@@ -210,237 +188,61 @@ internal fun UIControllerImpl(
     val playButtonState = rememberPlayButtonState(nativePlayer)
     val pictureInPictureState = rememberPictureInPictureState(theoplayerView)
     val errorState = rememberErrorState(nativePlayer, player?.error)
-    val adState = rememberAdState(nativePlayer)
     val videoSizeState = rememberVideoSizeState(nativePlayer)
-
-    var tapCount by remember { mutableIntStateOf(0) }
-    var isRecentlyTapped by remember { mutableStateOf(false) }
-    LaunchedEffect(tapCount) {
-        if (tapCount > 0) {
-            isRecentlyTapped = true
-            delay(2.seconds)
-            isRecentlyTapped = false
-        }
-    }
-    var forceControlsHidden by remember { mutableStateOf(false) }
-
-    // Wait a little bit before showing the controls and enabling animations,
-    // so we can hide the UI immediately in case of autoplay.
-    val inspectionMode = LocalInspectionMode.current
-    var isReady by remember { mutableStateOf(inspectionMode) }
-    LaunchedEffect(Unit) {
-        delay(50.milliseconds)
-        isReady = true
-    }
-
-    val controlsVisible = remember(firstPlayState, castState, playButtonState) {
-        derivedStateOf {
-            if (!isReady) {
-                false
-            } else if (!firstPlayState.firstPlay || castState.castState == PlayerCastState.CONNECTED) {
-                true
-            } else if (forceControlsHidden) {
-                false
-            } else {
-                isRecentlyTapped || playButtonState.paused
-            }
-        }
-    }
-
-    val scope = remember(theoplayerView, player) { UIControllerScopeImpl(theoplayerView, player) }
-    if (player == null) {
-        val isInPipMode = rememberIsInPipMode()
-        SideEffect { scope.activityInPipMode = isInPipMode }
-    }
-    DisposableEffect(scope) {
-        onDispose { scope.dispose() }
-    }
-
-    val uiState by remember(scope, pictureInPictureState, errorState) {
-        derivedStateOf {
-            val currentMenu = scope.currentMenu
-            when {
-                pictureInPictureState.pictureInPicture -> UIState.Hidden
-                errorState.error != null -> UIState.Error
-                currentMenu != null -> UIState.Menu(currentMenu)
-                else -> UIState.Controls
-            }
-        }
-    }
-    val backgroundVisible = uiState.isVisible(controlsVisible.value)
-    val background by animateColorAsState(
-        label = "BackgroundAnimation",
-        targetValue = if (backgroundVisible) color else color.copy(alpha = 0f),
-        animationSpec = tween(
-            easing = LinearEasing,
-            durationMillis = if (backgroundVisible) {
-                THEOplayerTheme.playerAnimations.controlsEnterDuration.toInt(
-                    DurationUnit.MILLISECONDS
-                )
-            } else {
-                THEOplayerTheme.playerAnimations.controlsExitDuration.toInt(
-                    DurationUnit.MILLISECONDS
-                )
-            }
-        )
+    val scope = rememberUIControllerScope(theoplayerView, player)
+    val uiState = rememberUIState(scope, errorState, pictureInPictureState)
+    val controls = rememberControlsVisibility(
+        firstPlay = firstPlayState.firstPlay,
+        paused = playButtonState.paused,
+        forceVisible = castState.castState == PlayerCastState.CONNECTED,
+        hideDelay = THEOplayerTheme.playerAnimations.controlsHideDelay
     )
 
-    PlayerContainer(
-        theoplayerView = theoplayerView,
-        modifier = Modifier
-            .background(Color.Black)
-            .then(modifier)
+    UIControllerCore(
+        modifier = modifier
             .playerAspectRatio(videoSizeState)
             .toggleControlsOnTap(
-                controlsVisible = controlsVisible,
-                showControlsTemporarily = {
-                    forceControlsHidden = false
-                    tapCount++
-                },
-                hideControls = {
-                    forceControlsHidden = true
-                    tapCount++
-                }
-            )
-            .handlePlayerKeys(
-                player = nativePlayer,
-                controlsVisible = { uiState.isVisible(controlsVisible.value) },
-                showControls = {
-                    forceControlsHidden = false
-                    tapCount++
-                }
-            )
-    ) {
-        CompositionLocalProvider(
-            LocalPlayer provides player,
-            LocalTHEOplayerView provides theoplayerView,
-            LocalUIControllerErrorState provides errorState
-        ) {
-            AnimatedContent(
-                label = "ContentAnimation",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(background),
-                targetState = uiState,
-                transitionSpec = {
-                    if (targetState is UIState.Error) {
-                        // Show errors immediately
-                        EnterTransition.None togetherWith ExitTransition.None
-                    } else if (initialState is UIState.Menu && targetState is UIState.Menu) {
-                        if (scope.lastWasClosed) {
-                            // Close menu towards the right
-                            slideInHorizontally { -it } togetherWith
-                                    slideOutHorizontally { it }
-                        } else {
-                            // Open new menu towards the left
-                            slideInHorizontally(initialOffsetX = { it }) togetherWith
-                                    slideOutHorizontally(targetOffsetX = { -it })
-                        }
-                    } else if (targetState is UIState.Menu) {
-                        // Open first menu from the bottom
-                        slideInVertically { it / 4 } + fadeIn() togetherWith fadeOut()
-                    } else if (initialState is UIState.Menu) {
-                        // Close last menu towards the bottom
-                        fadeIn() togetherWith slideOutVertically { it / 4 } + fadeOut()
-                    } else {
-                        EnterTransition.None togetherWith ExitTransition.None
-                    }
-                }
-            ) { uiState ->
-                when (uiState) {
-                    is UIState.Error -> {
-                        errorOverlay?.let { scope.it() }
-                    }
-
-                    is UIState.Menu -> {
-                        uiState.menu.let { scope.it() }
-                    }
-
-                    is UIState.Controls -> {
-                        scope.PlayerControls(
-                            controlsVisible = controlsVisible.value,
-                            animationsActive = isReady && !adState.playingAd,
-                            centerOverlay = centerOverlay,
-                            topChrome = topChrome,
-                            centerChrome = centerChrome,
-                            bottomChrome = bottomChrome
-                        )
-                    }
-
-                    is UIState.Hidden -> {}
-                }
-            }
-        }
-    }
+                controlsVisible = controls.visible,
+                showControlsTemporarily = controls.show,
+                hideControls = controls.hide
+            ),
+        theoplayerView = theoplayerView,
+        player = player,
+        scope = scope,
+        uiState = uiState,
+        errorState = errorState,
+        controls = controls,
+        color = color,
+        contentTransform = mobileContentTransform(scope),
+        centerOverlay = centerOverlay,
+        errorOverlay = errorOverlay,
+        topChrome = topChrome,
+        centerChrome = centerChrome,
+        bottomChrome = bottomChrome
+    )
 }
 
-internal val LocalUIControllerErrorState = staticCompositionLocalOf<ErrorState?> { null }
-
-private sealed class UIState {
-    object Error : UIState()
-    data class Menu(val menu: MenuContent) : UIState()
-    object Controls : UIState()
-    object Hidden : UIState()
-}
-
-/** Returns whether this UI state is visible. */
-private fun UIState.isVisible(controlsVisible: Boolean): Boolean = when (this) {
-    is UIState.Controls -> controlsVisible
-    is UIState.Hidden -> false
-    else -> true
-}
-
-@Composable
-private fun UIControllerScope.PlayerControls(
-    controlsVisible: Boolean,
-    animationsActive: Boolean,
-    centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
-    topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
-) {
-    centerOverlay?.let {
-        Row(
-            modifier = Modifier.fillMaxSize(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            it()
+/**
+ * Returns the mobile menu transitions.
+ */
+private fun mobileContentTransform(
+    scope: UIControllerScopeImpl
+): AnimatedContentTransitionScope<UIState>.() -> ContentTransform = {
+    if (targetState is UIState.Error) {
+        EnterTransition.None togetherWith ExitTransition.None
+    } else if (initialState is UIState.Menu && targetState is UIState.Menu) {
+        if (scope.lastWasClosed) {
+            slideInHorizontally { -it } togetherWith slideOutHorizontally { it }
+        } else {
+            slideInHorizontally(initialOffsetX = { it }) togetherWith
+                    slideOutHorizontally(targetOffsetX = { -it })
         }
-    }
-    AnimatedVisibility(
-        visible = controlsVisible,
-        enter = if (animationsActive) fadeIn(
-            animationSpec = tween(
-                easing = LinearEasing,
-                durationMillis = THEOplayerTheme.playerAnimations.controlsEnterDuration.toInt(
-                    DurationUnit.MILLISECONDS
-                )
-            )
-        ) else EnterTransition.None,
-        exit = if (animationsActive) fadeOut(
-            animationSpec = tween(
-                easing = LinearEasing,
-                durationMillis = THEOplayerTheme.playerAnimations.controlsExitDuration.toInt(
-                    DurationUnit.MILLISECONDS
-                )
-            )
-        ) else ExitTransition.None,
-    ) {
-        centerChrome?.let {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                it()
-            }
-        }
-        Column(modifier = Modifier.fillMaxSize()) {
-            topChrome?.let { it() }
-            Spacer(modifier = Modifier.weight(1f))
-            bottomChrome?.let { it() }
-        }
+    } else if (targetState is UIState.Menu) {
+        slideInVertically { it / 4 } + fadeIn() togetherWith fadeOut()
+    } else if (initialState is UIState.Menu) {
+        fadeIn() togetherWith slideOutVertically { it / 4 } + fadeOut()
+    } else {
+        EnterTransition.None togetherWith ExitTransition.None
     }
 }
 
