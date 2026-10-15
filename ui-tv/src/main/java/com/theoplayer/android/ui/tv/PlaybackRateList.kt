@@ -1,16 +1,19 @@
 package com.theoplayer.android.ui.tv
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.focusRequester
+import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
-import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.LocalTHEOplayerView
@@ -63,7 +66,8 @@ fun PlaybackRateList(
 
     LazyColumn(
         modifier = modifier.focusRestorer(selectedRequester),
-        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex),
+        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
     ) {
         items(
             items = playbackRates,
@@ -76,8 +80,13 @@ fun PlaybackRateList(
                     state.select(playbackRate)
                     onClick?.invoke()
                 },
+                colors = menuItemColors(),
                 headlineContent = { Text(text = formatPlaybackRate(playbackRate)) },
-                leadingContent = { RadioButton(selected = isActive, onClick = null) },
+                trailingContent = if (isActive) {
+                    { Icon(Icons.Rounded.Check, contentDescription = null) }
+                } else {
+                    null
+                },
                 modifier = if (playbackRates.indexOf(playbackRate) == selectedIndex) {
                     Modifier.focusRequester(selectedRequester)
                 } else {

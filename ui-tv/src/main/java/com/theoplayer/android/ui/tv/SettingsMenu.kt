@@ -1,7 +1,11 @@
 package com.theoplayer.android.ui.tv
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.HighQuality
+import androidx.compose.material.icons.rounded.Speed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.tv.material3.Icon
 import androidx.tv.material3.Text
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.LocalTHEOplayerView
@@ -54,6 +58,9 @@ fun MenuScope.SettingsMenu(
             headlineContent = {
                 Text(text = stringResource(CommonR.string.theoplayer_ui_menu_quality))
             },
+            leadingContent = {
+                Icon(Icons.Rounded.HighQuality, contentDescription = null)
+            },
             supportingContent = {
                 Text(
                     text = formatActiveQualityLabel(
@@ -67,6 +74,9 @@ fun MenuScope.SettingsMenu(
             onClick = { openMenu { PlaybackRateMenu() } },
             headlineContent = {
                 Text(text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate))
+            },
+            leadingContent = {
+                Icon(Icons.Rounded.Speed, contentDescription = null)
             },
             supportingContent = {
                 Text(text = formatPlaybackRate(playbackRateState.playbackRate))

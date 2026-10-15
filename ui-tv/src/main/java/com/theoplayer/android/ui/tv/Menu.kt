@@ -1,7 +1,9 @@
 package com.theoplayer.android.ui.tv
 
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -10,7 +12,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.ChevronRight
+import androidx.compose.material.icons.rounded.ClosedCaption
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -22,9 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
+import androidx.tv.material3.ListItemDefaults
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ProvideTextStyle
-import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Surface
 import androidx.tv.material3.SurfaceDefaults
 import androidx.tv.material3.Text
@@ -79,7 +83,8 @@ fun MenuScope.Menu(
                     modifier = Modifier
                         .padding(horizontal = menuContentPadding)
                         .focusRequester(focusRequester)
-                        .focusGroup()
+                        .focusGroup(),
+                    verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
                 ) {
                     content()
                 }
@@ -93,18 +98,28 @@ fun MenuScope.Menu(
 internal fun MenuSubmenuItem(
     onClick: () -> Unit,
     headlineContent: @Composable () -> Unit,
-    supportingContent: @Composable () -> Unit
+    supportingContent: @Composable () -> Unit,
+    leadingContent: @Composable BoxScope.() -> Unit
 ) {
     ListItem(
         selected = false,
         onClick = onClick,
+        colors = menuItemColors(),
         headlineContent = headlineContent,
         supportingContent = supportingContent,
+        leadingContent = leadingContent,
         trailingContent = { Icon(Icons.Rounded.ChevronRight, contentDescription = null) }
     )
 }
 
-private val menuWidth = 360.dp
+@Composable
+internal fun menuItemColors() = ListItemDefaults.colors(
+    containerColor = MaterialTheme.colorScheme.surfaceVariant
+)
+
+internal val menuItemVerticalSpacing = 8.dp
+
+private val menuWidth = 320.dp
 private val menuCornerRadius = 16.dp
 private val menuTitlePadding = 24.dp
 private val menuContentPadding = 12.dp
@@ -124,14 +139,19 @@ private fun MenuPreview() {
             ListItem(
                 selected = true,
                 onClick = {},
+                colors = menuItemColors(),
                 headlineContent = { Text("English") },
-                leadingContent = { RadioButton(selected = true, onClick = null) }
+                trailingContent = { Icon(Icons.Rounded.Check, contentDescription = null) }
             )
             ListItem(
                 selected = false,
                 onClick = {},
+                colors = menuItemColors(),
                 headlineContent = { Text("Subtitles") },
                 supportingContent = { Text("Off") },
+                leadingContent = {
+                    Icon(Icons.Rounded.ClosedCaption, contentDescription = null)
+                },
                 trailingContent = { Icon(Icons.Rounded.ChevronRight, contentDescription = null) }
             )
         }
