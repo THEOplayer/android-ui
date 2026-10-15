@@ -19,7 +19,7 @@
 * 🚀 Pressing a key now shows the controls in `UIController`, which helps on tablets with a keyboard. Media keys (play/pause, fast-forward and rewind) control playback, even while the controls are hidden. ([#122](https://github.com/THEOplayer/android-ui/pull/122))
 * 🚀 Pressing Back now closes an open menu in `UIController`. ([#124](https://github.com/THEOplayer/android-ui/pull/124))
 * 🚀 Added `PlayerAnimations.controlsHideDelay` to configure how long the controls stay visible after user interaction. ([#124](https://github.com/THEOplayer/android-ui/pull/124))
-* 🚀 Added `android-ui-tv`, an experimental UI library for Android TV built on Compose for TV. ([#121](https://github.com/THEOplayer/android-ui/pull/121), [#124](https://github.com/THEOplayer/android-ui/pull/124), [#125](https://github.com/THEOplayer/android-ui/pull/125))
+* 🚀 Added `android-ui-tv`, an experimental UI library for Android TV built on Compose for TV. ([#121](https://github.com/THEOplayer/android-ui/pull/121), [#124](https://github.com/THEOplayer/android-ui/pull/124), [#125](https://github.com/THEOplayer/android-ui/pull/125), [#126](https://github.com/THEOplayer/android-ui/pull/126))
 
 ## [1.14.2] (2026-10-13)
 
