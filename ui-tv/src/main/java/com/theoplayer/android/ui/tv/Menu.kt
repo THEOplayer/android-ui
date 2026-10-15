@@ -73,8 +73,12 @@ fun MenuScope.Menu(
                 ProvideTextStyle(MaterialTheme.typography.titleLarge) {
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = menuTitlePadding)
-                            .padding(top = menuTitlePadding)
+                            .padding(
+                                start = menuTitlePadding,
+                                top = menuTitlePadding,
+                                end = menuTitlePadding,
+                                bottom = menuTitleBottomSpacing
+                            )
                     ) {
                         title()
                     }
@@ -122,6 +126,7 @@ internal val menuItemVerticalSpacing = 8.dp
 private val menuWidth = 320.dp
 private val menuCornerRadius = 16.dp
 private val menuTitlePadding = 24.dp
+private val menuTitleBottomSpacing = 16.dp
 private val menuContentPadding = 12.dp
 
 @OptIn(ExperimentalTvUiApi::class)
