@@ -12,6 +12,9 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.focusGroup
+import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.graphics.Color
@@ -91,13 +95,15 @@ fun UIController(
         hideDelay = playerAnimations.controlsHideDelay
     )
     val focusRequester = remember { FocusRequester() }
+    val hiddenFocusRequester = remember { FocusRequester() }
     val currentUiState = uiState.value
 
     rememberControlsFocus(
         uiState = currentUiState,
         menuOpen = scope.currentMenu != null,
         controls = controls,
-        focusRequester = focusRequester
+        focusRequester = focusRequester,
+        hiddenFocusRequester = hiddenFocusRequester
     )
     BackHandler(
         enabled = currentUiState is UIState.Controls &&
@@ -106,34 +112,47 @@ fun UIController(
         controls.hide()
     }
 
-    UIControllerCore(
+    Box(
         modifier = modifier.tvHiddenControlsKeys(
             player = nativePlayer,
             controlsVisible = { uiState.value.isVisible(controls.visible.value) },
             showControls = controls.show
-        ),
-        theoplayerView = view,
-        player = null,
-        scope = scope,
-        uiState = uiState,
-        errorState = errorState,
-        controls = controls,
-        color = color,
-        contentTransform = tvContentTransform(LocalLayoutDirection.current),
-        controlsModifier = Modifier
-            .focusRequester(focusRequester)
-            .focusRestorer()
-            .focusGroup(),
-        centerOverlay = centerOverlay,
-        errorOverlay = errorOverlay,
-        topChrome = topChrome,
-        centerChrome = centerChrome,
-        bottomChrome = bottomChrome
-    )
+        )
+    ) {
+        // Holds focus while the controls are hidden, so key events still reach this controller.
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .focusRequester(hiddenFocusRequester)
+                .focusProperties { canFocus = !uiState.value.isVisible(controls.visible.value) }
+                .focusable()
+        )
+        UIControllerCore(
+            modifier = Modifier.fillMaxSize(),
+            theoplayerView = view,
+            player = null,
+            scope = scope,
+            uiState = uiState,
+            errorState = errorState,
+            controls = controls,
+            color = color,
+            contentTransform = tvContentTransform(LocalLayoutDirection.current),
+            controlsModifier = Modifier
+                .focusRequester(focusRequester)
+                .focusRestorer()
+                .focusGroup(),
+            centerOverlay = centerOverlay,
+            errorOverlay = errorOverlay,
+            topChrome = topChrome,
+            centerChrome = centerChrome,
+            bottomChrome = bottomChrome
+        )
+    }
 }
 
 /**
- * Restores focus to controls when they become visible or a menu closes.
+ * Restores focus to controls when they become visible or a menu closes,
+ * and moves focus to [hiddenFocusRequester] when the controls are hidden.
  */
 @OptIn(InternalUiApi::class)
 @Composable
@@ -141,7 +160,8 @@ private fun rememberControlsFocus(
     uiState: UIState,
     menuOpen: Boolean,
     controls: ControlsVisibility,
-    focusRequester: FocusRequester
+    focusRequester: FocusRequester,
+    hiddenFocusRequester: FocusRequester
 ) {
     var menuWasOpen by remember { mutableStateOf(false) }
     LaunchedEffect(controls.visible.value, menuOpen, uiState) {
@@ -149,6 +169,8 @@ private fun rememberControlsFocus(
             (controls.visible.value || menuWasOpen)
         ) {
             focusRequester.requestFocus()
+        } else if (uiState is UIState.Controls && !menuOpen && !controls.visible.value) {
+            hiddenFocusRequester.requestFocus()
         }
         menuWasOpen = menuOpen
     }
