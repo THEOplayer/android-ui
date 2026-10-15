@@ -1,13 +1,9 @@
 package com.theoplayer.android.ui
 
-import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.compose.ui.res.stringResource
 import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
-import com.theoplayer.android.ui.util.constructLabel
 
 /**
  * Return the given time in a human-readable format, such as `"0:10"` or `"01:23:45"`.
@@ -29,15 +25,10 @@ fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = fals
  *
  * @param track the media track or text track
  */
+@OptIn(InternalUiApi::class)
 @Composable
 fun formatTrackLabel(track: Track): String {
-    return remember(track.id, track.uid) {
-        when (track) {
-            is TextTrack -> constructLabel(track)
-            is MediaTrack<*> -> constructLabel(track)
-            else -> null
-        }
-    } ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
+    return formatTrackName(track)
 }
 
 /**
@@ -45,10 +36,10 @@ fun formatTrackLabel(track: Track): String {
  *
  * @param track the media track
  */
+@OptIn(InternalUiApi::class)
 @Composable
 fun formatTrackLabel(track: MediaTrack<*>): String {
-    return remember(track.id, track.uid) { constructLabel(track) }
-        ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
+    return formatTrackName(track)
 }
 
 /**
@@ -56,8 +47,8 @@ fun formatTrackLabel(track: MediaTrack<*>): String {
  *
  * @param track the text track
  */
+@OptIn(InternalUiApi::class)
 @Composable
 fun formatTrackLabel(track: TextTrack): String {
-    return remember(track.id, track.uid) { constructLabel(track) }
-        ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
+    return formatTrackName(track)
 }

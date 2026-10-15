@@ -21,9 +21,12 @@ import androidx.compose.ui.input.key.KeyEvent as ComposeKeyEvent
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerView
@@ -32,6 +35,13 @@ import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.player.ErrorEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrackList
+import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
+import com.theoplayer.android.api.player.track.mediatrack.quality.QualityList
+import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
+import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.api.player.track.texttrack.TextTrackList
 import com.theoplayer.android.api.timerange.TimeRanges
 import com.theoplayer.android.ui.InternalUiApi
 import com.theoplayer.android.ui.UIControllerScope
@@ -94,6 +104,184 @@ class UIControllerTest {
 
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_LEFT))
         verify(exactly = 1) { player.currentTime = 30.0 }
+    }
+
+    @Test
+    fun languageMenuButtonIsHiddenWithoutAlternativeTracks() {
+        val onlyTrack = MenuAudioTrack(uid = 1, label = "English", enabled = true)
+        setControllerAndShowControls(mockMenuPlayer(audioTracks = listOf(onlyTrack.track))) {
+            LanguageMenuButton(modifier = Modifier.testTag("language-menu-button"))
+        }
+        assertTagDoesNotExist("language-menu-button")
+    }
+
+    @Test
+    fun languageMenuButtonIsShownWithAlternativeAudioTracks() {
+        val onlyTrack = MenuAudioTrack(uid = 1, label = "English", enabled = true)
+        val secondTrack = MenuAudioTrack(uid = 2, label = "French", enabled = false)
+        setControllerAndShowControls(
+            mockMenuPlayer(audioTracks = listOf(onlyTrack.track, secondTrack.track))
+        ) {
+            LanguageMenuButton(modifier = Modifier.testTag("language-menu-button"))
+        }
+        waitForTag("language-menu-button")
+    }
+
+    @Test
+    fun languageMenuShowsActiveTrackAndFocusesFirstRow() {
+        val english = MenuAudioTrack(uid = 1, label = "English", enabled = true)
+        val french = MenuAudioTrack(uid = 2, label = "French", enabled = false)
+        val buttonFocusRequester = FocusRequester()
+        setControllerAndShowControls(
+            mockMenuPlayer(audioTracks = listOf(english.track, french.track))
+        ) {
+            LanguageMenuButton(
+                modifier = Modifier
+                    .focusRequester(buttonFocusRequester)
+                    .testTag("language-menu-button")
+            )
+        }
+        waitForTag("language-menu-button")
+        composeRule.runOnIdle { buttonFocusRequester.requestFocus() }
+        composeRule.onNodeWithTag("language-menu-button").assertIsFocused()
+        pressCenter()
+
+        waitForText("Language")
+        assertTextExists("Language")
+        waitForText("English")
+        assertTextExists("English")
+        composeRule.onNodeWithText("Audio").assertIsFocused()
+    }
+
+    @Test
+    fun audioTrackMenuFocusesActiveTrackAndSelectionReturnsToLanguageMenu() {
+        val english = MenuAudioTrack(uid = 1, label = "English", enabled = false)
+        val french = MenuAudioTrack(uid = 2, label = "French", enabled = true)
+        val buttonFocusRequester = FocusRequester()
+        setControllerAndShowControls(
+            mockMenuPlayer(audioTracks = listOf(english.track, french.track))
+        ) {
+            LanguageMenuButton(
+                modifier = Modifier
+                    .focusRequester(buttonFocusRequester)
+                    .testTag("language-menu-button")
+            )
+        }
+        waitForTag("language-menu-button")
+        composeRule.runOnIdle { buttonFocusRequester.requestFocus() }
+        composeRule.onNodeWithTag("language-menu-button").assertIsFocused()
+        pressCenter()
+        waitForText("Audio")
+        composeRule.onNodeWithText("Audio").assertIsFocused()
+        pressCenter()
+
+        waitForText("French")
+        composeRule.onNodeWithText("French").assertIsFocused()
+        pressDpad(KeyEvent.KEYCODE_DPAD_UP)
+        composeRule.onNodeWithText("English").assertIsFocused()
+        pressCenter()
+        waitForText("Language")
+        assertTextExists("Language")
+        assertTextExists("English")
+        assertTrue(english.enabled)
+    }
+
+    @Test
+    fun backReturnsFromSubmenuAndRestoresFocusToControls() {
+        val english = MenuAudioTrack(uid = 1, label = "English", enabled = true)
+        val french = MenuAudioTrack(uid = 2, label = "French", enabled = false)
+        val buttonFocusRequester = FocusRequester()
+        setControllerAndShowControls(
+            mockMenuPlayer(audioTracks = listOf(english.track, french.track))
+        ) {
+            LanguageMenuButton(
+                modifier = Modifier
+                    .focusRequester(buttonFocusRequester)
+                    .testTag("language-menu-button")
+            )
+        }
+        waitForTag("language-menu-button")
+        composeRule.runOnIdle { buttonFocusRequester.requestFocus() }
+        composeRule.onNodeWithTag("language-menu-button").assertIsFocused()
+        pressCenter()
+        waitForText("Audio")
+        composeRule.onNodeWithText("Audio").assertIsFocused()
+        pressCenter()
+        waitForText("English")
+        assertTextExists("English")
+
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
+        waitForText("Language")
+        assertTextExists("Language")
+        composeRule.onNodeWithText("Audio").assertIsFocused()
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
+        composeRule.waitForIdle()
+
+        assertTagExists("language-menu-button")
+        composeRule.onNodeWithTag("language-menu-button").assertIsFocused()
+    }
+
+    @Test
+    fun settingsMenuShowsCurrentValuesAndSelectsPlaybackRate() {
+        val player = mockMenuPlayer(playbackRate = 1.25)
+        val buttonFocusRequester = FocusRequester()
+        setControllerAndShowControls(player) {
+            SettingsMenuButton(
+                modifier = Modifier
+                    .focusRequester(buttonFocusRequester)
+                    .testTag("settings-menu-button")
+            )
+        }
+        waitForTag("settings-menu-button")
+        composeRule.runOnIdle { buttonFocusRequester.requestFocus() }
+        composeRule.onNodeWithTag("settings-menu-button").assertIsFocused()
+        pressCenter()
+
+        waitForText("Automatic")
+        assertTextExists("Automatic")
+        assertTextExists("1.25x")
+        composeRule.onNodeWithText("Quality").assertIsFocused()
+        pressDpad(KeyEvent.KEYCODE_DPAD_DOWN)
+        composeRule.onNodeWithText("Playback speed").assertIsFocused()
+        waitForText("Playback speed")
+        pressCenter()
+        waitForText("1.5x")
+        composeRule.onNodeWithText("1.25x").assertIsFocused()
+        pressDpad(KeyEvent.KEYCODE_DPAD_DOWN)
+        composeRule.onNodeWithText("1.5x").assertIsFocused()
+        pressCenter()
+
+        verify(exactly = 1) { player.setPlaybackRate(1.5) }
+    }
+
+    @Test
+    fun qualityListSelectsTargetQuality() {
+        val quality720 = menuVideoQuality(uid = 10, height = 720, bandwidth = 2_500_000)
+        val quality1080 = menuVideoQuality(uid = 11, height = 1080, bandwidth = 5_000_000)
+        val videoTrack = MenuVideoTrack(listOf(quality720, quality1080))
+        val player = mockMenuPlayer(videoTracks = listOf(videoTrack.track))
+        val buttonFocusRequester = FocusRequester()
+        setControllerAndShowControls(player) {
+            SettingsMenuButton(
+                modifier = Modifier
+                    .focusRequester(buttonFocusRequester)
+                    .testTag("settings-menu-button")
+            )
+        }
+        waitForTag("settings-menu-button")
+        composeRule.runOnIdle { buttonFocusRequester.requestFocus() }
+        composeRule.onNodeWithTag("settings-menu-button").assertIsFocused()
+        pressCenter()
+        waitForText("Quality")
+        composeRule.onNodeWithText("Quality").assertIsFocused()
+        pressCenter()
+        waitForText("720p")
+        composeRule.onNodeWithText("Automatic").assertIsFocused()
+        pressDpad(KeyEvent.KEYCODE_DPAD_DOWN)
+        composeRule.onNodeWithText("720p").assertIsFocused()
+        pressCenter()
+
+        assertEquals(quality720, videoTrack.targetQuality)
     }
 
     @Test
@@ -494,12 +682,22 @@ class UIControllerTest {
         }
     }
 
+    private fun waitForText(text: String) {
+        composeRule.waitUntil(10_000) {
+            composeRule.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+        }
+    }
+
     private fun assertTagExists(tag: String) {
         assertTrue(composeRule.onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty())
     }
 
     private fun assertTagDoesNotExist(tag: String) {
         assertTrue(composeRule.onAllNodesWithTag(tag).fetchSemanticsNodes().isEmpty())
+    }
+
+    private fun assertTextExists(text: String) {
+        assertTrue(composeRule.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty())
     }
 
     private fun focusableOverlay(
@@ -539,6 +737,56 @@ class UIControllerTest {
         return player
     }
 
+    private fun setControllerAndShowControls(
+        player: Player,
+        bottomChrome: @Composable UIControllerScope.() -> Unit
+    ) {
+        val keyFocusRequester = FocusRequester()
+        setController(
+            player = player,
+            centerOverlay = focusableOverlay(keyFocusRequester),
+            bottomChrome = bottomChrome
+        )
+        composeRule.runOnIdle { keyFocusRequester.requestFocus() }
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
+        composeRule.waitForIdle()
+    }
+
+    private fun mockMenuPlayer(
+        audioTracks: List<MediaTrack<AudioQuality>> = emptyList(),
+        videoTracks: List<MediaTrack<VideoQuality>> = emptyList(),
+        playbackRate: Double = 1.0
+    ): Player {
+        val player = mockPlayingPlayer()
+        every { player.getAudioTracks() } returns mockAudioTrackList(audioTracks)
+        every { player.getTextTracks() } returns mockTextTrackList(emptyList())
+        every { player.getVideoTracks() } returns mockVideoTrackList(videoTracks)
+        every { player.getPlaybackRate() } returns playbackRate
+        return player
+    }
+
+    private fun pressCenter() {
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER)
+            )
+        )
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(
+                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER)
+            )
+        )
+        composeRule.waitForIdle()
+    }
+
+    private fun pressDpad(keyCode: Int) {
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
+        )
+        composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+        composeRule.waitForIdle()
+    }
+
     private fun dispatchKey(keyCode: Int): Boolean = composeRule.activity.dispatchKeyEvent(
         KeyEvent(KeyEvent.ACTION_DOWN, keyCode)
     )
@@ -546,4 +794,62 @@ class UIControllerTest {
     private companion object {
         const val CONTROLS_AUTO_HIDE_DURATION_MILLIS = 5_000L
     }
+}
+
+private class MenuAudioTrack(
+    val uid: Int,
+    val label: String,
+    var enabled: Boolean
+) {
+    val track: MediaTrack<AudioQuality> = mockk(relaxed = true) {
+        every { this@mockk.uid } returns this@MenuAudioTrack.uid
+        every { this@mockk.label } returns this@MenuAudioTrack.label
+        every { isEnabled } answers { this@MenuAudioTrack.enabled }
+        every { setEnabled(any()) } answers { this@MenuAudioTrack.enabled = firstArg() }
+    }
+}
+
+private class MenuVideoTrack(
+    private val qualities: List<VideoQuality>
+) {
+    var targetQuality: VideoQuality? = null
+
+    val track: MediaTrack<VideoQuality> = mockk(relaxed = true) {
+        every { this@mockk.uid } returns 100
+        every { isEnabled } returns true
+        every { getActiveQuality() } returns qualities.firstOrNull()
+        every { getTargetQuality() } answers { this@MenuVideoTrack.targetQuality }
+        every { setTargetQuality(any()) } answers {
+            this@MenuVideoTrack.targetQuality = firstArg()
+        }
+        every { getQualities() } answers {
+            mockk<QualityList<VideoQuality>>(relaxed = true) {
+                every { iterator() } answers {
+                    this@MenuVideoTrack.qualities.toMutableList().listIterator()
+                }
+            }
+        }
+    }
+}
+
+private fun menuVideoQuality(uid: Int, height: Int, bandwidth: Long): VideoQuality = mockk {
+    every { this@mockk.uid } returns uid
+    every { this@mockk.height } returns height
+    every { this@mockk.bandwidth } returns bandwidth
+}
+
+private fun mockAudioTrackList(
+    tracks: List<MediaTrack<AudioQuality>>
+): MediaTrackList<AudioQuality> = mockk(relaxed = true) {
+    every { iterator() } answers { tracks.toMutableList().listIterator() }
+}
+
+private fun mockVideoTrackList(
+    tracks: List<MediaTrack<VideoQuality>>
+): MediaTrackList<VideoQuality> = mockk(relaxed = true) {
+    every { iterator() } answers { tracks.toMutableList().listIterator() }
+}
+
+private fun mockTextTrackList(tracks: List<TextTrack>): TextTrackList = mockk(relaxed = true) {
+    every { iterator() } answers { tracks.toMutableList().listIterator() }
 }

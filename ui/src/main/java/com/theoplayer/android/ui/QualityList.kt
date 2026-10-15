@@ -9,11 +9,9 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
-import java.text.DecimalFormat
 
 /**
  * A list of video qualities, from which the user can choose a target video quality.
@@ -41,6 +39,7 @@ fun QualityList(
  * @param onClick called when a video quality in the list is clicked
  */
 @ExperimentalPlayerStateApi
+@OptIn(InternalUiApi::class)
 @Composable
 fun QualityList(
     state: VideoQualityState,
@@ -106,19 +105,4 @@ fun QualityList(
             )
         }
     }
-}
-
-@Composable
-internal fun formatBandwidth(bandwidth: Long): String {
-    val format = stringResource(
-        if (bandwidth >= 1e7) {
-            CommonR.string.theoplayer_ui_bandwidth_format_10mbps
-        } else if (bandwidth >= 1e6) {
-            CommonR.string.theoplayer_ui_bandwidth_format_1mbps
-        } else {
-            CommonR.string.theoplayer_ui_bandwidth_format_kbps
-        }
-    )
-    val decimalFormat = remember(format) { DecimalFormat(format) }
-    return decimalFormat.format(bandwidth / (if (bandwidth >= 1e6) 1e6 else 1e3))
 }
