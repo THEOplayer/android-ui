@@ -1,21 +1,22 @@
 package com.theoplayer.android.ui.tv
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.res.stringResource
+import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
-import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
 import com.theoplayer.android.ui.AudioTrackState
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.LocalTHEOplayerView
-import com.theoplayer.android.ui.common.R as CommonR
 import com.theoplayer.android.ui.formatTrackName
 import com.theoplayer.android.ui.rememberAudioTrackState
 
@@ -58,7 +59,8 @@ fun AudioTrackList(
 
     LazyColumn(
         modifier = modifier.focusRestorer(selectedRequester),
-        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex),
+        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
     ) {
         items(
             count = state.audioTracks.size,
@@ -72,8 +74,13 @@ fun AudioTrackList(
                     state.select(audioTrack)
                     onClick?.invoke()
                 },
+                colors = menuItemColors(),
                 headlineContent = { Text(text = formatTrackName(audioTrack)) },
-                leadingContent = { RadioButton(selected = isActive, onClick = null) },
+                trailingContent = if (isActive) {
+                    { Icon(Icons.Rounded.Check, contentDescription = null) }
+                } else {
+                    null
+                },
                 modifier = if (index == selectedIndex) {
                     Modifier.focusRequester(selectedRequester)
                 } else {

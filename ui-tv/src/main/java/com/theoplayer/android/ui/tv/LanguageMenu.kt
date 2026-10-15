@@ -1,7 +1,11 @@
 package com.theoplayer.android.ui.tv
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Audiotrack
+import androidx.compose.material.icons.rounded.ClosedCaption
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
+import androidx.tv.material3.Icon
 import androidx.tv.material3.Text
 import com.theoplayer.android.ui.AudioTrackState
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
@@ -49,6 +53,9 @@ fun MenuScope.LanguageMenu(
                 headlineContent = {
                     Text(text = stringResource(CommonR.string.theoplayer_ui_menu_audio))
                 },
+                leadingContent = {
+                    Icon(Icons.Rounded.Audiotrack, contentDescription = null)
+                },
                 supportingContent = {
                     Text(
                         text = audioTrackState.activeAudioTrack?.let { formatTrackName(it) }
@@ -62,6 +69,9 @@ fun MenuScope.LanguageMenu(
                 onClick = { openMenu { SubtitleMenu() } },
                 headlineContent = {
                     Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles))
+                },
+                leadingContent = {
+                    Icon(Icons.Rounded.ClosedCaption, contentDescription = null)
                 },
                 supportingContent = {
                     Text(

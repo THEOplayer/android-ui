@@ -1,7 +1,10 @@
 package com.theoplayer.android.ui.tv
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -9,8 +12,8 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
+import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
-import androidx.tv.material3.RadioButton
 import androidx.tv.material3.Text
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.LocalTHEOplayerView
@@ -60,7 +63,8 @@ fun QualityList(
 
     LazyColumn(
         modifier = modifier.focusRestorer(selectedRequester),
-        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex),
+        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
     ) {
         item(key = null) {
             val isActive = state.targetVideoQuality == null
@@ -70,10 +74,15 @@ fun QualityList(
                     state.select(null)
                     onClick?.invoke()
                 },
+                colors = menuItemColors(),
                 headlineContent = {
                     Text(text = stringResource(CommonR.string.theoplayer_ui_quality_automatic))
                 },
-                leadingContent = { RadioButton(selected = isActive, onClick = null) },
+                trailingContent = if (isActive) {
+                    { Icon(Icons.Rounded.Check, contentDescription = null) }
+                } else {
+                    null
+                },
                 modifier = if (selectedIndex == 0) {
                     Modifier.focusRequester(selectedRequester)
                 } else {
@@ -93,6 +102,7 @@ fun QualityList(
                     state.select(quality)
                     onClick?.invoke()
                 },
+                colors = menuItemColors(),
                 headlineContent = {
                     Text(
                         text = stringResource(
@@ -104,7 +114,11 @@ fun QualityList(
                 supportingContent = {
                     Text(text = formatBandwidth(quality.bandwidth))
                 },
-                leadingContent = { RadioButton(selected = isActive, onClick = null) },
+                trailingContent = if (isActive) {
+                    { Icon(Icons.Rounded.Check, contentDescription = null) }
+                } else {
+                    null
+                },
                 modifier = if (index + 1 == selectedIndex) {
                     Modifier.focusRequester(selectedRequester)
                 } else {
