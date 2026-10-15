@@ -5,6 +5,7 @@ import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
+import com.theoplayer.android.ui.InternalUiApi
 import java.util.Locale
 
 private const val LANGUAGE_UNDEFINED = "und"
@@ -18,7 +19,8 @@ private const val LANGUAGE_UNDEFINED = "und"
  * returns `null`.
  */
 @get:CheckResult
-internal val Track.localizedLanguageName: String?
+@InternalUiApi
+val Track.localizedLanguageName: String?
     get() {
         val languageCode = this.language
             ?.takeUnless { it.isBlank() || it == LANGUAGE_UNDEFINED }
@@ -31,7 +33,8 @@ internal val Track.localizedLanguageName: String?
 /**
  * Constructs a label for the given [MediaTrack] instance.
  */
-internal fun constructLabel(track: MediaTrack<*>): String? {
+@InternalUiApi
+fun constructLabel(track: MediaTrack<*>): String? {
     return track.label?.takeUnless { it.isBlank() }
         ?: track.localizedLanguageName
 }
@@ -39,7 +42,8 @@ internal fun constructLabel(track: MediaTrack<*>): String? {
 /**
  * Constructs a label for the given [TextTrack] instance.
  */
-internal fun constructLabel(track: TextTrack): String? {
+@InternalUiApi
+fun constructLabel(track: TextTrack): String? {
     val label = track.label?.takeIf {
         when {
             // Ignore empty labels.
