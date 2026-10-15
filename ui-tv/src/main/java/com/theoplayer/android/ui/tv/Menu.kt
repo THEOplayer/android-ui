@@ -123,6 +123,9 @@ internal fun menuItemColors() = ListItemDefaults.colors(
 
 internal val menuItemVerticalSpacing = 8.dp
 
+// Leaves room for the focused item's scale so lazy lists don't clip it.
+internal val menuItemFocusOverflowPadding = 4.dp
+
 private val menuWidth = 320.dp
 private val menuCornerRadius = 16.dp
 private val menuTitlePadding = 24.dp

@@ -1,6 +1,7 @@
 package com.theoplayer.android.ui.tv
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
@@ -64,6 +65,7 @@ fun SubtitleTrackList(
     LazyColumn(
         modifier = modifier.focusRestorer(selectedRequester),
         state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex),
+        contentPadding = PaddingValues(vertical = menuItemFocusOverflowPadding),
         verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
     ) {
         item(key = null) {
