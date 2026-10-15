@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.tv.material)
     implementation(libs.androidx.compose.animation)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material.iconsExtended)
     implementation(libs.androidx.compose.ui.ui)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui.toolingPreview)

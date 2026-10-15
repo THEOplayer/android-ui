@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
@@ -90,9 +91,9 @@ fun PlaybackRateList(
 @Composable
 internal fun formatPlaybackRate(rate: Double): String {
     return if (rate == 1.0) {
-        stringResource(R.string.theoplayer_ui_playback_rate_normal, rate)
+        stringResource(CommonR.string.theoplayer_ui_playback_rate_normal, rate)
     } else {
-        val format = stringResource(R.string.theoplayer_ui_playback_rate_format)
+        val format = stringResource(CommonR.string.theoplayer_ui_playback_rate_format)
         val decimalFormat = remember(format) { DecimalFormat(format) }
         decimalFormat.format(rate)
     }

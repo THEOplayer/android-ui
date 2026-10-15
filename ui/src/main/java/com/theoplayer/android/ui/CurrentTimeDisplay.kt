@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -58,9 +59,9 @@ fun CurrentTimeDisplay(
     val text = if (showDuration) {
         stringResource(
             if (showRemaining) {
-                R.string.theoplayer_ui_current_time_remaining_with_duration
+                CommonR.string.theoplayer_ui_current_time_remaining_with_duration
             } else {
-                R.string.theoplayer_ui_current_time_with_duration
+                CommonR.string.theoplayer_ui_current_time_with_duration
             },
             formatTime(time, duration, preferNegative = showRemaining),
             formatTime(duration)
@@ -68,9 +69,9 @@ fun CurrentTimeDisplay(
     } else {
         stringResource(
             if (showRemaining) {
-                R.string.theoplayer_ui_current_time_remaining
+                CommonR.string.theoplayer_ui_current_time_remaining
             } else {
-                R.string.theoplayer_ui_current_time
+                CommonR.string.theoplayer_ui_current_time
             },
             formatTime(time, duration, preferNegative = showRemaining),
         )

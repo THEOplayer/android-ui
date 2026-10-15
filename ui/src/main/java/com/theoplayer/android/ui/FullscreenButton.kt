@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fullscreen
@@ -26,13 +27,13 @@ fun FullscreenButton(
     enter: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Fullscreen,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_enter)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_fullscreen_enter)
         )
     },
     exit: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.FullscreenExit,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_exit)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_fullscreen_exit)
         )
     }
 ) {
@@ -64,13 +65,13 @@ fun FullscreenButton(
     enter: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Fullscreen,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_enter)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_fullscreen_enter)
         )
     },
     exit: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.FullscreenExit,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_fullscreen_exit)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_fullscreen_exit)
         )
     }
 ) {

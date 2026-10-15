@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Fullscreen
@@ -31,13 +32,13 @@ fun PictureInPictureButton(
     enter: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.PictureInPictureAlt,
-            contentDescription = stringResource(R.string.theoplayer_ui_pip_enter),
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_pip_enter),
         )
     },
     exit: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Fullscreen,
-            contentDescription = stringResource(R.string.theoplayer_ui_pip_exit)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_pip_exit)
         )
     }
 ) {
@@ -74,13 +75,13 @@ fun PictureInPictureButton(
     enter: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.PictureInPictureAlt,
-            contentDescription = stringResource(R.string.theoplayer_ui_pip_enter),
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_pip_enter),
         )
     },
     exit: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Fullscreen,
-            contentDescription = stringResource(R.string.theoplayer_ui_pip_exit)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_pip_exit)
         )
     }
 ) {

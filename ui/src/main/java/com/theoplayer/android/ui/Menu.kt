@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
@@ -34,7 +35,7 @@ fun MenuScope.Menu(
     backIcon: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.ArrowBack,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_back)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_back)
         )
     },
     content: @Composable () -> Unit,
