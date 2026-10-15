@@ -23,10 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.theme.LocalPlayerAnimations
 import kotlin.time.DurationUnit
@@ -70,6 +73,13 @@ fun UIControllerCore(
         )
     )
 
+    val chromeBounds = remember { ChromeBounds() }
+    val chromeVisible = uiState.value == UIState.Controls && controls.visible.value
+    TextTrackMarginsEffect(
+        player = nativePlayer.takeUnless { theoplayerView?.isInEditMode == true },
+        chromeMargins = if (chromeVisible) chromeBounds.margins else ChromeMargins()
+    )
+
     BackHandler(enabled = scope.currentMenu != null) {
         scope.closeCurrentMenu()
     }
@@ -96,6 +106,7 @@ fun UIControllerCore(
             controls = controls,
             adPlaying = adState.playingAd,
             background = animatedBackground,
+            chromeBounds = chromeBounds,
             controlsModifier = controlsModifier,
             contentTransform = contentTransform,
             centerOverlay = centerOverlay,
@@ -120,6 +131,7 @@ private fun UIControllerContent(
     controls: ControlsVisibility,
     adPlaying: Boolean,
     background: Color,
+    chromeBounds: ChromeBounds,
     controlsModifier: Modifier,
     contentTransform: AnimatedContentTransitionScope<UIState>.() -> ContentTransform,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)?,
@@ -147,6 +159,7 @@ private fun UIControllerContent(
                 UIState.Controls -> scope.PlayerControls(
                     controlsVisible = controls.visible.value,
                     animationsActive = controls.animationsActive && !adPlaying,
+                    chromeBounds = chromeBounds,
                     controlsModifier = controlsModifier,
                     centerOverlay = centerOverlay,
                     topChrome = topChrome,
@@ -166,6 +179,7 @@ private fun UIControllerContent(
 private fun UIControllerScope.PlayerControls(
     controlsVisible: Boolean,
     animationsActive: Boolean,
+    chromeBounds: ChromeBounds,
     controlsModifier: Modifier,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)?,
     topChrome: (@Composable UIControllerScope.() -> Unit)?,
@@ -173,7 +187,11 @@ private fun UIControllerScope.PlayerControls(
     bottomChrome: (@Composable UIControllerScope.() -> Unit)?
 ) {
     val playerAnimations = LocalPlayerAnimations.current
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .onGloballyPositioned { chromeBounds.player = it.boundsInRoot() }
+    ) {
         centerOverlay?.let {
             Row(
                 modifier = Modifier.fillMaxSize(),
@@ -217,9 +235,21 @@ private fun UIControllerScope.PlayerControls(
                     }
                 }
                 Column(modifier = Modifier.fillMaxSize()) {
-                    topChrome?.let { it() }
+                    topChrome?.let { chrome ->
+                        Column(
+                            modifier = Modifier.onGloballyPositioned {
+                                chromeBounds.topChrome = it.boundsInRoot()
+                            }
+                        ) { chrome() }
+                    }
                     Spacer(modifier = Modifier.weight(1f))
-                    bottomChrome?.let { it() }
+                    bottomChrome?.let { chrome ->
+                        Column(
+                            modifier = Modifier.onGloballyPositioned {
+                                chromeBounds.bottomChrome = it.boundsInRoot()
+                            }
+                        ) { chrome() }
+                    }
                 }
             }
         }
