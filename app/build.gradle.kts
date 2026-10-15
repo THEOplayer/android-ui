@@ -67,6 +67,13 @@ android {
     }
 }
 
+androidComponents {
+    // TODO Re-enable once android-ui-tv is published to Maven
+    beforeVariants(selector().withBuildType("maven")) { variantBuilder ->
+        variantBuilder.enable = false
+    }
+}
+
 kotlin {
     compilerOptions {
         apiVersion = KotlinVersion.KOTLIN_2_0
