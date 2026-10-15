@@ -91,6 +91,7 @@ dependencies {
 
 dokka {
     moduleName = "android-ui-tv"
+    modulePath = "android-ui-tv"
 
     dokkaSourceSets.configureEach {
         sourceLink {

@@ -1,4 +1,6 @@
 import org.jetbrains.changelog.date
+import java.time.Year
+import kotlin.text.Typography.copyright
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
@@ -16,8 +18,27 @@ plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.compose.compiler) apply false
-    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.dokka)
     alias(libs.plugins.changelog)
+}
+
+dependencies {
+    dokka(project(":ui"))
+    dokka(project(":ui-common"))
+    dokka(project(":ui-tv"))
+}
+
+dokka {
+    moduleName = rootProject.name
+
+    pluginsConfiguration.html {
+        customAssets.from("ui/assets/logo-icon.svg")
+        footerMessage = "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
+    }
+
+    dokkaPublications.html {
+        outputDirectory = rootDir.resolve("site/api")
+    }
 }
 
 changelog {
