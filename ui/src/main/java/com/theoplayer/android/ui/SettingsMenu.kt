@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 
 /**
  * A [Menu] to change the settings of the player, such as the video quality or the playback rate.
@@ -42,6 +41,7 @@ fun MenuScope.SettingsMenu() {
  * @see PlaybackRateMenu
  */
 @ExperimentalPlayerStateApi
+@OptIn(InternalUiApi::class)
 @Composable
 fun MenuScope.SettingsMenu(
     videoQualityState: VideoQualityState,
@@ -169,25 +169,5 @@ fun MenuScope.PlaybackRateMenu(state: PlaybackRateState) {
         title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate)) }
     ) {
         PlaybackRateList(state, onClick = { closeCurrentMenu() })
-    }
-}
-
-@Composable
-internal fun formatActiveQualityLabel(
-    targetVideoQuality: VideoQuality?,
-    activeVideoQuality: VideoQuality?
-): String {
-    return if (targetVideoQuality != null) {
-        stringResource(
-            CommonR.string.theoplayer_ui_quality_with_height,
-            targetVideoQuality.height
-        )
-    } else if (activeVideoQuality != null) {
-        stringResource(
-            CommonR.string.theoplayer_ui_quality_automatic_with_height,
-            activeVideoQuality.height
-        )
-    } else {
-        stringResource(CommonR.string.theoplayer_ui_quality_automatic)
     }
 }

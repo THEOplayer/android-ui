@@ -1,13 +1,15 @@
 package com.theoplayer.android.ui.util
 
 import com.theoplayer.android.api.THEOplayerGlobal
+import com.theoplayer.android.ui.InternalUiApi
 
 private const val VERSION_DELIMITER = '.'
 
 /**
  * A [semver](https://semver.org/) version.
  */
-internal data class Version(
+@InternalUiApi
+data class Version(
     /**
      * The major version.
      */
@@ -54,7 +56,8 @@ internal data class Version(
     }
 }
 
-internal object THEOplayerGlobalExt {
+@InternalUiApi
+object THEOplayerGlobalExt {
     /**
      * Returns the version of THEOplayer, as a [Version].
      */

@@ -2,11 +2,13 @@ package com.theoplayer.android.ui.util
 
 import androidx.annotation.DoNotInline
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.ui.InternalUiApi
 
 /**
  * Returns [TextTrack.getCaptionChannel], if available.
  */
-internal val TextTrack.captionChannelCompat: Int?
+@InternalUiApi
+val TextTrack.captionChannelCompat: Int?
     get() {
         // TextTrack.getCaptionChannel was added in THEOplayer 10.13.0.
         return if (THEOplayerGlobalExt.version >= version1013) {

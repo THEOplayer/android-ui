@@ -8,6 +8,8 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.focusGroup
 import androidx.compose.runtime.Composable
@@ -24,6 +26,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.ui.ControlsVisibility
@@ -115,7 +119,7 @@ fun UIController(
         errorState = errorState,
         controls = controls,
         color = color,
-        contentTransform = tvContentTransform(),
+        contentTransform = tvContentTransform(LocalLayoutDirection.current),
         controlsModifier = Modifier
             .focusRequester(focusRequester)
             .focusRestorer()
@@ -151,13 +155,23 @@ private fun rememberControlsFocus(
 }
 
 /**
- * Returns fade-only transitions for TV content.
+ * Returns transitions for TV menus.
  */
-private fun tvContentTransform(): AnimatedContentTransitionScope<UIState>.() -> ContentTransform = {
+private fun tvContentTransform(
+    layoutDirection: LayoutDirection
+): AnimatedContentTransitionScope<UIState>.() -> ContentTransform = {
     when {
         targetState is UIState.Error ->
             EnterTransition.None togetherWith ExitTransition.None
-        targetState is UIState.Menu || initialState is UIState.Menu ->
+        initialState == UIState.Controls && targetState is UIState.Menu ->
+            slideInHorizontally {
+                if (layoutDirection == LayoutDirection.Ltr) it else -it
+            } + fadeIn() togetherWith fadeOut()
+        initialState is UIState.Menu && targetState == UIState.Controls ->
+            fadeIn() togetherWith slideOutHorizontally {
+                if (layoutDirection == LayoutDirection.Ltr) it else -it
+            } + fadeOut()
+        initialState is UIState.Menu && targetState is UIState.Menu ->
             fadeIn() togetherWith fadeOut()
         else ->
             EnterTransition.None togetherWith ExitTransition.None
