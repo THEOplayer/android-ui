@@ -119,6 +119,7 @@ private fun StreamCarousel(
  * instead of moving focus to the theme row.
  *
  * Works around tv-material 1.1.0, where [Carousel]'s own exit handler never cancels the move.
+ * See https://issuetracker.google.com/issues/575161906
  */
 private fun Modifier.keepHorizontalFocusInside(): Modifier = this
     .focusProperties {
