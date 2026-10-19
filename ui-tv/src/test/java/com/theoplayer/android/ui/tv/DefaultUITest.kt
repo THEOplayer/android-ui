@@ -18,6 +18,7 @@ import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.timerange.TimeRanges
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
+import com.theoplayer.android.api.player.track.texttrack.TextTrackStyle
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -97,6 +98,20 @@ class DefaultUITest {
 
         verify { player.pause() }
         waitUntil { hasText(TITLE) }
+    }
+
+    @Test
+    fun visibleControlsMoveSubtitlesOutOfTheWay() {
+        val textTrackStyle = mockk<TextTrackStyle>(relaxed = true)
+        val player = mockPlayer(paused = true, played = true)
+        every { player.textTrackStyle } returns textTrackStyle
+        setDefaultUI(player)
+
+        waitUntil { hasText(TITLE) }
+        composeRule.waitForIdle()
+
+        verify { textTrackStyle.marginTop = more(0) }
+        verify { textTrackStyle.marginBottom = more(0) }
     }
 
     private fun setDefaultUI(player: Player) {
