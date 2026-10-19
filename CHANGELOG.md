@@ -22,6 +22,7 @@
 * 🚀 Added `android-ui-tv`, an experimental UI library for Android TV built on Compose for TV. ([#121](https://github.com/THEOplayer/android-ui/pull/121), [#124](https://github.com/THEOplayer/android-ui/pull/124), [#125](https://github.com/THEOplayer/android-ui/pull/125), [#126](https://github.com/THEOplayer/android-ui/pull/126), [#128](https://github.com/THEOplayer/android-ui/pull/128))
 * 📝 The API documentation now has a separate section for each module (`android-ui`, `android-ui-common` and `android-ui-tv`). ([#128](https://github.com/THEOplayer/android-ui/pull/128))
 * 🚀 `UIController` now moves subtitles up or down while the controls are visible, so they don't render behind the top or bottom chrome. Moving subtitles up requires THEOplayer 9.5.0 or higher. ([#129](https://github.com/THEOplayer/android-ui/pull/129))
+* 🚀 Added `SeekButton` and a `UIController(config, source)` overload to `android-ui-tv`. ([#131](https://github.com/THEOplayer/android-ui/pull/131))
 
 ## [1.14.2] (2026-10-13)
 
