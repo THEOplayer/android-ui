@@ -142,10 +142,9 @@ private fun NitflexCenterControls(firstPlay: Boolean) {
             modifier = Modifier
                 .focusRequester(playButtonFocusRequester)
                 .size(80.dp),
-            iconModifier = Modifier.size(48.dp),
-            play = { Icon(Icons.Sharp.PlayArrow, contentDescription = "Play") },
-            pause = { Icon(Icons.Sharp.Pause, contentDescription = "Pause") },
-            replay = { Icon(Icons.Sharp.Replay, contentDescription = "Replay") }
+            play = { Icon(Icons.Sharp.PlayArrow, contentDescription = "Play", modifier = Modifier.size(56.dp)) },
+            pause = { Icon(Icons.Sharp.Pause, contentDescription = "Pause", modifier = Modifier.size(56.dp)) },
+            replay = { Icon(Icons.Sharp.Replay, contentDescription = "Replay", modifier = Modifier.size(56.dp)) }
         )
         if (firstPlay) {
             SeekButton(seekOffset = 10, iconSize = 48.dp, modifier = Modifier.size(72.dp))
