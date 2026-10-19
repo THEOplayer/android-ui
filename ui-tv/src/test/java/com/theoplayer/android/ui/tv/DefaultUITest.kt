@@ -82,6 +82,18 @@ class DefaultUITest {
     }
 
     @Test
+    fun playButtonIsFocusedWhenControlsAreShownForLiveStream() {
+        setDefaultUI(mockPlayer(paused = true, played = true, duration = Double.POSITIVE_INFINITY))
+        val playButton = androidx.compose.ui.test.hasContentDescription("Play")
+
+        composeRule.waitUntil(10_000) {
+            composeRule.onAllNodes(playButton and SemanticsMatcher.expectValue(SemanticsProperties.Focused, true))
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+        composeRule.onNode(playButton).assertIsFocused()
+    }
+
+    @Test
     fun hiddenDpadCenterPausesAndShowsControls() {
         val player = mockPlayer(paused = false, played = true)
         setDefaultUI(player)
