@@ -32,8 +32,10 @@ import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.LayoutDirection
+import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.player.Player
+import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.ControlsVisibility
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.InternalUiApi
@@ -45,6 +47,7 @@ import com.theoplayer.android.ui.rememberControlsVisibility
 import com.theoplayer.android.ui.rememberErrorState
 import com.theoplayer.android.ui.rememberFirstPlayState
 import com.theoplayer.android.ui.rememberPlayButtonState
+import com.theoplayer.android.ui.rememberTHEOplayerView
 import com.theoplayer.android.ui.rememberUIControllerScope
 import com.theoplayer.android.ui.rememberUIState
 import com.theoplayer.android.ui.seekPlayerBy
@@ -53,6 +56,58 @@ import com.theoplayer.android.ui.togglePlayerPlayPause
 
 /**
  * A TV-oriented UI controller for a THEOplayer view.
+ *
+ * This creates a [THEOplayerView] with the given [config] that follows the lifecycle of the
+ * composition, and loads the given [source] into its player.
+ *
+ * @param modifier the [Modifier] to be applied to this controller
+ * @param config the player configuration to be used when constructing the [THEOplayerView]
+ * @param source the source description to load into the player
+ * @param color the background color behind visible controls
+ * @param centerOverlay content displayed over the center of the player
+ * @param errorOverlay content displayed when the player encounters a fatal error
+ * @param topChrome controls displayed at the top of the player
+ * @param centerChrome controls displayed at the center of the player
+ * @param bottomChrome controls displayed at the bottom of the player
+ */
+@ExperimentalTvUiApi
+@Composable
+fun UIController(
+    modifier: Modifier = Modifier,
+    config: THEOplayerConfig,
+    source: SourceDescription? = null,
+    color: Color = Color.Black.copy(alpha = 0.5f),
+    centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
+    topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+) {
+    val theoplayerView = rememberTHEOplayerView(config)
+    LaunchedEffect(theoplayerView, source) {
+        if (!theoplayerView.isInEditMode) {
+            theoplayerView.player.source = source
+        }
+    }
+
+    UIController(
+        modifier = modifier,
+        theoplayerView = theoplayerView,
+        color = color,
+        centerOverlay = centerOverlay,
+        errorOverlay = errorOverlay,
+        topChrome = topChrome,
+        centerChrome = centerChrome,
+        bottomChrome = bottomChrome
+    )
+}
+
+/**
+ * A TV-oriented UI controller for a THEOplayer view.
+ *
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
+ * create a view owned by the composition, or forward [THEOplayerView.onPause],
+ * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
  *
  * @param modifier the [Modifier] to be applied to this controller
  * @param theoplayerView the THEOplayer view to host
