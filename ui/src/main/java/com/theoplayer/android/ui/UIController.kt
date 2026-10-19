@@ -267,11 +267,7 @@ internal fun UIControllerImpl(
             }
         }
     }
-    val backgroundVisible = when (uiState) {
-        is UIState.Controls -> controlsVisible.value
-        is UIState.Hidden -> false
-        else -> true
-    }
+    val backgroundVisible = uiState.isVisible(controlsVisible.value)
     val background by animateColorAsState(
         label = "BackgroundAnimation",
         targetValue = if (backgroundVisible) color else color.copy(alpha = 0f),
@@ -303,6 +299,14 @@ internal fun UIControllerImpl(
                 },
                 hideControls = {
                     forceControlsHidden = true
+                    tapCount++
+                }
+            )
+            .handlePlayerKeys(
+                player = nativePlayer,
+                controlsVisible = { uiState.isVisible(controlsVisible.value) },
+                showControls = {
+                    forceControlsHidden = false
                     tapCount++
                 }
             )
@@ -376,7 +380,14 @@ private sealed class UIState {
     object Error : UIState()
     data class Menu(val menu: MenuContent) : UIState()
     object Controls : UIState()
-    object Hidden
+    object Hidden : UIState()
+}
+
+/** Returns whether this UI state is visible. */
+private fun UIState.isVisible(controlsVisible: Boolean): Boolean = when (this) {
+    is UIState.Controls -> controlsVisible
+    is UIState.Hidden -> false
+    else -> true
 }
 
 @Composable
