@@ -1,10 +1,6 @@
 package com.theoplayer.android.ui
 
 import android.app.Activity
-import android.app.Application
-import android.content.Context
-import android.content.ContextWrapper
-import android.view.ViewGroup
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.EnterTransition
@@ -21,7 +17,6 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,7 +28,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
@@ -42,14 +36,8 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
@@ -382,70 +370,6 @@ internal fun UIControllerImpl(
     }
 }
 
-/**
- * Scope for the contents of a [UIController].
- */
-interface UIControllerScope : MenuScope {
-    /**
-     * The player hosted in this [UIController].
-     *
-     * If the UIController was created from a [THEOplayerView], the [Player] is created on
-     * first access (and only then adds its listeners). Prefer [theoplayerView] with the
-     * experimental state holders instead.
-     */
-    val player: Player
-
-    /**
-     * The THEOplayer view hosted in this [UIController], or `null` in inspection mode.
-     */
-    val theoplayerView: THEOplayerView?
-        get() = player.theoplayerView
-}
-
-private class UIControllerScopeImpl(
-    override val theoplayerView: THEOplayerView?,
-    private val providedPlayer: Player?
-) : UIControllerScope {
-    private var menuStack = mutableStateListOf<MenuContent>()
-
-    val currentMenu: MenuContent?
-        get() = menuStack.lastOrNull()
-    var lastWasClosed: Boolean = false
-        private set
-
-    var activityInPipMode: Boolean = false
-        set(value) {
-            field = value
-            if (lazyPlayer.isInitialized()) {
-                lazyPlayer.value.activityInPipMode = value
-            }
-        }
-
-    private val lazyPlayer = lazy {
-        PlayerImpl(theoplayerView).also { it.activityInPipMode = activityInPipMode }
-    }
-
-    override val player: Player
-        get() = providedPlayer ?: lazyPlayer.value
-
-    fun dispose() {
-        if (lazyPlayer.isInitialized()) {
-            lazyPlayer.value.dispose()
-        }
-    }
-
-    override fun openMenu(menu: MenuContent) {
-        menuStack.add(menu)
-        lastWasClosed = false
-    }
-
-    override fun closeCurrentMenu() {
-        menuStack.removeLastOrNull()?.also {
-            lastWasClosed = true
-        }
-    }
-}
-
 internal val LocalUIControllerErrorState = staticCompositionLocalOf<ErrorState?> { null }
 
 private sealed class UIState {
@@ -453,67 +377,6 @@ private sealed class UIState {
     data class Menu(val menu: MenuContent) : UIState()
     object Controls : UIState()
     object Hidden
-}
-
-@Composable
-private fun PlayerContainer(
-    modifier: Modifier = Modifier,
-    theoplayerView: THEOplayerView?,
-    ui: @Composable () -> Unit
-) {
-    if (theoplayerView == null) {
-        Box(
-            modifier = modifier
-        ) {
-            ui()
-        }
-    } else {
-        val lifecycle = LocalLifecycleOwner.current.lifecycle
-        var uiContainer by remember { mutableStateOf<ViewGroup?>(null) }
-        var composeView by remember { mutableStateOf<ComposeView?>(null) }
-
-        AndroidView(
-            modifier = modifier,
-            factory = { context ->
-                uiContainer =
-                    theoplayerView.findViewById(com.theoplayer.android.R.id.theo_ui_container)
-                // Wrap our UI inside a ComposeView
-                composeView = ComposeView(context).apply {
-                    // When entering fullscreen, we remove the view from its original location
-                    // and add it to the activity's root view.
-                    // When it is temporarily removed (and detached from the window),
-                    // we do *not* want to lose the composition. Therefore, don't use the default
-                    // DisposeOnDetachedFromWindow or DisposeOnDetachedFromWindowOrReleasedFromPool
-                    // strategies!
-                    setViewCompositionStrategy(
-                        ViewCompositionStrategy.DisposeOnLifecycleDestroyed(lifecycle)
-                    )
-                    setContent {
-                        ui()
-                    }
-                }
-                // Host the THEOplayer view inside our AndroidView
-                (theoplayerView.parent as? ViewGroup)?.removeView(theoplayerView)
-                theoplayerView
-            })
-
-        // Install inside THEOplayerView's UI container
-        DisposableEffect(uiContainer, composeView) {
-            val container = uiContainer
-            val view = composeView
-            if (container != null && view != null) {
-                container.addView(view)
-                theoplayerView.postInvalidate()
-            }
-            onDispose {
-                if (container != null && view != null) {
-                    container.removeView(view)
-                    view.disposeComposition()
-                    theoplayerView.postInvalidate()
-                }
-            }
-        }
-    }
 }
 
 @Composable
@@ -594,61 +457,6 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
 }
 
 /**
- * Creates and remembers a [THEOplayerView] owned by the composition.
- *
- * This couples the lifecycle of the view to the current activity: it automatically calls
- * [THEOplayerView.onPause] and [THEOplayerView.onResume] whenever the current activity is
- * [paused][Activity.onPause] or [resumed][Activity.onResume] (resuming an ad that was
- * interrupted), and it destroys the view when it leaves the composition.
- *
- * In previews, the SDK does not initialize the view ([View.isInEditMode]), so do not
- * access its [THEOplayerView.player] there. [UIController] and [DefaultUI] handle this
- * automatically.
- *
- * @param config the player configuration
- */
-@Composable
-fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
-    val context = LocalContext.current
-    val inspectionMode = LocalInspectionMode.current
-    val theoplayerView = remember {
-        THEOplayerView(if (inspectionMode) PreviewContext(context) else context, config)
-    }
-    if (!theoplayerView.isInEditMode) {
-        setupTHEOplayerView(theoplayerView, destroyOnLifecycleDestroy = false)
-        DisposableEffect(theoplayerView) {
-            onDispose {
-                theoplayerView.onDestroy()
-            }
-        }
-    }
-    return theoplayerView
-}
-
-/**
- * A context for creating a [THEOplayerView] in a preview.
- *
- * The [THEOplayerView] constructor casts the application context to [Application],
- * but layoutlib's application context is not an [Application].
- */
-private class PreviewContext(base: Context) : ContextWrapper(base) {
-    private val application = PreviewApplication(base.applicationContext)
-
-    override fun getApplicationContext(): Context = application
-}
-
-private class PreviewApplication(base: Context) : Application() {
-    init {
-        attachBaseContext(base)
-    }
-}
-
-@Composable
-internal fun rememberTHEOplayerViewInternal(config: THEOplayerConfig?): THEOplayerView? {
-    return if (LocalInspectionMode.current) null else rememberTHEOplayerView(config)
-}
-
-/**
  * Create a [Player] wrapping an existing [THEOplayerView].
  *
  * The [THEOplayerView] should be [remembered][remember] so it's not re-created on every
@@ -700,47 +508,6 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
     player.activityInPipMode = rememberIsInPipMode()
 
     return player
-}
-
-@Composable
-internal fun setupTHEOplayerView(
-    theoplayerView: THEOplayerView,
-    destroyOnLifecycleDestroy: Boolean = true
-): THEOplayerView {
-    var wasPlayingAd by remember { mutableStateOf(false) }
-
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    DisposableEffect(lifecycle, theoplayerView) {
-        val lifecycleObserver = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> {
-                    theoplayerView.onResume()
-                    if (wasPlayingAd) {
-                        theoplayerView.player.play()
-                        wasPlayingAd = false
-                    }
-                }
-
-                Lifecycle.Event.ON_PAUSE -> {
-                    wasPlayingAd = theoplayerView.player.ads.isPlaying
-                    theoplayerView.onPause()
-                }
-
-                Lifecycle.Event.ON_DESTROY -> {
-                    if (destroyOnLifecycleDestroy) {
-                        theoplayerView.onDestroy()
-                    }
-                }
-                else -> {}
-            }
-        }
-        lifecycle.addObserver(lifecycleObserver)
-        onDispose {
-            lifecycle.removeObserver(lifecycleObserver)
-        }
-    }
-
-    return theoplayerView
 }
 
 internal fun Modifier.playerAspectRatio(videoSizeState: VideoSizeState): Modifier {
