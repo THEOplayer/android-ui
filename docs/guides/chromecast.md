@@ -6,6 +6,8 @@ sidebar_position: 2
 
 The Open Video UI for Android has integrated support for Chromecast.
 
+Chromecast is not supported by the experimental `android-ui-tv` library.
+
 - When using the `DefaultUI`, the Chromecast button is automatically added in the top right corner
   of the player.
 - When creating a custom UI using a `UIController`, you can add a `ChromecastButton` component

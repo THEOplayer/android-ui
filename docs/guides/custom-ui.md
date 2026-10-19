@@ -8,6 +8,10 @@ Although the default UI was designed to support a variety of usage scenarios, yo
 
 In this guide, you will build a custom player from scratch, starting from a basic player and gradually adding more features. Finally, we will look at some more complete examples of custom players, which you can use as reference for your own UI.
 
+:::tip
+Building for Android TV? See [Making a custom TV UI](./android-tv/custom-ui.md).
+:::
+
 ## A basic player
 
 We'll start by making the most basic player possible: one with just a play button.
@@ -128,3 +132,5 @@ It may sound odd to mention the default UI when we're talking about custom UIs. 
 The default UI comes with all the bells and whistles that you'd expect from a fully-featured player: buttons to play or mute the video, a seek bar to seek through the video, menus to change the audio language and subtitles, and support for casting to Chromecast.
 
 Have a look at [`DefaultUI.kt`](https://github.com/THEOplayer/android-ui/blob/main/ui/src/main/java/com/theoplayer/android/ui/DefaultUI.kt) to learn how the default layout is implemented, and perhaps copy some ideas for your own UI.
+
+For a TV player, see [Making a custom TV UI](./android-tv/custom-ui.md).
