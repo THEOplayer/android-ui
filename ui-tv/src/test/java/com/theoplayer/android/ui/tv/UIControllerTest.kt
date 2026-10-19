@@ -1,6 +1,5 @@
 package com.theoplayer.android.ui.tv
 
-import android.content.Context
 import android.view.KeyEvent
 import android.view.ViewGroup
 import androidx.activity.ComponentActivity
@@ -30,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.error.THEOplayerException
-import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.ErrorEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
@@ -40,7 +38,6 @@ import com.theoplayer.android.ui.UIControllerScope
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -342,12 +339,12 @@ class UIControllerTest {
         }
         composeRule.activity.onBackPressedDispatcher.addCallback(callback)
         val player = mockNotPlayedPlayer()
-        val errorListener = slot<EventListener<ErrorEvent>>()
-        val errorListeners = mutableListOf<EventListener<ErrorEvent>>()
+        val errorListeners = PlayerEventListeners()
         every {
-            player.addEventListener(PlayerEventTypes.ERROR, capture(errorListener))
+            player.addEventListener(PlayerEventTypes.ERROR, any())
         } answers {
-            errorListeners += errorListener.captured
+            errorListeners.add(firstArg(), secondArg())
+            Unit
         }
         setController(
             player = player,
@@ -356,12 +353,14 @@ class UIControllerTest {
             }
         )
         composeRule.mainClock.advanceTimeBy(100)
-        composeRule.waitUntil(10_000) { errorListeners.isNotEmpty() }
+        composeRule.waitUntil(10_000) {
+            errorListeners.hasListeners(PlayerEventTypes.ERROR)
+        }
         composeRule.waitForIdle()
         val errorEvent = mockk<ErrorEvent>()
         every { errorEvent.errorObject } returns mockk<THEOplayerException>()
         composeRule.runOnIdle {
-            errorListeners.forEach { it.handleEvent(errorEvent) }
+            errorListeners.dispatch(PlayerEventTypes.ERROR, errorEvent)
         }
         waitForTag("error")
 
@@ -538,13 +537,6 @@ class UIControllerTest {
         every { player.played } returns played
         every { player.ads } returns ads
         return player
-    }
-
-    private class PlayerBackedTHEOplayerView(
-        context: Context,
-        private val nativePlayer: Player
-    ) : THEOplayerView(context) {
-        override fun getPlayer(): Player = nativePlayer
     }
 
     private fun dispatchKey(keyCode: Int): Boolean = composeRule.activity.dispatchKeyEvent(
