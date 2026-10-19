@@ -82,6 +82,7 @@ fun TvContent(theoplayerView: THEOplayerView) {
             theoplayerView = theoplayerView,
             stream = currentStream,
             theme = theme,
+            onNextStream = { stream = streams[(streams.indexOf(currentStream) + 1) % streams.size] },
             onExit = { stream = null }
         )
     }
@@ -91,7 +92,8 @@ fun TvContent(theoplayerView: THEOplayerView) {
  * The player themes available on Android TV.
  */
 enum class TvPlayerTheme(val title: String) {
-    Default(title = "Default theme")
+    Default(title = "Default theme"),
+    Nitflex(title = "Nitflex theme")
 }
 
 /**

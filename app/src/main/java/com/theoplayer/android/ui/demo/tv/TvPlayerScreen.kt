@@ -6,12 +6,15 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.demo.Stream
+import com.theoplayer.android.ui.demo.tv.nitflex.TvNitflexTheme
+import com.theoplayer.android.ui.demo.tv.nitflex.TvNitflexUI
 import com.theoplayer.android.ui.tv.DefaultUI
 import com.theoplayer.android.ui.tv.ExperimentalTvUiApi
 
 /**
  * Plays the given [stream] with the given [theme].
  *
+ * [onNextStream] switches to the next stream, for themes that have a "next" button.
  * Back first hides the controls (handled by the player UI), and then calls [onExit].
  */
 @OptIn(ExperimentalTvUiApi::class)
@@ -21,6 +24,7 @@ fun TvPlayerScreen(
     theoplayerView: THEOplayerView,
     stream: Stream,
     theme: TvPlayerTheme,
+    onNextStream: () -> Unit,
     onExit: () -> Unit
 ) {
     DisposableEffect(theoplayerView, stream) {
@@ -41,5 +45,14 @@ fun TvPlayerScreen(
             theoplayerView = theoplayerView,
             title = stream.title
         )
+
+        TvPlayerTheme.Nitflex -> TvNitflexTheme {
+            TvNitflexUI(
+                modifier = modifier,
+                theoplayerView = theoplayerView,
+                title = stream.title,
+                onNextEpisode = onNextStream
+            )
+        }
     }
 }
