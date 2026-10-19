@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".TvActivity"
+            android:name=".tv.TvActivity"
             android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|keyboard|keyboardHidden|navigation"
             android:exported="true"
             android:label="@string/app_name"
