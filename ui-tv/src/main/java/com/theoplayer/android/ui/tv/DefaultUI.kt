@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui.tv
 
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
@@ -181,14 +186,24 @@ private fun UIControllerScope.BottomControls(playingAd: Boolean, streamType: Str
             SeekBar(modifier = Modifier.fillMaxWidth())
         }
         Spacer(modifier = Modifier.height(8.dp))
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        // Entering this row focuses the play button, rather than the first button in the row.
+        // This matters when the controls open without a seek bar, e.g. for live streams without DVR.
+        val playButtonFocusRequester = remember { FocusRequester() }
+        Row(
+            modifier = Modifier
+                .focusProperties { onEnter = { playButtonFocusRequester.requestFocus() } }
+                .focusGroup(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Row(modifier = Modifier.weight(1f)) {
                 if (!playingAd) {
                     LiveButton()
                 }
             }
             PlayButton(
-                modifier = Modifier.size(56.dp),
+                modifier = Modifier
+                    .focusRequester(playButtonFocusRequester)
+                    .size(56.dp),
                 iconModifier = Modifier.size(32.dp)
             )
             Row(
