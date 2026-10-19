@@ -157,7 +157,7 @@ fun TvPlayerWithState() {
 }
 ```
 
-`Player.current` is not provided by the TV controller. It passes `null` as the player facade to the shared controller core. Read the native player from `LocalTHEOplayerView` and use state holders such as `rememberFirstPlayState`, `rememberPlayButtonState`, and `rememberSeekBarState`.
+Unlike the mobile UI, the TV UI does not provide `Player.current`. Use state holders such as `rememberFirstPlayState`, `rememberPlayButtonState`, and `rememberSeekBarState` instead.
 
 ## More examples
 
