@@ -94,6 +94,8 @@ dokka {
     modulePath = "android-ui-tv"
 
     dokkaSourceSets.configureEach {
+        suppressAnnotatedWith.add("com.theoplayer.android.ui.InternalUiApi")
+
         sourceLink {
             localDirectory = file("src/main/java")
             remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui-tv/src/main/java")

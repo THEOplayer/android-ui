@@ -87,6 +87,8 @@ dokka {
     modulePath = "android-ui-common"
 
     dokkaSourceSets.configureEach {
+        suppressAnnotatedWith.add("com.theoplayer.android.ui.InternalUiApi")
+
         sourceLink {
             localDirectory = file("src/main/java")
             remoteUrl("https://github.com/THEOplayer/android-ui/blob/${version}/ui-common/src/main/java")
