@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -168,12 +167,7 @@ private fun ThemeRow(currentTheme: TvPlayerTheme, onSelectTheme: (TvPlayerTheme)
             val selected = theme == currentTheme
             FilterChip(
                 selected = selected,
-                onClick = { onSelectTheme(theme) },
-                leadingIcon = if (selected) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null) }
-                } else {
-                    null
-                }
+                onClick = { onSelectTheme(theme) }
             ) {
                 Text(text = theme.title)
             }
