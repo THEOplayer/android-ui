@@ -84,6 +84,7 @@ dependencies {
 
 dokka {
     moduleName = "android-ui-common"
+    modulePath = "android-ui-common"
 
     dokkaSourceSets.configureEach {
         sourceLink {
