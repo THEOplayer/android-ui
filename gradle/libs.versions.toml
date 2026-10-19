@@ -27,12 +27,14 @@ theoplayer-compile = { prefer = "11.+", strictly = "[10.13.0, 12.0)" }
 theoplayer-min = { strictly = "7.6.0" }
 core = "1.18.0"
 core-pip = "1.0.0-alpha02"
+tv-material = "1.1.0"
 
 [libraries]
 androidx-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "ktx" }
 androidx-lifecycle-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle-compose" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
@@ -48,6 +50,7 @@ androidx-espresso = { group = "androidx.test.espresso", name = "espresso-core", 
 androidx-mediarouter = { group = "androidx.mediarouter", name = "mediarouter", version.ref = "androidx-mediarouter" }
 androidx-core = { group = "androidx.core", name = "core", version.ref = "core" }
 androidx-core-pip = { group = "androidx.core", name = "core-pip", version.ref = "core-pip" }
+androidx-tv-material = { group = "androidx.tv", name = "tv-material", version.ref = "tv-material" }
 androidTools-desugarJdkLibs = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "desugar-jdk-libs" }
 playServices-castFramework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "playServices-castFramework" }
 gradle-plugin = { group = "com.android.tools.build", name = "gradle", version.ref = "gradle" }
