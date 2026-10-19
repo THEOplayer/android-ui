@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui.demo.tv.nitflex
 
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,8 +18,12 @@ import androidx.compose.material.icons.sharp.SkipNext
 import androidx.compose.material.icons.sharp.Speed
 import androidx.compose.material.icons.sharp.Subtitles
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -121,7 +126,12 @@ private fun NitflexTitle(title: String) {
 @OptIn(ExperimentalTvUiApi::class)
 @Composable
 private fun NitflexCenterControls(firstPlay: Boolean) {
+    // Entering this row focuses the play button, rather than the seek back button.
+    val playButtonFocusRequester = remember { FocusRequester() }
     Row(
+        modifier = Modifier
+            .focusProperties { onEnter = { playButtonFocusRequester.requestFocus() } }
+            .focusGroup(),
         horizontalArrangement = Arrangement.spacedBy(48.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -129,7 +139,9 @@ private fun NitflexCenterControls(firstPlay: Boolean) {
             SeekButton(seekOffset = -10, iconSize = 48.dp, modifier = Modifier.size(72.dp))
         }
         PlayButton(
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier
+                .focusRequester(playButtonFocusRequester)
+                .size(80.dp),
             iconModifier = Modifier.size(48.dp),
             play = { Icon(Icons.Sharp.PlayArrow, contentDescription = "Play") },
             pause = { Icon(Icons.Sharp.Pause, contentDescription = "Pause") },
