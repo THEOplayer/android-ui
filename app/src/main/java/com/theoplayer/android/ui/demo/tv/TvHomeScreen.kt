@@ -1,6 +1,7 @@
 package com.theoplayer.android.ui.demo.tv
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +22,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -89,7 +92,9 @@ private fun StreamCarousel(
     val carouselState = rememberCarouselState()
     Carousel(
         itemCount = streams.size,
-        modifier = modifier.clip(RoundedCornerShape(16.dp)),
+        modifier = modifier
+            .clip(RoundedCornerShape(16.dp))
+            .keepHorizontalFocusInside(),
         carouselState = carouselState,
         carouselIndicator = {
             CarouselDefaults.IndicatorRow(
@@ -108,6 +113,22 @@ private fun StreamCarousel(
         )
     }
 }
+
+/**
+ * Keeps Left and Right focus moves inside this element, so [Carousel] changes slides
+ * instead of moving focus to the theme row.
+ *
+ * Works around tv-material 1.1.0, where [Carousel]'s own exit handler never cancels the move.
+ */
+private fun Modifier.keepHorizontalFocusInside(): Modifier = this
+    .focusProperties {
+        onExit = {
+            if (requestedFocusDirection == FocusDirection.Left || requestedFocusDirection == FocusDirection.Right) {
+                cancelFocusChange()
+            }
+        }
+    }
+    .focusGroup()
 
 /**
  * A single carousel slide, with the stream's title, description and a play button.
