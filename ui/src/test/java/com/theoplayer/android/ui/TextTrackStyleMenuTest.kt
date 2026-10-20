@@ -13,6 +13,9 @@ import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.performClick
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.player.Player
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
+import com.theoplayer.android.api.player.track.mediatrack.MediaTrackList
+import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackList
@@ -70,24 +73,12 @@ class TextTrackStyleMenuTest {
     }
 
     @Test
-    fun languageMenuShowsTextTrackStyleActionWithSubtitleTracks() {
-        val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
-        val menuStack = mutableStateListOf<MenuContent>()
-        val scope = TestMenuScope(menuStack)
-        menuStack.add { LanguageMenu() }
-        setMenus(player, scope, menuStack)
-
-        assertTrue(
-            composeRule
-                .onAllNodes(hasContentDescription("Subtitle options"))
-                .fetchSemanticsNodes()
-                .isNotEmpty()
-        )
-    }
-
-    @Test
-    fun languageMenuHidesTextTrackStyleActionWithoutSubtitleTracks() {
-        val player = mockPlayer()
+    fun languageMenuDoesNotShowTextTrackStyleAction() {
+        val player =
+            mockPlayer(
+                audioTracks = listOf(mockAudioTrack(), mockAudioTrack()),
+                textTracks = listOf(mockSubtitleTrack()),
+            )
         val menuStack = mutableStateListOf<MenuContent>()
         val scope = TestMenuScope(menuStack)
         menuStack.add { LanguageMenu() }
@@ -99,6 +90,40 @@ class TextTrackStyleMenuTest {
                 .fetchSemanticsNodes()
                 .isEmpty()
         )
+    }
+
+    @Test
+    fun subtitleMenuOpensTextTrackStyleMenu() {
+        val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
+        val menuStack = mutableStateListOf<MenuContent>()
+        val scope = TestMenuScope(menuStack)
+        menuStack.add { SubtitleMenu() }
+        setMenus(player, scope, menuStack)
+
+        composeRule
+            .onNode(hasContentDescription("Subtitle options") and hasClickAction())
+            .performClick()
+        composeRule.waitForIdle()
+
+        assertTextExists("Subtitle options")
+        assertTextExists("Font color")
+    }
+
+    @Test
+    fun languageMenuExpandedOpensTextTrackStyleMenu() {
+        val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
+        val menuStack = mutableStateListOf<MenuContent>()
+        val scope = TestMenuScope(menuStack)
+        menuStack.add { LanguageMenuExpanded() }
+        setMenus(player, scope, menuStack)
+
+        composeRule
+            .onNode(hasContentDescription("Subtitle options") and hasClickAction())
+            .performClick()
+        composeRule.waitForIdle()
+
+        assertTextExists("Subtitle options")
+        assertTextExists("Font color")
     }
 
     private fun setMenus(
@@ -178,16 +203,24 @@ class TextTrackStyleMenuTest {
             every { label } returns "English"
         }
 
+    private fun mockAudioTrack(): MediaTrack<AudioQuality> = mockk(relaxed = true)
+
     private fun mockPlayer(
         style: MockStyle = MockStyle(),
+        audioTracks: List<MediaTrack<AudioQuality>> = emptyList(),
         textTracks: List<TextTrack> = emptyList(),
     ): Player {
+        val audioTrackList =
+            mockk<MediaTrackList<AudioQuality>>(relaxed = true) {
+                every { iterator() } answers { audioTracks.toMutableList().listIterator() }
+            }
         val textTrackList =
             mockk<TextTrackList>(relaxed = true) {
                 every { iterator() } answers { textTracks.toMutableList().listIterator() }
             }
         return mockk(relaxed = true) {
             every { getTextTrackStyle() } returns style.style
+            every { getAudioTracks() } returns audioTrackList
             every { getTextTracks() } returns textTrackList
         }
     }

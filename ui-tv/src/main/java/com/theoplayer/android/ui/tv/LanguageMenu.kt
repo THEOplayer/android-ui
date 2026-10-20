@@ -5,6 +5,7 @@ import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.compose.material.icons.rounded.ClosedCaption
 import androidx.compose.material.icons.rounded.FormatSize
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.tv.material3.Icon
 import androidx.tv.material3.Text
@@ -75,13 +76,6 @@ fun MenuScope.LanguageMenu(
                     )
                 },
             )
-            MenuSubmenuItem(
-                onClick = { openMenu { TextTrackStyleMenu() } },
-                headlineContent = {
-                    Text(text = stringResource(CommonR.string.theoplayer_ui_menu_text_track_style))
-                },
-                leadingContent = { Icon(Icons.Rounded.FormatSize, contentDescription = null) },
-            )
         }
     }
 }
@@ -125,7 +119,11 @@ fun MenuScope.AudioTrackMenu(state: AudioTrackState) {
 /**
  * A menu to change the subtitles of the stream.
  *
+ * Besides the subtitle tracks, this menu also links to the [TextTrackStyleMenu], to change the
+ * style of the subtitles.
+ *
  * @see SubtitleTrackList
+ * @see TextTrackStyleMenu
  */
 @ExperimentalTvUiApi
 @Composable
@@ -138,14 +136,29 @@ fun MenuScope.SubtitleMenu() {
  *
  * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
+ * Besides the subtitle tracks, this menu also links to the [TextTrackStyleMenu], to change the
+ * style of the subtitles.
+ *
  * @param state the [SubtitleTrackState] to read and control
  * @see SubtitleTrackList
+ * @see TextTrackStyleMenu
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.SubtitleMenu(state: SubtitleTrackState) {
     Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) }) {
-        SubtitleTrackList(state, onClick = { closeCurrentMenu() })
+        SubtitleTrackList(
+            state,
+            modifier = Modifier.weight(1f, fill = false),
+            onClick = { closeCurrentMenu() },
+        )
+        MenuSubmenuItem(
+            onClick = { openMenu { TextTrackStyleMenu() } },
+            headlineContent = {
+                Text(text = stringResource(CommonR.string.theoplayer_ui_menu_text_track_style))
+            },
+            leadingContent = { Icon(Icons.Rounded.FormatSize, contentDescription = null) },
+        )
     }
 }
