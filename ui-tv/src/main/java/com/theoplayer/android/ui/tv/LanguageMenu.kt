@@ -78,7 +78,7 @@ fun MenuScope.LanguageMenu(
             MenuSubmenuItem(
                 onClick = { openMenu { TextTrackStyleMenu() } },
                 headlineContent = {
-                    Text(text = stringResource(CommonR.string.theoplayer_ui_menu_caption_style))
+                    Text(text = stringResource(CommonR.string.theoplayer_ui_menu_text_track_style))
                 },
                 leadingContent = { Icon(Icons.Rounded.FormatSize, contentDescription = null) },
             )

@@ -59,77 +59,71 @@
     <!-- The label shown on the subtitle dropdown to disable all subtitles. -->
     <string name="theoplayer_ui_subtitles_off">Off</string>
 
-    <!-- The title of the caption style menu, where users can change the style of the subtitles. -->
-    <string name="theoplayer_ui_menu_caption_style">Caption style</string>
-    <!-- The label of the button that resets the caption style to its defaults. -->
-    <string name="theoplayer_ui_caption_style_reset">Reset style</string>
-    <!-- The label of the caption style option to change the font family. -->
-    <string name="theoplayer_ui_caption_style_font_family">Font family</string>
-    <!-- The label of the caption style option to change the font color. -->
-    <string name="theoplayer_ui_caption_style_font_color">Font color</string>
-    <!-- The label of the caption style option to change the font size. -->
-    <string name="theoplayer_ui_caption_style_font_size">Font size</string>
-    <!-- The label of the caption style option to change the opacity of the subtitle text. -->
-    <string name="theoplayer_ui_caption_style_font_opacity">Text opacity</string>
-    <!-- The label of the caption style option to change the edge style of the subtitle text. -->
-    <string name="theoplayer_ui_caption_style_edge_type">Character edge style</string>
-    <!-- The label of the caption style option to change the edge color. -->
-    <string name="theoplayer_ui_caption_style_edge_color">Edge color</string>
-    <!-- The label of the caption style option to change the background color. -->
-    <string name="theoplayer_ui_caption_style_background_color">Background color</string>
-    <!-- The label of the caption style option to change the background opacity. -->
-    <string name="theoplayer_ui_caption_style_background_opacity">Background opacity</string>
-    <!-- The label of the caption style option to change the window color. -->
-    <string name="theoplayer_ui_caption_style_window_color">Window color</string>
-    <!-- The label of the caption style option to change the window opacity. -->
-    <string name="theoplayer_ui_caption_style_window_opacity">Window opacity</string>
-    <!-- The label shown for a caption style value that is not one of the preset options. -->
+    <!-- The title of the subtitle options menu, where users can change the style of the subtitles. -->
+    <string name="theoplayer_ui_menu_text_track_style">Subtitle options</string>
+    <!-- The label of the button that resets the subtitle style to its defaults. -->
+    <string name="theoplayer_ui_text_track_style_reset">Reset</string>
+    <!-- The label of the subtitle options menu item to change the font family. -->
+    <string name="theoplayer_ui_text_track_style_font_family">Font family</string>
+    <!-- The label of the subtitle options menu item to change the font color. -->
+    <string name="theoplayer_ui_text_track_style_font_color">Font color</string>
+    <!-- The label of the subtitle options menu item to change the opacity of the subtitle text. -->
+    <string name="theoplayer_ui_text_track_style_font_opacity">Font opacity</string>
+    <!-- The label of the subtitle options menu item to change the font size. -->
+    <string name="theoplayer_ui_text_track_style_font_size">Font size</string>
+    <!-- The label of the subtitle options menu item to change the background color. -->
+    <string name="theoplayer_ui_text_track_style_background_color">Background color</string>
+    <!-- The label of the subtitle options menu item to change the background opacity. -->
+    <string name="theoplayer_ui_text_track_style_background_opacity">Background opacity</string>
+    <!-- The label of the subtitle options menu item to change the window color. -->
+    <string name="theoplayer_ui_text_track_style_window_color">Window color</string>
+    <!-- The label of the subtitle options menu item to change the window opacity. -->
+    <string name="theoplayer_ui_text_track_style_window_opacity">Window opacity</string>
+    <!-- The label of the subtitle options menu item to change the edge style of the subtitle text. -->
+    <string name="theoplayer_ui_text_track_style_edge_type">Character edge style</string>
+    <!-- The label of the subtitle options menu item to change the edge color. -->
+    <string name="theoplayer_ui_text_track_style_edge_color">Edge color</string>
+    <!-- The label shown for a text track style value that is not one of the preset options. -->
     <string name="theoplayer_ui_custom">Custom</string>
 
-    <!-- A font family option in the caption style menu. -->
+    <!-- A font family option in the subtitle options menu. -->
     <string name="theoplayer_ui_font_family_default">Default</string>
-    <!-- A font family option in the caption style menu. -->
-    <string name="theoplayer_ui_font_family_casual">Casual</string>
-    <!-- A font family option in the caption style menu. -->
-    <string name="theoplayer_ui_font_family_cursive">Cursive</string>
-    <!-- A font family option in the caption style menu. -->
-    <string name="theoplayer_ui_font_family_monospace_sans_serif">Monospaced Sans-Serif</string>
-    <!-- A font family option in the caption style menu. -->
-    <string name="theoplayer_ui_font_family_monospace_serif">Monospaced Serif</string>
-    <!-- A font family option in the caption style menu. -->
-    <string name="theoplayer_ui_font_family_sans_serif">Proportional Sans-Serif</string>
-    <!-- A font family option in the caption style menu. -->
-    <string name="theoplayer_ui_font_family_serif">Proportional Serif</string>
-    <!-- A font family option in the caption style menu. -->
-    <string name="theoplayer_ui_font_family_small_capitals">Small Capitals</string>
+    <!-- A font family option in the subtitle options menu. -->
+    <string name="theoplayer_ui_font_family_monospace_serif">Monospace Serif</string>
+    <!-- A font family option in the subtitle options menu. -->
+    <string name="theoplayer_ui_font_family_proportional_serif">Proportional Serif</string>
+    <!-- A font family option in the subtitle options menu. -->
+    <string name="theoplayer_ui_font_family_monospace_sans">Monospace Sans</string>
+    <!-- A font family option in the subtitle options menu. -->
+    <string name="theoplayer_ui_font_family_proportional_sans">Proportional Sans</string>
 
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_white">White</string>
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_yellow">Yellow</string>
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_green">Green</string>
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_cyan">Cyan</string>
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_blue">Blue</string>
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_magenta">Magenta</string>
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_red">Red</string>
-    <!-- A color option in the caption style menu. -->
+    <!-- A color option in the subtitle options menu. -->
     <string name="theoplayer_ui_color_black">Black</string>
 
-    <!-- An edge type option in the caption style menu. -->
+    <!-- An edge type option in the subtitle options menu. -->
     <string name="theoplayer_ui_edge_type_none">None</string>
-    <!-- An edge type option in the caption style menu. -->
-    <string name="theoplayer_ui_edge_type_outline">Outline</string>
-    <!-- An edge type option in the caption style menu. -->
+    <!-- An edge type option in the subtitle options menu. -->
     <string name="theoplayer_ui_edge_type_drop_shadow">Drop shadow</string>
-    <!-- An edge type option in the caption style menu. -->
+    <!-- An edge type option in the subtitle options menu. -->
     <string name="theoplayer_ui_edge_type_raised">Raised</string>
-    <!-- An edge type option in the caption style menu. -->
+    <!-- An edge type option in the subtitle options menu. -->
     <string name="theoplayer_ui_edge_type_depressed">Depressed</string>
+    <!-- An edge type option in the subtitle options menu. -->
+    <string name="theoplayer_ui_edge_type_uniform">Uniform</string>
 
     <!-- The label shown for the normal playback speed (1x). -->
     <string name="theoplayer_ui_playback_rate_normal">Normal</string>

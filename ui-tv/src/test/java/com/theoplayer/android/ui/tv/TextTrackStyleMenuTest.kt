@@ -64,30 +64,32 @@ class TextTrackStyleMenuTest {
         composeRule.waitForIdle()
 
         assertEquals(0x8000FF00.toInt(), style.fontColor)
-        assertTextExists("Caption style")
+        assertTextExists("Subtitle options")
         assertTextExists("Green")
     }
 
     @Test
-    fun languageMenuShowsCaptionStyleWithSubtitleTracks() {
+    fun languageMenuShowsTextTrackStyleWithSubtitleTracks() {
         val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
         val menuStack = mutableStateListOf<MenuContent>()
         val scope = TestMenuScope(menuStack)
         menuStack.add { LanguageMenu() }
         setMenus(player, scope, menuStack)
 
-        assertTextExists("Caption style")
+        assertTextExists("Subtitle options")
     }
 
     @Test
-    fun languageMenuHidesCaptionStyleWithoutSubtitleTracks() {
+    fun languageMenuHidesTextTrackStyleWithoutSubtitleTracks() {
         val player = mockPlayer()
         val menuStack = mutableStateListOf<MenuContent>()
         val scope = TestMenuScope(menuStack)
         menuStack.add { LanguageMenu() }
         setMenus(player, scope, menuStack)
 
-        assertTrue(composeRule.onAllNodesWithText("Caption style").fetchSemanticsNodes().isEmpty())
+        assertTrue(
+            composeRule.onAllNodesWithText("Subtitle options").fetchSemanticsNodes().isEmpty()
+        )
     }
 
     private fun setMenus(

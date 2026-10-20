@@ -65,7 +65,7 @@ fun MenuScope.LanguageMenu(
                     Icon(
                         Icons.Rounded.Settings,
                         contentDescription =
-                            stringResource(CommonR.string.theoplayer_ui_menu_caption_style),
+                            stringResource(CommonR.string.theoplayer_ui_menu_text_track_style),
                     )
                 }
             }

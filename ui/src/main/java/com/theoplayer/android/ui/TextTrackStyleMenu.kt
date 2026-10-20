@@ -56,10 +56,10 @@ fun MenuScope.TextTrackStyleMenu() {
 @Composable
 fun MenuScope.TextTrackStyleMenu(state: TextTrackStyleState) {
     Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_caption_style)) },
+        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_text_track_style)) },
         actions = {
             TextButton(onClick = { state.reset() }) {
-                Text(text = stringResource(CommonR.string.theoplayer_ui_caption_style_reset))
+                Text(text = stringResource(CommonR.string.theoplayer_ui_text_track_style_reset))
             }
         },
     ) {

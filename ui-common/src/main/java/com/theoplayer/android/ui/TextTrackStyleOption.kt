@@ -70,10 +70,10 @@ private val textTrackStyleBackgroundOpacities = listOf(0, 25, 50, 75, 100)
 private val textTrackStyleEdgeTypes =
     listOf(
         TextTrackStyle.EdgeType.EDGE_TYPE_NONE,
-        TextTrackStyle.EdgeType.EDGE_TYPE_OUTLINE,
         TextTrackStyle.EdgeType.EDGE_TYPE_DROP_SHADOW,
         TextTrackStyle.EdgeType.EDGE_TYPE_RAISED,
         TextTrackStyle.EdgeType.EDGE_TYPE_DEPRESSED,
+        TextTrackStyle.EdgeType.EDGE_TYPE_OUTLINE,
     )
 
 private fun Color.rgbEquals(other: Color): Boolean =
@@ -91,19 +91,14 @@ private fun formatTextTrackFontFamily(fontFamily: TextTrackFontFamily?): String 
     return when (fontFamily) {
         TextTrackFontFamily.DEFAULT ->
             stringResource(CommonR.string.theoplayer_ui_font_family_default)
-        TextTrackFontFamily.CASUAL ->
-            stringResource(CommonR.string.theoplayer_ui_font_family_casual)
-        TextTrackFontFamily.CURSIVE ->
-            stringResource(CommonR.string.theoplayer_ui_font_family_cursive)
-        TextTrackFontFamily.MONOSPACE_SANS_SERIF ->
-            stringResource(CommonR.string.theoplayer_ui_font_family_monospace_sans_serif)
         TextTrackFontFamily.MONOSPACE_SERIF ->
             stringResource(CommonR.string.theoplayer_ui_font_family_monospace_serif)
-        TextTrackFontFamily.SANS_SERIF ->
-            stringResource(CommonR.string.theoplayer_ui_font_family_sans_serif)
-        TextTrackFontFamily.SERIF -> stringResource(CommonR.string.theoplayer_ui_font_family_serif)
-        TextTrackFontFamily.SMALL_CAPITALS ->
-            stringResource(CommonR.string.theoplayer_ui_font_family_small_capitals)
+        TextTrackFontFamily.PROPORTIONAL_SERIF ->
+            stringResource(CommonR.string.theoplayer_ui_font_family_proportional_serif)
+        TextTrackFontFamily.MONOSPACE_SANS ->
+            stringResource(CommonR.string.theoplayer_ui_font_family_monospace_sans)
+        TextTrackFontFamily.PROPORTIONAL_SANS ->
+            stringResource(CommonR.string.theoplayer_ui_font_family_proportional_sans)
         null -> stringResource(CommonR.string.theoplayer_ui_custom)
     }
 }
@@ -114,7 +109,7 @@ private fun formatTextTrackEdgeType(edgeType: TextTrackStyle.EdgeType): String {
         TextTrackStyle.EdgeType.EDGE_TYPE_NONE ->
             stringResource(CommonR.string.theoplayer_ui_edge_type_none)
         TextTrackStyle.EdgeType.EDGE_TYPE_OUTLINE ->
-            stringResource(CommonR.string.theoplayer_ui_edge_type_outline)
+            stringResource(CommonR.string.theoplayer_ui_edge_type_uniform)
         TextTrackStyle.EdgeType.EDGE_TYPE_DROP_SHADOW ->
             stringResource(CommonR.string.theoplayer_ui_edge_type_drop_shadow)
         TextTrackStyle.EdgeType.EDGE_TYPE_RAISED ->
@@ -131,7 +126,7 @@ private fun formatPercentage(percent: Int): String {
 
 private val fontFamilyOption =
     TextTrackStyleOption<TextTrackFontFamily?>(
-        label = CommonR.string.theoplayer_ui_caption_style_font_family,
+        label = CommonR.string.theoplayer_ui_text_track_style_font_family,
         values = TextTrackFontFamily.entries,
         current = { it.fontFamily },
         matches = { current, value -> current == value },
@@ -142,7 +137,7 @@ private val fontFamilyOption =
 
 private val fontColorOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_font_color,
+        label = CommonR.string.theoplayer_ui_text_track_style_font_color,
         values = textTrackStyleColors.map { it.first },
         current = { it.fontColor },
         matches = { current, value -> current.rgbEquals(value) },
@@ -153,7 +148,7 @@ private val fontColorOption =
 
 private val fontSizeOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_font_size,
+        label = CommonR.string.theoplayer_ui_text_track_style_font_size,
         values = textTrackStyleFontSizes,
         current = { it.fontSize },
         matches = { current, value -> current == value },
@@ -163,7 +158,7 @@ private val fontSizeOption =
 
 private val fontOpacityOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_font_opacity,
+        label = CommonR.string.theoplayer_ui_text_track_style_font_opacity,
         values = textTrackStyleFontOpacities,
         current = { it.fontOpacity },
         matches = { current, value -> current == value },
@@ -173,7 +168,7 @@ private val fontOpacityOption =
 
 private val edgeTypeOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_edge_type,
+        label = CommonR.string.theoplayer_ui_text_track_style_edge_type,
         values = textTrackStyleEdgeTypes,
         current = { it.edgeType },
         matches = { current, value -> current == value },
@@ -183,7 +178,7 @@ private val edgeTypeOption =
 
 private val edgeColorOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_edge_color,
+        label = CommonR.string.theoplayer_ui_text_track_style_edge_color,
         values = textTrackStyleColors.map { it.first },
         current = { it.edgeColor },
         matches = { current, value -> current.rgbEquals(value) },
@@ -194,7 +189,7 @@ private val edgeColorOption =
 
 private val backgroundColorOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_background_color,
+        label = CommonR.string.theoplayer_ui_text_track_style_background_color,
         values = textTrackStyleColors.map { it.first },
         current = { it.backgroundColor },
         matches = { current, value -> current.rgbEquals(value) },
@@ -205,7 +200,7 @@ private val backgroundColorOption =
 
 private val backgroundOpacityOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_background_opacity,
+        label = CommonR.string.theoplayer_ui_text_track_style_background_opacity,
         values = textTrackStyleBackgroundOpacities,
         current = { it.backgroundOpacity },
         matches = { current, value -> current == value },
@@ -215,7 +210,7 @@ private val backgroundOpacityOption =
 
 private val windowColorOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_window_color,
+        label = CommonR.string.theoplayer_ui_text_track_style_window_color,
         values = textTrackStyleColors.map { it.first },
         current = { it.windowColor },
         matches = { current, value -> current.rgbEquals(value) },
@@ -226,7 +221,7 @@ private val windowColorOption =
 
 private val windowOpacityOption =
     TextTrackStyleOption(
-        label = CommonR.string.theoplayer_ui_caption_style_window_opacity,
+        label = CommonR.string.theoplayer_ui_text_track_style_window_opacity,
         values = textTrackStyleBackgroundOpacities,
         current = { it.windowOpacity },
         matches = { current, value -> current == value },
@@ -241,12 +236,12 @@ val textTrackStyleOptions: List<TextTrackStyleOption<*>> =
     listOf(
         fontFamilyOption,
         fontColorOption,
-        fontSizeOption,
         fontOpacityOption,
-        edgeTypeOption,
-        edgeColorOption,
+        fontSizeOption,
         backgroundColorOption,
         backgroundOpacityOption,
         windowColorOption,
         windowOpacityOption,
+        edgeTypeOption,
+        edgeColorOption,
     )

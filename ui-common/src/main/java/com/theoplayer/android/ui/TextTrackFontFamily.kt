@@ -11,13 +11,14 @@ import android.graphics.Typeface
 enum class TextTrackFontFamily(internal val familyName: String?) {
     /** The default font family of the system or the player. */
     DEFAULT(null),
-    CASUAL("casual"),
-    CURSIVE("cursive"),
-    MONOSPACE_SANS_SERIF("sans-serif-monospace"),
+    /** A serif font where every glyph has the same width. */
     MONOSPACE_SERIF("serif-monospace"),
-    SANS_SERIF("sans-serif"),
-    SERIF("serif"),
-    SMALL_CAPITALS("sans-serif-smallcaps");
+    /** A serif font where glyphs have varying widths. */
+    PROPORTIONAL_SERIF("serif"),
+    /** A sans-serif font where every glyph has the same width. */
+    MONOSPACE_SANS("monospace"),
+    /** A sans-serif font where glyphs have varying widths. */
+    PROPORTIONAL_SANS("sans-serif");
 
     // This cached instance is passed to setFont(), so that getFont() returns an equal typeface.
     internal val typeface: Typeface? by lazy {

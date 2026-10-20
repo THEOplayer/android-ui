@@ -58,7 +58,9 @@ fun MenuScope.TextTrackStyleMenu() {
 @OptIn(InternalUiApi::class)
 @Composable
 fun MenuScope.TextTrackStyleMenu(state: TextTrackStyleState) {
-    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_caption_style)) }) {
+    Menu(
+        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_text_track_style)) }
+    ) {
         LazyColumn(
             contentPadding = PaddingValues(vertical = menuItemFocusOverflowPadding),
             verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing),
@@ -70,7 +72,8 @@ fun MenuScope.TextTrackStyleMenu(state: TextTrackStyleState) {
                     colors = menuItemColors(),
                     headlineContent = {
                         Text(
-                            text = stringResource(CommonR.string.theoplayer_ui_caption_style_reset)
+                            text =
+                                stringResource(CommonR.string.theoplayer_ui_text_track_style_reset)
                         )
                     },
                 )

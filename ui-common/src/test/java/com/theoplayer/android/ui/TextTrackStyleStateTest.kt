@@ -173,10 +173,10 @@ class TextTrackStyleStateTest {
         val mock = MockPlayer()
         val state = TextTrackStyleState(mock.player)
 
-        state.selectFontFamily(TextTrackFontFamily.SERIF)
+        state.selectFontFamily(TextTrackFontFamily.PROPORTIONAL_SERIF)
 
-        assertTrue(mock.textTrackStyle.font === TextTrackFontFamily.SERIF.typeface)
-        assertEquals(TextTrackFontFamily.SERIF, state.fontFamily)
+        assertTrue(mock.textTrackStyle.font === TextTrackFontFamily.PROPORTIONAL_SERIF.typeface)
+        assertEquals(TextTrackFontFamily.PROPORTIONAL_SERIF, state.fontFamily)
 
         state.selectFontFamily(TextTrackFontFamily.DEFAULT)
 
@@ -202,7 +202,7 @@ class TextTrackStyleStateTest {
         val state = TextTrackStyleState(mock.player)
 
         assertFalse(state.isFontFamilySupported)
-        state.selectFontFamily(TextTrackFontFamily.SERIF)
+        state.selectFontFamily(TextTrackFontFamily.PROPORTIONAL_SERIF)
         verify(exactly = 0) { mock.textTrackStyle.style.setFont(any<Typeface>()) }
         assertEquals(TextTrackFontFamily.DEFAULT, state.fontFamily)
     }
@@ -229,7 +229,7 @@ class TextTrackStyleStateTest {
         state.selectEdgeColor(Color(0xFF00FF00))
         state.selectFontSize(200)
         state.selectEdgeType(TextTrackStyle.EdgeType.EDGE_TYPE_OUTLINE)
-        state.selectFontFamily(TextTrackFontFamily.SERIF)
+        state.selectFontFamily(TextTrackFontFamily.PROPORTIONAL_SERIF)
         state.reset()
     }
 
