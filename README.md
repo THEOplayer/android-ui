@@ -138,7 +138,7 @@ fun TvPlayer() {
 }
 ```
 
-See the [Android TV getting started guide](https://optiview.dolby.com/docs/theoplayer/ui/android/open-video-ui/guides/android-tv/getting-started/).
+See the [Android TV getting started guide](https://optiview.dolby.com/docs/theoplayer/ui/android/open-video-ui/guides/android-tv/getting-started/) for more details, and [the TV demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/tv/TvActivity.kt) for a complete and working example.
 
 ### Custom UI
 
