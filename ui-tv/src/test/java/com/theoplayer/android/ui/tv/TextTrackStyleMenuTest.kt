@@ -112,13 +112,28 @@ class TextTrackStyleMenuTest {
         // The selected track is focused when the menu is first opened.
         composeRule.onNodeWithText("English").assertIsFocused()
 
-        moveFocusTo("Subtitle options")
+        moveFocusTo("Subtitle options", KeyEvent.KEYCODE_DPAD_UP)
         pressCenter()
         waitForText("Font color")
 
         pressBack()
         waitForText("Subtitle options")
         composeRule.onNodeWithText("Subtitle options").assertIsFocused()
+    }
+
+    @Test
+    fun subtitleMenuDpadUpFromFirstTrackFocusesOptions() {
+        val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
+        val scope = setController(player)
+        composeRule.runOnIdle { scope.openMenu { SubtitleMenu() } }
+        waitForText("English")
+
+        pressDpad(KeyEvent.KEYCODE_DPAD_UP)
+        composeRule.onNodeWithText("Off").assertIsFocused()
+        pressDpad(KeyEvent.KEYCODE_DPAD_UP)
+        composeRule.onNodeWithText("Subtitle options").assertIsFocused()
+        pressDpad(KeyEvent.KEYCODE_DPAD_DOWN)
+        composeRule.onNodeWithText("Off").assertIsFocused()
     }
 
     @Test
@@ -156,7 +171,7 @@ class TextTrackStyleMenuTest {
         return scope
     }
 
-    private fun moveFocusTo(text: String) {
+    private fun moveFocusTo(text: String, keyCode: Int = KeyEvent.KEYCODE_DPAD_DOWN) {
         repeat(12) {
             val focused =
                 composeRule
@@ -164,7 +179,7 @@ class TextTrackStyleMenuTest {
                     .fetchSemanticsNodes()
                     .isNotEmpty()
             if (focused) return
-            pressDpad(KeyEvent.KEYCODE_DPAD_DOWN)
+            pressDpad(keyCode)
         }
     }
 

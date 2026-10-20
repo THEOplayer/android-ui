@@ -5,7 +5,15 @@ import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.compose.material.icons.rounded.ClosedCaption
 import androidx.compose.material.icons.rounded.FormatSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.stringResource
 import androidx.tv.material3.Icon
 import androidx.tv.material3.Text
@@ -148,17 +156,29 @@ fun MenuScope.SubtitleMenu() {
 @Composable
 fun MenuScope.SubtitleMenu(state: SubtitleTrackState) {
     Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) }) {
-        SubtitleTrackList(
-            state,
-            modifier = Modifier.weight(1f, fill = false),
-            onClick = { closeCurrentMenu() },
-        )
+        val listRequester = remember { FocusRequester() }
+        // Focus the "Subtitle options" item after returning from it,
+        // and the selected track when the menu is opened fresh.
+        var returnToOptions by rememberSaveable { mutableStateOf(false) }
+        LaunchedEffect(Unit) {
+            if (!returnToOptions) {
+                listRequester.requestFocus()
+            }
+        }
         MenuSubmenuItem(
-            onClick = { openMenu { TextTrackStyleMenu() } },
+            onClick = {
+                returnToOptions = true
+                openMenu { TextTrackStyleMenu() }
+            },
             headlineContent = {
                 Text(text = stringResource(CommonR.string.theoplayer_ui_menu_text_track_style))
             },
             leadingContent = { Icon(Icons.Rounded.FormatSize, contentDescription = null) },
+        )
+        SubtitleTrackList(
+            state,
+            modifier = Modifier.weight(1f, fill = false).focusRequester(listRequester),
+            onClick = { closeCurrentMenu() },
         )
     }
 }
