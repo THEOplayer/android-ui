@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -57,6 +58,17 @@ fun MenuScope.LanguageMenu(
                 Icons.Rounded.Close,
                 contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_menu_close),
             )
+        },
+        actions = {
+            if (showSubtitleTracks(subtitleTrackState)) {
+                IconButton(onClick = { openMenu { TextTrackStyleMenu() } }) {
+                    Icon(
+                        Icons.Rounded.Settings,
+                        contentDescription =
+                            stringResource(CommonR.string.theoplayer_ui_menu_caption_style),
+                    )
+                }
+            }
         },
     ) {
         BoxWithConstraints {
