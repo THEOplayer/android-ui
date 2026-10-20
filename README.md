@@ -106,6 +106,30 @@ class MainActivity : ComponentActivity() {
 
 See [the demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/MainActivity.kt) for a complete and working example.
 
+### Custom UI
+
+If you want to fully customize your video player layout, you can use a `UIController` instead.
+
+```kotlin
+setContent {
+    UIController(
+        config = THEOplayerConfig.Builder().build(),
+        source = SourceDescription.Builder("https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8")
+            .build(),
+        // Choose your own layout using the provided components (or your own!)
+        bottomChrome = {
+            SeekBar()
+            Row {
+                PlayButton()
+                MuteButton()
+                Spacer(modifier = Modifier.weight(1f))
+                FullscreenButton()
+            }
+        }
+    )
+}
+```
+
 ### Android TV
 
 Add the TV UI library and TV Material to your module-level `build.gradle` file:
@@ -139,27 +163,3 @@ fun TvPlayer() {
 ```
 
 See the [Android TV getting started guide](https://optiview.dolby.com/docs/theoplayer/ui/android/open-video-ui/guides/android-tv/getting-started/) for more details, and [the TV demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/tv/TvActivity.kt) for a complete and working example.
-
-### Custom UI
-
-If you want to fully customize your video player layout, you can use a `UIController` instead.
-
-```kotlin
-setContent {
-    UIController(
-        config = THEOplayerConfig.Builder().build(),
-        source = SourceDescription.Builder("https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8")
-            .build(),
-        // Choose your own layout using the provided components (or your own!)
-        bottomChrome = {
-            SeekBar()
-            Row {
-                PlayButton()
-                MuteButton()
-                Spacer(modifier = Modifier.weight(1f))
-                FullscreenButton()
-            }
-        }
-    )
-}
-```
