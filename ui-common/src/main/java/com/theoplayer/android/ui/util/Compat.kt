@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui.util
 
+import android.graphics.Typeface
 import androidx.annotation.DoNotInline
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackStyle
@@ -34,7 +35,38 @@ var TextTrackStyle.marginBottomCompat: Int?
         }
     }
 
+/**
+ * The font of the text track style.
+ *
+ * Returns `null` and ignores new values if [TextTrackStyle.setFont] isn't available.
+ *
+ * @see isTextTrackStyleFontSupported
+ */
+@InternalUiApi
+var TextTrackStyle.fontCompat: Typeface?
+    get() {
+        // TextTrackStyle.getFont was added in THEOplayer 9.9.0.
+        return if (isTextTrackStyleFontSupported) {
+            TheoPlayer99Impl.getTextTrackStyleFont(this)
+        } else null
+    }
+    set(value) {
+        if (isTextTrackStyleFontSupported) {
+            TheoPlayer99Impl.setTextTrackStyleFont(this, value)
+        }
+    }
+
+/**
+ * Whether [TextTrackStyle.getFont] and [TextTrackStyle.setFont] are available.
+ *
+ * These were added in THEOplayer 9.9.0.
+ */
+@InternalUiApi
+val isTextTrackStyleFontSupported: Boolean
+    get() = THEOplayerGlobalExt.version >= version99
+
 private val version95 = Version(major = 9, minor = 5, patchAndPrerelease = "0")
+private val version99 = Version(major = 9, minor = 9, patchAndPrerelease = "0")
 private val version1013 = Version(major = 10, minor = 13, patchAndPrerelease = "0")
 
 /**
@@ -50,6 +82,22 @@ private class TheoPlayer95Impl private constructor() {
         @DoNotInline
         fun setTextTrackStyleMarginBottom(style: TextTrackStyle, marginBottom: Int) {
             style.marginBottom = marginBottom
+        }
+    }
+}
+
+/**
+ * This class must be loaded **only** with THEOplayer 9.9.0 or higher.
+ *
+ * @see TheoPlayer1013Impl
+ */
+private class TheoPlayer99Impl private constructor() {
+    companion object {
+        @DoNotInline fun getTextTrackStyleFont(style: TextTrackStyle): Typeface? = style.getFont()
+
+        @DoNotInline
+        fun setTextTrackStyleFont(style: TextTrackStyle, font: Typeface?) {
+            style.setFont(font)
         }
     }
 }
