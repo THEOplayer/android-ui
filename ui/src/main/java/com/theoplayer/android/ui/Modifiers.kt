@@ -9,10 +9,10 @@ import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
-import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.debugInspectorInfo
@@ -128,7 +128,7 @@ private class ConstrainedAspectRatioElement(
 private class ConstrainedAspectRatioNode(
     var aspectRatio: Float,
     var matchHeightConstraintsFirst: Boolean
-) : LayoutModifier, Modifier.Node() {
+) : LayoutModifierNode, Modifier.Node() {
     init {
         require(aspectRatio > 0) { "aspectRatio $aspectRatio must be > 0" }
     }

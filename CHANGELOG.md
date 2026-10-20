@@ -17,6 +17,7 @@
 * 🚀 `UIController` now handles keys: pressing any key shows the controls (which helps on tablets with a keyboard), media keys (play/pause, fast-forward and rewind) control playback even while the controls are hidden, and Back closes an open menu. Use the new `PlayerAnimations.controlsHideDelay` to configure how long the controls stay visible after user interaction. ([#122](https://github.com/THEOplayer/android-ui/pull/122), [#124](https://github.com/THEOplayer/android-ui/pull/124))
 * 🚀 `UIController` now moves subtitles up or down while the controls are visible, so they don't render behind the top or bottom chrome. Moving subtitles up requires THEOplayer 9.5.0 or higher. ([#129](https://github.com/THEOplayer/android-ui/pull/129))
 * 🐛 Fixed `AudioTrackList`, `SubtitleTrackList`, `QualityList` and `PlaybackRateList` not scrolling to the selected item, and not announcing it to accessibility services. ([#127](https://github.com/THEOplayer/android-ui/pull/127))
+* 🐛 Fixed `UIController` and `DefaultUI` not keeping the player at the aspect ratio of the video (or 16:9 before the video is loaded). ([#140](https://github.com/THEOplayer/android-ui/pull/140))
 * 📝 The API documentation now has a separate section for each module (`android-ui`, `android-ui-common` and `android-ui-tv`). ([#128](https://github.com/THEOplayer/android-ui/pull/128))
 
 ## [1.14.2] (2026-10-13)
