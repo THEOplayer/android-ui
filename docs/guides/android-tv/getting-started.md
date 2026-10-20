@@ -168,7 +168,7 @@ class TvActivity : ComponentActivity() {
 
 ## Differences from mobile
 
-The TV UI has no Chromecast, fullscreen, picture-in-picture, or mute controls. On a TV, the system and the remote already handle these.
+The TV UI has no Chromecast, fullscreen, picture-in-picture, or mute controls. The player is assumed to always fill the screen, and the remote controls the volume.
 
 ## Try the demo app
 
