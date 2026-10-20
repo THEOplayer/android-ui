@@ -83,8 +83,8 @@ fun MenuScope.Menu(
 internal fun MenuSubmenuItem(
     onClick: () -> Unit,
     headlineContent: @Composable () -> Unit,
-    supportingContent: @Composable () -> Unit,
-    leadingContent: @Composable BoxScope.() -> Unit,
+    supportingContent: (@Composable () -> Unit)? = null,
+    leadingContent: (@Composable BoxScope.() -> Unit)? = null,
 ) {
     ListItem(
         selected = false,

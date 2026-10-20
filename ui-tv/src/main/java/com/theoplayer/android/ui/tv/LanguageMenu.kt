@@ -3,6 +3,7 @@ package com.theoplayer.android.ui.tv
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Audiotrack
 import androidx.compose.material.icons.rounded.ClosedCaption
+import androidx.compose.material.icons.rounded.FormatSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import androidx.tv.material3.Icon
@@ -73,6 +74,13 @@ fun MenuScope.LanguageMenu(
                                 ?: stringResource(CommonR.string.theoplayer_ui_subtitles_off)
                     )
                 },
+            )
+            MenuSubmenuItem(
+                onClick = { openMenu { TextTrackStyleMenu() } },
+                headlineContent = {
+                    Text(text = stringResource(CommonR.string.theoplayer_ui_menu_caption_style))
+                },
+                leadingContent = { Icon(Icons.Rounded.FormatSize, contentDescription = null) },
             )
         }
     }
