@@ -8,6 +8,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalInspectionMode
 import kotlinx.coroutines.delay
@@ -19,6 +20,10 @@ import kotlin.time.Duration.Companion.milliseconds
  */
 @InternalUiApi
 class ControlsVisibility(
+    /**
+     * Whether the controls are currently visible. This [State] instance is stable
+     * across recompositions.
+     */
     val visible: State<Boolean>,
     val animationsActive: Boolean,
     val show: () -> Unit,
@@ -54,13 +59,16 @@ fun rememberControlsVisibility(
         isReady = true
     }
 
-    val visible = remember(firstPlay, paused, forceVisible) {
+    val currentFirstPlay by rememberUpdatedState(firstPlay)
+    val currentPaused by rememberUpdatedState(paused)
+    val currentForceVisible by rememberUpdatedState(forceVisible)
+    val visible = remember {
         derivedStateOf {
             when {
                 !isReady -> false
-                !firstPlay || forceVisible -> true
+                !currentFirstPlay || currentForceVisible -> true
                 forceControlsHidden -> false
-                else -> recentlyActive || paused
+                else -> recentlyActive || currentPaused
             }
         }
     }

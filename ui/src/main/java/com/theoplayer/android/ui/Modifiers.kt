@@ -2,7 +2,10 @@ package com.theoplayer.android.ui
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputScope
@@ -25,11 +28,15 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
+@Composable
 internal fun Modifier.toggleControlsOnTap(
     controlsVisible: State<Boolean>,
     showControlsTemporarily: () -> Unit,
     hideControls: () -> Unit
 ): Modifier {
+    val currentControlsVisible by rememberUpdatedState(controlsVisible)
+    val currentShowControlsTemporarily by rememberUpdatedState(showControlsTemporarily)
+    val currentHideControls by rememberUpdatedState(hideControls)
     return this.pointerInput(Unit) {
         coroutineScope {
             var didHideControls = false
@@ -37,11 +44,11 @@ internal fun Modifier.toggleControlsOnTap(
                 detectTapGestures(onPress = {
                     didHideControls = false
                     // Hide controls immediately when pressed while visible
-                    val controlsWereVisible = controlsVisible.value
+                    val controlsWereVisible = currentControlsVisible.value
                     awaitRelease()
                     if (controlsWereVisible) {
                         didHideControls = true
-                        hideControls()
+                        currentHideControls()
                     }
                 })
             }
@@ -52,7 +59,7 @@ internal fun Modifier.toggleControlsOnTap(
                     if (didHideControls) {
                         didHideControls = false
                     } else {
-                        showControlsTemporarily()
+                        currentShowControlsTemporarily()
                     }
                 }
             }
