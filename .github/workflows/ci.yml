@@ -11,6 +11,11 @@ on:
     paths-ignore:
       - '**.md'
 
+# Cancel outdated runs on the same PR, but let runs on main/develop finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
