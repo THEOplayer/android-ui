@@ -12,6 +12,9 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,12 +33,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.theme.LocalPlayerAnimations
 import kotlin.time.DurationUnit
 
 /**
  * Renders the shared player UI around the active controls, menu, or error state.
+ *
+ * @param menuContainer an optional container that wraps all menus. When non-null, all menus
+ * are rendered inside one container (e.g. a sheet), so opening a submenu does not trigger the
+ * outer content transition; the menu contents animate with a push/pop transition inside the
+ * container instead.
  */
 @InternalUiApi
 @Composable
@@ -49,6 +59,7 @@ fun UIControllerCore(
     controls: ControlsVisibility,
     color: Color,
     contentTransform: AnimatedContentTransitionScope<UIState>.() -> ContentTransform,
+    menuContainer: (@Composable (menuContent: @Composable () -> Unit) -> Unit)? = null,
     controlsModifier: Modifier = Modifier,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -109,6 +120,7 @@ fun UIControllerCore(
             chromeBounds = chromeBounds,
             controlsModifier = controlsModifier,
             contentTransform = contentTransform,
+            menuContainer = menuContainer,
             centerOverlay = centerOverlay,
             errorOverlay = errorOverlay,
             topChrome = topChrome,
@@ -134,6 +146,7 @@ private fun UIControllerContent(
     chromeBounds: ChromeBounds,
     controlsModifier: Modifier,
     contentTransform: AnimatedContentTransitionScope<UIState>.() -> ContentTransform,
+    menuContainer: (@Composable (menuContent: @Composable () -> Unit) -> Unit)?,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)?,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)?,
     topChrome: (@Composable UIControllerScope.() -> Unit)?,
@@ -151,11 +164,24 @@ private fun UIControllerContent(
                 .fillMaxSize()
                 .background(background),
             targetState = uiState,
-            transitionSpec = contentTransform
+            transitionSpec = contentTransform,
+            contentKey = { state ->
+                if (menuContainer != null && state is UIState.Menu) {
+                    // One stable content key while menus are open, so pushing a submenu
+                    // does not animate the whole menu container.
+                    menusOpenContentKey
+                } else {
+                    state
+                }
+            }
         ) { state ->
             when (state) {
                 UIState.Error -> errorOverlay?.let { scope.it() }
-                is UIState.Menu -> state.menu.let { scope.it() }
+                is UIState.Menu -> if (menuContainer != null) {
+                    menuContainer { InnerMenus(scope) }
+                } else {
+                    state.menu.let { scope.it() }
+                }
                 UIState.Controls -> scope.PlayerControls(
                     controlsVisible = controls.visible.value,
                     animationsActive = controls.animationsActive && !adPlaying,
@@ -254,6 +280,31 @@ private fun UIControllerScope.PlayerControls(
             }
         }
     }
+}
+
+private val menusOpenContentKey = UIState.Menu { }
+
+/**
+ * Renders the open menu stack, animating menu pushes and pops within the current
+ * [menuContainer][UIControllerCore].
+ */
+@Composable
+private fun InnerMenus(scope: UIControllerScopeImpl) {
+    val layoutDirection = LocalLayoutDirection.current
+    AnimatedContent(
+        label = "InnerMenusAnimation",
+        targetState = scope.currentMenu,
+        transitionSpec = {
+            val ltr = layoutDirection == LayoutDirection.Ltr
+            if (scope.lastWasClosed) {
+                slideInHorizontally { if (ltr) -it else it } togetherWith
+                        slideOutHorizontally { if (ltr) it else -it }
+            } else {
+                slideInHorizontally { if (ltr) it else -it } togetherWith
+                        slideOutHorizontally { if (ltr) -it else it }
+            }
+        }
+    ) { menu -> menu?.let { scope.it() } }
 }
 
 /**
