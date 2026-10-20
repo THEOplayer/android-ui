@@ -104,6 +104,8 @@ class MainActivity : ComponentActivity() {
 }
 ```
 
+See [the demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/MainActivity.kt) for a complete and working example.
+
 ### Android TV
 
 Add the TV UI library and TV Material to your module-level `build.gradle` file:
@@ -137,8 +139,6 @@ fun TvPlayer() {
 ```
 
 See the [Android TV getting started guide](https://optiview.dolby.com/docs/theoplayer/ui/android/open-video-ui/guides/android-tv/getting-started/).
-
-See [the demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/MainActivity.kt) for a complete and working example.
 
 ### Custom UI
 
