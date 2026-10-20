@@ -61,7 +61,9 @@ fun MenuScope.TextTrackStyleMenu(state: TextTrackStyleState) {
     Menu(
         title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_text_track_style)) }
     ) {
+        val resetRequester = remember { FocusRequester() }
         LazyColumn(
+            modifier = Modifier.focusRestorer(resetRequester),
             contentPadding = PaddingValues(vertical = menuItemFocusOverflowPadding),
             verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing),
         ) {
@@ -76,6 +78,7 @@ fun MenuScope.TextTrackStyleMenu(state: TextTrackStyleState) {
                                 stringResource(CommonR.string.theoplayer_ui_text_track_style_reset)
                         )
                     },
+                    modifier = Modifier.focusRequester(resetRequester),
                 )
             }
             items(

@@ -1,14 +1,18 @@
 package com.theoplayer.android.ui.tv
 
+import android.view.KeyEvent
 import androidx.activity.ComponentActivity
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.semantics.SemanticsActions
+import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
+import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performSemanticsAction
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
@@ -20,6 +24,7 @@ import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.LocalTHEOplayerView
 import com.theoplayer.android.ui.MenuContent
 import com.theoplayer.android.ui.MenuScope
+import com.theoplayer.android.ui.UIControllerScope
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 import io.mockk.Runs
 import io.mockk.every
@@ -69,19 +74,8 @@ class TextTrackStyleMenuTest {
     }
 
     @Test
-    fun languageMenuShowsTextTrackStyleWithSubtitleTracks() {
+    fun languageMenuDoesNotShowTextTrackStyle() {
         val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
-        val menuStack = mutableStateListOf<MenuContent>()
-        val scope = TestMenuScope(menuStack)
-        menuStack.add { LanguageMenu() }
-        setMenus(player, scope, menuStack)
-
-        assertTextExists("Subtitle options")
-    }
-
-    @Test
-    fun languageMenuHidesTextTrackStyleWithoutSubtitleTracks() {
-        val player = mockPlayer()
         val menuStack = mutableStateListOf<MenuContent>()
         val scope = TestMenuScope(menuStack)
         menuStack.add { LanguageMenu() }
@@ -90,6 +84,119 @@ class TextTrackStyleMenuTest {
         assertTrue(
             composeRule.onAllNodesWithText("Subtitle options").fetchSemanticsNodes().isEmpty()
         )
+    }
+
+    @Test
+    fun textTrackStyleMenuRestoresFocusOnBack() {
+        val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
+        val scope = setController(player)
+        composeRule.runOnIdle { scope.openMenu { TextTrackStyleMenu() } }
+        waitForText("Font color")
+
+        moveFocusTo("Font color")
+        pressCenter()
+        waitForText("Green")
+
+        pressBack()
+        waitForText("Font color")
+        composeRule.onNodeWithText("Font color").assertIsFocused()
+    }
+
+    @Test
+    fun subtitleMenuRestoresFocusOnBack() {
+        val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
+        val scope = setController(player)
+        composeRule.runOnIdle { scope.openMenu { SubtitleMenu() } }
+        waitForText("English")
+
+        // The selected track is focused when the menu is first opened.
+        composeRule.onNodeWithText("English").assertIsFocused()
+
+        moveFocusTo("Subtitle options")
+        pressCenter()
+        waitForText("Font color")
+
+        pressBack()
+        waitForText("Subtitle options")
+        composeRule.onNodeWithText("Subtitle options").assertIsFocused()
+    }
+
+    @Test
+    fun subtitleMenuOpensTextTrackStyleMenu() {
+        val player = mockPlayer(textTracks = listOf(mockSubtitleTrack()))
+        val menuStack = mutableStateListOf<MenuContent>()
+        val scope = TestMenuScope(menuStack)
+        menuStack.add { SubtitleMenu() }
+        setMenus(player, scope, menuStack)
+
+        composeRule
+            .onNode(
+                hasAnyDescendant(hasText("Subtitle options")) and hasClickAction(),
+                useUnmergedTree = true,
+            )
+            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.waitForIdle()
+
+        assertTextExists("Subtitle options")
+        assertTextExists("Font color")
+    }
+
+    private fun setController(player: Player): UIControllerScope {
+        lateinit var scope: UIControllerScope
+        val view = PlayerBackedTHEOplayerView(composeRule.activity, player)
+        composeRule.setContent {
+            THEOplayerTvTheme {
+                UIController(
+                    theoplayerView = view,
+                    centerOverlay = { scope = this },
+                )
+            }
+        }
+        composeRule.waitForIdle()
+        return scope
+    }
+
+    private fun moveFocusTo(text: String) {
+        repeat(12) {
+            val focused =
+                composeRule
+                    .onAllNodes(hasText(text) and isFocused())
+                    .fetchSemanticsNodes()
+                    .isNotEmpty()
+            if (focused) return
+            pressDpad(KeyEvent.KEYCODE_DPAD_DOWN)
+        }
+    }
+
+    private fun pressCenter() {
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER)
+            )
+        )
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(
+                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER)
+            )
+        )
+        composeRule.waitForIdle()
+    }
+
+    private fun pressDpad(keyCode: Int) {
+        assertTrue(composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode)))
+        composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
+        composeRule.waitForIdle()
+    }
+
+    private fun pressBack() {
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
+        composeRule.waitForIdle()
+    }
+
+    private fun waitForText(text: String) {
+        composeRule.waitUntil(10_000) {
+            composeRule.onAllNodesWithText(text).fetchSemanticsNodes().isNotEmpty()
+        }
     }
 
     private fun setMenus(
