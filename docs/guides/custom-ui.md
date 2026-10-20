@@ -8,6 +8,10 @@ Although the default UI was designed to support a variety of usage scenarios, yo
 
 In this guide, you will build a custom player from scratch, starting from a basic player and gradually adding more features. Finally, we will look at some more complete examples of custom players, which you can use as reference for your own UI.
 
+:::tip
+Building for Android TV? See [Making a custom TV UI](./android-tv/custom-ui.md).
+:::
+
 ## A basic player
 
 We'll start by making the most basic player possible: one with just a play button.
@@ -73,7 +77,7 @@ Additionally, we change the size and padding of the play button, to make it bigg
 
 You might have noticed that all buttons are visible immediately, even before the video starts playing for the first time. Most of the time however, you want to initially show only the play button, and then show the rest of the buttons after the video has started playing. To do this, you should check the player's current state and then adjust your player layout accordingly.
 
-Within any of the composable lambdas you pass to `UIController`, you can use `Player.current` to access the current player. This `Player` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`Player.kt`](https://github.com/THEOplayer/android-ui/blob/main/ui/src/main/java/com/theoplayer/android/ui/Player.kt) for the full list of properties.
+Within any of the composable lambdas you pass to `UIController`, you can use `Player.current` to access the current player. This `Player` object exposes properties for the player's current time, duration, paused and muted states, etc. See [`Player.kt`](https://github.com/THEOplayer/android-ui/blob/main/ui-common/src/main/java/com/theoplayer/android/ui/Player.kt) for the full list of properties.
 
 You can then perform any logic on these properties to adjust your player layout. For example, you can check the `firstPlay` property to see if the player has already started playing for the first time, and only show certain buttons if that property is `true`:
 
@@ -128,3 +132,5 @@ It may sound odd to mention the default UI when we're talking about custom UIs. 
 The default UI comes with all the bells and whistles that you'd expect from a fully-featured player: buttons to play or mute the video, a seek bar to seek through the video, menus to change the audio language and subtitles, and support for casting to Chromecast.
 
 Have a look at [`DefaultUI.kt`](https://github.com/THEOplayer/android-ui/blob/main/ui/src/main/java/com/theoplayer/android/ui/DefaultUI.kt) to learn how the default layout is implemented, and perhaps copy some ideas for your own UI.
+
+For a TV player, see [Making a custom TV UI](./android-tv/custom-ui.md).

@@ -103,3 +103,7 @@ you need to use theme based on `Theme.AppCompat` in your app:
     </style>
 </resources>
 ```
+
+## Android TV
+
+Chromecast is not supported by the experimental `android-ui-tv` library.

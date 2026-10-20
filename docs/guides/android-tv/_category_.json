@@ -1,0 +1,10 @@
+{
+  "label": "Android TV",
+  "position": 4,
+  "collapsible": true,
+  "collapsed": true,
+  "description": "Build a player UI for Android TV with Compose for TV.",
+  "customProps": {
+    "icon": "📺"
+  }
+}

@@ -12,13 +12,15 @@ by [providing alternative resources](https://developer.android.com/guide/topics/
 in one or more languages. You can choose to [change the text of the default language](#changing-the-default-language)
 to target a single audience, or [add alternative languages](#add-alternative-languages) to target many audiences.
 
+The resources are in `ui-common` and are shared by `android-ui` and `android-ui-tv`.
+
 ## Changing the default language
 
 By default, the Open Video UI ships with English texts only. If your app targets a non-English speaking audience,
 you can override these texts with translations for another language.
 
 1. Copy the English string resources
-   from [`res/values/strings.xml`](https://github.com/THEOplayer/android-ui/blob/main/ui/src/main/res/values/strings.xml)
+   from [`res/values/strings.xml`](https://github.com/THEOplayer/android-ui/blob/main/ui-common/src/main/res/values/strings.xml)
    to your app's resources for the default locale (i.e. `res/values/strings.xml`).
 2. Change the resource values to the translated texts.
    For example, to change the title of the "Language" menu, you would change the contents
@@ -44,7 +46,7 @@ If your app targets many audiences speaking different languages, you can add mul
 locale-specific resources.
 
 1. Copy the English string resources
-   from [`res/values/strings.xml`](https://github.com/THEOplayer/android-ui/blob/main/ui/src/main/res/values/strings.xml)
+   from [`res/values/strings.xml`](https://github.com/THEOplayer/android-ui/blob/main/ui-common/src/main/res/values/strings.xml)
    to your app's resources for the default locale (i.e. `res/values/strings.xml`).
 2. Add a new string resources file for a new locale.
    For example, for French, create the file: `res/values-fr/strings.xml`.
@@ -62,8 +64,9 @@ locale-specific resources.
 
 Newer versions of the Open Video UI for Android may add new string resources that need to be translated.
 
-When using custom translations in your app, we recommend pinning the `com.theoplayer.android-ui:android-ui` dependency
-in your app's `build.gradle` to a specific version. Avoid using `+` in the dependency's version range.
+If you use custom translations, pin the `com.theoplayer.android-ui:android-ui` dependency and, if used, the
+`com.theoplayer.android-ui:android-ui-tv` dependency to specific versions in your app's `build.gradle`. Avoid using `+`
+in the dependency version ranges.
 
 ```groovy title="build.gradle"
 dependencies {
@@ -72,7 +75,7 @@ dependencies {
 ```
 
 When you decide to upgrade Open Video UI to the latest version, make sure to also update your translations.
-Check the history for [`res/values/strings.xml`](https://github.com/THEOplayer/android-ui/commits/main/ui/src/main/res/values/strings.xml)
+Check the history for [`res/values/strings.xml`](https://github.com/THEOplayer/android-ui/commits/main/ui-common/src/main/res/values/strings.xml)
 to see whether any string resources were added or changed since the previous version.
 
 ## More information
