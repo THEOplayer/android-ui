@@ -17,11 +17,13 @@ import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.ClosedCaption
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
@@ -37,9 +39,47 @@ import com.theoplayer.android.ui.MenuScope
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 
 /**
+ * Whether the current menu is rendered inside the sheet drawn by [UIController].
+ */
+internal val LocalMenuSheet = compositionLocalOf { false }
+
+/**
+ * Draws the menu sheet on top of the player: a 320dp surface at the end edge,
+ * covering the full player height.
+ */
+@Composable
+internal fun MenuSheet(
+    content: @Composable () -> Unit
+) {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(menuWidth)
+                .testTag("menu-sheet"),
+            shape = RoundedCornerShape(
+                topStart = menuCornerRadius,
+                bottomStart = menuCornerRadius
+            ),
+            colors = SurfaceDefaults.colors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
+        ) {
+            content()
+        }
+    }
+}
+
+/**
  * A side menu displayed at the end edge of the player.
  *
- * @param modifier the [Modifier] to be applied to this menu
+ * Inside a [UIController] the menu is rendered in the shared [MenuSheet], so opening
+ * a submenu only animates the menu contents inside it.
+ *
+ * @param modifier the [Modifier] to be applied to this menu's contents
  * @param title the title
  * @param content the menu content
  */
@@ -51,49 +91,41 @@ fun MenuScope.Menu(
     content: @Composable ColumnScope.() -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
+    val menuContent: @Composable () -> Unit = {
+        Column(modifier = modifier.fillMaxSize()) {
+            ProvideTextStyle(MaterialTheme.typography.titleLarge) {
+                Box(
+                    modifier = Modifier
+                        .padding(
+                            start = menuTitlePadding,
+                            top = menuTitlePadding,
+                            end = menuTitlePadding,
+                            bottom = menuTitleBottomSpacing
+                        )
+                ) {
+                    title()
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = menuContentPadding)
+                    .focusRequester(focusRequester)
+                    .focusGroup(),
+                verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
+            ) {
+                content()
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Surface(
-            modifier = modifier.fillMaxHeight().width(menuWidth),
-            shape = RoundedCornerShape(
-                topStart = menuCornerRadius,
-                bottomStart = menuCornerRadius
-            ),
-            colors = SurfaceDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Column {
-                ProvideTextStyle(MaterialTheme.typography.titleLarge) {
-                    Box(
-                        modifier = Modifier
-                            .padding(
-                                start = menuTitlePadding,
-                                top = menuTitlePadding,
-                                end = menuTitlePadding,
-                                bottom = menuTitleBottomSpacing
-                            )
-                    ) {
-                        title()
-                    }
-                }
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = menuContentPadding)
-                        .focusRequester(focusRequester)
-                        .focusGroup(),
-                    verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
-                ) {
-                    content()
-                }
-            }
-        }
+    if (LocalMenuSheet.current) {
+        menuContent()
+    } else {
+        MenuSheet(content = menuContent)
     }
 }
 

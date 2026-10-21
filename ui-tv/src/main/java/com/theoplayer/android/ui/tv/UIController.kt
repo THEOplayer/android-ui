@@ -16,6 +16,7 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -192,6 +193,11 @@ fun UIController(
             controls = controls,
             color = color,
             contentTransform = tvContentTransform(LocalLayoutDirection.current),
+            menuContainer = { menuContent ->
+                CompositionLocalProvider(LocalMenuSheet provides true) {
+                    MenuSheet(content = menuContent)
+                }
+            },
             controlsModifier = Modifier
                 .focusRequester(focusRequester)
                 .focusRestorer()
@@ -249,7 +255,8 @@ private fun tvContentTransform(
                 if (layoutDirection == LayoutDirection.Ltr) it else -it
             } + fadeOut()
         initialState is UIState.Menu && targetState is UIState.Menu ->
-            fadeIn() togetherWith fadeOut()
+            // Menus are drawn inside one shared sheet: only their contents animate.
+            EnterTransition.None togetherWith ExitTransition.None
         else ->
             EnterTransition.None togetherWith ExitTransition.None
     }
