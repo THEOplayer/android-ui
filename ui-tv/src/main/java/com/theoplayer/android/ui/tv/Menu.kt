@@ -26,6 +26,7 @@ import androidx.tv.material3.ListItemDefaults
 import androidx.tv.material3.MaterialTheme
 import androidx.tv.material3.ProvideTextStyle
 import androidx.tv.material3.Text
+import com.theoplayer.android.ui.InternalUiApi
 import com.theoplayer.android.ui.MenuContent
 import com.theoplayer.android.ui.MenuScope
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
@@ -148,6 +149,7 @@ private fun MenuPreview() {
     }
 }
 
+@OptIn(InternalUiApi::class)
 private object PreviewMenuScope : MenuScope {
     override fun openMenu(menu: MenuContent) = Unit
 

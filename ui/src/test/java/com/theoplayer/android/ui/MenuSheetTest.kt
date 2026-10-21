@@ -475,6 +475,7 @@ class MenuSheetTest {
         }
     }
 
+    @OptIn(InternalUiApi::class)
     private class TestMenuScope : MenuScope {
         var closeCalls = 0
 
