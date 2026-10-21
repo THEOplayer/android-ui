@@ -28,33 +28,21 @@ plugins {
 
 ktfmt { kotlinLangStyle() }
 
-tasks.register<KtfmtCheckTask>("ktfmtCheckBuildSrc") {
-    source = project.fileTree("buildSrc") { exclude("build/**") }
-    include("**/*.kts")
-}
+val ktfmtCheckBuildSrc =
+    tasks.register<KtfmtCheckTask>("ktfmtCheckBuildSrc") {
+        source = project.fileTree("buildSrc") { exclude("build/**") }
+        include("**/*.kts")
+    }
 
-tasks.register<KtfmtFormatTask>("ktfmtFormatBuildSrc") {
-    source = project.fileTree("buildSrc") { exclude("build/**") }
-    include("**/*.kts")
-}
+val ktfmtFormatBuildSrc =
+    tasks.register<KtfmtFormatTask>("ktfmtFormatBuildSrc") {
+        source = project.fileTree("buildSrc") { exclude("build/**") }
+        include("**/*.kts")
+    }
 
-val ktfmtCheck =
-    tasks.findByName("ktfmtCheck")?.let { tasks.named("ktfmtCheck") }
-        ?: tasks.register("ktfmtCheck")
+tasks.named("ktfmtCheck") { dependsOn(ktfmtCheckBuildSrc) }
 
-ktfmtCheck.configure {
-    dependsOn("ktfmtCheckScripts", "ktfmtCheckBuildSrc")
-    dependsOn(subprojects.map { "${it.path}:ktfmtCheck" })
-}
-
-val ktfmtFormat =
-    tasks.findByName("ktfmtFormat")?.let { tasks.named("ktfmtFormat") }
-        ?: tasks.register("ktfmtFormat")
-
-ktfmtFormat.configure {
-    dependsOn("ktfmtFormatScripts", "ktfmtFormatBuildSrc")
-    dependsOn(subprojects.map { "${it.path}:ktfmtFormat" })
-}
+tasks.named("ktfmtFormat") { dependsOn(ktfmtFormatBuildSrc) }
 
 dependencies {
     dokka(project(":ui"))
