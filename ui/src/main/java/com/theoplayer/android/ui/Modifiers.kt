@@ -107,52 +107,6 @@ internal fun Modifier.constrainedAspectRatio(
     )
 )
 
-/**
- * How far a menu list scrolls past the item above the selected item,
- * so it peeks in half above it. Roughly half of a list item's height.
- */
-internal val menuListPeekOffset = 28.dp
-
-/**
- * Fades the edges of a scrollable list to indicate that it can scroll further:
- * at the top while it can scroll backward, and at the bottom while it can scroll forward.
- */
-internal fun Modifier.fadingEdges(
-    state: LazyListState,
-    height: Dp = 24.dp
-): Modifier = this
-    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
-    .drawWithContent {
-        drawContent()
-        val fadeHeight = height.toPx()
-        if (state.canScrollBackward) {
-            drawRect(
-                brush = Brush.verticalGradient(
-                    0f to Color.Transparent,
-                    1f to Color.Black,
-                    startY = 0f,
-                    endY = fadeHeight
-                ),
-                topLeft = Offset.Zero,
-                size = Size(size.width, fadeHeight),
-                blendMode = BlendMode.DstIn
-            )
-        }
-        if (state.canScrollForward) {
-            drawRect(
-                brush = Brush.verticalGradient(
-                    0f to Color.Black,
-                    1f to Color.Transparent,
-                    startY = size.height - fadeHeight,
-                    endY = size.height
-                ),
-                topLeft = Offset(0f, size.height - fadeHeight),
-                size = Size(size.width, fadeHeight),
-                blendMode = BlendMode.DstIn
-            )
-        }
-    }
-
 private class ConstrainedAspectRatioElement(
     val aspectRatio: Float,
     val matchHeightConstraintsFirst: Boolean,
@@ -316,3 +270,49 @@ private class ConstrainedAspectRatioNode(
         return IntSize.Zero
     }
 }
+
+/**
+ * How far a menu list scrolls past the item above the selected item,
+ * so it peeks in half above it. Roughly half of a list item's height.
+ */
+internal val menuListPeekOffset = 28.dp
+
+/**
+ * Fades the edges of a scrollable list to indicate that it can scroll further:
+ * at the top while it can scroll backward, and at the bottom while it can scroll forward.
+ */
+internal fun Modifier.fadingEdges(
+    state: LazyListState,
+    height: Dp = 24.dp
+): Modifier = this
+    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+    .drawWithContent {
+        drawContent()
+        val fadeHeight = height.toPx()
+        if (state.canScrollBackward) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    0f to Color.Transparent,
+                    1f to Color.Black,
+                    startY = 0f,
+                    endY = fadeHeight
+                ),
+                topLeft = Offset.Zero,
+                size = Size(size.width, fadeHeight),
+                blendMode = BlendMode.DstIn
+            )
+        }
+        if (state.canScrollForward) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    0f to Color.Black,
+                    1f to Color.Transparent,
+                    startY = size.height - fadeHeight,
+                    endY = size.height
+                ),
+                topLeft = Offset(0f, size.height - fadeHeight),
+                size = Size(size.width, fadeHeight),
+                blendMode = BlendMode.DstIn
+            )
+        }
+    }
