@@ -5,9 +5,7 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackStyle
 import com.theoplayer.android.ui.InternalUiApi
 
-/**
- * Returns [TextTrack.getCaptionChannel], if available.
- */
+/** Returns [TextTrack.getCaptionChannel], if available. */
 @InternalUiApi
 val TextTrack.captionChannelCompat: Int?
     get() {
@@ -59,14 +57,14 @@ private class TheoPlayer95Impl private constructor() {
 /**
  * This class must be loaded **only** with THEOplayer 10.13.0 or higher.
  *
- * This uses the same pattern as AndroidX AppCompat,
- * see e.g. [androidx.appcompat.app.AppCompatDelegate.Api33Impl]
- * and the docs about [API-specific implementations](https://github.com/androidx/androidx/blob/androidx-main/docs/api_guidelines/compat.md#delegating-to-api-specific-implementations-delegating-to-api-specific-implementations)
- * and [static shims](https://github.com/androidx/androidx/blob/androidx-main/docs/api_guidelines/platform_compat.md#static-shims-ex-viewcompat-static-shim).
+ * This uses the same pattern as AndroidX AppCompat, see e.g.
+ * [androidx.appcompat.app.AppCompatDelegate.Api33Impl] and the docs about
+ * [API-specific implementations](https://github.com/androidx/androidx/blob/androidx-main/docs/api_guidelines/compat.md#delegating-to-api-specific-implementations-delegating-to-api-specific-implementations)
+ * and
+ * [static shims](https://github.com/androidx/androidx/blob/androidx-main/docs/api_guidelines/platform_compat.md#static-shims-ex-viewcompat-static-shim).
  */
 private class TheoPlayer1013Impl private constructor() {
     companion object {
-        @DoNotInline
-        fun getTextTrackCaptionChannel(track: TextTrack): Int? = track.captionChannel
+        @DoNotInline fun getTextTrackCaptionChannel(track: TextTrack): Int? = track.captionChannel
     }
 }

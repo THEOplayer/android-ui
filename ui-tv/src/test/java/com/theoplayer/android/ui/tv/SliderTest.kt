@@ -34,8 +34,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(ExperimentalTvUiApi::class)
 class SliderTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun singlePressChangesValueAndFinishesOnce() {
@@ -48,7 +47,7 @@ class SliderTest {
                 onValueChange = changes::add,
                 modifier = modifier,
                 keyStep = 0.1f,
-                onValueChangeFinished = { finished += Unit }
+                onValueChangeFinished = { finished += Unit },
             )
         }
         requestFocus(focusRequester)
@@ -78,7 +77,7 @@ class SliderTest {
                 modifier = modifier,
                 keyStep = 0.3f,
                 keyRepeatStep = 0.1f,
-                onValueChangeFinished = { finished += Unit }
+                onValueChangeFinished = { finished += Unit },
             )
         }
         requestFocus(focusRequester)
@@ -112,7 +111,7 @@ class SliderTest {
                 value = value.floatValue,
                 onValueChange = changes::add,
                 modifier = modifier,
-                keyStep = 0.1f
+                keyStep = 0.1f,
             )
         }
         requestFocus(focusRequester)
@@ -140,7 +139,7 @@ class SliderTest {
                 onValueChange = changes::add,
                 modifier = modifier,
                 enabled = false,
-                onValueChangeFinished = { finished += Unit }
+                onValueChangeFinished = { finished += Unit },
             )
         }
         requestFocus(focusRequester)
@@ -162,13 +161,13 @@ class SliderTest {
         val finished = mutableListOf<Unit>()
         setSlider(
             modifier = Modifier.focusRequester(focusRequester),
-            otherFocusRequester = otherFocusRequester
+            otherFocusRequester = otherFocusRequester,
         ) { modifier ->
             Slider(
                 state = state,
                 onValueChange = {},
                 modifier = modifier,
-                onValueChangeFinished = { finished += Unit }
+                onValueChangeFinished = { finished += Unit },
             )
         }
         requestFocus(focusRequester)
@@ -195,7 +194,7 @@ class SliderTest {
                 onValueChange = {},
                 modifier = modifier,
                 enabled = enabled.value,
-                onValueChangeFinished = { finished += Unit }
+                onValueChangeFinished = { finished += Unit },
             )
         }
         requestFocus(focusRequester)
@@ -222,11 +221,11 @@ class SliderTest {
                 modifier = modifier,
                 thumb = { state ->
                     Box(
-                        Modifier
-                            .size(1.dp)
-                            .semantics { contentDescription = "slider-value-${state.value}" }
+                        Modifier.size(1.dp).semantics {
+                            contentDescription = "slider-value-${state.value}"
+                        }
                     )
-                }
+                },
             )
         }
 
@@ -251,19 +250,14 @@ class SliderTest {
     private fun setSlider(
         modifier: Modifier = Modifier,
         otherFocusRequester: FocusRequester? = null,
-        content: @Composable (Modifier) -> Unit
+        content: @Composable (Modifier) -> Unit,
     ) {
         composeRule.setContent {
             THEOplayerTvTheme {
                 Column {
                     content(modifier)
                     if (otherFocusRequester != null) {
-                        Box(
-                            Modifier
-                                .size(16.dp)
-                                .focusRequester(otherFocusRequester)
-                                .focusable()
-                        )
+                        Box(Modifier.size(16.dp).focusRequester(otherFocusRequester).focusable())
                     }
                 }
             }
@@ -278,11 +272,12 @@ class SliderTest {
     private fun dispatchKey(
         keyCode: Int,
         action: Int,
-        repeat: Int = 0
-    ): Boolean = dispatchKeyEvent(
-        composeRule.activity,
-        KeyEvent(1_000L, eventTime++, action, keyCode, repeat)
-    )
+        repeat: Int = 0,
+    ): Boolean =
+        dispatchKeyEvent(
+            composeRule.activity,
+            KeyEvent(1_000L, eventTime++, action, keyCode, repeat),
+        )
 
     private var eventTime = 1_001L
 }

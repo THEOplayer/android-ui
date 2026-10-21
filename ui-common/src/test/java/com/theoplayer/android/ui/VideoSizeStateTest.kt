@@ -1,8 +1,8 @@
 package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.player.PlayerEventTypes
-import org.junit.Assert.assertEquals
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class VideoSizeStateTest {
@@ -12,7 +12,7 @@ class VideoSizeStateTest {
         launchObserve { VideoSizeState(mock.player).observe() }
         assertEquals(
             setOf(PlayerEventTypes.RESIZE, PlayerEventTypes.SOURCECHANGE, PlayerEventTypes.ERROR),
-            mock.playerEventTypes
+            mock.playerEventTypes,
         )
     }
 

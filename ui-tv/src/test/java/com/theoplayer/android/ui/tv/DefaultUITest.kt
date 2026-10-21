@@ -16,9 +16,9 @@ import androidx.compose.ui.test.onAllNodesWithText
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.player.Player
+import com.theoplayer.android.api.player.track.texttrack.TextTrackStyle
 import com.theoplayer.android.api.timerange.TimeRanges
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
-import com.theoplayer.android.api.player.track.texttrack.TextTrackStyle
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -34,8 +34,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(ExperimentalTvUiApi::class)
 class DefaultUITest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private val seekBar = SemanticsMatcher.keyIsDefined(SemanticsProperties.ProgressBarRangeInfo)
 
@@ -66,8 +65,12 @@ class DefaultUITest {
         setDefaultUI(mockPlayer(paused = true, played = true))
 
         composeRule.waitUntil(10_000) {
-            composeRule.onAllNodes(seekBar and SemanticsMatcher.expectValue(SemanticsProperties.Focused, true))
-                .fetchSemanticsNodes().isNotEmpty()
+            composeRule
+                .onAllNodes(
+                    seekBar and SemanticsMatcher.expectValue(SemanticsProperties.Focused, true)
+                )
+                .fetchSemanticsNodes()
+                .isNotEmpty()
         }
         composeRule.onNode(seekBar).assertIsFocused()
     }
@@ -87,8 +90,12 @@ class DefaultUITest {
         val playButton = androidx.compose.ui.test.hasContentDescription("Play")
 
         composeRule.waitUntil(10_000) {
-            composeRule.onAllNodes(playButton and SemanticsMatcher.expectValue(SemanticsProperties.Focused, true))
-                .fetchSemanticsNodes().isNotEmpty()
+            composeRule
+                .onAllNodes(
+                    playButton and SemanticsMatcher.expectValue(SemanticsProperties.Focused, true)
+                )
+                .fetchSemanticsNodes()
+                .isNotEmpty()
         }
         composeRule.onNode(playButton).assertIsFocused()
     }
@@ -135,14 +142,15 @@ class DefaultUITest {
                 DefaultUI(
                     modifier = Modifier.fillMaxSize(),
                     theoplayerView = view,
-                    title = TITLE
+                    title = TITLE,
                 )
             }
         }
         composeRule.waitUntil(10_000) {
-            val container = theoplayerView.findViewById<ViewGroup>(
-                com.theoplayer.android.R.id.theo_ui_container
-            )
+            val container =
+                theoplayerView.findViewById<ViewGroup>(
+                    com.theoplayer.android.R.id.theo_ui_container
+                )
             (0 until container.childCount).any { container.getChildAt(it) is ComposeView }
         }
         composeRule.waitForIdle()
@@ -161,7 +169,7 @@ class DefaultUITest {
     private fun mockPlayer(
         paused: Boolean,
         played: Boolean,
-        duration: Double = 100.0
+        duration: Double = 100.0,
     ): Player {
         val ads = mockk<Ads>(relaxed = true)
         every { ads.isPlaying } returns false

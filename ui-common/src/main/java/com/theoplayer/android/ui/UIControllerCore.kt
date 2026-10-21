@@ -40,9 +40,9 @@ import kotlin.time.DurationUnit
 /**
  * Renders the shared player UI around the active controls, menu, or error state.
  *
- * @param menuContainer the container that wraps all menus (e.g. a sheet). All menus are
- * rendered inside it, so opening a submenu does not trigger the outer content transition;
- * the menu contents animate with a push/pop transition inside the container instead.
+ * @param menuContainer the container that wraps all menus (e.g. a sheet). All menus are rendered
+ *   inside it, so opening a submenu does not trigger the outer content transition; the menu
+ *   contents animate with a push/pop transition inside the container instead.
  */
 @InternalUiApi
 @Composable
@@ -62,48 +62,47 @@ fun UIControllerCore(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null,
 ) {
     val nativePlayer = theoplayerView?.player
     val adState = rememberAdState(nativePlayer)
     val playerAnimations = LocalPlayerAnimations.current
     val backgroundVisible = uiState.value.isVisible(controls.visible.value)
-    val animatedBackground by animateColorAsState(
-        label = "BackgroundAnimation",
-        targetValue = if (backgroundVisible) color else color.copy(alpha = 0f),
-        animationSpec = tween(
-            easing = LinearEasing,
-            durationMillis = if (backgroundVisible) {
-                playerAnimations.controlsEnterDuration.toInt(DurationUnit.MILLISECONDS)
-            } else {
-                playerAnimations.controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
-            }
+    val animatedBackground by
+        animateColorAsState(
+            label = "BackgroundAnimation",
+            targetValue = if (backgroundVisible) color else color.copy(alpha = 0f),
+            animationSpec =
+                tween(
+                    easing = LinearEasing,
+                    durationMillis =
+                        if (backgroundVisible) {
+                            playerAnimations.controlsEnterDuration.toInt(DurationUnit.MILLISECONDS)
+                        } else {
+                            playerAnimations.controlsExitDuration.toInt(DurationUnit.MILLISECONDS)
+                        },
+                ),
         )
-    )
 
     val chromeBounds = remember { ChromeBounds() }
     val chromeVisible = uiState.value == UIState.Controls && controls.visible.value
     TextTrackMarginsEffect(
         player = nativePlayer.takeUnless { theoplayerView?.isInEditMode == true },
-        chromeMargins = if (chromeVisible) chromeBounds.margins else ChromeMargins()
+        chromeMargins = if (chromeVisible) chromeBounds.margins else ChromeMargins(),
     )
 
-    BackHandler(enabled = scope.currentMenu != null) {
-        scope.closeCurrentMenu()
-    }
+    BackHandler(enabled = scope.currentMenu != null) { scope.closeCurrentMenu() }
 
     PlayerContainer(
         theoplayerView = theoplayerView,
-        modifier = Modifier
-            .background(Color.Black)
-            .then(modifier)
-            .handlePlayerKeys(
-                player = nativePlayer,
-                controlsVisible = {
-                    uiState.value.isVisible(controls.visible.value)
-                },
-                showControls = controls.show
-            )
+        modifier =
+            Modifier.background(Color.Black)
+                .then(modifier)
+                .handlePlayerKeys(
+                    player = nativePlayer,
+                    controlsVisible = { uiState.value.isVisible(controls.visible.value) },
+                    showControls = controls.show,
+                ),
     ) {
         UIControllerContent(
             theoplayerView = theoplayerView,
@@ -122,14 +121,12 @@ fun UIControllerCore(
             errorOverlay = errorOverlay,
             topChrome = topChrome,
             centerChrome = centerChrome,
-            bottomChrome = bottomChrome
+            bottomChrome = bottomChrome,
         )
     }
 }
 
-/**
- * Provides controller locals and displays the active content.
- */
+/** Provides controller locals and displays the active content. */
 @Composable
 private fun UIControllerContent(
     theoplayerView: THEOplayerView?,
@@ -148,18 +145,16 @@ private fun UIControllerContent(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)?,
     topChrome: (@Composable UIControllerScope.() -> Unit)?,
     centerChrome: (@Composable UIControllerScope.() -> Unit)?,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)?
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)?,
 ) {
     CompositionLocalProvider(
         LocalPlayer provides player,
         LocalTHEOplayerView provides theoplayerView,
-        LocalUIControllerErrorState provides errorState
+        LocalUIControllerErrorState provides errorState,
     ) {
         AnimatedContent(
             label = "ContentAnimation",
-            modifier = Modifier
-                .fillMaxSize()
-                .background(background),
+            modifier = Modifier.fillMaxSize().background(background),
             targetState = uiState,
             transitionSpec = contentTransform,
             contentKey = { state ->
@@ -170,30 +165,29 @@ private fun UIControllerContent(
                 } else {
                     state
                 }
-            }
+            },
         ) { state ->
             when (state) {
                 UIState.Error -> errorOverlay?.let { scope.it() }
                 is UIState.Menu -> menuContainer { InnerMenus(scope) }
-                UIState.Controls -> scope.PlayerControls(
-                    controlsVisible = controls.visible.value,
-                    animationsActive = controls.animationsActive && !adPlaying,
-                    chromeBounds = chromeBounds,
-                    controlsModifier = controlsModifier,
-                    centerOverlay = centerOverlay,
-                    topChrome = topChrome,
-                    centerChrome = centerChrome,
-                    bottomChrome = bottomChrome
-                )
+                UIState.Controls ->
+                    scope.PlayerControls(
+                        controlsVisible = controls.visible.value,
+                        animationsActive = controls.animationsActive && !adPlaying,
+                        chromeBounds = chromeBounds,
+                        controlsModifier = controlsModifier,
+                        centerOverlay = centerOverlay,
+                        topChrome = topChrome,
+                        centerChrome = centerChrome,
+                        bottomChrome = bottomChrome,
+                    )
                 UIState.Hidden -> Unit
             }
         }
     }
 }
 
-/**
- * Displays the center overlay and animated control slots.
- */
+/** Displays the center overlay and animated control slots. */
 @Composable
 private fun UIControllerScope.PlayerControls(
     controlsVisible: Boolean,
@@ -203,52 +197,57 @@ private fun UIControllerScope.PlayerControls(
     centerOverlay: (@Composable UIControllerScope.() -> Unit)?,
     topChrome: (@Composable UIControllerScope.() -> Unit)?,
     centerChrome: (@Composable UIControllerScope.() -> Unit)?,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)?
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)?,
 ) {
     val playerAnimations = LocalPlayerAnimations.current
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .onGloballyPositioned { chromeBounds.player = it.boundsInRoot() }
+        modifier =
+            Modifier.fillMaxSize().onGloballyPositioned { chromeBounds.player = it.boundsInRoot() }
     ) {
         centerOverlay?.let {
             Row(
                 modifier = Modifier.fillMaxSize(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 it()
             }
         }
         AnimatedVisibility(
             visible = controlsVisible,
-            enter = if (animationsActive) fadeIn(
-                animationSpec = tween(
-                    easing = LinearEasing,
-                    durationMillis = playerAnimations.controlsEnterDuration.toInt(
-                        DurationUnit.MILLISECONDS
+            enter =
+                if (animationsActive)
+                    fadeIn(
+                        animationSpec =
+                            tween(
+                                easing = LinearEasing,
+                                durationMillis =
+                                    playerAnimations.controlsEnterDuration.toInt(
+                                        DurationUnit.MILLISECONDS
+                                    ),
+                            )
                     )
-                )
-            ) else EnterTransition.None,
-            exit = if (animationsActive) fadeOut(
-                animationSpec = tween(
-                    easing = LinearEasing,
-                    durationMillis = playerAnimations.controlsExitDuration.toInt(
-                        DurationUnit.MILLISECONDS
+                else EnterTransition.None,
+            exit =
+                if (animationsActive)
+                    fadeOut(
+                        animationSpec =
+                            tween(
+                                easing = LinearEasing,
+                                durationMillis =
+                                    playerAnimations.controlsExitDuration.toInt(
+                                        DurationUnit.MILLISECONDS
+                                    ),
+                            )
                     )
-                )
-            ) else ExitTransition.None,
+                else ExitTransition.None,
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(controlsModifier)
-            ) {
+            Box(modifier = Modifier.fillMaxSize().then(controlsModifier)) {
                 centerChrome?.let {
                     Row(
                         modifier = Modifier.fillMaxSize(),
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         it()
                     }
@@ -256,18 +255,24 @@ private fun UIControllerScope.PlayerControls(
                 Column(modifier = Modifier.fillMaxSize()) {
                     topChrome?.let { chrome ->
                         Column(
-                            modifier = Modifier.onGloballyPositioned {
-                                chromeBounds.topChrome = it.boundsInRoot()
-                            }
-                        ) { chrome() }
+                            modifier =
+                                Modifier.onGloballyPositioned {
+                                    chromeBounds.topChrome = it.boundsInRoot()
+                                }
+                        ) {
+                            chrome()
+                        }
                     }
                     Spacer(modifier = Modifier.weight(1f))
                     bottomChrome?.let { chrome ->
                         Column(
-                            modifier = Modifier.onGloballyPositioned {
-                                chromeBounds.bottomChrome = it.boundsInRoot()
-                            }
-                        ) { chrome() }
+                            modifier =
+                                Modifier.onGloballyPositioned {
+                                    chromeBounds.bottomChrome = it.boundsInRoot()
+                                }
+                        ) {
+                            chrome()
+                        }
                     }
                 }
             }
@@ -275,7 +280,7 @@ private fun UIControllerScope.PlayerControls(
     }
 }
 
-private val menusOpenContentKey = UIState.Menu { }
+private val menusOpenContentKey = UIState.Menu {}
 
 /**
  * Renders the open menu stack, animating menu pushes and pops within the current
@@ -285,8 +290,8 @@ private val menusOpenContentKey = UIState.Menu { }
 private fun InnerMenus(scope: UIControllerScopeImpl) {
     val layoutDirection = LocalLayoutDirection.current
     val slideDistance = with(LocalDensity.current) { SharedAxisSlideDistance.toPx() }.roundToInt()
-    val durationMillis = LocalPlayerAnimations.current.menuTransitionDuration
-        .inWholeMilliseconds.toInt()
+    val durationMillis =
+        LocalPlayerAnimations.current.menuTransitionDuration.inWholeMilliseconds.toInt()
     AnimatedContent(
         label = "InnerMenusAnimation",
         targetState = scope.currentMenu,
@@ -295,14 +300,13 @@ private fun InnerMenus(scope: UIControllerScopeImpl) {
                 forward = !scope.lastWasClosed,
                 slideDistance = slideDistance,
                 layoutDirection = layoutDirection,
-                durationMillis = durationMillis
+                durationMillis = durationMillis,
             )
-        }
-    ) { menu -> menu?.let { scope.it() } }
+        },
+    ) { menu ->
+        menu?.let { scope.it() }
+    }
 }
 
-/**
- * The current error state provided by a UI controller.
- */
-@InternalUiApi
-val LocalUIControllerErrorState = staticCompositionLocalOf<ErrorState?> { null }
+/** The current error state provided by a UI controller. */
+@InternalUiApi val LocalUIControllerErrorState = staticCompositionLocalOf<ErrorState?> { null }

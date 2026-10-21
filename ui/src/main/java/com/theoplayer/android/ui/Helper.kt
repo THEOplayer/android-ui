@@ -11,10 +11,10 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
  * If the time is infinite or `NaN`, this returns `"--:--"`.
  *
  * @param time the time (in seconds) to be formatted
- * @param guide another time (in seconds) such that the returned formatted time has the same
- * number of parts and number of leading zeros as this guide.
- * @param preferNegative whether the returned formatted time should preferably be negative,
- * for example because it represents the time remaining in the video.
+ * @param guide another time (in seconds) such that the returned formatted time has the same number
+ *   of parts and number of leading zeros as this guide.
+ * @param preferNegative whether the returned formatted time should preferably be negative, for
+ *   example because it represents the time remaining in the video.
  */
 fun formatTime(time: Double, guide: Double = 0.0, preferNegative: Boolean = false): String {
     return formatPlaybackTime(time, guide, preferNegative)

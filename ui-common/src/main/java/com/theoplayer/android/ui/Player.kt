@@ -1,7 +1,6 @@
 package com.theoplayer.android.ui
 
 import android.app.Activity
-import android.view.View
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -39,11 +38,23 @@ import com.theoplayer.android.api.event.player.SeekingEvent
 import com.theoplayer.android.api.event.player.SourceChangeEvent
 import com.theoplayer.android.api.event.player.TimeUpdateEvent
 import com.theoplayer.android.api.event.player.VolumeChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
 import com.theoplayer.android.api.event.track.mediatrack.audio.list.AudioTrackListEventTypes
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent as VideoActiveQualityChangedEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.TargetQualityChangedEvent as VideoTargetQualityChangedEvent
 import com.theoplayer.android.api.event.track.mediatrack.video.VideoTrackEventTypes
+import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent as VideoAddTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent as VideoRemoveTrackEvent
+import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent as VideoTrackListChangeEvent
 import com.theoplayer.android.api.event.track.mediatrack.video.list.VideoTrackListEventTypes
+import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as TextAddTrackEvent
+import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
 import com.theoplayer.android.api.event.track.texttrack.list.TextTrackListEventTypes
+import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
 import com.theoplayer.android.api.pip.PiPType
+import com.theoplayer.android.api.player.Player as THEOplayer
 import com.theoplayer.android.api.player.ReadyState
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
@@ -53,26 +64,13 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.ui.util.supportsPictureInPictureMode
-import com.theoplayer.android.api.event.track.mediatrack.audio.list.AddTrackEvent as AudioAddTrackEvent
-import com.theoplayer.android.api.event.track.mediatrack.audio.list.RemoveTrackEvent as AudioRemoveTrackEvent
-import com.theoplayer.android.api.event.track.mediatrack.audio.list.TrackListChangeEvent as AudioTrackListChangeEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent as VideoActiveQualityChangedEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.TargetQualityChangedEvent as VideoTargetQualityChangedEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.list.AddTrackEvent as VideoAddTrackEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.list.RemoveTrackEvent as VideoRemoveTrackEvent
-import com.theoplayer.android.api.event.track.mediatrack.video.list.TrackListChangeEvent as VideoTrackListChangeEvent
-import com.theoplayer.android.api.event.track.texttrack.list.AddTrackEvent as TextAddTrackEvent
-import com.theoplayer.android.api.event.track.texttrack.list.RemoveTrackEvent as TextRemoveTrackEvent
-import com.theoplayer.android.api.event.track.texttrack.list.TrackListChangeEvent as TextTrackListChangeEvent
-import com.theoplayer.android.api.player.Player as THEOplayer
 
 /**
  * The [Player] provided by the enclosing [UIController].
  *
  * @suppress
  */
-@InternalUiApi
-val LocalPlayer = staticCompositionLocalOf<Player?> { null }
+@InternalUiApi val LocalPlayer = staticCompositionLocalOf<Player?> { null }
 
 /**
  * A player holding a [THEOplayer] instance that can be hosted by a [DefaultUI] or [UIController].
@@ -84,9 +82,9 @@ interface Player {
     /**
      * Returns the backing THEOplayer instance.
      *
-     * Note that [THEOplayer] properties are *not* backed by [State] objects, so composables
-     * will *not* be automatically subscribed to changes. Instead, use [THEOplayer.addEventListener],
-     * or use a corresponding [Player] property if available.
+     * Note that [THEOplayer] properties are *not* backed by [State] objects, so composables will
+     * *not* be automatically subscribed to changes. Instead, use [THEOplayer.addEventListener], or
+     * use a corresponding [Player] property if available.
      */
     val player: THEOplayer?
 
@@ -97,83 +95,55 @@ interface Player {
      */
     val theoplayerView: THEOplayerView?
 
-    /**
-     * Returns or sets the player's source.
-     */
+    /** Returns or sets the player's source. */
     var source: SourceDescription?
 
-    /**
-     * Returns the raw [Cast] API of the backing THEOplayer instance.
-     */
+    /** Returns the raw [Cast] API of the backing THEOplayer instance. */
     val cast: Cast?
 
-    /**
-     * Returns the raw [Ads] API of the backing THEOplayer instance.
-     */
+    /** Returns the raw [Ads] API of the backing THEOplayer instance. */
     val ads: Ads?
 
-    /**
-     * Returns the current playback position of the media, in seconds.
-     */
+    /** Returns the current playback position of the media, in seconds. */
     val currentTime: Double
 
-    /**
-     * Returns the duration of the media, in seconds.
-     */
+    /** Returns the duration of the media, in seconds. */
     val duration: Double
 
-    /**
-     * Returns the ranges of the media to which the player can seek.
-     */
+    /** Returns the ranges of the media to which the player can seek. */
     val seekable: TimeRanges
 
-    /**
-     * Returns whether the player is paused.
-     */
+    /** Returns whether the player is paused. */
     val paused: Boolean
 
-    /**
-     * Returns whether playback has reached the end of the media.
-     */
+    /** Returns whether playback has reached the end of the media. */
     val ended: Boolean
 
-    /**
-     * Returns whether the player is seeking.
-     */
+    /** Returns whether the player is seeking. */
     val seeking: Boolean
 
-    /**
-     * Returns the [ReadyState] of the player.
-     */
+    /** Returns the [ReadyState] of the player. */
     val readyState: ReadyState
 
     /**
      * Returns or sets the audio volume of the player.
      *
-     * The player's volume is separate from the device's media volume.
-     * In general, it is recommended to let the user control the volume of the device instead,
-     * and leave the player's volume untouched.
+     * The player's volume is separate from the device's media volume. In general, it is recommended
+     * to let the user control the volume of the device instead, and leave the player's volume
+     * untouched.
      */
     var volume: Double
 
-    /**
-     * Returns or sets whether the audio is muted.
-     */
+    /** Returns or sets whether the audio is muted. */
     var muted: Boolean
 
-    /**
-     * Returns or sets the playback rate of the player.
-     */
+    /** Returns or sets the playback rate of the player. */
     var playbackRate: Double
 
-    /**
-     * Returns the width of the active video rendition, in pixels.
-     */
+    /** Returns the width of the active video rendition, in pixels. */
     val videoWidth: Int
 
-    /**
-     * Returns the height of the active video rendition, in pixels.
-     */
+    /** Returns the height of the active video rendition, in pixels. */
     val videoHeight: Int
 
     /**
@@ -183,161 +153,113 @@ interface Player {
      */
     val firstPlay: Boolean
 
-    /**
-     * Returns any fatal error the player has encountered, if any.
-     */
+    /** Returns any fatal error the player has encountered, if any. */
     val error: THEOplayerException?
 
-    /**
-     * Returns or sets whether the player should be shown in fullscreen mode.
-     */
+    /** Returns or sets whether the player should be shown in fullscreen mode. */
     var fullscreen: Boolean
 
-    /**
-     * Returns whether the player is showing in picture-in-picture mode.
-     */
+    /** Returns whether the player is showing in picture-in-picture mode. */
     val pictureInPicture: Boolean
 
-    /**
-     * Returns whether the player supports entering picture-in-picture mode.
-     */
+    /** Returns whether the player supports entering picture-in-picture mode. */
     val pictureInPictureSupported: Boolean
 
-    /**
-     * Returns whether the player is currently waiting for more data to resume playback.
-     */
+    /** Returns whether the player is currently waiting for more data to resume playback. */
     val loading: Boolean
 
-    /**
-     * Returns whether the player is currently playing an ad.
-     */
+    /** Returns whether the player is currently playing an ad. */
     val playingAd: Boolean
 
     /**
      * Returns whether the player can seek to a different time.
      *
-     * Seeking may sometimes be prevented, for example because the player is [playing an ad][playingAd].
+     * Seeking may sometimes be prevented, for example because the player is
+     * [playing an ad][playingAd].
      */
     val canSeek: Boolean
 
     /**
      * Returns the [StreamType] of the media.
      *
-     * This can be used to show or hide certain controls which are only relevant
-     * for certain stream types.
+     * This can be used to show or hide certain controls which are only relevant for certain stream
+     * types.
      */
     val streamType: StreamType
 
-    /**
-     * Returns the currently active video quality.
-     */
+    /** Returns the currently active video quality. */
     val activeVideoQuality: VideoQuality?
 
     /**
      * Returns or sets the target video quality.
      *
-     * If `null`, then the player will choose a video quality based on its ABR algorithm.
-     * Otherwise, the player will only load from the given video quality.
+     * If `null`, then the player will choose a video quality based on its ABR algorithm. Otherwise,
+     * the player will only load from the given video quality.
      */
     var targetVideoQuality: VideoQuality?
 
-    /**
-     * Returns all available video qualities.
-     */
+    /** Returns all available video qualities. */
     val videoQualities: List<VideoQuality>
 
-    /**
-     * Returns all available audio tracks.
-     */
+    /** Returns all available audio tracks. */
     val audioTracks: List<MediaTrack<AudioQuality>>
 
-    /**
-     * Returns or sets the active audio track.
-     */
+    /** Returns or sets the active audio track. */
     var activeAudioTrack: MediaTrack<AudioQuality>?
 
     /**
      * Returns all available subtitle tracks.
      *
-     * A subtitle track is a [TextTrack] whose [kind][TextTrack.getKind]
-     * is [TextTrackKind.SUBTITLES] or [TextTrackKind.CAPTIONS].
+     * A subtitle track is a [TextTrack] whose [kind][TextTrack.getKind] is
+     * [TextTrackKind.SUBTITLES] or [TextTrackKind.CAPTIONS].
      */
     val subtitleTracks: List<TextTrack>
 
-    /**
-     * Returns or sets the active subtitle track.
-     */
+    /** Returns or sets the active subtitle track. */
     var activeSubtitleTrack: TextTrack?
 
-    /**
-     * Returns the casting state of the player.
-     */
+    /** Returns the casting state of the player. */
     val castState: PlayerCastState
 
-    /**
-     * Returns the name of the connected Chromecast receiver, if any.
-     */
+    /** Returns the name of the connected Chromecast receiver, if any. */
     val castReceiverName: String?
 
-    /**
-     * Starts or resumes playback.
-     */
+    /** Starts or resumes playback. */
     fun play()
 
-    /**
-     * Pauses playback.
-     */
+    /** Pauses playback. */
     fun pause()
 
-    /**
-     * Enter picture-in-picture mode.
-     */
+    /** Enter picture-in-picture mode. */
     fun enterPictureInPicture(pipType: PiPType)
 
-    /**
-     * Exit picture-in-picture mode.
-     */
+    /** Exit picture-in-picture mode. */
     fun exitPictureInPicture()
 
-    /**
-     * Contains properties to access the current [Player].
-     */
+    /** Contains properties to access the current [Player]. */
     companion object {
-        /**
-         * Retrieves the current [Player] at the call site's position in the hierarchy.
-         */
+        /** Retrieves the current [Player] at the call site's position in the hierarchy. */
         val current: Player?
-            @Composable
-            get() = LocalPlayer.current
+            @Composable get() = LocalPlayer.current
     }
 }
 
-/**
- * The type of a stream.
- */
+/** The type of a stream. */
 enum class StreamType {
-    /**
-     * Video-on-demand: the stream has a known fixed duration.
-     */
+    /** Video-on-demand: the stream has a known fixed duration. */
     Vod,
 
-    /**
-     * Live: the stream has an unknown duration, and does not allow seeking to an earlier time.
-     */
+    /** Live: the stream has an unknown duration, and does not allow seeking to an earlier time. */
     Live,
 
-    /**
-     * DVR: the stream has an unknown duration, and allows seeking to an earlier time.
-     */
-    Dvr
+    /** DVR: the stream has an unknown duration, and allows seeking to an earlier time. */
+    Dvr,
 }
 
 // TODO Make DVR threshold configurable?
 private const val DVR_WINDOW_THRESHOLD = 60.0
 
-/**
- * Returns the [StreamType] for a stream with the given duration and seekable range.
- */
+/** Returns the [StreamType] for a stream with the given duration and seekable range. */
 internal fun streamTypeOf(duration: Double, seekable: TimeRanges): StreamType {
     if (duration.isInfinite()) {
         val slidingWindow = seekable.bounds?.let { it.endInclusive - it.start } ?: 0.0
@@ -357,37 +279,52 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
     override val ads = theoplayerView?.player?.ads
     override var currentTime by mutableDoubleStateOf(0.0)
         private set
+
     override var duration by mutableDoubleStateOf(Double.NaN)
         private set
+
     override var seekable by mutableStateOf(TimeRanges.empty())
         private set
+
     override var paused by mutableStateOf(true)
         private set
+
     override var playingAd by mutableStateOf(false)
         private set
+
     override var ended by mutableStateOf(false)
         private set
+
     override var seeking by mutableStateOf(false)
         private set
+
     override var readyState by mutableStateOf(ReadyState.HAVE_NOTHING)
         private set
+
     override var videoWidth by mutableIntStateOf(0)
         private set
+
     override var videoHeight by mutableIntStateOf(0)
         private set
+
     override var firstPlay by mutableStateOf(false)
         private set
+
     override var error by mutableStateOf<THEOplayerException?>(null)
         private set
+
     override val canSeek by derivedStateOf {
         if (playingAd) {
             false
         } else {
-            seekable.isNotEmpty() || run {
-                // On THEOplayer 7.11 and lower, `player.seekable` is (incorrectly) empty while casting, see #35.
-                // Always allow seeking while casting. This is no longer needed on THEOplayer 7.12.0 or higher.
-                castState == PlayerCastState.CONNECTED
-            }
+            seekable.isNotEmpty() ||
+                run {
+                    // On THEOplayer 7.11 and lower, `player.seekable` is (incorrectly) empty while
+                    // casting, see #35.
+                    // Always allow seeking while casting. This is no longer needed on THEOplayer
+                    // 7.12.0 or higher.
+                    castState == PlayerCastState.CONNECTED
+                }
         }
     }
 
@@ -432,26 +369,28 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         EventListener<ReadyStateChangeEvent> { updateCurrentTimeAndPlaybackState() }
     private val resizeListener = EventListener<ResizeEvent> { updateVideoWidthAndHeight() }
     private val adListener = EventListener<AdEvent<*>> { updatePlayingAd() }
-    private val sourceChangeListener = EventListener<SourceChangeEvent> {
-        _source = player?.source
-        error = null
-        firstPlay = false
-        updateCast(theoplayerView?.cast)
-        updateCurrentTimeAndPlaybackState()
-        updateDuration()
-        updateVideoWidthAndHeight()
-        updateActiveVideoTrack()
-        updatePlayingAd()
-    }
-    private val errorListener = EventListener<ErrorEvent> { event ->
-        _source = player?.source
-        error = event.errorObject
-        updateCurrentTimeAndPlaybackState()
-        updateDuration()
-        updateVideoWidthAndHeight()
-        updateActiveVideoTrack()
-        updatePlayingAd()
-    }
+    private val sourceChangeListener =
+        EventListener<SourceChangeEvent> {
+            _source = player?.source
+            error = null
+            firstPlay = false
+            updateCast(theoplayerView?.cast)
+            updateCurrentTimeAndPlaybackState()
+            updateDuration()
+            updateVideoWidthAndHeight()
+            updateActiveVideoTrack()
+            updatePlayingAd()
+        }
+    private val errorListener =
+        EventListener<ErrorEvent> { event ->
+            _source = player?.source
+            error = event.errorObject
+            updateCurrentTimeAndPlaybackState()
+            updateDuration()
+            updateVideoWidthAndHeight()
+            updateActiveVideoTrack()
+            updatePlayingAd()
+        }
 
     override fun play() {
         paused = false
@@ -479,6 +418,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
             _volume = value
             player?.volume = value
         }
+
     override var muted: Boolean
         get() = _muted
         set(value) {
@@ -529,8 +469,9 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         }
     }
 
-    internal val fullscreenListener =
-        FullscreenHandler.OnFullscreenChangeListener { updateFullscreen() }
+    internal val fullscreenListener = FullscreenHandler.OnFullscreenChangeListener {
+        updateFullscreen()
+    }
 
     var activityInPipMode: Boolean by mutableStateOf(false)
     private var pipManagerInPipMode: Boolean by mutableStateOf(false)
@@ -569,14 +510,13 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         !paused && !ended && (seeking || readyState.ordinal < ReadyState.HAVE_FUTURE_DATA.ordinal)
     }
 
-    override val streamType by derivedStateOf {
-        streamTypeOf(duration, seekable)
-    }
+    override val streamType by derivedStateOf { streamTypeOf(duration, seekable) }
 
     private var activeVideoTrack: MediaTrack<VideoQuality>? = null
     override val videoQualities = mutableStateListOf<VideoQuality>()
     override var activeVideoQuality by mutableStateOf<VideoQuality?>(null)
         private set
+
     private var _targetVideoQuality by mutableStateOf<VideoQuality?>(null)
     override var targetVideoQuality: VideoQuality?
         get() = _targetVideoQuality
@@ -596,11 +536,11 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         }
         oldActiveVideoTrack?.removeEventListener(
             VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT,
-            videoActiveQualityChangeListener
+            videoActiveQualityChangeListener,
         )
         oldActiveVideoTrack?.removeEventListener(
             VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT,
-            videoTargetQualityChangeListener
+            videoTargetQualityChangeListener,
         )
         activeVideoTrack = videoTrack
         videoQualities.clear()
@@ -609,11 +549,11 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         updateTargetVideoQuality()
         videoTrack?.addEventListener(
             VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT,
-            videoActiveQualityChangeListener
+            videoActiveQualityChangeListener,
         )
         videoTrack?.addEventListener(
             VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT,
-            videoTargetQualityChangeListener
+            videoTargetQualityChangeListener,
         )
     }
 
@@ -638,6 +578,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
 
     override var audioTracks = mutableStateListOf<MediaTrack<AudioQuality>>()
         private set
+
     private var _activeAudioTrack by mutableStateOf<MediaTrack<AudioQuality>?>(null)
     override var activeAudioTrack: MediaTrack<AudioQuality>?
         get() = _activeAudioTrack
@@ -672,6 +613,7 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
 
     override var subtitleTracks = mutableStateListOf<TextTrack>()
         private set
+
     private var _activeSubtitleTrack by mutableStateOf<TextTrack?>(null)
     override var activeSubtitleTrack: TextTrack?
         get() = _activeSubtitleTrack
@@ -715,11 +657,13 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
             updateCast(theoplayerView?.cast)
             return _cast
         }
+
     override val castState: PlayerCastState
         get() {
             updateCast(theoplayerView?.cast)
             return _castState
         }
+
     override val castReceiverName: String?
         get() {
             updateCast(theoplayerView?.cast)
@@ -731,18 +675,18 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         _cast?.let { oldCast ->
             oldCast.chromecast.removeEventListener(
                 ChromecastEventTypes.STATECHANGE,
-                chromecastStateChangeListener
+                chromecastStateChangeListener,
             )
             oldCast.chromecast.removeEventListener(
                 ChromecastEventTypes.ERROR,
-                chromecastErrorListener
+                chromecastErrorListener,
             )
         }
         _cast = cast
         cast?.let {
             cast.chromecast.addEventListener(
                 ChromecastEventTypes.STATECHANGE,
-                chromecastStateChangeListener
+                chromecastStateChangeListener,
             )
             cast.chromecast.addEventListener(ChromecastEventTypes.ERROR, chromecastErrorListener)
         }
@@ -784,46 +728,64 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         player?.addEventListener(PlayerEventTypes.RESIZE, resizeListener)
         player?.addEventListener(
             PlayerEventTypes.PRESENTATIONMODECHANGE,
-            presentationModeChangeListener
+            presentationModeChangeListener,
         )
         player?.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.addEventListener(PlayerEventTypes.ERROR, errorListener)
-        player?.videoTracks?.addEventListener(
-            VideoTrackListEventTypes.ADDTRACK,
-            videoAddTrackListener
-        )
-        player?.videoTracks?.addEventListener(
-            VideoTrackListEventTypes.REMOVETRACK,
-            videoRemoveTrackListener
-        )
-        player?.videoTracks?.addEventListener(
-            VideoTrackListEventTypes.TRACKLISTCHANGE,
-            videoTrackListChangeListener
-        )
-        player?.audioTracks?.addEventListener(
-            AudioTrackListEventTypes.ADDTRACK,
-            audioAddTrackListener
-        )
-        player?.audioTracks?.addEventListener(
-            AudioTrackListEventTypes.REMOVETRACK,
-            audioRemoveTrackListener
-        )
-        player?.audioTracks?.addEventListener(
-            AudioTrackListEventTypes.TRACKLISTCHANGE,
-            audioTrackListChangeListener
-        )
-        player?.textTracks?.addEventListener(
-            TextTrackListEventTypes.ADDTRACK,
-            textAddTrackListener
-        )
-        player?.textTracks?.addEventListener(
-            TextTrackListEventTypes.REMOVETRACK,
-            textRemoveTrackListener
-        )
-        player?.textTracks?.addEventListener(
-            TextTrackListEventTypes.TRACKLISTCHANGE,
-            textTrackListChangeListener
-        )
+        player
+            ?.videoTracks
+            ?.addEventListener(
+                VideoTrackListEventTypes.ADDTRACK,
+                videoAddTrackListener,
+            )
+        player
+            ?.videoTracks
+            ?.addEventListener(
+                VideoTrackListEventTypes.REMOVETRACK,
+                videoRemoveTrackListener,
+            )
+        player
+            ?.videoTracks
+            ?.addEventListener(
+                VideoTrackListEventTypes.TRACKLISTCHANGE,
+                videoTrackListChangeListener,
+            )
+        player
+            ?.audioTracks
+            ?.addEventListener(
+                AudioTrackListEventTypes.ADDTRACK,
+                audioAddTrackListener,
+            )
+        player
+            ?.audioTracks
+            ?.addEventListener(
+                AudioTrackListEventTypes.REMOVETRACK,
+                audioRemoveTrackListener,
+            )
+        player
+            ?.audioTracks
+            ?.addEventListener(
+                AudioTrackListEventTypes.TRACKLISTCHANGE,
+                audioTrackListChangeListener,
+            )
+        player
+            ?.textTracks
+            ?.addEventListener(
+                TextTrackListEventTypes.ADDTRACK,
+                textAddTrackListener,
+            )
+        player
+            ?.textTracks
+            ?.addEventListener(
+                TextTrackListEventTypes.REMOVETRACK,
+                textRemoveTrackListener,
+            )
+        player
+            ?.textTracks
+            ?.addEventListener(
+                TextTrackListEventTypes.TRACKLISTCHANGE,
+                textTrackListChangeListener,
+            )
         ads?.addEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.addEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.addEventListener(AdsEventTypes.AD_BREAK_END, adListener)
@@ -849,46 +811,64 @@ class PlayerImpl(override val theoplayerView: THEOplayerView?) : Player {
         player?.removeEventListener(PlayerEventTypes.RESIZE, resizeListener)
         player?.removeEventListener(
             PlayerEventTypes.PRESENTATIONMODECHANGE,
-            presentationModeChangeListener
+            presentationModeChangeListener,
         )
         player?.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeListener)
         player?.removeEventListener(PlayerEventTypes.ERROR, errorListener)
-        player?.videoTracks?.removeEventListener(
-            VideoTrackListEventTypes.ADDTRACK,
-            videoAddTrackListener
-        )
-        player?.videoTracks?.removeEventListener(
-            VideoTrackListEventTypes.REMOVETRACK,
-            videoRemoveTrackListener
-        )
-        player?.videoTracks?.removeEventListener(
-            VideoTrackListEventTypes.TRACKLISTCHANGE,
-            videoTrackListChangeListener
-        )
-        player?.audioTracks?.removeEventListener(
-            AudioTrackListEventTypes.ADDTRACK,
-            audioAddTrackListener
-        )
-        player?.audioTracks?.removeEventListener(
-            AudioTrackListEventTypes.REMOVETRACK,
-            audioRemoveTrackListener
-        )
-        player?.audioTracks?.removeEventListener(
-            AudioTrackListEventTypes.TRACKLISTCHANGE,
-            audioTrackListChangeListener
-        )
-        player?.textTracks?.removeEventListener(
-            TextTrackListEventTypes.ADDTRACK,
-            textAddTrackListener
-        )
-        player?.textTracks?.removeEventListener(
-            TextTrackListEventTypes.REMOVETRACK,
-            textRemoveTrackListener
-        )
-        player?.textTracks?.removeEventListener(
-            TextTrackListEventTypes.TRACKLISTCHANGE,
-            textTrackListChangeListener
-        )
+        player
+            ?.videoTracks
+            ?.removeEventListener(
+                VideoTrackListEventTypes.ADDTRACK,
+                videoAddTrackListener,
+            )
+        player
+            ?.videoTracks
+            ?.removeEventListener(
+                VideoTrackListEventTypes.REMOVETRACK,
+                videoRemoveTrackListener,
+            )
+        player
+            ?.videoTracks
+            ?.removeEventListener(
+                VideoTrackListEventTypes.TRACKLISTCHANGE,
+                videoTrackListChangeListener,
+            )
+        player
+            ?.audioTracks
+            ?.removeEventListener(
+                AudioTrackListEventTypes.ADDTRACK,
+                audioAddTrackListener,
+            )
+        player
+            ?.audioTracks
+            ?.removeEventListener(
+                AudioTrackListEventTypes.REMOVETRACK,
+                audioRemoveTrackListener,
+            )
+        player
+            ?.audioTracks
+            ?.removeEventListener(
+                AudioTrackListEventTypes.TRACKLISTCHANGE,
+                audioTrackListChangeListener,
+            )
+        player
+            ?.textTracks
+            ?.removeEventListener(
+                TextTrackListEventTypes.ADDTRACK,
+                textAddTrackListener,
+            )
+        player
+            ?.textTracks
+            ?.removeEventListener(
+                TextTrackListEventTypes.REMOVETRACK,
+                textRemoveTrackListener,
+            )
+        player
+            ?.textTracks
+            ?.removeEventListener(
+                TextTrackListEventTypes.TRACKLISTCHANGE,
+                textTrackListChangeListener,
+            )
         ads?.removeEventListener(AdsEventTypes.AD_BREAK_BEGIN, adListener)
         ads?.removeEventListener(AdsEventTypes.AD_SKIP, adListener)
         ads?.removeEventListener(AdsEventTypes.AD_BREAK_END, adListener)

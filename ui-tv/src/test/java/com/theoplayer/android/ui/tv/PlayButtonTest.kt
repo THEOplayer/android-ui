@@ -33,8 +33,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(ExperimentalTvUiApi::class)
 class PlayButtonTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun pausedPlayerShowsPlayAndClickStartsPlayback() {
@@ -81,9 +80,7 @@ class PlayButtonTest {
         composeRule.setContent {
             val view = remember { PlayerBackedTHEOplayerView(composeRule.activity, player.player) }
             CompositionLocalProvider(LocalTHEOplayerView provides view) {
-                THEOplayerTvTheme {
-                    PlayButton(modifier = modifier.testTag("play-button"))
-                }
+                THEOplayerTvTheme { PlayButton(modifier = modifier.testTag("play-button")) }
             }
         }
         composeRule.waitForIdle()
@@ -98,21 +95,19 @@ class PlayButtonTest {
         assertTrue(
             dispatchKeyEvent(
                 composeRule.activity,
-                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER)
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER),
             )
         )
         assertTrue(
             dispatchKeyEvent(
                 composeRule.activity,
-                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER)
+                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER),
             )
         )
     }
 
     private fun dispatch(player: TestPlayer, eventType: EventType<*>, event: Event<*>) {
-        composeRule.runOnIdle {
-            player.dispatch(eventType, event)
-        }
+        composeRule.runOnIdle { player.dispatch(eventType, event) }
         composeRule.waitForIdle()
     }
 }

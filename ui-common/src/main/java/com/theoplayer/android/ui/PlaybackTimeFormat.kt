@@ -2,14 +2,12 @@ package com.theoplayer.android.ui
 
 import kotlin.math.absoluteValue
 
-/**
- * Formats a playback time as a human-readable string.
- */
+/** Formats a playback time as a human-readable string. */
 @InternalUiApi
 fun formatPlaybackTime(
     time: Double,
     guide: Double = 0.0,
-    preferNegative: Boolean = false
+    preferNegative: Boolean = false,
 ): String {
     val isNegative = time < 0 || (preferNegative && time == 0.0)
     val absoluteTime = time.absoluteValue.toInt()

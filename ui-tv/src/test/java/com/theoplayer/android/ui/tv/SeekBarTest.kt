@@ -16,8 +16,8 @@ import androidx.compose.ui.test.assertIsFocused
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
-import com.theoplayer.android.api.event.player.TimeUpdateEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.event.player.TimeUpdateEvent
 import com.theoplayer.android.ui.LocalTHEOplayerView
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 import io.mockk.mockk
@@ -35,8 +35,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(ExperimentalTvUiApi::class)
 class SeekBarTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun seekBarIsFocusable() {
@@ -94,7 +93,7 @@ class SeekBarTest {
                 dispatchKey(
                     KeyEvent.KEYCODE_DPAD_RIGHT,
                     KeyEvent.ACTION_DOWN,
-                    repeat = repeat
+                    repeat = repeat,
                 )
             )
             positions += player.currentTime
@@ -140,7 +139,7 @@ class SeekBarTest {
         setSeekBar(
             player,
             Modifier.focusRequester(focusRequester),
-            otherFocusRequester
+            otherFocusRequester,
         )
         requestFocus(focusRequester)
 
@@ -173,7 +172,7 @@ class SeekBarTest {
     private fun setSeekBar(
         player: TestPlayer,
         modifier: Modifier = Modifier,
-        otherFocusRequester: FocusRequester? = null
+        otherFocusRequester: FocusRequester? = null,
     ) {
         composeRule.setContent {
             val view = remember { PlayerBackedTHEOplayerView(composeRule.activity, player.player) }
@@ -183,10 +182,7 @@ class SeekBarTest {
                         SeekBar(modifier = modifier)
                         if (otherFocusRequester != null) {
                             Box(
-                                Modifier
-                                    .size(16.dp)
-                                    .focusRequester(otherFocusRequester)
-                                    .focusable()
+                                Modifier.size(16.dp).focusRequester(otherFocusRequester).focusable()
                             )
                         }
                     }
@@ -203,11 +199,12 @@ class SeekBarTest {
     private fun dispatchKey(
         keyCode: Int,
         action: Int,
-        repeat: Int = 0
-    ): Boolean = dispatchKeyEvent(
-        composeRule.activity,
-        KeyEvent(1_000L, eventTime++, action, keyCode, repeat)
-    )
+        repeat: Int = 0,
+    ): Boolean =
+        dispatchKeyEvent(
+            composeRule.activity,
+            KeyEvent(1_000L, eventTime++, action, keyCode, repeat),
+        )
 
     private var eventTime = 1_001L
 }

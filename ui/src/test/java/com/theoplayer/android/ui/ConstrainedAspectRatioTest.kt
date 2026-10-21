@@ -25,8 +25,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], qualifiers = "w1000dp-h1000dp")
 class ConstrainedAspectRatioTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private var size = IntSize.Zero
 
@@ -42,8 +41,7 @@ class ConstrainedAspectRatioTest {
         composeRule.setContent {
             Box(Modifier.size(1000.dp), propagateMinConstraints = false) {
                 Box(
-                    Modifier
-                        .onSizeChanged { size = it }
+                    Modifier.onSizeChanged { size = it }
                         .width(320.dp)
                         .constrainedAspectRatio(16f / 9f)
                 )
@@ -57,12 +55,7 @@ class ConstrainedAspectRatioTest {
     fun derivesHeightFromWidthForSquareRatio() {
         composeRule.setContent {
             Box(Modifier.size(1000.dp), propagateMinConstraints = false) {
-                Box(
-                    Modifier
-                        .onSizeChanged { size = it }
-                        .width(320.dp)
-                        .constrainedAspectRatio(1f)
-                )
+                Box(Modifier.onSizeChanged { size = it }.width(320.dp).constrainedAspectRatio(1f))
             }
         }
         composeRule.waitForIdle()
@@ -74,8 +67,7 @@ class ConstrainedAspectRatioTest {
         composeRule.setContent {
             Box(Modifier.width(320.dp).height(1000.dp)) {
                 Box(
-                    Modifier
-                        .onSizeChanged { size = it }
+                    Modifier.onSizeChanged { size = it }
                         .fillMaxWidth()
                         .constrainedAspectRatio(16f / 9f)
                 )
@@ -90,8 +82,7 @@ class ConstrainedAspectRatioTest {
         composeRule.setContent {
             Box(Modifier.size(1000.dp), propagateMinConstraints = false) {
                 Box(
-                    Modifier
-                        .onSizeChanged { size = it }
+                    Modifier.onSizeChanged { size = it }
                         .height(180.dp)
                         .constrainedAspectRatio(16f / 9f)
                 )
@@ -106,8 +97,7 @@ class ConstrainedAspectRatioTest {
         composeRule.setContent {
             Box(Modifier.size(1000.dp), propagateMinConstraints = false) {
                 Box(
-                    Modifier
-                        .onSizeChanged { size = it }
+                    Modifier.onSizeChanged { size = it }
                         .size(320.dp, 100.dp)
                         .constrainedAspectRatio(16f / 9f)
                 )
@@ -124,7 +114,7 @@ class ConstrainedAspectRatioTest {
             Box(Modifier.width(320.dp).height(1000.dp)) {
                 UIController(
                     modifier = Modifier.onSizeChanged { size = it },
-                    theoplayerView = theoplayerView
+                    theoplayerView = theoplayerView,
                 )
             }
         }
@@ -134,7 +124,7 @@ class ConstrainedAspectRatioTest {
 
     private class PlayerBackedTHEOplayerView(
         context: Context,
-        private val nativePlayer: NativePlayer
+        private val nativePlayer: NativePlayer,
     ) : THEOplayerView(context) {
         override fun getPlayer(): NativePlayer = nativePlayer
     }

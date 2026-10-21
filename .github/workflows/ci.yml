@@ -32,6 +32,8 @@ jobs:
         with:
           # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
           cache-disabled: true
+      - name: Check formatting
+        run: ./gradlew ktfmtCheck
       - name: Run tests
         run: ./gradlew test
       - name: Assemble

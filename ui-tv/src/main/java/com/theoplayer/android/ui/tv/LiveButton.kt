@@ -27,20 +27,20 @@ import com.theoplayer.android.ui.rememberLiveButtonState
 import com.theoplayer.android.ui.theme.LocalPlayerColors
 
 /**
- * A button that shows whether the player is currently playing at the live point,
- * and seeks to the live point when clicked.
+ * A button that shows whether the player is currently playing at the live point, and seeks to the
+ * live point when clicked.
  *
  * @param modifier the [Modifier] to be applied to this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param colors [ButtonColors] that resolve the colors for this button in different states. See
- * [ButtonDefaults.colors].
+ *   [ButtonDefaults.colors].
  * @param liveThreshold the maximum distance (in seconds) from the live point that the player's
- * current time can be for it to still be considered "at the live point"
- * @param live button content when the player is playing at the live point,
- * typically a red circle icon followed by the text "LIVE"
- * @param dvr button content when the player is playing behind the live point,
- * typically a gray circle icon followed by the text "LIVE"
+ *   current time can be for it to still be considered "at the live point"
+ * @param live button content when the player is playing at the live point, typically a red circle
+ *   icon followed by the text "LIVE"
+ * @param dvr button content when the player is playing behind the live point, typically a gray
+ *   circle icon followed by the text "LIVE"
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class, InternalUiApi::class)
@@ -55,7 +55,7 @@ fun LiveButton(
     },
     dvr: @Composable RowScope.() -> Unit = {
         LiveButtonContent(LocalPlayerColors.current.liveButtonDvr)
-    }
+    },
 ) {
     LiveButton(
         state = rememberLiveButtonState(LocalTHEOplayerView.current?.player, liveThreshold),
@@ -63,24 +63,24 @@ fun LiveButton(
         contentPadding = contentPadding,
         colors = colors,
         live = live,
-        dvr = dvr
+        dvr = dvr,
     )
 }
 
 /**
- * A button that shows whether the player is currently playing at the live point,
- * and seeks to the live point when clicked.
+ * A button that shows whether the player is currently playing at the live point, and seeks to the
+ * live point when clicked.
  *
  * @param state the [LiveButtonState] to read and control
  * @param modifier the [Modifier] to be applied to this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param colors [ButtonColors] that resolve the colors for this button in different states. See
- * [ButtonDefaults.colors].
- * @param live button content when the player is playing at the live point,
- * typically a red circle icon followed by the text "LIVE"
- * @param dvr button content when the player is playing behind the live point,
- * typically a gray circle icon followed by the text "LIVE"
+ *   [ButtonDefaults.colors].
+ * @param live button content when the player is playing at the live point, typically a red circle
+ *   icon followed by the text "LIVE"
+ * @param dvr button content when the player is playing behind the live point, typically a gray
+ *   circle icon followed by the text "LIVE"
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi
@@ -96,14 +96,14 @@ fun LiveButton(
     },
     dvr: @Composable RowScope.() -> Unit = {
         LiveButtonContent(LocalPlayerColors.current.liveButtonDvr)
-    }
+    },
 ) {
     if (state.visible) {
         Button(
             onClick = state::onClick,
             modifier = modifier,
             contentPadding = contentPadding,
-            colors = colors
+            colors = colors,
         ) {
             if (state.isLive) live() else dvr()
         }
@@ -114,15 +114,13 @@ fun LiveButton(
 private fun RowScope.LiveButtonContent(color: Color) {
     Icon(
         Icons.Rounded.Circle,
-        modifier = Modifier
-            .size(12.dp)
-            .align(Alignment.CenterVertically),
+        modifier = Modifier.size(12.dp).align(Alignment.CenterVertically),
         tint = color,
-        contentDescription = null
+        contentDescription = null,
     )
     Spacer(Modifier.width(4.dp))
     Text(
         modifier = Modifier.align(Alignment.CenterVertically),
-        text = stringResource(R.string.theoplayer_ui_btn_live)
+        text = stringResource(R.string.theoplayer_ui_btn_live),
     )
 }

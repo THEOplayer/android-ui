@@ -36,18 +36,19 @@ import com.theoplayer.android.ui.rememberErrorState
 @Composable
 fun ErrorDisplay(modifier: Modifier = Modifier) {
     ErrorDisplay(
-        state = LocalUIControllerErrorState.current
-            ?: rememberErrorState(LocalTHEOplayerView.current?.player, Player.current?.error),
-        modifier = modifier
+        state =
+            LocalUIControllerErrorState.current
+                ?: rememberErrorState(LocalTHEOplayerView.current?.player, Player.current?.error),
+        modifier = modifier,
     )
 }
 
 /**
  * A display for a fatal error, if the player encounters one.
  *
- * The error is only captured from the player's `error` event, so create the [ErrorState]
- * *before* an error can happen: at the top of your UI instead of inside the error overlay
- * that is only shown once there's an error.
+ * The error is only captured from the player's `error` event, so create the [ErrorState] *before*
+ * an error can happen: at the top of your UI instead of inside the error overlay that is only shown
+ * once there's an error.
  *
  * @param state the [ErrorState] to read
  * @param modifier the [Modifier] to be applied to this display
@@ -65,16 +66,16 @@ private fun ErrorDisplayContent(error: THEOplayerException, modifier: Modifier) 
         Icon(
             Icons.Rounded.Error,
             modifier = Modifier.size(48.dp),
-            contentDescription = null
+            contentDescription = null,
         )
         Column {
             Box(
                 modifier = Modifier.defaultMinSize(minHeight = 48.dp),
-                contentAlignment = Alignment.CenterStart
+                contentAlignment = Alignment.CenterStart,
             ) {
                 Text(
                     text = stringResource(R.string.theoplayer_ui_error_title),
-                    style = MaterialTheme.typography.headlineMedium
+                    style = MaterialTheme.typography.headlineMedium,
                 )
             }
             Text(text = "${error.message}")

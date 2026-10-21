@@ -1,4 +1,5 @@
 package com.theoplayer.android.ui.demo.nitflex
+
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.offset
@@ -24,33 +25,32 @@ fun NitflexSeekButton(
     seekOffset: Int = 10,
     color: Color = Color.White,
     iconSize: Dp = 24.dp,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     SeekButton(
         modifier = modifier,
         seekOffset = seekOffset,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
     ) {
         Box {
             Icon(
                 Icons.Sharp.Replay,
-                modifier = Modifier
-                    .size(iconSize)
-                    .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
+                modifier =
+                    Modifier.size(iconSize)
+                        .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
                 tint = color,
-                contentDescription = if (seekOffset >= 0) {
-                    "Seek forward by $seekOffset seconds"
-                } else {
-                    "Seek backward by $seekOffset seconds"
-                }
+                contentDescription =
+                    if (seekOffset >= 0) {
+                        "Seek forward by $seekOffset seconds"
+                    } else {
+                        "Seek backward by $seekOffset seconds"
+                    },
             )
             Text(
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .offset(y = iconSize * 0.4f),
+                modifier = Modifier.align(Alignment.TopCenter).offset(y = iconSize * 0.4f),
                 color = color,
                 text = "${seekOffset.absoluteValue}",
-                fontSize = 6.sp * (iconSize / 24.dp)
+                fontSize = 6.sp * (iconSize / 24.dp),
             )
         }
     }

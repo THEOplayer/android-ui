@@ -10,12 +10,10 @@ import androidx.compose.ui.Modifier
  * @param modifier the [Modifier] to be applied to this text
  */
 @Composable
-fun DurationDisplay(
-    modifier: Modifier = Modifier
-) {
+fun DurationDisplay(modifier: Modifier = Modifier) {
     DurationDisplay(
         state = rememberPlaybackTimeState(LocalTHEOplayerView.current?.player),
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -29,7 +27,7 @@ fun DurationDisplay(
 @Composable
 fun DurationDisplay(
     state: PlaybackTimeState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Text(modifier = modifier, text = formatTime(state.duration))
 }

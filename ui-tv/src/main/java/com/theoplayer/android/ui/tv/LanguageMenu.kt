@@ -17,15 +17,13 @@ import com.theoplayer.android.ui.formatTrackName
 import com.theoplayer.android.ui.rememberAudioTrackState
 import com.theoplayer.android.ui.rememberSubtitleTrackState
 
-/**
- * A menu to change the spoken language and subtitles of the stream.
- */
+/** A menu to change the spoken language and subtitles of the stream. */
 @ExperimentalTvUiApi
 @Composable
 fun MenuScope.LanguageMenu() {
     LanguageMenu(
         audioTrackState = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
-        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player)
+        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player),
     )
 }
 
@@ -42,26 +40,23 @@ fun MenuScope.LanguageMenu() {
 @Composable
 fun MenuScope.LanguageMenu(
     audioTrackState: AudioTrackState,
-    subtitleTrackState: SubtitleTrackState
+    subtitleTrackState: SubtitleTrackState,
 ) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_language)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_language)) }) {
         if (showAudioTracks(audioTrackState)) {
             MenuSubmenuItem(
                 onClick = { openMenu { AudioTrackMenu() } },
                 headlineContent = {
                     Text(text = stringResource(CommonR.string.theoplayer_ui_menu_audio))
                 },
-                leadingContent = {
-                    Icon(Icons.Rounded.Audiotrack, contentDescription = null)
-                },
+                leadingContent = { Icon(Icons.Rounded.Audiotrack, contentDescription = null) },
                 supportingContent = {
                     Text(
-                        text = audioTrackState.activeAudioTrack?.let { formatTrackName(it) }
-                            ?: stringResource(CommonR.string.theoplayer_ui_audio_none)
+                        text =
+                            audioTrackState.activeAudioTrack?.let { formatTrackName(it) }
+                                ?: stringResource(CommonR.string.theoplayer_ui_audio_none)
                     )
-                }
+                },
             )
         }
         if (showSubtitleTracks(subtitleTrackState)) {
@@ -70,16 +65,14 @@ fun MenuScope.LanguageMenu(
                 headlineContent = {
                     Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles))
                 },
-                leadingContent = {
-                    Icon(Icons.Rounded.ClosedCaption, contentDescription = null)
-                },
+                leadingContent = { Icon(Icons.Rounded.ClosedCaption, contentDescription = null) },
                 supportingContent = {
                     Text(
-                        text = subtitleTrackState.activeSubtitleTrack?.let {
-                            formatTrackName(it)
-                        } ?: stringResource(CommonR.string.theoplayer_ui_subtitles_off)
+                        text =
+                            subtitleTrackState.activeSubtitleTrack?.let { formatTrackName(it) }
+                                ?: stringResource(CommonR.string.theoplayer_ui_subtitles_off)
                     )
-                }
+                },
             )
         }
     }
@@ -116,9 +109,7 @@ fun MenuScope.AudioTrackMenu() {
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.AudioTrackMenu(state: AudioTrackState) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_audio)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_audio)) }) {
         AudioTrackList(state, onClick = { closeCurrentMenu() })
     }
 }
@@ -146,9 +137,7 @@ fun MenuScope.SubtitleMenu() {
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.SubtitleMenu(state: SubtitleTrackState) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) }) {
         SubtitleTrackList(state, onClick = { closeCurrentMenu() })
     }
 }

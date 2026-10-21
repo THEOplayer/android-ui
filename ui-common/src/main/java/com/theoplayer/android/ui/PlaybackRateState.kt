@@ -16,9 +16,7 @@ import com.theoplayer.android.api.player.Player
  */
 @ExperimentalPlayerStateApi
 class PlaybackRateState internal constructor(private val player: Player?) {
-    /**
-     * The playback rate of the player. `1.0` is normal speed.
-     */
+    /** The playback rate of the player. `1.0` is normal speed. */
     var playbackRate by mutableDoubleStateOf(1.0)
         private set
 
@@ -36,18 +34,14 @@ class PlaybackRateState internal constructor(private val player: Player?) {
         player.listen(PlayerEventTypes.RATECHANGE) { update() }
     }
 
-    /**
-     * Selects the desired playback rate.
-     */
+    /** Selects the desired playback rate. */
     fun select(rate: Double) {
         playbackRate = rate
         player?.playbackRate = rate
     }
 }
 
-/**
- * Creates a [PlaybackRateState] that's remembered across compositions.
- */
+/** Creates a [PlaybackRateState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberPlaybackRateState(player: Player?): PlaybackRateState {

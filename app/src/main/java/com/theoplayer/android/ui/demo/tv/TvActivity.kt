@@ -19,21 +19,18 @@ import com.theoplayer.android.ui.demo.Stream
 import com.theoplayer.android.ui.demo.streams
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 
-/**
- * Demo activity for Android TV, launched from the Android TV launcher.
- */
+/** Demo activity for Android TV, launched from the Android TV launcher. */
 class TvActivity : ComponentActivity() {
     private lateinit var theoplayerView: THEOplayerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        theoplayerView = THEOplayerView(this, THEOplayerConfig.Builder().build()).apply {
-            // Add ads integration through Google IMA
-            player.addIntegration(
-                GoogleImaIntegrationFactory.createGoogleImaIntegration(this)
-            )
-        }
+        theoplayerView =
+            THEOplayerView(this, THEOplayerConfig.Builder().build()).apply {
+                // Add ads integration through Google IMA
+                player.addIntegration(GoogleImaIntegrationFactory.createGoogleImaIntegration(this))
+            }
 
         setContent {
             THEOplayerTvTheme {
@@ -60,46 +57,46 @@ class TvActivity : ComponentActivity() {
     }
 }
 
-/**
- * Shows the start screen until a stream is selected, then plays that stream.
- */
+/** Shows the start screen until a stream is selected, then plays that stream. */
 @Composable
 fun TvContent(theoplayerView: THEOplayerView) {
-    var stream by rememberSaveable(stateSaver = OptionalStreamSaver) { mutableStateOf<Stream?>(null) }
+    var stream by
+        rememberSaveable(stateSaver = OptionalStreamSaver) { mutableStateOf<Stream?>(null) }
     var theme by rememberSaveable { mutableStateOf(TvPlayerTheme.Default) }
 
     when (val currentStream = stream) {
-        null -> TvHomeScreen(
-            modifier = Modifier.fillMaxSize(),
-            streams = streams,
-            currentTheme = theme,
-            onSelectStream = { stream = it },
-            onSelectTheme = { theme = it }
-        )
+        null ->
+            TvHomeScreen(
+                modifier = Modifier.fillMaxSize(),
+                streams = streams,
+                currentTheme = theme,
+                onSelectStream = { stream = it },
+                onSelectTheme = { theme = it },
+            )
 
-        else -> TvPlayerScreen(
-            modifier = Modifier.fillMaxSize(),
-            theoplayerView = theoplayerView,
-            stream = currentStream,
-            theme = theme,
-            onNextStream = { stream = streams[(streams.indexOf(currentStream) + 1) % streams.size] },
-            onExit = { stream = null }
-        )
+        else ->
+            TvPlayerScreen(
+                modifier = Modifier.fillMaxSize(),
+                theoplayerView = theoplayerView,
+                stream = currentStream,
+                theme = theme,
+                onNextStream = {
+                    stream = streams[(streams.indexOf(currentStream) + 1) % streams.size]
+                },
+                onExit = { stream = null },
+            )
     }
 }
 
-/**
- * The player themes available on Android TV.
- */
+/** The player themes available on Android TV. */
 enum class TvPlayerTheme(val title: String) {
     Default(title = "Default theme"),
-    Nitflex(title = "Nitflex theme")
+    Nitflex(title = "Nitflex theme"),
 }
 
-/**
- * Saves the selected stream by its index in [streams], or -1 when no stream is selected.
- */
-private val OptionalStreamSaver = Saver<Stream?, Int>(
-    save = { streams.indexOf(it) },
-    restore = { streams.getOrNull(it) }
-)
+/** Saves the selected stream by its index in [streams], or -1 when no stream is selected. */
+private val OptionalStreamSaver =
+    Saver<Stream?, Int>(
+        save = { streams.indexOf(it) },
+        restore = { streams.getOrNull(it) },
+    )

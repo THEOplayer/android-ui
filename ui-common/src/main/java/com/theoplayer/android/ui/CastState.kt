@@ -16,8 +16,8 @@ import kotlinx.coroutines.flow.collectLatest
 /**
  * State holder for Chromecast controls, such as [ChromecastButton] and [ChromecastDisplay].
  *
- * The cast integration is only registered after the view is created, so this keeps track
- * of the current [Cast] integration and moves its listeners when it changes.
+ * The cast integration is only registered after the view is created, so this keeps track of the
+ * current [Cast] integration and moves its listeners when it changes.
  *
  * Create an instance with [rememberCastState].
  */
@@ -25,34 +25,31 @@ import kotlinx.coroutines.flow.collectLatest
 class CastState internal constructor(private val theoplayerView: THEOplayerView?) {
     private var cast: Cast? by mutableStateOf(null)
 
-    /**
-     * The current cast state of the player.
-     */
+    /** The current cast state of the player. */
     val castState: PlayerCastState
         get() {
             refreshCast()
             return _castState
         }
+
     private var _castState: PlayerCastState by mutableStateOf(PlayerCastState.UNAVAILABLE)
 
-    /**
-     * The name of the connected Chromecast receiver, if any.
-     */
+    /** The name of the connected Chromecast receiver, if any. */
     val castReceiverName: String?
         get() {
             refreshCast()
             return _castReceiverName
         }
+
     private var _castReceiverName: String? by mutableStateOf(null)
 
-    /**
-     * Whether the player is casting.
-     */
+    /** Whether the player is casting. */
     val casting: Boolean
         get() {
             refreshCast()
             return _casting
         }
+
     private var _casting: Boolean by mutableStateOf(false)
 
     private fun update(cast: Cast?) {
@@ -67,32 +64,30 @@ class CastState internal constructor(private val theoplayerView: THEOplayerView?
 
     internal suspend fun observe() {
         refreshCast()
-        snapshotFlow { cast }.collectLatest { cast ->
-            update(cast)
-            cast?.chromecast?.listen(ChromecastEventTypes.STATECHANGE, ChromecastEventTypes.ERROR) {
+        snapshotFlow { cast }
+            .collectLatest { cast ->
                 update(cast)
+                cast?.chromecast?.listen(
+                    ChromecastEventTypes.STATECHANGE,
+                    ChromecastEventTypes.ERROR,
+                ) {
+                    update(cast)
+                }
             }
-        }
     }
 
-    /**
-     * Starts casting to a Chromecast receiver.
-     */
+    /** Starts casting to a Chromecast receiver. */
     fun startCasting() {
         theoplayerView?.cast?.chromecast?.start()
     }
 
-    /**
-     * Stops casting.
-     */
+    /** Stops casting. */
     fun stopCasting() {
         theoplayerView?.cast?.chromecast?.stop()
     }
 }
 
-/**
- * Creates a [CastState] that's remembered across compositions.
- */
+/** Creates a [CastState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberCastState(theoplayerView: THEOplayerView?): CastState {

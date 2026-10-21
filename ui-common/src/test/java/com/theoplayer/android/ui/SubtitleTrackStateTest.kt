@@ -2,17 +2,15 @@ package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class SubtitleTrackStateTest {
     private fun playerWithTracks(vararg tracks: MockTextTrack): MockPlayer {
-        return MockPlayer().also { mock ->
-            mock.textTrackList.addAll(tracks.map { it.track })
-        }
+        return MockPlayer().also { mock -> mock.textTrackList.addAll(tracks.map { it.track }) }
     }
 
     @Test

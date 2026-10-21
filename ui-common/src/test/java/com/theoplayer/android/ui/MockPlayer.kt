@@ -1,6 +1,7 @@
 package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.ads.Ads
+import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.Event
 import com.theoplayer.android.api.event.EventDispatcher
 import com.theoplayer.android.api.event.EventListener
@@ -10,7 +11,6 @@ import com.theoplayer.android.api.event.ads.AdBreakEndEvent
 import com.theoplayer.android.api.event.ads.AdEvent
 import com.theoplayer.android.api.event.ads.AdSkipEvent
 import com.theoplayer.android.api.event.ads.AdsEventTypes
-import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.player.DurationChangeEvent
 import com.theoplayer.android.api.event.player.EndedEvent
 import com.theoplayer.android.api.event.player.ErrorEvent
@@ -61,8 +61,8 @@ import io.mockk.every
 import io.mockk.mockk
 
 /**
- * A mocked [Player] that records the listeners added to it and to its [Ads],
- * so tests can fire events at them.
+ * A mocked [Player] that records the listeners added to it and to its [Ads], so tests can fire
+ * events at them.
  */
 internal class MockPlayer(
     var paused: Boolean = true,
@@ -91,34 +91,35 @@ internal class MockPlayer(
 
     val ads: Ads = mockk {
         every { isPlaying } answers { this@MockPlayer.adPlaying }
-        every {
-            addEventListener(any<EventType<out AdEvent<*>>>(), any())
-        } answers {
-            adListeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-            Unit
-        }
-        every {
-            removeEventListener(any<EventType<out AdEvent<*>>>(), any())
-        } answers {
-            adListeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-            Unit
-        }
+        every { addEventListener(any<EventType<out AdEvent<*>>>(), any()) } answers
+            {
+                adListeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
+        every { removeEventListener(any<EventType<out AdEvent<*>>>(), any()) } answers
+            {
+                adListeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
     }
 
-    val audioTracks: MediaTrackList<AudioQuality> = mockTrackList(
-        { audioTrackList.toMutableList().listIterator() },
-        audioTrackListeners
-    )
+    val audioTracks: MediaTrackList<AudioQuality> =
+        mockTrackList(
+            { audioTrackList.toMutableList().listIterator() },
+            audioTrackListeners,
+        )
 
-    val textTracks: TextTrackList = mockTrackList(
-        { textTrackList.toMutableList().listIterator() },
-        textTrackListeners
-    )
+    val textTracks: TextTrackList =
+        mockTrackList(
+            { textTrackList.toMutableList().listIterator() },
+            textTrackListeners,
+        )
 
-    val videoTracks: MediaTrackList<VideoQuality> = mockTrackList(
-        { videoTrackList.toMutableList().listIterator() },
-        videoTrackListeners
-    )
+    val videoTracks: MediaTrackList<VideoQuality> =
+        mockTrackList(
+            { videoTrackList.toMutableList().listIterator() },
+            videoTrackListeners,
+        )
 
     val player: Player = mockk {
         every { isPaused } answers { this@MockPlayer.paused }
@@ -136,26 +137,25 @@ internal class MockPlayer(
         every { getReadyState() } answers { this@MockPlayer.readyState }
         every { getVideoWidth() } answers { this@MockPlayer.videoWidth }
         every { getVideoHeight() } answers { this@MockPlayer.videoHeight }
-        every { getPlayed() } answers {
-            mockk { every { length() } returns this@MockPlayer.playedLength }
-        }
+        every { getPlayed() } answers
+            {
+                mockk { every { length() } returns this@MockPlayer.playedLength }
+            }
         every { getPlaybackRate() } answers { this@MockPlayer.playbackRate }
         every { setPlaybackRate(any()) } answers { this@MockPlayer.playbackRate = firstArg() }
         every { getAudioTracks() } returns this@MockPlayer.audioTracks
         every { getTextTracks() } returns this@MockPlayer.textTracks
         every { getVideoTracks() } returns this@MockPlayer.videoTracks
-        every {
-            addEventListener(any<EventType<out PlayerEvent<*>>>(), any())
-        } answers {
-            playerListeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-            Unit
-        }
-        every {
-            removeEventListener(any<EventType<out PlayerEvent<*>>>(), any())
-        } answers {
-            playerListeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-            Unit
-        }
+        every { addEventListener(any<EventType<out PlayerEvent<*>>>(), any()) } answers
+            {
+                playerListeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
+        every { removeEventListener(any<EventType<out PlayerEvent<*>>>(), any()) } answers
+            {
+                playerListeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
     }
 
     val playerEventTypes: Set<EventType<*>>
@@ -175,25 +175,25 @@ internal class MockPlayer(
         }
     }
 
-    private fun mockEvent(type: EventType<*>): PlayerEvent<*> = when (type) {
-        PlayerEventTypes.PLAY -> mockk<PlayEvent>()
-        PlayerEventTypes.PAUSE -> mockk<PauseEvent>()
-        PlayerEventTypes.ENDED -> mockk<EndedEvent>()
-        PlayerEventTypes.SEEKING -> mockk<SeekingEvent>()
-        PlayerEventTypes.SEEKED -> mockk<SeekedEvent>()
-        PlayerEventTypes.READYSTATECHANGE -> mockk<ReadyStateChangeEvent>()
-        PlayerEventTypes.SOURCECHANGE -> mockk<SourceChangeEvent>()
-        PlayerEventTypes.ERROR -> mockk<ErrorEvent> {
-            every { errorObject } returns this@MockPlayer.errorObject
+    private fun mockEvent(type: EventType<*>): PlayerEvent<*> =
+        when (type) {
+            PlayerEventTypes.PLAY -> mockk<PlayEvent>()
+            PlayerEventTypes.PAUSE -> mockk<PauseEvent>()
+            PlayerEventTypes.ENDED -> mockk<EndedEvent>()
+            PlayerEventTypes.SEEKING -> mockk<SeekingEvent>()
+            PlayerEventTypes.SEEKED -> mockk<SeekedEvent>()
+            PlayerEventTypes.READYSTATECHANGE -> mockk<ReadyStateChangeEvent>()
+            PlayerEventTypes.SOURCECHANGE -> mockk<SourceChangeEvent>()
+            PlayerEventTypes.ERROR ->
+                mockk<ErrorEvent> { every { errorObject } returns this@MockPlayer.errorObject }
+            PlayerEventTypes.TIMEUPDATE -> mockk<TimeUpdateEvent>()
+            PlayerEventTypes.DURATIONCHANGE -> mockk<DurationChangeEvent>()
+            PlayerEventTypes.VOLUMECHANGE -> mockk<VolumeChangeEvent>()
+            PlayerEventTypes.RESIZE -> mockk<ResizeEvent>()
+            PlayerEventTypes.RATECHANGE -> mockk<RateChangeEvent>()
+            PlayerEventTypes.PRESENTATIONMODECHANGE -> mockk<PresentationModeChange>()
+            else -> mockk()
         }
-        PlayerEventTypes.TIMEUPDATE -> mockk<TimeUpdateEvent>()
-        PlayerEventTypes.DURATIONCHANGE -> mockk<DurationChangeEvent>()
-        PlayerEventTypes.VOLUMECHANGE -> mockk<VolumeChangeEvent>()
-        PlayerEventTypes.RESIZE -> mockk<ResizeEvent>()
-        PlayerEventTypes.RATECHANGE -> mockk<RateChangeEvent>()
-        PlayerEventTypes.PRESENTATIONMODECHANGE -> mockk<PresentationModeChange>()
-        else -> mockk()
-    }
 
     fun fireAdEvent() {
         adListeners.toList().forEach { (type, listener) ->
@@ -211,39 +211,42 @@ internal class MockPlayer(
 }
 
 internal fun mockTimeRanges(ranges: List<Pair<Double, Double>>): TimeRanges = mockk {
-    every { iterator() } answers {
-        ranges.map { (start, end) ->
-            mockk<TimeRange> {
-                every { this@mockk.start } returns start
-                every { this@mockk.end } returns end
-            }
-        }.toMutableList().listIterator()
-    }
+    every { iterator() } answers
+        {
+            ranges
+                .map { (start, end) ->
+                    mockk<TimeRange> {
+                        every { this@mockk.start } returns start
+                        every { this@mockk.end } returns end
+                    }
+                }
+                .toMutableList()
+                .listIterator()
+        }
 }
 
 internal var nextTrackUid = 0
 
-/**
- * A mocked track list that records the listeners added to it.
- */
+/** A mocked track list that records the listeners added to it. */
 internal inline fun <reified L> mockTrackList(
     noinline items: () -> MutableIterator<*>,
-    listeners: MutableList<Pair<EventType<*>, EventListener<*>>>
-): L where L : EventDispatcher<TrackListEvent<*, *>>, L : Iterable<*> = mockk<L> {
-    every { iterator() } answers { items() }
-    every { addEventListener(any<EventType<out TrackListEvent<*, *>>>(), any()) } answers {
-        listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-        Unit
+    listeners: MutableList<Pair<EventType<*>, EventListener<*>>>,
+): L where L : EventDispatcher<TrackListEvent<*, *>>, L : Iterable<*> =
+    mockk<L> {
+        every { iterator() } answers { items() }
+        every { addEventListener(any<EventType<out TrackListEvent<*, *>>>(), any()) } answers
+            {
+                listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
+        every { removeEventListener(any<EventType<out TrackListEvent<*, *>>>(), any()) } answers
+            {
+                listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
     }
-    every { removeEventListener(any<EventType<out TrackListEvent<*, *>>>(), any()) } answers {
-        listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-        Unit
-    }
-}
 
-/**
- * A mocked [MediaTrack] of [AudioQuality] with a mutable [MediaTrack.isEnabled].
- */
+/** A mocked [MediaTrack] of [AudioQuality] with a mutable [MediaTrack.isEnabled]. */
 internal class MockAudioTrack(var enabled: Boolean = false) {
     val uid = nextTrackUid++
     val track: MediaTrack<AudioQuality> = mockk {
@@ -253,9 +256,7 @@ internal class MockAudioTrack(var enabled: Boolean = false) {
     }
 }
 
-/**
- * A mocked [TextTrack] with a fixed [TextTrack.getKind] and a mutable [TextTrack.getMode].
- */
+/** A mocked [TextTrack] with a fixed [TextTrack.getKind] and a mutable [TextTrack.getMode]. */
 internal class MockTextTrack(kind: TextTrackKind, var mode: TextTrackMode) {
     val uid = nextTrackUid++
     private val kindType = kind.type
@@ -276,14 +277,12 @@ internal fun mockVideoQuality(): VideoQuality {
     }
 }
 
-/**
- * A mocked [MediaTrack] of [VideoQuality] that records its own event listeners.
- */
+/** A mocked [MediaTrack] of [VideoQuality] that records its own event listeners. */
 internal class MockVideoTrack(
     var enabled: Boolean = false,
     var activeQuality: VideoQuality? = null,
     var targetQuality: VideoQuality? = null,
-    var qualities: List<VideoQuality> = listOf()
+    var qualities: List<VideoQuality> = listOf(),
 ) {
     val uid = nextTrackUid++
     val listeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
@@ -295,19 +294,25 @@ internal class MockVideoTrack(
         every { getActiveQuality() } answers { this@MockVideoTrack.activeQuality }
         every { getTargetQuality() } answers { this@MockVideoTrack.targetQuality }
         every { setTargetQuality(any()) } answers { this@MockVideoTrack.targetQuality = firstArg() }
-        every { getQualities() } answers {
-            mockk<QualityList<VideoQuality>> {
-                every { iterator() } answers { this@MockVideoTrack.qualities.toMutableList().listIterator() }
+        every { getQualities() } answers
+            {
+                mockk<QualityList<VideoQuality>> {
+                    every { iterator() } answers
+                        {
+                            this@MockVideoTrack.qualities.toMutableList().listIterator()
+                        }
+                }
             }
-        }
-        every { addEventListener(any<EventType<out TrackEvent<*>>>(), any()) } answers {
-            listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-            Unit
-        }
-        every { removeEventListener(any<EventType<out TrackEvent<*>>>(), any()) } answers {
-            listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-            Unit
-        }
+        every { addEventListener(any<EventType<out TrackEvent<*>>>(), any()) } answers
+            {
+                listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
+        every { removeEventListener(any<EventType<out TrackEvent<*>>>(), any()) } answers
+            {
+                listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                Unit
+            }
     }
 
     // Fires at all listeners with an event matching their registered event type.
@@ -347,20 +352,22 @@ internal fun MutableList<Pair<EventType<*>, EventListener<*>>>.fireTrackListEven
     }
 }
 
-internal val playbackEventTypes = setOf(
-    PlayerEventTypes.TIMEUPDATE,
-    PlayerEventTypes.PLAY,
-    PlayerEventTypes.PAUSE,
-    PlayerEventTypes.ENDED,
-    PlayerEventTypes.SEEKING,
-    PlayerEventTypes.SEEKED,
-    PlayerEventTypes.READYSTATECHANGE,
-    PlayerEventTypes.SOURCECHANGE,
-    PlayerEventTypes.ERROR
-)
+internal val playbackEventTypes =
+    setOf(
+        PlayerEventTypes.TIMEUPDATE,
+        PlayerEventTypes.PLAY,
+        PlayerEventTypes.PAUSE,
+        PlayerEventTypes.ENDED,
+        PlayerEventTypes.SEEKING,
+        PlayerEventTypes.SEEKED,
+        PlayerEventTypes.READYSTATECHANGE,
+        PlayerEventTypes.SOURCECHANGE,
+        PlayerEventTypes.ERROR,
+    )
 
-internal val adEventTypes = setOf(
-    AdsEventTypes.AD_BREAK_BEGIN,
-    AdsEventTypes.AD_SKIP,
-    AdsEventTypes.AD_BREAK_END
-)
+internal val adEventTypes =
+    setOf(
+        AdsEventTypes.AD_BREAK_BEGIN,
+        AdsEventTypes.AD_SKIP,
+        AdsEventTypes.AD_BREAK_END,
+    )

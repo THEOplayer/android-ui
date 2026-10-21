@@ -62,8 +62,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(ExperimentalTvUiApi::class, InternalUiApi::class)
 class UIControllerTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun hiddenDpadDownShowsControlsAndConsumesKey() {
@@ -72,13 +71,12 @@ class UIControllerTest {
         var childSawKey = false
         setController(
             player = player,
-            centerOverlay = focusableOverlay(keyFocusRequester) {
-                childSawKey = true
-                false
-            },
-            bottomChrome = {
-                Box(Modifier.size(20.dp).testTag("controls"))
-            }
+            centerOverlay =
+                focusableOverlay(keyFocusRequester) {
+                    childSawKey = true
+                    false
+                },
+            bottomChrome = { Box(Modifier.size(20.dp).testTag("controls")) },
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
 
@@ -95,7 +93,7 @@ class UIControllerTest {
         val keyFocusRequester = FocusRequester()
         setController(
             player = player,
-            centerOverlay = focusableOverlay(keyFocusRequester)
+            centerOverlay = focusableOverlay(keyFocusRequester),
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
 
@@ -136,9 +134,8 @@ class UIControllerTest {
             mockMenuPlayer(audioTracks = listOf(english.track, french.track))
         ) {
             LanguageMenuButton(
-                modifier = Modifier
-                    .focusRequester(buttonFocusRequester)
-                    .testTag("language-menu-button")
+                modifier =
+                    Modifier.focusRequester(buttonFocusRequester).testTag("language-menu-button")
             )
         }
         waitForTag("language-menu-button")
@@ -162,9 +159,8 @@ class UIControllerTest {
             mockMenuPlayer(audioTracks = listOf(english.track, french.track))
         ) {
             LanguageMenuButton(
-                modifier = Modifier
-                    .focusRequester(buttonFocusRequester)
-                    .testTag("language-menu-button")
+                modifier =
+                    Modifier.focusRequester(buttonFocusRequester).testTag("language-menu-button")
             )
         }
         waitForTag("language-menu-button")
@@ -195,9 +191,8 @@ class UIControllerTest {
             mockMenuPlayer(audioTracks = listOf(english.track, french.track))
         ) {
             LanguageMenuButton(
-                modifier = Modifier
-                    .focusRequester(buttonFocusRequester)
-                    .testTag("language-menu-button")
+                modifier =
+                    Modifier.focusRequester(buttonFocusRequester).testTag("language-menu-button")
             )
         }
         waitForTag("language-menu-button")
@@ -227,9 +222,8 @@ class UIControllerTest {
         val buttonFocusRequester = FocusRequester()
         setControllerAndShowControls(player) {
             SettingsMenuButton(
-                modifier = Modifier
-                    .focusRequester(buttonFocusRequester)
-                    .testTag("settings-menu-button")
+                modifier =
+                    Modifier.focusRequester(buttonFocusRequester).testTag("settings-menu-button")
             )
         }
         waitForTag("settings-menu-button")
@@ -263,9 +257,8 @@ class UIControllerTest {
         val buttonFocusRequester = FocusRequester()
         setControllerAndShowControls(player) {
             SettingsMenuButton(
-                modifier = Modifier
-                    .focusRequester(buttonFocusRequester)
-                    .testTag("settings-menu-button")
+                modifier =
+                    Modifier.focusRequester(buttonFocusRequester).testTag("settings-menu-button")
             )
         }
         waitForTag("settings-menu-button")
@@ -291,9 +284,7 @@ class UIControllerTest {
         setController(
             player = player,
             centerOverlay = focusableOverlay(keyFocusRequester),
-            bottomChrome = {
-                Box(Modifier.size(20.dp).testTag("controls"))
-            }
+            bottomChrome = { Box(Modifier.size(20.dp).testTag("controls")) },
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
 
@@ -315,8 +306,7 @@ class UIControllerTest {
             centerOverlay = focusableOverlay(keyFocusRequester),
             bottomChrome = {
                 Box(
-                    Modifier
-                        .size(20.dp)
+                    Modifier.size(20.dp)
                         .onFocusChanged { focused = it.isFocused }
                         .onKeyEvent {
                             focusedControlSawKey = true
@@ -325,7 +315,7 @@ class UIControllerTest {
                         .focusable()
                         .testTag("control")
                 )
-            }
+            },
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
@@ -344,9 +334,7 @@ class UIControllerTest {
         setController(
             player = player,
             centerOverlay = focusableOverlay(keyFocusRequester),
-            bottomChrome = {
-                Box(Modifier.size(20.dp).testTag("controls"))
-            }
+            bottomChrome = { Box(Modifier.size(20.dp).testTag("controls")) },
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
@@ -362,11 +350,12 @@ class UIControllerTest {
     @Test
     fun backClosesMenuBeforeFallingThroughToActivity() {
         var activityBackCalls = 0
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                activityBackCalls++
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    activityBackCalls++
+                }
             }
-        }
         composeRule.activity.onBackPressedDispatcher.addCallback(callback)
 
         val player = mockPlayingPlayer()
@@ -376,17 +365,12 @@ class UIControllerTest {
             centerOverlay = focusableOverlay(keyFocusRequester),
             bottomChrome = {
                 Box(
-                    Modifier
-                        .size(20.dp)
-                        .clickable {
-                            openMenu {
-                                Box(Modifier.fillMaxSize().testTag("menu"))
-                            }
-                        }
+                    Modifier.size(20.dp)
+                        .clickable { openMenu { Box(Modifier.fillMaxSize().testTag("menu")) } }
                         .focusable()
                         .testTag("open-menu")
                 )
-            }
+            },
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
@@ -395,25 +379,19 @@ class UIControllerTest {
         waitForTag("menu")
         assertTagExists("menu")
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeRule.waitForIdle()
 
         assertTagDoesNotExist("menu")
         assertEquals(0, activityBackCalls)
         waitForTag("open-menu")
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeRule.waitForIdle()
         assertTagDoesNotExist("open-menu")
         assertEquals(0, activityBackCalls)
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
 
         assertEquals(1, activityBackCalls)
     }
@@ -421,11 +399,12 @@ class UIControllerTest {
     @Test
     fun backHidesVisibleControlsAndFallsThroughWhenHidden() {
         var activityBackCalls = 0
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                activityBackCalls++
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    activityBackCalls++
+                }
             }
-        }
         composeRule.activity.onBackPressedDispatcher.addCallback(callback)
 
         val player = mockPlayingPlayer()
@@ -433,26 +412,20 @@ class UIControllerTest {
         setController(
             player = player,
             centerOverlay = focusableOverlay(keyFocusRequester),
-            bottomChrome = {
-                Box(Modifier.size(20.dp).testTag("controls"))
-            }
+            bottomChrome = { Box(Modifier.size(20.dp).testTag("controls")) },
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
         waitForTag("controls")
         assertTagExists("controls")
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeRule.waitForIdle()
 
         assertTagDoesNotExist("controls")
         assertEquals(0, activityBackCalls)
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
 
         assertEquals(1, activityBackCalls)
     }
@@ -494,25 +467,22 @@ class UIControllerTest {
     @Test
     fun backBeforeFirstPlayFallsThroughToActivity() {
         var activityBackCalls = 0
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                activityBackCalls++
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    activityBackCalls++
+                }
             }
-        }
         composeRule.activity.onBackPressedDispatcher.addCallback(callback)
         setController(
             player = mockNotPlayedPlayer(),
-            bottomChrome = {
-                Box(Modifier.size(20.dp).testTag("controls"))
-            }
+            bottomChrome = { Box(Modifier.size(20.dp).testTag("controls")) },
         )
         composeRule.mainClock.advanceTimeBy(100)
         composeRule.waitForIdle()
         waitForTag("controls")
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
 
         assertEquals(1, activityBackCalls)
     }
@@ -520,41 +490,33 @@ class UIControllerTest {
     @Test
     fun backOnErrorFallsThroughToActivity() {
         var activityBackCalls = 0
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                activityBackCalls++
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    activityBackCalls++
+                }
             }
-        }
         composeRule.activity.onBackPressedDispatcher.addCallback(callback)
         val player = mockNotPlayedPlayer()
         val errorListeners = PlayerEventListeners()
-        every {
-            player.addEventListener(PlayerEventTypes.ERROR, any())
-        } answers {
-            errorListeners.add(firstArg(), secondArg())
-            Unit
-        }
+        every { player.addEventListener(PlayerEventTypes.ERROR, any()) } answers
+            {
+                errorListeners.add(firstArg(), secondArg())
+                Unit
+            }
         setController(
             player = player,
-            errorOverlay = {
-                Box(Modifier.size(20.dp).testTag("error"))
-            }
+            errorOverlay = { Box(Modifier.size(20.dp).testTag("error")) },
         )
         composeRule.mainClock.advanceTimeBy(100)
-        composeRule.waitUntil(10_000) {
-            errorListeners.hasListeners(PlayerEventTypes.ERROR)
-        }
+        composeRule.waitUntil(10_000) { errorListeners.hasListeners(PlayerEventTypes.ERROR) }
         composeRule.waitForIdle()
         val errorEvent = mockk<ErrorEvent>()
         every { errorEvent.errorObject } returns mockk<THEOplayerException>()
-        composeRule.runOnIdle {
-            errorListeners.dispatch(PlayerEventTypes.ERROR, errorEvent)
-        }
+        composeRule.runOnIdle { errorListeners.dispatch(PlayerEventTypes.ERROR, errorEvent) }
         waitForTag("error")
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
 
         assertEquals(1, activityBackCalls)
         assertTagExists("error")
@@ -572,21 +534,19 @@ class UIControllerTest {
             bottomChrome = {
                 Row {
                     Box(
-                        Modifier
-                            .size(20.dp)
+                        Modifier.size(20.dp)
                             .onFocusChanged { firstControlFocused = it.isFocused }
                             .focusable()
                             .testTag("first-control")
                     )
                     Box(
-                        Modifier
-                            .size(20.dp)
+                        Modifier.size(20.dp)
                             .onFocusChanged { secondControlFocused = it.isFocused }
                             .focusable()
                             .testTag("second-control")
                     )
                 }
-            }
+            },
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
 
@@ -603,13 +563,11 @@ class UIControllerTest {
         errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
         topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
         centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-        bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+        bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     ) {
         lateinit var theoplayerView: THEOplayerView
         composeRule.setContent {
-            val view = remember {
-                PlayerBackedTHEOplayerView(composeRule.activity, player)
-            }
+            val view = remember { PlayerBackedTHEOplayerView(composeRule.activity, player) }
             theoplayerView = view
             THEOplayerTvTheme {
                 UIController(
@@ -620,23 +578,22 @@ class UIControllerTest {
                     errorOverlay = errorOverlay,
                     topChrome = topChrome,
                     centerChrome = centerChrome,
-                    bottomChrome = bottomChrome
+                    bottomChrome = bottomChrome,
                 )
             }
         }
         composeRule.waitUntil(10_000) {
-            val container = theoplayerView.findViewById<ViewGroup>(
-                com.theoplayer.android.R.id.theo_ui_container
-            )
-            (0 until container.childCount).any {
-                container.getChildAt(it) is ComposeView
-            }
+            val container =
+                theoplayerView.findViewById<ViewGroup>(
+                    com.theoplayer.android.R.id.theo_ui_container
+                )
+            (0 until container.childCount).any { container.getChildAt(it) is ComposeView }
         }
     }
 
     private fun openMenuWhileControlsAreHidden(
         player: Player,
-        onMenuKeyEvent: (ComposeKeyEvent) -> Boolean
+        onMenuKeyEvent: (ComposeKeyEvent) -> Boolean,
     ) {
         val menuFocusRequester = FocusRequester()
         lateinit var scope: UIControllerScope
@@ -647,9 +604,7 @@ class UIControllerTest {
                 scope = this
                 Box(Modifier.size(1.dp).testTag("center-overlay"))
             },
-            bottomChrome = {
-                Box(Modifier.size(20.dp).testTag("controls"))
-            }
+            bottomChrome = { Box(Modifier.size(20.dp).testTag("controls")) },
         )
         composeRule.mainClock.advanceTimeBy(100)
         composeRule.waitForIdle()
@@ -658,8 +613,7 @@ class UIControllerTest {
         composeRule.runOnIdle {
             scope.openMenu {
                 Box(
-                    Modifier
-                        .size(20.dp)
+                    Modifier.size(20.dp)
                         .focusRequester(menuFocusRequester)
                         .onFocusChanged { menuItemFocused = it.isFocused }
                         .onKeyEvent(onMenuKeyEvent)
@@ -702,14 +656,10 @@ class UIControllerTest {
 
     private fun focusableOverlay(
         focusRequester: FocusRequester,
-        onKeyEvent: (ComposeKeyEvent) -> Boolean = { false }
+        onKeyEvent: (ComposeKeyEvent) -> Boolean = { false },
     ): @Composable UIControllerScope.() -> Unit = {
         Box(
-            Modifier
-                .fillMaxSize()
-                .focusRequester(focusRequester)
-                .onKeyEvent(onKeyEvent)
-                .focusable()
+            Modifier.fillMaxSize().focusRequester(focusRequester).onKeyEvent(onKeyEvent).focusable()
         )
     }
 
@@ -739,13 +689,13 @@ class UIControllerTest {
 
     private fun setControllerAndShowControls(
         player: Player,
-        bottomChrome: @Composable UIControllerScope.() -> Unit
+        bottomChrome: @Composable UIControllerScope.() -> Unit,
     ) {
         val keyFocusRequester = FocusRequester()
         setController(
             player = player,
             centerOverlay = focusableOverlay(keyFocusRequester),
-            bottomChrome = bottomChrome
+            bottomChrome = bottomChrome,
         )
         composeRule.runOnIdle { keyFocusRequester.requestFocus() }
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
@@ -755,7 +705,7 @@ class UIControllerTest {
     private fun mockMenuPlayer(
         audioTracks: List<MediaTrack<AudioQuality>> = emptyList(),
         videoTracks: List<MediaTrack<VideoQuality>> = emptyList(),
-        playbackRate: Double = 1.0
+        playbackRate: Double = 1.0,
     ): Player {
         val player = mockPlayingPlayer()
         every { player.getAudioTracks() } returns mockAudioTrackList(audioTracks)
@@ -780,16 +730,13 @@ class UIControllerTest {
     }
 
     private fun pressDpad(keyCode: Int) {
-        assertTrue(
-            composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
-        )
+        assertTrue(composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode)))
         composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_UP, keyCode))
         composeRule.waitForIdle()
     }
 
-    private fun dispatchKey(keyCode: Int): Boolean = composeRule.activity.dispatchKeyEvent(
-        KeyEvent(KeyEvent.ACTION_DOWN, keyCode)
-    )
+    private fun dispatchKey(keyCode: Int): Boolean =
+        composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
 
     private companion object {
         const val CONTROLS_AUTO_HIDE_DURATION_MILLIS = 5_000L
@@ -799,37 +746,40 @@ class UIControllerTest {
 private class MenuAudioTrack(
     val uid: Int,
     val label: String,
-    var enabled: Boolean
+    var enabled: Boolean,
 ) {
-    val track: MediaTrack<AudioQuality> = mockk(relaxed = true) {
-        every { this@mockk.uid } returns this@MenuAudioTrack.uid
-        every { this@mockk.label } returns this@MenuAudioTrack.label
-        every { isEnabled } answers { this@MenuAudioTrack.enabled }
-        every { setEnabled(any()) } answers { this@MenuAudioTrack.enabled = firstArg() }
-    }
+    val track: MediaTrack<AudioQuality> =
+        mockk(relaxed = true) {
+            every { this@mockk.uid } returns this@MenuAudioTrack.uid
+            every { this@mockk.label } returns this@MenuAudioTrack.label
+            every { isEnabled } answers { this@MenuAudioTrack.enabled }
+            every { setEnabled(any()) } answers { this@MenuAudioTrack.enabled = firstArg() }
+        }
 }
 
-private class MenuVideoTrack(
-    private val qualities: List<VideoQuality>
-) {
+private class MenuVideoTrack(private val qualities: List<VideoQuality>) {
     var targetQuality: VideoQuality? = null
 
-    val track: MediaTrack<VideoQuality> = mockk(relaxed = true) {
-        every { this@mockk.uid } returns 100
-        every { isEnabled } returns true
-        every { getActiveQuality() } returns qualities.firstOrNull()
-        every { getTargetQuality() } answers { this@MenuVideoTrack.targetQuality }
-        every { setTargetQuality(any()) } answers {
-            this@MenuVideoTrack.targetQuality = firstArg()
-        }
-        every { getQualities() } answers {
-            mockk<QualityList<VideoQuality>>(relaxed = true) {
-                every { iterator() } answers {
-                    this@MenuVideoTrack.qualities.toMutableList().listIterator()
+    val track: MediaTrack<VideoQuality> =
+        mockk(relaxed = true) {
+            every { this@mockk.uid } returns 100
+            every { isEnabled } returns true
+            every { getActiveQuality() } returns qualities.firstOrNull()
+            every { getTargetQuality() } answers { this@MenuVideoTrack.targetQuality }
+            every { setTargetQuality(any()) } answers
+                {
+                    this@MenuVideoTrack.targetQuality = firstArg()
                 }
-            }
+            every { getQualities() } answers
+                {
+                    mockk<QualityList<VideoQuality>>(relaxed = true) {
+                        every { iterator() } answers
+                            {
+                                this@MenuVideoTrack.qualities.toMutableList().listIterator()
+                            }
+                    }
+                }
         }
-    }
 }
 
 private fun menuVideoQuality(uid: Int, height: Int, bandwidth: Long): VideoQuality = mockk {
@@ -840,16 +790,13 @@ private fun menuVideoQuality(uid: Int, height: Int, bandwidth: Long): VideoQuali
 
 private fun mockAudioTrackList(
     tracks: List<MediaTrack<AudioQuality>>
-): MediaTrackList<AudioQuality> = mockk(relaxed = true) {
-    every { iterator() } answers { tracks.toMutableList().listIterator() }
-}
+): MediaTrackList<AudioQuality> =
+    mockk(relaxed = true) { every { iterator() } answers { tracks.toMutableList().listIterator() } }
 
 private fun mockVideoTrackList(
     tracks: List<MediaTrack<VideoQuality>>
-): MediaTrackList<VideoQuality> = mockk(relaxed = true) {
-    every { iterator() } answers { tracks.toMutableList().listIterator() }
-}
+): MediaTrackList<VideoQuality> =
+    mockk(relaxed = true) { every { iterator() } answers { tracks.toMutableList().listIterator() } }
 
-private fun mockTextTrackList(tracks: List<TextTrack>): TextTrackList = mockk(relaxed = true) {
-    every { iterator() } answers { tracks.toMutableList().listIterator() }
-}
+private fun mockTextTrackList(tracks: List<TextTrack>): TextTrackList =
+    mockk(relaxed = true) { every { iterator() } answers { tracks.toMutableList().listIterator() } }

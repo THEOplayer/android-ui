@@ -1,6 +1,5 @@
 package com.theoplayer.android.ui
 
-import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -19,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
+import com.theoplayer.android.ui.common.R as CommonR
 
 /**
  * A display for the state of an active Chromecast session.
@@ -29,12 +29,10 @@ import com.theoplayer.android.api.cast.chromecast.PlayerCastState
  * @param modifier the [Modifier] to be applied to this display
  */
 @Composable
-fun ChromecastDisplay(
-    modifier: Modifier = Modifier
-) {
+fun ChromecastDisplay(modifier: Modifier = Modifier) {
     ChromecastDisplay(
         state = rememberCastState(LocalTHEOplayerView.current),
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -51,7 +49,7 @@ fun ChromecastDisplay(
 @Composable
 fun ChromecastDisplay(
     state: CastState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     BoxWithConstraints {
         if (maxHeight < 100.dp) {
@@ -68,12 +66,10 @@ fun ChromecastDisplay(
  * @param modifier the [Modifier] to be applied to this display
  */
 @Composable
-fun ChromecastDisplayCompact(
-    modifier: Modifier = Modifier
-) {
+fun ChromecastDisplayCompact(modifier: Modifier = Modifier) {
     ChromecastDisplayCompact(
         state = rememberCastState(LocalTHEOplayerView.current),
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -87,7 +83,7 @@ fun ChromecastDisplayCompact(
 @Composable
 fun ChromecastDisplayCompact(
     state: CastState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (state.castState != PlayerCastState.CONNECTED) {
         // Hide when not connected to Chromecast
@@ -95,21 +91,24 @@ fun ChromecastDisplayCompact(
     }
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             Icons.Rounded.CastConnected,
-            contentDescription = null
+            contentDescription = null,
         )
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
         Text(
-            text = state.castReceiverName?.let {
-                stringResource(
-                    CommonR.string.theoplayer_ui_chromecast_playing_on_receiver,
-                    it
-                )
-            }
-                ?: stringResource(CommonR.string.theoplayer_ui_chromecast_playing_on_unknown_receiver)
+            text =
+                state.castReceiverName?.let {
+                    stringResource(
+                        CommonR.string.theoplayer_ui_chromecast_playing_on_receiver,
+                        it,
+                    )
+                }
+                    ?: stringResource(
+                        CommonR.string.theoplayer_ui_chromecast_playing_on_unknown_receiver
+                    )
         )
     }
 }
@@ -120,12 +119,10 @@ fun ChromecastDisplayCompact(
  * @param modifier the [Modifier] to be applied to this display
  */
 @Composable
-fun ChromecastDisplayExpanded(
-    modifier: Modifier = Modifier
-) {
+fun ChromecastDisplayExpanded(modifier: Modifier = Modifier) {
     ChromecastDisplayExpanded(
         state = rememberCastState(LocalTHEOplayerView.current),
-        modifier = modifier
+        modifier = modifier,
     )
 }
 
@@ -139,7 +136,7 @@ fun ChromecastDisplayExpanded(
 @Composable
 fun ChromecastDisplayExpanded(
     state: CastState,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     if (state.castState != PlayerCastState.CONNECTED) {
         // Hide when not connected to Chromecast
@@ -148,35 +145,45 @@ fun ChromecastDisplayExpanded(
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(ButtonDefaults.IconSpacing),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Column {
             Icon(
                 Icons.Rounded.CastConnected,
                 modifier = Modifier.size(48.dp),
-                contentDescription = null
+                contentDescription = null,
             )
         }
         Column {
             Text(
-                text = state.castReceiverName?.let {
-                    stringResource(
-                        CommonR.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line,
-                        it
-                    )
-                }
-                    ?: stringResource(CommonR.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line),
-                style = MaterialTheme.typography.bodyLarge
+                text =
+                    state.castReceiverName?.let {
+                        stringResource(
+                            CommonR.string
+                                .theoplayer_ui_chromecast_playing_on_receiver_expanded_first_line,
+                            it,
+                        )
+                    }
+                        ?: stringResource(
+                            CommonR.string
+                                .theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_first_line
+                        ),
+                style = MaterialTheme.typography.bodyLarge,
             )
             Text(
-                text = state.castReceiverName?.let {
-                    stringResource(
-                        CommonR.string.theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line,
-                        it
-                    )
-                }
-                    ?: stringResource(CommonR.string.theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_second_line),
-                style = MaterialTheme.typography.headlineSmall
+                text =
+                    state.castReceiverName?.let {
+                        stringResource(
+                            CommonR.string
+                                .theoplayer_ui_chromecast_playing_on_receiver_expanded_second_line,
+                            it,
+                        )
+                    }
+                        ?: stringResource(
+                            CommonR.string
+                                .theoplayer_ui_chromecast_playing_on_unknown_receiver_expanded_second_line
+                        ),
+                style = MaterialTheme.typography.headlineSmall,
             )
         }
     }

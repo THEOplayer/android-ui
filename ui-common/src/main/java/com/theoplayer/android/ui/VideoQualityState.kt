@@ -25,21 +25,15 @@ import kotlinx.coroutines.launch
 @ExperimentalPlayerStateApi
 class VideoQualityState internal constructor(private val player: Player?) {
 
-    /**
-     * The qualities of the active video track.
-     */
+    /** The qualities of the active video track. */
     var videoQualities by mutableStateOf<List<VideoQuality>>(listOf())
         private set
 
-    /**
-     * The currently playing video quality, if any.
-     */
+    /** The currently playing video quality, if any. */
     var activeVideoQuality by mutableStateOf<VideoQuality?>(null)
         private set
 
-    /**
-     * The desired video quality, or `null` for automatic selection.
-     */
+    /** The desired video quality, or `null` for automatic selection. */
     var targetVideoQuality by mutableStateOf<VideoQuality?>(null)
         private set
 
@@ -68,7 +62,7 @@ class VideoQualityState internal constructor(private val player: Player?) {
                         setActiveVideoTrack(track)
                         track?.listen(
                             VideoTrackEventTypes.ACTIVEQUALITYCHANGEDEVENT,
-                            VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT
+                            VideoTrackEventTypes.TARGETQUALITYCHANGEDEVENT,
                         ) {
                             activeVideoQuality = track.activeQuality
                             targetVideoQuality = track.targetQuality
@@ -78,26 +72,24 @@ class VideoQualityState internal constructor(private val player: Player?) {
                 player.videoTracks.listen(
                     VideoTrackListEventTypes.ADDTRACK,
                     VideoTrackListEventTypes.REMOVETRACK,
-                    VideoTrackListEventTypes.TRACKLISTCHANGE
-                ) { activeTrack.value = findActiveVideoTrack() }
+                    VideoTrackListEventTypes.TRACKLISTCHANGE,
+                ) {
+                    activeTrack.value = findActiveVideoTrack()
+                }
             }
         } finally {
             activeVideoTrack = null
         }
     }
 
-    /**
-     * Selects the desired video quality, or `null` for automatic selection.
-     */
+    /** Selects the desired video quality, or `null` for automatic selection. */
     fun select(quality: VideoQuality?) {
         targetVideoQuality = quality
         activeVideoTrack?.targetQuality = quality
     }
 }
 
-/**
- * Creates a [VideoQualityState] that's remembered across compositions.
- */
+/** Creates a [VideoQualityState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberVideoQualityState(player: Player?): VideoQualityState {

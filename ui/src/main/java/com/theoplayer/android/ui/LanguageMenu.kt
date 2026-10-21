@@ -1,6 +1,5 @@
 package com.theoplayer.android.ui
 
-import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,26 +17,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.theoplayer.android.ui.common.R as CommonR
 
 /**
  * A [Menu] to change the spoken language and subtitles of the stream.
  *
- * Depending on the available screen width, this shows either [compact][LanguageMenuCompact]
- * or [expanded][LanguageMenuExpanded] contents.
+ * Depending on the available screen width, this shows either [compact][LanguageMenuCompact] or
+ * [expanded][LanguageMenuExpanded] contents.
  */
 @Composable
 fun MenuScope.LanguageMenu() {
     LanguageMenu(
         audioTrackState = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
-        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player)
+        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player),
     )
 }
 
 /**
  * A [Menu] to change the spoken language and subtitles of the stream.
  *
- * Depending on the available screen width, this shows either [compact][LanguageMenuCompact]
- * or [expanded][LanguageMenuExpanded] contents.
+ * Depending on the available screen width, this shows either [compact][LanguageMenuCompact] or
+ * [expanded][LanguageMenuExpanded] contents.
  *
  * Remember the states inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
@@ -48,21 +48,21 @@ fun MenuScope.LanguageMenu() {
 @Composable
 fun MenuScope.LanguageMenu(
     audioTrackState: AudioTrackState,
-    subtitleTrackState: SubtitleTrackState
+    subtitleTrackState: SubtitleTrackState,
 ) {
     Menu(
         title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_language)) },
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
-                contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_menu_close)
+                contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_menu_close),
             )
         },
     ) {
         BoxWithConstraints {
             val neededWidth =
                 (if (showAudioTracks(audioTrackState)) 300.dp else 0.dp) +
-                        (if (showSubtitleTracks(subtitleTrackState)) 300.dp else 0.dp)
+                    (if (showSubtitleTracks(subtitleTrackState)) 300.dp else 0.dp)
             if (maxWidth < neededWidth) {
                 LanguageMenuCompact(audioTrackState, subtitleTrackState)
             } else {
@@ -83,8 +83,8 @@ internal fun showSubtitleTracks(subtitleTrackState: SubtitleTrackState): Boolean
 /**
  * The compact menu contents of the [LanguageMenu].
  *
- * In this form, the currently selected audio and subtitle track are shown inside buttons.
- * Click these buttons opens a separate menu to change the audio track or subtitle track.
+ * In this form, the currently selected audio and subtitle track are shown inside buttons. Click
+ * these buttons opens a separate menu to change the audio track or subtitle track.
  *
  * @see AudioTrackMenu
  * @see SubtitleMenu
@@ -93,17 +93,18 @@ internal fun showSubtitleTracks(subtitleTrackState: SubtitleTrackState): Boolean
 fun MenuScope.LanguageMenuCompact() {
     LanguageMenuCompact(
         audioTrackState = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
-        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player)
+        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player),
     )
 }
 
 /**
  * The compact menu contents of the [LanguageMenu].
  *
- * In this form, the currently selected audio and subtitle track are shown inside buttons.
- * Click these buttons opens a separate menu to change the audio track or subtitle track.
+ * In this form, the currently selected audio and subtitle track are shown inside buttons. Click
+ * these buttons opens a separate menu to change the audio track or subtitle track.
  *
- * Remember the states inside the `openMenu` block that opens the enclosing menu, see [MenuScope.openMenu].
+ * Remember the states inside the `openMenu` block that opens the enclosing menu, see
+ * [MenuScope.openMenu].
  *
  * @param audioTrackState the [AudioTrackState] to read and control
  * @param subtitleTrackState the [SubtitleTrackState] to read and control
@@ -114,34 +115,29 @@ fun MenuScope.LanguageMenuCompact() {
 @Composable
 fun MenuScope.LanguageMenuCompact(
     audioTrackState: AudioTrackState,
-    subtitleTrackState: SubtitleTrackState
+    subtitleTrackState: SubtitleTrackState,
 ) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(audioTrackState)) {
             Row {
                 Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    text = stringResource(CommonR.string.theoplayer_ui_menu_audio)
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    text = stringResource(CommonR.string.theoplayer_ui_menu_audio),
                 )
                 TextButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    onClick = { openMenu { AudioTrackMenu() } }
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    onClick = { openMenu { AudioTrackMenu() } },
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = audioTrackState.activeAudioTrack?.let { formatTrackLabel(it) }
-                            ?: stringResource(
-                                CommonR.string.theoplayer_ui_audio_none
-                            ),
-                        textAlign = TextAlign.Center
+                        text =
+                            audioTrackState.activeAudioTrack?.let { formatTrackLabel(it) }
+                                ?: stringResource(CommonR.string.theoplayer_ui_audio_none),
+                        textAlign = TextAlign.Center,
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
             }
@@ -149,27 +145,23 @@ fun MenuScope.LanguageMenuCompact(
         if (showSubtitleTracks(subtitleTrackState)) {
             Row {
                 Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles),
                 )
                 TextButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    onClick = { openMenu { SubtitleMenu() } }
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    onClick = { openMenu { SubtitleMenu() } },
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = subtitleTrackState.activeSubtitleTrack?.let { formatTrackLabel(it) } ?: stringResource(
-                            CommonR.string.theoplayer_ui_subtitles_off
-                        ),
-                        textAlign = TextAlign.Center
+                        text =
+                            subtitleTrackState.activeSubtitleTrack?.let { formatTrackLabel(it) }
+                                ?: stringResource(CommonR.string.theoplayer_ui_subtitles_off),
+                        textAlign = TextAlign.Center,
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
             }
@@ -189,7 +181,7 @@ fun MenuScope.LanguageMenuCompact(
 fun MenuScope.LanguageMenuExpanded() {
     LanguageMenuExpanded(
         audioTrackState = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
-        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player)
+        subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player),
     )
 }
 
@@ -198,7 +190,8 @@ fun MenuScope.LanguageMenuExpanded() {
  *
  * In this form, the list of audio and subtitle tracks are shown side-by-side.
  *
- * Remember the states inside the `openMenu` block that opens the enclosing menu, see [MenuScope.openMenu].
+ * Remember the states inside the `openMenu` block that opens the enclosing menu, see
+ * [MenuScope.openMenu].
  *
  * @param audioTrackState the [AudioTrackState] to read and control
  * @param subtitleTrackState the [SubtitleTrackState] to read and control
@@ -209,18 +202,16 @@ fun MenuScope.LanguageMenuExpanded() {
 @Composable
 fun MenuScope.LanguageMenuExpanded(
     audioTrackState: AudioTrackState,
-    subtitleTrackState: SubtitleTrackState
+    subtitleTrackState: SubtitleTrackState,
 ) {
     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(audioTrackState)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .padding(0.dp, 8.dp),
+                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
                     text = stringResource(CommonR.string.theoplayer_ui_menu_audio),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 AudioTrackList(audioTrackState)
             }
@@ -228,12 +219,10 @@ fun MenuScope.LanguageMenuExpanded(
         if (showSubtitleTracks(subtitleTrackState)) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    modifier = Modifier
-                        .fillMaxWidth(1f)
-                        .padding(0.dp, 8.dp),
+                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
                     text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles),
                     textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium,
                 )
                 SubtitleTrackList(subtitleTrackState)
             }
@@ -248,9 +237,7 @@ fun MenuScope.LanguageMenuExpanded(
  */
 @Composable
 fun MenuScope.AudioTrackMenu() {
-    AudioTrackMenu(
-        state = rememberAudioTrackState(LocalTHEOplayerView.current?.player)
-    )
+    AudioTrackMenu(state = rememberAudioTrackState(LocalTHEOplayerView.current?.player))
 }
 
 /**
@@ -264,9 +251,7 @@ fun MenuScope.AudioTrackMenu() {
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.AudioTrackMenu(state: AudioTrackState) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_audio)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_audio)) }) {
         AudioTrackList(state, onClick = { closeCurrentMenu() })
     }
 }
@@ -278,9 +263,7 @@ fun MenuScope.AudioTrackMenu(state: AudioTrackState) {
  */
 @Composable
 fun MenuScope.SubtitleMenu() {
-    SubtitleMenu(
-        state = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player)
-    )
+    SubtitleMenu(state = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player))
 }
 
 /**
@@ -294,9 +277,7 @@ fun MenuScope.SubtitleMenu() {
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.SubtitleMenu(state: SubtitleTrackState) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) }) {
         SubtitleTrackList(state, onClick = { closeCurrentMenu() })
     }
 }

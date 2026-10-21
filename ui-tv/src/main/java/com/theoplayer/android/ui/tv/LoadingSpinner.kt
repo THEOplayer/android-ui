@@ -27,8 +27,9 @@ import kotlin.time.DurationUnit
  * @param modifier the [Modifier] to be applied to this indicator
  * @param color color of this progress indicator
  * @param strokeWidth stroke width of this progress indicator
- * @param delay delay for the progress indicator to become visible after the player starts buffering.
- * In general, it's less jarring to *not* show the indicator for very short buffering periods.
+ * @param delay delay for the progress indicator to become visible after the player starts
+ *   buffering. In general, it's less jarring to *not* show the indicator for very short buffering
+ *   periods.
  */
 @ExperimentalTvUiApi
 @OptIn(ExperimentalPlayerStateApi::class, InternalUiApi::class)
@@ -37,14 +38,14 @@ fun LoadingSpinner(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     strokeWidth: Dp = 4.dp,
-    delay: Duration = LocalPlayerAnimations.current.loadingSpinnerDelay
+    delay: Duration = LocalPlayerAnimations.current.loadingSpinnerDelay,
 ) {
     LoadingSpinner(
         state = rememberLoadingState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         color = color,
         strokeWidth = strokeWidth,
-        delay = delay
+        delay = delay,
     )
 }
 
@@ -55,8 +56,9 @@ fun LoadingSpinner(
  * @param modifier the [Modifier] to be applied to this indicator
  * @param color color of this progress indicator
  * @param strokeWidth stroke width of this progress indicator
- * @param delay delay for the progress indicator to become visible after the player starts buffering.
- * In general, it's less jarring to *not* show the indicator for very short buffering periods.
+ * @param delay delay for the progress indicator to become visible after the player starts
+ *   buffering. In general, it's less jarring to *not* show the indicator for very short buffering
+ *   periods.
  */
 @ExperimentalTvUiApi
 @ExperimentalPlayerStateApi
@@ -67,14 +69,14 @@ fun LoadingSpinner(
     modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colorScheme.primary,
     strokeWidth: Dp = 4.dp,
-    delay: Duration = LocalPlayerAnimations.current.loadingSpinnerDelay
+    delay: Duration = LocalPlayerAnimations.current.loadingSpinnerDelay,
 ) {
     AnimatedVisibility(
         visible = state.loading,
         // Show the loading spinner only after a small delay
         enter = fadeIn(snap(delayMillis = delay.toInt(DurationUnit.MILLISECONDS))),
         // Hide the loading spinner immediately when loaded
-        exit = ExitTransition.None
+        exit = ExitTransition.None,
     ) {
         CircularProgressIndicator(modifier = modifier, color = color, strokeWidth = strokeWidth)
     }

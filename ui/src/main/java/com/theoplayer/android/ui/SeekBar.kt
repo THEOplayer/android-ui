@@ -28,35 +28,37 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 
 /**
- * A seek bar showing the current time of the player, and which seeks the player when clicked or dragged.
+ * A seek bar showing the current time of the player, and which seeks the player when clicked or
+ * dragged.
  *
  * While the user is dragging the seek bar, the player is temporarily paused.
  *
  * @param modifier the [Modifier] to be applied to this seek bar
  * @param colors [SliderColors] that will be used to resolve the colors used for this seek bar in
- * different states. See [SliderDefaults.colors].
+ *   different states. See [SliderDefaults.colors].
  */
 @Composable
 fun SeekBar(
     modifier: Modifier = Modifier,
-    colors: SliderColors = SliderDefaults.colors()
+    colors: SliderColors = SliderDefaults.colors(),
 ) {
     SeekBar(
         state = rememberSeekBarState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
-        colors = colors
+        colors = colors,
     )
 }
 
 /**
- * A seek bar showing the current time of the player, and which seeks the player when clicked or dragged.
+ * A seek bar showing the current time of the player, and which seeks the player when clicked or
+ * dragged.
  *
  * While the user is dragging the seek bar, the player is temporarily paused.
  *
  * @param state the [SeekBarState] to read and control
  * @param modifier the [Modifier] to be applied to this seek bar
  * @param colors [SliderColors] that will be used to resolve the colors used for this seek bar in
- * different states. See [SliderDefaults.colors].
+ *   different states. See [SliderDefaults.colors].
  */
 @ExperimentalPlayerStateApi
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,7 +66,7 @@ fun SeekBar(
 fun SeekBar(
     state: SeekBarState,
     modifier: Modifier = Modifier,
-    colors: SliderColors = SliderDefaults.colors()
+    colors: SliderColors = SliderDefaults.colors(),
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -80,7 +82,7 @@ fun SeekBar(
                 SeekBarThumb(
                     interactionSource = interactionSource,
                     colors = colors,
-                    enabled = state.enabled
+                    enabled = state.enabled,
                 )
             }
         },
@@ -93,11 +95,11 @@ fun SeekBar(
                 // Don't draw the stop indicator at the end of the track
                 drawStopIndicator = {},
                 // Remove the gap in the track around the thumb
-                thumbTrackGapSize = 0.dp
+                thumbTrackGapSize = 0.dp,
             )
         },
         onValueChange = state::onValueChange,
-        onValueChangeFinished = state::onValueChangeFinished
+        onValueChangeFinished = state::onValueChangeFinished,
     )
 }
 
@@ -114,7 +116,7 @@ private fun SeekBarThumb(
     modifier: Modifier = Modifier,
     colors: SliderColors = SliderDefaults.colors(),
     enabled: Boolean = true,
-    thumbSize: DpSize = ThumbSize
+    thumbSize: DpSize = ThumbSize,
 ) {
     val interactions = remember { mutableStateListOf<Interaction>() }
     LaunchedEffect(interactionSource) {
@@ -130,11 +132,12 @@ private fun SeekBarThumb(
         }
     }
 
-    val elevation = if (interactions.isNotEmpty()) {
-        ThumbPressedElevation
-    } else {
-        ThumbDefaultElevation
-    }
+    val elevation =
+        if (interactions.isNotEmpty()) {
+            ThumbPressedElevation
+        } else {
+            ThumbDefaultElevation
+        }
     val shape = CircleShape
 
     Spacer(
@@ -142,10 +145,11 @@ private fun SeekBarThumb(
             .size(thumbSize)
             .indication(
                 interactionSource = interactionSource,
-                indication = ripple(
-                    bounded = false,
-                    radius = StateLayerSize / 2
-                )
+                indication =
+                    ripple(
+                        bounded = false,
+                        radius = StateLayerSize / 2,
+                    ),
             )
             .hoverable(interactionSource = interactionSource)
             .shadow(if (enabled) elevation else 0.dp, shape, clip = false)

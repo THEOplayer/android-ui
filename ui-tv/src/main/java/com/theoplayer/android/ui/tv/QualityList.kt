@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.res.stringResource
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
@@ -33,12 +33,12 @@ import com.theoplayer.android.ui.rememberVideoQualityState
 @Composable
 fun QualityList(
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     QualityList(
         state = rememberVideoQualityState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -55,18 +55,16 @@ fun QualityList(
 fun QualityList(
     state: VideoQualityState,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
-    val selectedIndex = state.targetVideoQuality
-        ?.let { state.videoQualities.indexOf(it) + 1 }
-        ?: 0
+    val selectedIndex = state.targetVideoQuality?.let { state.videoQualities.indexOf(it) + 1 } ?: 0
     val selectedRequester = remember { FocusRequester() }
 
     LazyColumn(
         modifier = modifier.focusRestorer(selectedRequester),
         state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex),
         contentPadding = PaddingValues(vertical = menuItemFocusOverflowPadding),
-        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
+        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing),
     ) {
         item(key = null) {
             val isActive = state.targetVideoQuality == null
@@ -80,21 +78,23 @@ fun QualityList(
                 headlineContent = {
                     Text(text = stringResource(CommonR.string.theoplayer_ui_quality_automatic))
                 },
-                trailingContent = if (isActive) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null) }
-                } else {
-                    null
-                },
-                modifier = if (selectedIndex == 0) {
-                    Modifier.focusRequester(selectedRequester)
-                } else {
-                    Modifier
-                }
+                trailingContent =
+                    if (isActive) {
+                        { Icon(Icons.Rounded.Check, contentDescription = null) }
+                    } else {
+                        null
+                    },
+                modifier =
+                    if (selectedIndex == 0) {
+                        Modifier.focusRequester(selectedRequester)
+                    } else {
+                        Modifier
+                    },
             )
         }
         items(
             count = state.videoQualities.size,
-            key = { state.videoQualities[it].uid }
+            key = { state.videoQualities[it].uid },
         ) { index ->
             val quality = state.videoQualities[index]
             val isActive = state.targetVideoQuality == quality
@@ -107,25 +107,26 @@ fun QualityList(
                 colors = menuItemColors(),
                 headlineContent = {
                     Text(
-                        text = stringResource(
-                            CommonR.string.theoplayer_ui_quality_with_height,
-                            quality.height
-                        )
+                        text =
+                            stringResource(
+                                CommonR.string.theoplayer_ui_quality_with_height,
+                                quality.height,
+                            )
                     )
                 },
-                supportingContent = {
-                    Text(text = formatBandwidth(quality.bandwidth))
-                },
-                trailingContent = if (isActive) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null) }
-                } else {
-                    null
-                },
-                modifier = if (index + 1 == selectedIndex) {
-                    Modifier.focusRequester(selectedRequester)
-                } else {
-                    Modifier
-                }
+                supportingContent = { Text(text = formatBandwidth(quality.bandwidth)) },
+                trailingContent =
+                    if (isActive) {
+                        { Icon(Icons.Rounded.Check, contentDescription = null) }
+                    } else {
+                        null
+                    },
+                modifier =
+                    if (index + 1 == selectedIndex) {
+                        Modifier.focusRequester(selectedRequester)
+                    } else {
+                        Modifier
+                    },
             )
         }
     }

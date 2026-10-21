@@ -14,20 +14,18 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 /**
- * State holder for a button that seeks forward or backward by a fixed offset,
- * such as [SeekButton].
+ * State holder for a button that seeks forward or backward by a fixed offset, such as [SeekButton].
  *
  * Create an instance with [rememberSeekButtonState].
  */
 @ExperimentalPlayerStateApi
-class SeekButtonState internal constructor(
+class SeekButtonState
+internal constructor(
     private val player: Player?,
-    private val seekOffset: Int
+    private val seekOffset: Int,
 ) {
 
-    /**
-     * Whether the button can be interacted with.
-     */
+    /** Whether the button can be interacted with. */
     val enabled: Boolean
         get() = !playingAd && seekable.isNotEmpty()
 
@@ -52,8 +50,10 @@ class SeekButtonState internal constructor(
                     ads.listen(
                         AdsEventTypes.AD_BREAK_BEGIN,
                         AdsEventTypes.AD_SKIP,
-                        AdsEventTypes.AD_BREAK_END
-                    ) { update() }
+                        AdsEventTypes.AD_BREAK_END,
+                    ) {
+                        update()
+                    }
                 }
             }
             player.listen(
@@ -65,8 +65,10 @@ class SeekButtonState internal constructor(
                 PlayerEventTypes.SEEKED,
                 PlayerEventTypes.READYSTATECHANGE,
                 PlayerEventTypes.SOURCECHANGE,
-                PlayerEventTypes.ERROR
-            ) { update() }
+                PlayerEventTypes.ERROR,
+            ) {
+                update()
+            }
         }
     }
 
@@ -86,8 +88,8 @@ class SeekButtonState internal constructor(
 /**
  * Creates a [SeekButtonState] that's remembered across compositions.
  *
- * @param seekOffset the offset (in seconds) by which to seek forward (if positive)
- * or backward (if negative)
+ * @param seekOffset the offset (in seconds) by which to seek forward (if positive) or backward (if
+ *   negative)
  */
 @ExperimentalPlayerStateApi
 @Composable

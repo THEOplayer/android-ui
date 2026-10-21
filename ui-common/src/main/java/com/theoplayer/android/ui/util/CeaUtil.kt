@@ -6,9 +6,7 @@ import com.theoplayer.android.ui.InternalUiApi
 
 private val CEA_FORMATTING_REGEX = "^CC(\\d+)$".toRegex()
 
-/**
- * Checks whether a provided label is CEA-608 or CEA-708 formed.
- */
+/** Checks whether a provided label is CEA-608 or CEA-708 formed. */
 @CheckResult
 @InternalUiApi
 fun isLabelCeaFormatted(label: String?): Boolean {
@@ -31,14 +29,12 @@ fun isLabelCeaFormatted(label: String?): Boolean {
 /**
  * Creates a text track label for CEA-608 and CEA-708 formats.
  *
- * @return an optional string composed of a [channelNumber] and a prepended
- * "CC" suffix, or `null` if the channel number is invalid.
+ * @return an optional string composed of a [channelNumber] and a prepended "CC" suffix, or `null`
+ *   if the channel number is invalid.
  */
 @CheckResult
 @InternalUiApi
-fun getLabelForChannelNumber(
-    @IntRange(from = 0L, to = 63L) channelNumber: Int,
-): String? {
+fun getLabelForChannelNumber(@IntRange(from = 0L, to = 63L) channelNumber: Int): String? {
     // CEA-608 only supports channel numbers in [1, 4],
     // while CEA-708 support service numbers in [1, 63].
     if (channelNumber !in 1..63) {

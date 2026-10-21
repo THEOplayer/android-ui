@@ -9,18 +9,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.SemanticsActions
-import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.click
 import androidx.compose.ui.test.getBoundsInRoot
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.click
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
 import androidx.compose.ui.unit.DpRect
@@ -28,8 +27,6 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.ads.Ads
-import com.theoplayer.android.ui.theme.PlayerAnimations
-import com.theoplayer.android.ui.theme.THEOplayerTheme
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrackList
@@ -38,8 +35,11 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackList
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
+import com.theoplayer.android.ui.theme.PlayerAnimations
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.time.Duration.Companion.milliseconds
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -47,14 +47,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 @OptIn(ExperimentalPlayerStateApi::class)
 class MenuSheetTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     @Config(qualifiers = "w900dp-h400dp")
@@ -89,7 +87,11 @@ class MenuSheetTest {
 
         val rootBounds = composeRule.onRoot().getBoundsInRoot()
         val bounds = sheetBounds()
-        assertEquals((rootBounds.right - rootBounds.left).value, (bounds.right - bounds.left).value, 1f)
+        assertEquals(
+            (rootBounds.right - rootBounds.left).value,
+            (bounds.right - bounds.left).value,
+            1f,
+        )
         assertEquals(rootBounds.bottom.value, bounds.bottom.value, 1f)
         // Title row + 100dp content fits below the 240dp minimum height.
         assertEquals(240.dp.value, (bounds.bottom - bounds.top).value, 1f)
@@ -161,55 +163,52 @@ class MenuSheetTest {
     @Config(qualifiers = "w900dp-h400dp")
     fun languageMenuShowsCompactLayoutOnWidePlayer() {
         val scope = TestMenuScope()
-        val player = mockPlayer(
-            audioTracks = listOf(
-                mockAudioTrack(uid = 1, label = "English audio", enabled = true),
-                mockAudioTrack(uid = 2, label = "French audio", enabled = false)
-            ),
-            textTracks = listOf(mockSubtitleTrack())
-        )
+        val player =
+            mockPlayer(
+                audioTracks =
+                    listOf(
+                        mockAudioTrack(uid = 1, label = "English audio", enabled = true),
+                        mockAudioTrack(uid = 2, label = "French audio", enabled = false),
+                    ),
+                textTracks = listOf(mockSubtitleTrack()),
+            )
         composeRule.setContent {
             MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
                 scope.LanguageMenu(
                     audioTrackState = rememberAudioTrackState(player),
-                    subtitleTrackState = rememberSubtitleTrackState(player)
+                    subtitleTrackState = rememberSubtitleTrackState(player),
                 )
             }
         }
 
         // The 400dp side sheet means the expanded side-by-side layout (2 * 300dp)
         // no longer fits, so the compact layout is shown instead.
-        assertTrue(
-            composeRule.onAllNodesWithText("Audio").fetchSemanticsNodes().isNotEmpty()
-        )
-        assertTrue(
-            composeRule.onAllNodesWithText("Subtitles").fetchSemanticsNodes().isNotEmpty()
-        )
-        assertTrue(
-            composeRule.onAllNodesWithText("French audio").fetchSemanticsNodes().isEmpty()
-        )
+        assertTrue(composeRule.onAllNodesWithText("Audio").fetchSemanticsNodes().isNotEmpty())
+        assertTrue(composeRule.onAllNodesWithText("Subtitles").fetchSemanticsNodes().isNotEmpty())
+        assertTrue(composeRule.onAllNodesWithText("French audio").fetchSemanticsNodes().isEmpty())
     }
 
     @Test
     @Config(qualifiers = "w400dp-h800dp")
     fun submenuPushesInsideOneSharedSheet() {
-        val theoplayerView = object : THEOplayerView(composeRule.activity) {
-            private val nativePlayer = mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
-                every { isPaused } returns false
-                every { isEnded } returns false
-                every { ads } returns mockk<Ads>(relaxed = true) {
-                    every { isPlaying } returns false
-                }
-            }
+        val theoplayerView =
+            object : THEOplayerView(composeRule.activity) {
+                private val nativePlayer =
+                    mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
+                        every { isPaused } returns false
+                        every { isEnded } returns false
+                        every { ads } returns
+                            mockk<Ads>(relaxed = true) { every { isPlaying } returns false }
+                    }
 
-            override fun getPlayer() = nativePlayer
-        }
+                override fun getPlayer() = nativePlayer
+            }
         var controllerScope: UIControllerScope? = null
         composeRule.setContent {
             UIController(
                 modifier = Modifier.fillMaxSize(),
                 theoplayerView = theoplayerView,
-                centerOverlay = { controllerScope = this }
+                centerOverlay = { controllerScope = this },
             )
         }
         composeRule.waitForIdle()
@@ -219,22 +218,17 @@ class MenuSheetTest {
             controllerScope!!.openMenu {
                 Menu(title = { Text("Menu") }) {
                     Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .testTag("menu-content")
-                            .clickable {
-                                openMenu {
-                                    Menu(title = { Text("Submenu") }) {
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .height(50.dp)
-                                                .testTag("submenu-content")
-                                        )
-                                    }
+                        Modifier.fillMaxWidth().height(100.dp).testTag("menu-content").clickable {
+                            openMenu {
+                                Menu(title = { Text("Submenu") }) {
+                                    Box(
+                                        Modifier.fillMaxWidth()
+                                            .height(50.dp)
+                                            .testTag("submenu-content")
+                                    )
                                 }
                             }
+                        }
                     )
                 }
             }
@@ -249,8 +243,7 @@ class MenuSheetTest {
         // Invoke the click semantics action directly: under Robolectric the
         // sheet's clipped Surface is opaque to touch hit-testing, so a real
         // tap would fall through to the scrim.
-        composeRule.onNodeWithTag("menu-content")
-            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.onNodeWithTag("menu-content").performSemanticsAction(SemanticsActions.OnClick)
         composeRule.mainClock.advanceTimeBy(100)
         assertEquals(1, sheetCount())
         val midBounds = composeRule.onNodeWithTag("menu-sheet").getBoundsInRoot()
@@ -268,23 +261,24 @@ class MenuSheetTest {
     @Test
     @Config(qualifiers = "w400dp-h800dp")
     fun submenuPushSlidesShortDistanceInsideSheet() {
-        val theoplayerView = object : THEOplayerView(composeRule.activity) {
-            private val nativePlayer = mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
-                every { isPaused } returns false
-                every { isEnded } returns false
-                every { ads } returns mockk<Ads>(relaxed = true) {
-                    every { isPlaying } returns false
-                }
-            }
+        val theoplayerView =
+            object : THEOplayerView(composeRule.activity) {
+                private val nativePlayer =
+                    mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
+                        every { isPaused } returns false
+                        every { isEnded } returns false
+                        every { ads } returns
+                            mockk<Ads>(relaxed = true) { every { isPlaying } returns false }
+                    }
 
-            override fun getPlayer() = nativePlayer
-        }
+                override fun getPlayer() = nativePlayer
+            }
         var controllerScope: UIControllerScope? = null
         composeRule.setContent {
             UIController(
                 modifier = Modifier.fillMaxSize(),
                 theoplayerView = theoplayerView,
-                centerOverlay = { controllerScope = this }
+                centerOverlay = { controllerScope = this },
             )
         }
         composeRule.waitForIdle()
@@ -293,22 +287,17 @@ class MenuSheetTest {
             controllerScope!!.openMenu {
                 Menu(title = { Text("Menu") }) {
                     Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .testTag("menu-content")
-                            .clickable {
-                                openMenu {
-                                    Menu(title = { Text("Submenu") }) {
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .height(50.dp)
-                                                .testTag("submenu-content")
-                                        )
-                                    }
+                        Modifier.fillMaxWidth().height(100.dp).testTag("menu-content").clickable {
+                            openMenu {
+                                Menu(title = { Text("Submenu") }) {
+                                    Box(
+                                        Modifier.fillMaxWidth()
+                                            .height(50.dp)
+                                            .testTag("submenu-content")
+                                    )
                                 }
                             }
+                        }
                     )
                 }
             }
@@ -322,8 +311,7 @@ class MenuSheetTest {
         // Invoke the click semantics action directly: under Robolectric the
         // sheet's clipped Surface is opaque to touch hit-testing, so a real
         // tap would fall through to the scrim.
-        composeRule.onNodeWithTag("menu-content")
-            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.onNodeWithTag("menu-content").performSemanticsAction(SemanticsActions.OnClick)
         // Let the recomposition apply the push before measuring.
         composeRule.mainClock.advanceTimeByFrame()
         val midIncomingLefts = mutableListOf<Float>()
@@ -343,46 +331,47 @@ class MenuSheetTest {
         // slide distance — not the full sheet width.
         assertTrue(
             "incomingLefts=$midIncomingLefts final=$finalIncomingLeft slidePx=$slidePx",
-            midIncomingLefts.isNotEmpty() && midIncomingLefts.all { left ->
-                left - finalIncomingLeft in -1f..slidePx + 1f
-            } && midIncomingLefts.any { it - finalIncomingLeft > 1f }
+            midIncomingLefts.isNotEmpty() &&
+                midIncomingLefts.all { left -> left - finalIncomingLeft in -1f..slidePx + 1f } &&
+                midIncomingLefts.any { it - finalIncomingLeft > 1f },
         )
         // The outgoing content remained visible while the incoming one arrived
         // (fade-through), then only the submenu content remains.
         assertTrue(outgoingVisibleMidTransition)
         assertEquals(menuStartLeft, finalIncomingLeft, 1f)
         assertTrue(
-            composeRule.onAllNodesWithTag("menu-content", useUnmergedTree = true)
-                .fetchSemanticsNodes().isEmpty()
+            composeRule
+                .onAllNodesWithTag("menu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isEmpty()
         )
     }
 
     @Test
     @Config(qualifiers = "w400dp-h800dp")
     fun menuTransitionDurationIsConfigurable() {
-        val theoplayerView = object : THEOplayerView(composeRule.activity) {
-            private val nativePlayer = mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
-                every { isPaused } returns false
-                every { isEnded } returns false
-                every { ads } returns mockk<Ads>(relaxed = true) {
-                    every { isPlaying } returns false
-                }
-            }
+        val theoplayerView =
+            object : THEOplayerView(composeRule.activity) {
+                private val nativePlayer =
+                    mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
+                        every { isPaused } returns false
+                        every { isEnded } returns false
+                        every { ads } returns
+                            mockk<Ads>(relaxed = true) { every { isPlaying } returns false }
+                    }
 
-            override fun getPlayer() = nativePlayer
-        }
+                override fun getPlayer() = nativePlayer
+            }
         var controllerScope: UIControllerScope? = null
         composeRule.setContent {
             THEOplayerTheme(
                 useDarkTheme = true,
-                playerAnimations = PlayerAnimations(
-                    menuTransitionDuration = 1000.milliseconds
-                )
+                playerAnimations = PlayerAnimations(menuTransitionDuration = 1000.milliseconds),
             ) {
                 UIController(
                     modifier = Modifier.fillMaxSize(),
                     theoplayerView = theoplayerView,
-                    centerOverlay = { controllerScope = this }
+                    centerOverlay = { controllerScope = this },
                 )
             }
         }
@@ -392,22 +381,17 @@ class MenuSheetTest {
             controllerScope!!.openMenu {
                 Menu(title = { Text("Menu") }) {
                     Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .testTag("menu-content")
-                            .clickable {
-                                openMenu {
-                                    Menu(title = { Text("Submenu") }) {
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .height(50.dp)
-                                                .testTag("submenu-content")
-                                        )
-                                    }
+                        Modifier.fillMaxWidth().height(100.dp).testTag("menu-content").clickable {
+                            openMenu {
+                                Menu(title = { Text("Submenu") }) {
+                                    Box(
+                                        Modifier.fillMaxWidth()
+                                            .height(50.dp)
+                                            .testTag("submenu-content")
+                                    )
                                 }
                             }
+                        }
                     )
                 }
             }
@@ -418,15 +402,15 @@ class MenuSheetTest {
         // Invoke the click semantics action directly: under Robolectric the
         // sheet's clipped Surface is opaque to touch hit-testing, so a real
         // tap would fall through to the scrim.
-        composeRule.onNodeWithTag("menu-content")
-            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.onNodeWithTag("menu-content").performSemanticsAction(SemanticsActions.OnClick)
         composeRule.mainClock.advanceTimeByFrame()
 
         // At 600ms the outgoing menu is still visible: it would already be
         // gone at the default 300ms duration.
         composeRule.mainClock.advanceTimeBy(600)
         fun menuContentNodes() =
-            composeRule.onAllNodesWithTag("menu-content", useUnmergedTree = true)
+            composeRule
+                .onAllNodesWithTag("menu-content", useUnmergedTree = true)
                 .fetchSemanticsNodes()
         assertTrue(menuContentNodes().isNotEmpty())
 
@@ -440,11 +424,11 @@ class MenuSheetTest {
         }
         assertTrue(
             "menu-content still present after ${advanced}ms",
-            menuContentNodes().isEmpty()
+            menuContentNodes().isEmpty(),
         )
         assertTrue(
             "transition took only ${advanced}ms, expected more than the default",
-            advanced > 800L
+            advanced > 800L,
         )
         assertTrue(
             composeRule.onAllNodesWithTag("submenu-content").fetchSemanticsNodes().isNotEmpty()
@@ -452,12 +436,17 @@ class MenuSheetTest {
     }
 
     private fun boundsOf(tag: String) =
-        composeRule.onAllNodesWithTag(tag, useUnmergedTree = true)
-            .fetchSemanticsNodes().firstOrNull()?.boundsInRoot
+        composeRule
+            .onAllNodesWithTag(tag, useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .firstOrNull()
+            ?.boundsInRoot
 
     private fun sheetCount() =
-        composeRule.onAllNodesWithTag("menu-sheet", useUnmergedTree = true)
-            .fetchSemanticsNodes().size
+        composeRule
+            .onAllNodesWithTag("menu-sheet", useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .size
 
     private fun contentBounds(): DpRect =
         composeRule.onNodeWithTag("menu-content", useUnmergedTree = true).getBoundsInRoot()
@@ -489,30 +478,34 @@ class MenuSheetTest {
     private fun mockAudioTrack(
         uid: Int,
         label: String,
-        enabled: Boolean
-    ): MediaTrack<AudioQuality> = mockk(relaxed = true) {
-        every { this@mockk.uid } returns uid
-        every { this@mockk.label } returns label
-        every { isEnabled } returns enabled
-    }
+        enabled: Boolean,
+    ): MediaTrack<AudioQuality> =
+        mockk(relaxed = true) {
+            every { this@mockk.uid } returns uid
+            every { this@mockk.label } returns label
+            every { isEnabled } returns enabled
+        }
 
-    private fun mockSubtitleTrack(): TextTrack = mockk(relaxed = true) {
-        every { kind } returns TextTrackKind.SUBTITLES.type
-        every { mode } returns TextTrackMode.SHOWING
-        every { uid } returns 1
-        every { label } returns "English"
-    }
+    private fun mockSubtitleTrack(): TextTrack =
+        mockk(relaxed = true) {
+            every { kind } returns TextTrackKind.SUBTITLES.type
+            every { mode } returns TextTrackMode.SHOWING
+            every { uid } returns 1
+            every { label } returns "English"
+        }
 
     private fun mockPlayer(
         audioTracks: List<MediaTrack<AudioQuality>> = emptyList(),
-        textTracks: List<TextTrack> = emptyList()
+        textTracks: List<TextTrack> = emptyList(),
     ): Player {
-        val audioTrackList = mockk<MediaTrackList<AudioQuality>>(relaxed = true) {
-            every { iterator() } answers { audioTracks.toMutableList().listIterator() }
-        }
-        val textTrackList = mockk<TextTrackList>(relaxed = true) {
-            every { iterator() } answers { textTracks.toMutableList().listIterator() }
-        }
+        val audioTrackList =
+            mockk<MediaTrackList<AudioQuality>>(relaxed = true) {
+                every { iterator() } answers { audioTracks.toMutableList().listIterator() }
+            }
+        val textTrackList =
+            mockk<TextTrackList>(relaxed = true) {
+                every { iterator() } answers { textTracks.toMutableList().listIterator() }
+            }
         return mockk(relaxed = true) {
             every { getAudioTracks() } returns audioTrackList
             every { getTextTracks() } returns textTrackList

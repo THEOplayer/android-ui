@@ -60,8 +60,8 @@ import com.theoplayer.android.ui.tv.UIController
  * @param modifier the [Modifier] to be applied to this UI
  * @param theoplayerView the THEOplayer view to host in this UI
  * @param title the stream's title, shown at the top of the player
- * @param onNextEpisode called when the "Next episode" button is clicked,
- * or `null` to hide that button
+ * @param onNextEpisode called when the "Next episode" button is clicked, or `null` to hide that
+ *   button
  */
 @OptIn(ExperimentalTvUiApi::class, ExperimentalPlayerStateApi::class)
 @Composable
@@ -69,7 +69,7 @@ fun TvNitflexUI(
     modifier: Modifier = Modifier,
     theoplayerView: THEOplayerView,
     title: String? = null,
-    onNextEpisode: (() -> Unit)? = null
+    onNextEpisode: (() -> Unit)? = null,
 ) {
     val view = theoplayerView.takeUnless { it.isInEditMode }
     val firstPlayState = rememberFirstPlayState(view?.player)
@@ -88,63 +88,67 @@ fun TvNitflexUI(
                 title?.let { NitflexTitle(it) }
             }
         },
-        centerChrome = {
-            NitflexCenterControls(firstPlay = firstPlay)
-        },
+        centerChrome = { NitflexCenterControls(firstPlay = firstPlay) },
         bottomChrome = {
             if (firstPlay) {
                 NitflexBottomControls(onNextEpisode = onNextEpisode)
             }
         },
-        errorOverlay = {
-            Box(contentAlignment = Alignment.Center) {
-                ErrorDisplay()
-            }
-        }
+        errorOverlay = { Box(contentAlignment = Alignment.Center) { ErrorDisplay() } },
     )
 }
 
-/**
- * The stream title, centered at the top.
- */
+/** The stream title, centered at the top. */
 @Composable
 private fun NitflexTitle(title: String) {
     Text(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = safeAreaVerticalPadding),
+        modifier = Modifier.fillMaxWidth().padding(top = safeAreaVerticalPadding),
         text = title,
         color = Color.White,
         style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
     )
 }
 
-/**
- * The play button, with seek buttons on either side once playback has started.
- */
+/** The play button, with seek buttons on either side once playback has started. */
 @OptIn(ExperimentalTvUiApi::class)
 @Composable
 private fun NitflexCenterControls(firstPlay: Boolean) {
     // Entering this row focuses the play button, rather than the seek back button.
     val playButtonFocusRequester = remember { FocusRequester() }
     Row(
-        modifier = Modifier
-            .focusProperties { onEnter = { playButtonFocusRequester.requestFocus() } }
-            .focusGroup(),
+        modifier =
+            Modifier.focusProperties { onEnter = { playButtonFocusRequester.requestFocus() } }
+                .focusGroup(),
         horizontalArrangement = Arrangement.spacedBy(48.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (firstPlay) {
             SeekButton(seekOffset = -10, iconSize = 48.dp, modifier = Modifier.size(72.dp))
         }
         PlayButton(
-            modifier = Modifier
-                .focusRequester(playButtonFocusRequester)
-                .size(80.dp),
-            play = { Icon(Icons.Sharp.PlayArrow, contentDescription = "Play", modifier = Modifier.size(56.dp)) },
-            pause = { Icon(Icons.Sharp.Pause, contentDescription = "Pause", modifier = Modifier.size(56.dp)) },
-            replay = { Icon(Icons.Sharp.Replay, contentDescription = "Replay", modifier = Modifier.size(56.dp)) }
+            modifier = Modifier.focusRequester(playButtonFocusRequester).size(80.dp),
+            play = {
+                Icon(
+                    Icons.Sharp.PlayArrow,
+                    contentDescription = "Play",
+                    modifier = Modifier.size(56.dp),
+                )
+            },
+            pause = {
+                Icon(
+                    Icons.Sharp.Pause,
+                    contentDescription = "Pause",
+                    modifier = Modifier.size(56.dp),
+                )
+            },
+            replay = {
+                Icon(
+                    Icons.Sharp.Replay,
+                    contentDescription = "Replay",
+                    modifier = Modifier.size(56.dp),
+                )
+            },
         )
         if (firstPlay) {
             SeekButton(seekOffset = 10, iconSize = 48.dp, modifier = Modifier.size(72.dp))
@@ -152,20 +156,18 @@ private fun NitflexCenterControls(firstPlay: Boolean) {
     }
 }
 
-/**
- * The seek bar with the remaining time, and a row of buttons below it.
- */
+/** The seek bar with the remaining time, and a row of buttons below it. */
 @OptIn(ExperimentalTvUiApi::class)
 @Composable
 private fun UIControllerScope.NitflexBottomControls(onNextEpisode: (() -> Unit)?) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = safeAreaHorizontalPadding,
-                end = safeAreaHorizontalPadding,
-                bottom = safeAreaVerticalPadding
-            )
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(
+                    start = safeAreaHorizontalPadding,
+                    end = safeAreaHorizontalPadding,
+                    bottom = safeAreaVerticalPadding,
+                )
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             SeekBar(modifier = Modifier.weight(1f))
@@ -174,23 +176,24 @@ private fun UIControllerScope.NitflexBottomControls(onNextEpisode: (() -> Unit)?
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
+            horizontalArrangement = Arrangement.SpaceAround,
         ) {
             NitflexTextButton(Icons.Sharp.Speed, "Speed") { openMenu { PlaybackRateMenu() } }
-            NitflexTextButton(Icons.Sharp.Subtitles, "Audio and subtitles") { openMenu { LanguageMenu() } }
+            NitflexTextButton(Icons.Sharp.Subtitles, "Audio and subtitles") {
+                openMenu { LanguageMenu() }
+            }
             onNextEpisode?.let { NitflexTextButton(Icons.Sharp.SkipNext, "Next episode", it) }
         }
     }
 }
 
-/**
- * A button with a leading icon and a label.
- */
+/** A button with a leading icon and a label. */
 @Composable
 private fun NitflexTextButton(icon: ImageVector, text: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.colors(containerColor = Color.Transparent, contentColor = Color.White)
+        colors =
+            ButtonDefaults.colors(containerColor = Color.Transparent, contentColor = Color.White),
     ) {
         Icon(icon, contentDescription = null)
         Spacer(Modifier.size(ButtonDefaults.IconSpacing))
@@ -210,7 +213,7 @@ private fun TvNitflexUIPreview() {
             TvNitflexUI(
                 theoplayerView = rememberTHEOplayerView(THEOplayerConfig.Builder().build()),
                 title = "Elephant's Dream",
-                onNextEpisode = {}
+                onNextEpisode = {},
             )
         }
     }

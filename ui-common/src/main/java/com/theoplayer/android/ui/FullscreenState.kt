@@ -19,9 +19,7 @@ import com.theoplayer.android.api.THEOplayerView
 class FullscreenState internal constructor(private val theoplayerView: THEOplayerView?) {
     private val handler: FullscreenHandler? = theoplayerView?.fullscreenHandler
 
-    /**
-     * Whether the player is shown in fullscreen mode.
-     */
+    /** Whether the player is shown in fullscreen mode. */
     var fullscreen by mutableStateOf(false)
         private set
 
@@ -39,26 +37,20 @@ class FullscreenState internal constructor(private val theoplayerView: THEOplaye
         handler.listen { update() }
     }
 
-    /**
-     * Shows the player in fullscreen mode.
-     */
+    /** Shows the player in fullscreen mode. */
     fun enterFullscreen() {
         fullscreen = true
         handler?.requestFullscreen()
     }
 
-    /**
-     * Shows the player inline again.
-     */
+    /** Shows the player inline again. */
     fun exitFullscreen() {
         fullscreen = false
         handler?.exitFullscreen()
     }
 }
 
-/**
- * Creates a [FullscreenState] that's remembered across compositions.
- */
+/** Creates a [FullscreenState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberFullscreenState(theoplayerView: THEOplayerView?): FullscreenState {

@@ -14,43 +14,44 @@ import com.theoplayer.android.api.event.chromecast.ChromecastEventTypes
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class CastStateTest {
     private fun mockCast(
         state: PlayerCastState = PlayerCastState.AVAILABLE,
         receiverName: String? = "Receiver",
-        casting: Boolean = false
+        casting: Boolean = false,
     ): Triple<Cast, MutableList<Pair<EventType<*>, EventListener<*>>>, Chromecast> {
         val listeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
-        val chromecast = mockk<Chromecast> {
-            every { this@mockk.state } answers { state }
-            every { this@mockk.receiverName } returns receiverName
-            every { isCasting } answers { casting }
-            every { start() } returns Unit
-            every { stop() } returns Unit
-            every {
-                addEventListener(any<EventType<out ChromecastEvent<*>>>(), any())
-            } answers {
-                listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-                Unit
+        val chromecast =
+            mockk<Chromecast> {
+                every { this@mockk.state } answers { state }
+                every { this@mockk.receiverName } returns receiverName
+                every { isCasting } answers { casting }
+                every { start() } returns Unit
+                every { stop() } returns Unit
+                every { addEventListener(any<EventType<out ChromecastEvent<*>>>(), any()) } answers
+                    {
+                        listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                        Unit
+                    }
+                every {
+                    removeEventListener(any<EventType<out ChromecastEvent<*>>>(), any())
+                } answers
+                    {
+                        listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                        Unit
+                    }
             }
-            every {
-                removeEventListener(any<EventType<out ChromecastEvent<*>>>(), any())
-            } answers {
-                listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-                Unit
-            }
-        }
         return Triple(
             mockk { every { this@mockk.chromecast } returns chromecast },
             listeners,
-            chromecast
+            chromecast,
         )
     }
 
@@ -80,7 +81,7 @@ class CastStateTest {
         assertEquals(2, listeners.size)
         assertEquals(
             setOf(ChromecastEventTypes.STATECHANGE, ChromecastEventTypes.ERROR),
-            listeners.map { it.first }.toSet()
+            listeners.map { it.first }.toSet(),
         )
         assertTrue(listeners.all { it.second === listeners.first().second })
 
@@ -129,9 +130,7 @@ class CastStateTest {
         val (oldCast, oldListeners, _) = mockCast()
         val (newCast, newListeners, _) = mockCast(state = PlayerCastState.CONNECTED)
         var currentCast: Cast = oldCast
-        val view = mockk<THEOplayerView> {
-            every { this@mockk.cast } answers { currentCast }
-        }
+        val view = mockk<THEOplayerView> { every { this@mockk.cast } answers { currentCast } }
         val state = CastState(view)
         launchObserve { state.observe() }
         assertEquals(2, oldListeners.size)

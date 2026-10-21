@@ -13,7 +13,7 @@ fun Modifier.handlePlayerKeys(
     player: Player?,
     controlsVisible: () -> Boolean,
     showControls: () -> Unit,
-    seekOffset: Int = 10
+    seekOffset: Int = 10,
 ): Modifier = onPreviewKeyEvent { event ->
     if (event.type != KeyEventType.KeyDown) {
         return@onPreviewKeyEvent false
@@ -36,14 +36,15 @@ fun Modifier.handlePlayerKeys(
 }
 
 /** Checks whether a key code represents a media transport key. */
-private fun Int.isMediaKey(): Boolean = when (this) {
-    NativeKeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
-    NativeKeyEvent.KEYCODE_MEDIA_PLAY,
-    NativeKeyEvent.KEYCODE_MEDIA_PAUSE,
-    NativeKeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
-    NativeKeyEvent.KEYCODE_MEDIA_REWIND -> true
-    else -> false
-}
+private fun Int.isMediaKey(): Boolean =
+    when (this) {
+        NativeKeyEvent.KEYCODE_MEDIA_PLAY_PAUSE,
+        NativeKeyEvent.KEYCODE_MEDIA_PLAY,
+        NativeKeyEvent.KEYCODE_MEDIA_PAUSE,
+        NativeKeyEvent.KEYCODE_MEDIA_FAST_FORWARD,
+        NativeKeyEvent.KEYCODE_MEDIA_REWIND -> true
+        else -> false
+    }
 
 /** Performs the action for a media transport key. */
 private fun handleMediaKey(player: Player?, keyCode: Int, seekOffset: Int) {

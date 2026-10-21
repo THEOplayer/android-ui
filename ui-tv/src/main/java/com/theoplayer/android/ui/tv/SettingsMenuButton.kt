@@ -29,16 +29,14 @@ fun MenuScope.SettingsMenuButton(
     content: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Settings,
-            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_settings)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_settings),
         )
-    }
+    },
 ) {
     IconButton(
         modifier = modifier,
-        onClick = { openMenu { SettingsMenu() } }
+        onClick = { openMenu { SettingsMenu() } },
     ) {
-        Box(Modifier.padding(contentPadding)) {
-            content()
-        }
+        Box(Modifier.padding(contentPadding)) { content() }
     }
 }

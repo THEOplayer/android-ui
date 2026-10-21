@@ -6,9 +6,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelectable
-import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
@@ -35,8 +35,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(ExperimentalPlayerStateApi::class)
 class MenuListTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun playbackRateListScrollsToSelectedRate() {
@@ -44,7 +43,7 @@ class MenuListTest {
         composeRule.setContent {
             PlaybackRateList(
                 state = rememberPlaybackRateState(player),
-                modifier = Modifier.height(120.dp)
+                modifier = Modifier.height(120.dp),
             )
         }
 
@@ -55,9 +54,7 @@ class MenuListTest {
     @Test
     fun playbackRateListExposesSelectionSemantics() {
         val player = playbackRatePlayer(rate = 1.5)
-        composeRule.setContent {
-            PlaybackRateList(state = rememberPlaybackRateState(player))
-        }
+        composeRule.setContent { PlaybackRateList(state = rememberPlaybackRateState(player)) }
 
         composeRule.onNode(hasText("1.5x") and isSelectable()).assertIsSelected()
         composeRule.onNode(hasText("1.25x") and isSelectable()).assertIsNotSelected()
@@ -100,9 +97,14 @@ class MenuListTest {
 
     @Test
     fun subtitleTrackListShowsHalfItemPeekAboveSelected() {
-        val tracks = (1..12).map {
-            mockSubtitleTrack(uid = it, label = "Track $it", mode = if (it == 6) TextTrackMode.SHOWING else TextTrackMode.DISABLED)
-        }
+        val tracks =
+            (1..12).map {
+                mockSubtitleTrack(
+                    uid = it,
+                    label = "Track $it",
+                    mode = if (it == 6) TextTrackMode.SHOWING else TextTrackMode.DISABLED,
+                )
+            }
         val player = subtitlePlayer(tracks = tracks)
         var state: SubtitleTrackState? = null
         composeRule.setContent {
@@ -112,7 +114,7 @@ class MenuListTest {
                 state = subtitleState,
                 // Bound the list height so the selected item can actually
                 // reach the top of the viewport.
-                modifier = Modifier.testTag("list").height(300.dp)
+                modifier = Modifier.testTag("list").height(300.dp),
             )
         }
         assertEquals(tracks[5], state?.activeSubtitleTrack)
@@ -124,7 +126,7 @@ class MenuListTest {
         val track5Bounds = composeRule.onNodeWithText("Track 5").getBoundsInRoot()
         assertTrue(
             "top=${track5Bounds.top} listTop=${listBounds.top} bottom=${track5Bounds.bottom}",
-            track5Bounds.top <= listBounds.top
+            track5Bounds.top <= listBounds.top,
         )
         assertTrue(track5Bounds.bottom > listBounds.top)
         // And earlier items are scrolled out of view entirely.
@@ -140,23 +142,22 @@ class MenuListTest {
     private fun mockSubtitleTrack(
         uid: Int = 1,
         label: String = "English",
-        mode: TextTrackMode = TextTrackMode.SHOWING
-    ): TextTrack = mockk(relaxed = true) {
-        every { this@mockk.uid } returns uid
-        every { this@mockk.label } returns label
-        every { kind } returns TextTrackKind.SUBTITLES.type
-        every { this@mockk.mode } returns mode
-    }
+        mode: TextTrackMode = TextTrackMode.SHOWING,
+    ): TextTrack =
+        mockk(relaxed = true) {
+            every { this@mockk.uid } returns uid
+            every { this@mockk.label } returns label
+            every { kind } returns TextTrackKind.SUBTITLES.type
+            every { this@mockk.mode } returns mode
+        }
 
-    private fun subtitlePlayer(track: TextTrack): THEOplayer =
-        subtitlePlayer(listOf(track))
+    private fun subtitlePlayer(track: TextTrack): THEOplayer = subtitlePlayer(listOf(track))
 
     private fun subtitlePlayer(tracks: List<TextTrack>): THEOplayer {
-        val textTracks = mockk<TextTrackList>(relaxed = true) {
-            every { iterator() } answers { tracks.toMutableList().listIterator() }
-        }
-        return mockk(relaxed = true) {
-            every { this@mockk.textTracks } returns textTracks
-        }
+        val textTracks =
+            mockk<TextTrackList>(relaxed = true) {
+                every { iterator() } answers { tracks.toMutableList().listIterator() }
+            }
+        return mockk(relaxed = true) { every { this@mockk.textTracks } returns textTracks }
     }
 }

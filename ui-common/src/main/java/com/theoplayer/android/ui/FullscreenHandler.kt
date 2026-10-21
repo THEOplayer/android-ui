@@ -10,20 +10,24 @@ import androidx.core.view.WindowInsetsControllerCompat
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.common.R
 import java.util.concurrent.CopyOnWriteArrayList
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import kotlinx.coroutines.CancellableContinuation
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 internal interface FullscreenHandler {
     val fullscreen: Boolean
+
     fun addOnFullscreenChangeListener(listener: OnFullscreenChangeListener)
+
     fun removeOnFullscreenChangeListener(listener: OnFullscreenChangeListener)
+
     fun requestFullscreen()
+
     fun exitFullscreen()
 
     fun interface OnFullscreenChangeListener {
@@ -34,14 +38,14 @@ internal interface FullscreenHandler {
 /**
  * Continuously listens to fullscreen changes, passing the new fullscreen state to [onChange].
  *
- * If [onChange] throws an exception, listening is terminated: the listener is removed,
- * and the exception is rethrown from this function.
+ * If [onChange] throws an exception, listening is terminated: the listener is removed, and the
+ * exception is rethrown from this function.
  *
  * See [EventDispatcher.listen][com.theoplayer.android.ui.listen] for why this uses
  * [suspendCancellableCoroutine] rather than a [callbackFlow][kotlinx.coroutines.flow.callbackFlow].
  *
- * @return Nothing. This function never returns normally: it either keeps listening indefinitely,
- *   or terminates due to an exception or cancellation.
+ * @return Nothing. This function never returns normally: it either keeps listening indefinitely, or
+ *   terminates due to an exception or cancellation.
  */
 internal suspend fun FullscreenHandler.listen(onChange: (Boolean) -> Unit): Nothing {
     var continuation: CancellableContinuation<Nothing>? = null
@@ -70,9 +74,11 @@ internal suspend fun FullscreenHandler.listen(onChange: (Boolean) -> Unit): Noth
  */
 internal val THEOplayerView.fullscreenHandler: FullscreenHandler?
     get() {
-        (getTag(R.id.theoplayer_ui_fullscreen_handler) as? FullscreenHandler)?.let { return it }
-        val container = findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
-            ?: return null
+        (getTag(R.id.theoplayer_ui_fullscreen_handler) as? FullscreenHandler)?.let {
+            return it
+        }
+        val container =
+            findViewById<View>(com.theoplayer.android.R.id.theo_player_container) ?: return null
         return FullscreenHandlerImpl(container).also {
             setTag(R.id.theoplayer_ui_fullscreen_handler, it)
         }
@@ -81,13 +87,18 @@ internal val THEOplayerView.fullscreenHandler: FullscreenHandler?
 internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler {
     override var fullscreen: Boolean = false
         private set
+
     private val listeners = CopyOnWriteArrayList<FullscreenHandler.OnFullscreenChangeListener>()
 
-    override fun addOnFullscreenChangeListener(listener: FullscreenHandler.OnFullscreenChangeListener) {
+    override fun addOnFullscreenChangeListener(
+        listener: FullscreenHandler.OnFullscreenChangeListener
+    ) {
         listeners.add(listener)
     }
 
-    override fun removeOnFullscreenChangeListener(listener: FullscreenHandler.OnFullscreenChangeListener) {
+    override fun removeOnFullscreenChangeListener(
+        listener: FullscreenHandler.OnFullscreenChangeListener
+    ) {
         listeners.remove(listener)
     }
 
@@ -131,8 +142,8 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
                 view,
                 ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                ),
             )
         }
 
@@ -174,5 +185,6 @@ internal class FullscreenHandlerImpl(private val view: View) : FullscreenHandler
     }
 }
 
-private suspend fun View.postAsync() =
-    suspendCoroutine { continuation -> post { continuation.resume(Unit) } }
+private suspend fun View.postAsync() = suspendCoroutine { continuation ->
+    post { continuation.resume(Unit) }
+}

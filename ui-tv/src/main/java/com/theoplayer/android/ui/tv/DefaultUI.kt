@@ -16,8 +16,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,13 +41,12 @@ import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 /**
  * A default THEOplayer UI component for Android TV.
  *
- * This component provides a great player experience out-of-the-box, that works for all types
- * of streams. It provides all the common playback controls for playing, seeking, changing
- * languages and qualities, and can be fully controlled with a D-pad.
+ * This component provides a great player experience out-of-the-box, that works for all types of
+ * streams. It provides all the common playback controls for playing, seeking, changing languages
+ * and qualities, and can be fully controlled with a D-pad.
  *
- * The colors and fonts can be changed by wrapping this inside a [THEOplayerTvTheme].
- * For more extensive customizations, we recommend defining your own custom UI using
- * a [UIController].
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTvTheme]. For more
+ * extensive customizations, we recommend defining your own custom UI using a [UIController].
  *
  * @param modifier the [Modifier] to be applied to this UI
  * @param config the player configuration to be used when constructing the [THEOplayerView]
@@ -61,7 +60,7 @@ fun DefaultUI(
     modifier: Modifier = Modifier,
     config: THEOplayerConfig,
     source: SourceDescription? = null,
-    title: String? = null
+    title: String? = null,
 ) {
     val theoplayerView = rememberTHEOplayerView(config)
     LaunchedEffect(theoplayerView, source) {
@@ -76,20 +75,18 @@ fun DefaultUI(
 /**
  * A default THEOplayer UI component for Android TV.
  *
- * This component provides a great player experience out-of-the-box, that works for all types
- * of streams. It provides all the common playback controls for playing, seeking, changing
- * languages and qualities, and can be fully controlled with a D-pad.
+ * This component provides a great player experience out-of-the-box, that works for all types of
+ * streams. It provides all the common playback controls for playing, seeking, changing languages
+ * and qualities, and can be fully controlled with a D-pad.
  *
- * Use [LocalTHEOplayerView] and the experimental state holders to access the player
- * inside this UI.
+ * Use [LocalTHEOplayerView] and the experimental state holders to access the player inside this UI.
  *
- * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
- * create a view owned by the composition, or forward [THEOplayerView.onPause],
- * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to create a
+ * view owned by the composition, or forward [THEOplayerView.onPause], [THEOplayerView.onResume] and
+ * [THEOplayerView.onDestroy] yourself.
  *
- * The colors and fonts can be changed by wrapping this inside a [THEOplayerTvTheme].
- * For more extensive customizations, we recommend defining your own custom UI using
- * a [UIController].
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTvTheme]. For more
+ * extensive customizations, we recommend defining your own custom UI using a [UIController].
  *
  * @param modifier the [Modifier] to be applied to this UI
  * @param theoplayerView the THEOplayer view to host in this UI
@@ -102,7 +99,7 @@ fun DefaultUI(
 fun DefaultUI(
     modifier: Modifier = Modifier,
     theoplayerView: THEOplayerView,
-    title: String? = null
+    title: String? = null,
 ) {
     val player = theoplayerView.takeUnless { it.isInEditMode }?.player
     val firstPlayState = rememberFirstPlayState(player)
@@ -123,13 +120,14 @@ fun DefaultUI(
             if (firstPlay) {
                 title?.let {
                     Text(
-                        modifier = Modifier.padding(
-                            start = safeAreaHorizontalPadding,
-                            top = safeAreaVerticalPadding,
-                            end = safeAreaHorizontalPadding
-                        ),
+                        modifier =
+                            Modifier.padding(
+                                start = safeAreaHorizontalPadding,
+                                top = safeAreaVerticalPadding,
+                                end = safeAreaHorizontalPadding,
+                            ),
                         text = it,
-                        style = MaterialTheme.typography.headlineMedium
+                        style = MaterialTheme.typography.headlineMedium,
                     )
                 }
             }
@@ -138,7 +136,7 @@ fun DefaultUI(
             if (!firstPlay) {
                 PlayButton(
                     modifier = Modifier.size(80.dp),
-                    iconModifier = Modifier.size(48.dp)
+                    iconModifier = Modifier.size(48.dp),
                 )
             }
         },
@@ -146,32 +144,26 @@ fun DefaultUI(
             if (firstPlay) {
                 BottomControls(
                     playingAd = adState.playingAd,
-                    streamType = playbackTimeState.streamType
+                    streamType = playbackTimeState.streamType,
                 )
             }
         },
-        errorOverlay = {
-            Box(contentAlignment = Alignment.Center) {
-                ErrorDisplay()
-            }
-        }
+        errorOverlay = { Box(contentAlignment = Alignment.Center) { ErrorDisplay() } },
     )
 }
 
-/**
- * The time displays, seek bar and buttons at the bottom of [DefaultUI].
- */
+/** The time displays, seek bar and buttons at the bottom of [DefaultUI]. */
 @ExperimentalTvUiApi
 @Composable
 private fun UIControllerScope.BottomControls(playingAd: Boolean, streamType: StreamType) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = safeAreaHorizontalPadding,
-                end = safeAreaHorizontalPadding,
-                bottom = safeAreaVerticalPadding
-            )
+        modifier =
+            Modifier.fillMaxWidth()
+                .padding(
+                    start = safeAreaHorizontalPadding,
+                    end = safeAreaHorizontalPadding,
+                    bottom = safeAreaVerticalPadding,
+                )
     ) {
         if (streamType != StreamType.Live) {
             if (!playingAd) {
@@ -187,13 +179,14 @@ private fun UIControllerScope.BottomControls(playingAd: Boolean, streamType: Str
         }
         Spacer(modifier = Modifier.height(8.dp))
         // Entering this row focuses the play button, rather than the first button in the row.
-        // This matters when the controls open without a seek bar, e.g. for live streams without DVR.
+        // This matters when the controls open without a seek bar, e.g. for live streams without
+        // DVR.
         val playButtonFocusRequester = remember { FocusRequester() }
         Row(
-            modifier = Modifier
-                .focusProperties { onEnter = { playButtonFocusRequester.requestFocus() } }
-                .focusGroup(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier =
+                Modifier.focusProperties { onEnter = { playButtonFocusRequester.requestFocus() } }
+                    .focusGroup(),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Row(modifier = Modifier.weight(1f)) {
                 if (!playingAd) {
@@ -201,14 +194,12 @@ private fun UIControllerScope.BottomControls(playingAd: Boolean, streamType: Str
                 }
             }
             PlayButton(
-                modifier = Modifier
-                    .focusRequester(playButtonFocusRequester)
-                    .size(56.dp),
-                iconModifier = Modifier.size(32.dp)
+                modifier = Modifier.focusRequester(playButtonFocusRequester).size(56.dp),
+                iconModifier = Modifier.size(32.dp),
             )
             Row(
                 modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
             ) {
                 if (!playingAd) {
                     LanguageMenuButton()
@@ -227,7 +218,7 @@ private val safeAreaVerticalPadding = 27.dp
 @Preview(
     showBackground = true,
     backgroundColor = 0xFF000000,
-    device = "spec:width=960dp,height=540dp"
+    device = "spec:width=960dp,height=540dp",
 )
 @Composable
 private fun DefaultUIPreview() {
@@ -235,7 +226,7 @@ private fun DefaultUIPreview() {
         Surface {
             DefaultUI(
                 theoplayerView = rememberTHEOplayerView(),
-                title = "Big Buck Bunny"
+                title = "Big Buck Bunny",
             )
         }
     }

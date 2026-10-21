@@ -17,15 +17,11 @@ import com.theoplayer.android.api.player.Player
 @ExperimentalPlayerStateApi
 class VideoSizeState internal constructor(private val player: Player?) {
 
-    /**
-     * The width of the video, in pixels.
-     */
+    /** The width of the video, in pixels. */
     var videoWidth by mutableIntStateOf(0)
         private set
 
-    /**
-     * The height of the video, in pixels.
-     */
+    /** The height of the video, in pixels. */
     var videoHeight by mutableIntStateOf(0)
         private set
 
@@ -44,14 +40,14 @@ class VideoSizeState internal constructor(private val player: Player?) {
         player.listen(
             PlayerEventTypes.RESIZE,
             PlayerEventTypes.SOURCECHANGE,
-            PlayerEventTypes.ERROR
-        ) { update() }
+            PlayerEventTypes.ERROR,
+        ) {
+            update()
+        }
     }
 }
 
-/**
- * Creates a [VideoSizeState] that's remembered across compositions.
- */
+/** Creates a [VideoSizeState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberVideoSizeState(player: Player?): VideoSizeState {

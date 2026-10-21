@@ -17,9 +17,7 @@ import com.theoplayer.android.api.player.Player
  */
 @ExperimentalPlayerStateApi
 class FirstPlayState internal constructor(private val player: Player?) {
-    /**
-     * Whether playback has started for the first time.
-     */
+    /** Whether playback has started for the first time. */
     var firstPlay by mutableStateOf(false)
         private set
 
@@ -48,7 +46,7 @@ class FirstPlayState internal constructor(private val player: Player?) {
             PlayerEventTypes.SEEKED,
             PlayerEventTypes.READYSTATECHANGE,
             PlayerEventTypes.SOURCECHANGE,
-            PlayerEventTypes.ERROR
+            PlayerEventTypes.ERROR,
         ) { event ->
             if (event is SourceChangeEvent) {
                 firstPlay = false
@@ -58,9 +56,7 @@ class FirstPlayState internal constructor(private val player: Player?) {
     }
 }
 
-/**
- * Creates a [FirstPlayState] that's remembered across compositions.
- */
+/** Creates a [FirstPlayState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberFirstPlayState(player: Player?): FirstPlayState {

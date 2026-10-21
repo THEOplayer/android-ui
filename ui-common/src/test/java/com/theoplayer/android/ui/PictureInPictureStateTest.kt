@@ -8,18 +8,18 @@ import com.theoplayer.android.ui.common.R
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class PictureInPictureStateTest {
     private fun mockView(
         player: MockPlayer = MockPlayer(),
         piPManager: PiPManager? = mockk(relaxed = true),
-        fullscreenHandler: FullscreenHandler? = null
+        fullscreenHandler: FullscreenHandler? = null,
     ): THEOplayerView = mockk {
         every { context } returns mockk<android.app.Activity>(relaxed = true)
         every { this@mockk.player } returns player.player
@@ -52,9 +52,7 @@ class PictureInPictureStateTest {
 
     @Test
     fun `seeds and updates pip mode on presentationmodechange`() = runTest {
-        val piPManager = mockk<PiPManager> {
-            every { isInPiP } returns true
-        }
+        val piPManager = mockk<PiPManager> { every { isInPiP } returns true }
         val mock = MockPlayer()
         val state = PictureInPictureState(mockView(player = mock, piPManager = piPManager))
         val job = launchObserve { state.observe() }
@@ -76,9 +74,8 @@ class PictureInPictureStateTest {
     fun `enter when not fullscreen calls enterPiP directly`() = runTest {
         val piPManager = mockk<PiPManager>(relaxed = true)
         val handler = FakeFullscreenHandler()
-        val state = PictureInPictureState(
-            mockView(piPManager = piPManager, fullscreenHandler = handler)
-        )
+        val state =
+            PictureInPictureState(mockView(piPManager = piPManager, fullscreenHandler = handler))
 
         state.enterPictureInPicture(PiPType.ACTIVITY)
         verify(exactly = 1) { piPManager.enterPiP(PiPType.ACTIVITY) }
@@ -89,9 +86,8 @@ class PictureInPictureStateTest {
     fun `enter while fullscreen waits for the exit notification`() = runTest {
         val piPManager = mockk<PiPManager>(relaxed = true)
         val handler = FakeFullscreenHandler().also { it.fire(true) }
-        val state = PictureInPictureState(
-            mockView(piPManager = piPManager, fullscreenHandler = handler)
-        )
+        val state =
+            PictureInPictureState(mockView(piPManager = piPManager, fullscreenHandler = handler))
 
         state.enterPictureInPicture(PiPType.ACTIVITY)
         assertEquals(1, handler.exitCount)
@@ -107,9 +103,8 @@ class PictureInPictureStateTest {
     fun `cancelling cancels a pending enterPiP`() = runTest {
         val piPManager = mockk<PiPManager>(relaxed = true)
         val handler = FakeFullscreenHandler().also { it.fire(true) }
-        val state = PictureInPictureState(
-            mockView(piPManager = piPManager, fullscreenHandler = handler)
-        )
+        val state =
+            PictureInPictureState(mockView(piPManager = piPManager, fullscreenHandler = handler))
         val job = launchObserve { state.observe() }
 
         state.enterPictureInPicture(PiPType.ACTIVITY)

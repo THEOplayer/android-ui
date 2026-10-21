@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -55,7 +55,7 @@ private const val ThumbLayoutId = "thumb"
 @Stable
 class SliderState(
     value: Float = 0f,
-    valueRange: ClosedFloatingPointRange<Float> = 0f..1f
+    valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
 ) {
     private var valueState by mutableFloatStateOf(value.coerceIn(valueRange))
 
@@ -119,12 +119,12 @@ fun Slider(
         SliderDefaults.Thumb(
             interactionSource = interactionSource,
             colors = colors,
-            enabled = enabled
+            enabled = enabled,
         )
     },
     track: @Composable (SliderState) -> Unit = { sliderState ->
         SliderDefaults.Track(sliderState = sliderState, colors = colors, enabled = enabled)
-    }
+    },
 ) {
     val state = rememberSyncedSliderState(value, valueRange)
     Slider(
@@ -138,7 +138,7 @@ fun Slider(
         colors = colors,
         interactionSource = interactionSource,
         thumb = thumb,
-        track = track
+        track = track,
     )
 }
 
@@ -176,56 +176,55 @@ fun Slider(
         SliderDefaults.Thumb(
             interactionSource = interactionSource,
             colors = colors,
-            enabled = enabled
+            enabled = enabled,
         )
     },
     track: @Composable (SliderState) -> Unit = { sliderState ->
         SliderDefaults.Track(sliderState = sliderState, colors = colors, enabled = enabled)
-    }
+    },
 ) {
     val range = state.valueRange
-    val sliderModifier = modifier
-        .fillMaxWidth()
-        .height(ThumbSize)
-        .semantics {
-            progressBarRangeInfo = ProgressBarRangeInfo(state.value, range)
-            setProgress { value ->
-                if (!enabled) {
-                    false
-                } else {
-                    state.value = value
-                    onValueChange(state.value)
-                    onValueChangeFinished?.invoke()
-                    true
+    val sliderModifier =
+        modifier
+            .fillMaxWidth()
+            .height(ThumbSize)
+            .semantics {
+                progressBarRangeInfo = ProgressBarRangeInfo(state.value, range)
+                setProgress { value ->
+                    if (!enabled) {
+                        false
+                    } else {
+                        state.value = value
+                        onValueChange(state.value)
+                        onValueChangeFinished?.invoke()
+                        true
+                    }
                 }
+                if (!enabled) disabled()
             }
-            if (!enabled) disabled()
-        }
-        .sliderKeyEvents(
-            state = state,
-            enabled = enabled,
-            keyStep = keyStep,
-            keyRepeatStep = keyRepeatStep,
-            onValueChange = onValueChange,
-            onValueChangeFinished = onValueChangeFinished
-        )
-        .focusable(interactionSource = interactionSource)
+            .sliderKeyEvents(
+                state = state,
+                enabled = enabled,
+                keyStep = keyStep,
+                keyRepeatStep = keyRepeatStep,
+                onValueChange = onValueChange,
+                onValueChangeFinished = onValueChangeFinished,
+            )
+            .focusable(interactionSource = interactionSource)
 
     SliderLayout(
         state = state,
         modifier = sliderModifier,
         thumb = thumb,
-        track = track
+        track = track,
     )
 }
 
-/**
- * Creates a remembered slider state synchronized with external values.
- */
+/** Creates a remembered slider state synchronized with external values. */
 @Composable
 internal fun rememberSyncedSliderState(
     value: Float,
-    valueRange: ClosedFloatingPointRange<Float>
+    valueRange: ClosedFloatingPointRange<Float>,
 ): SliderState {
     val state = remember { SliderState(value, valueRange) }
     state.valueRange = valueRange
@@ -233,9 +232,7 @@ internal fun rememberSyncedSliderState(
     return state
 }
 
-/**
- * Colors used to draw a TV slider in enabled and disabled states.
- */
+/** Colors used to draw a TV slider in enabled and disabled states. */
 @ExperimentalTvUiApi
 @Immutable
 class SliderColors(
@@ -250,7 +247,7 @@ class SliderColors(
     /** Active track color when disabled. */
     val disabledActiveTrackColor: Color,
     /** Inactive track color when disabled. */
-    val disabledInactiveTrackColor: Color
+    val disabledInactiveTrackColor: Color,
 ) {
     /** Returns the thumb color for [enabled]. */
     internal fun thumbColor(enabled: Boolean): Color =
@@ -265,9 +262,7 @@ class SliderColors(
         if (enabled) inactiveTrackColor else disabledInactiveTrackColor
 }
 
-/**
- * Creates slider colors and default slider content.
- */
+/** Creates slider colors and default slider content. */
 @ExperimentalTvUiApi
 object SliderDefaults {
     /**
@@ -284,22 +279,19 @@ object SliderDefaults {
     fun colors(
         thumbColor: Color = MaterialTheme.colorScheme.primary,
         activeTrackColor: Color = MaterialTheme.colorScheme.primary,
-        inactiveTrackColor: Color =
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
-        disabledThumbColor: Color =
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-        disabledActiveTrackColor: Color =
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-        disabledInactiveTrackColor: Color =
-            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-    ): SliderColors = SliderColors(
-        thumbColor = thumbColor,
-        activeTrackColor = activeTrackColor,
-        inactiveTrackColor = inactiveTrackColor,
-        disabledThumbColor = disabledThumbColor,
-        disabledActiveTrackColor = disabledActiveTrackColor,
-        disabledInactiveTrackColor = disabledInactiveTrackColor
-    )
+        inactiveTrackColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.24f),
+        disabledThumbColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        disabledActiveTrackColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+        disabledInactiveTrackColor: Color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
+    ): SliderColors =
+        SliderColors(
+            thumbColor = thumbColor,
+            activeTrackColor = activeTrackColor,
+            inactiveTrackColor = inactiveTrackColor,
+            disabledThumbColor = disabledThumbColor,
+            disabledActiveTrackColor = disabledActiveTrackColor,
+            disabledInactiveTrackColor = disabledInactiveTrackColor,
+        )
 
     /**
      * Displays a slider thumb that grows when focused.
@@ -314,18 +306,19 @@ object SliderDefaults {
         interactionSource: MutableInteractionSource,
         modifier: Modifier = Modifier,
         colors: SliderColors = colors(),
-        enabled: Boolean = true
+        enabled: Boolean = true,
     ) {
         val focused by interactionSource.collectIsFocusedAsState()
-        val radius by animateDpAsState(
-            targetValue = if (focused) 8.dp else 4.dp,
-            label = "slider-thumb-radius"
-        )
+        val radius by
+            animateDpAsState(
+                targetValue = if (focused) 8.dp else 4.dp,
+                label = "slider-thumb-radius",
+            )
 
         Canvas(modifier.size(ThumbSize)) {
             drawCircle(
                 color = colors.thumbColor(enabled),
-                radius = radius.toPx()
+                radius = radius.toPx(),
             )
         }
     }
@@ -343,7 +336,7 @@ object SliderDefaults {
         sliderState: SliderState,
         modifier: Modifier = Modifier,
         colors: SliderColors = colors(),
-        enabled: Boolean = true
+        enabled: Boolean = true,
     ) {
         Canvas(modifier.fillMaxWidth().height(4.dp)) {
             val centerY = size.height / 2
@@ -354,14 +347,14 @@ object SliderDefaults {
                 start = Offset(0f, centerY),
                 end = end,
                 strokeWidth = strokeWidth,
-                cap = StrokeCap.Round
+                cap = StrokeCap.Round,
             )
             drawLine(
                 color = colors.activeTrackColor(enabled),
                 start = Offset(0f, centerY),
                 end = Offset(size.width * sliderState.coercedValueAsFraction, centerY),
                 strokeWidth = strokeWidth,
-                cap = StrokeCap.Round
+                cap = StrokeCap.Round,
             )
         }
     }
@@ -374,7 +367,7 @@ private fun Modifier.sliderKeyEvents(
     keyStep: Float,
     keyRepeatStep: Float,
     onValueChange: (Float) -> Unit,
-    onValueChangeFinished: (() -> Unit)?
+    onValueChangeFinished: (() -> Unit)?,
 ): Modifier {
     val currentOnValueChange by rememberUpdatedState(onValueChange)
     val currentOnValueChangeFinished by rememberUpdatedState(onValueChangeFinished)
@@ -387,52 +380,53 @@ private fun Modifier.sliderKeyEvents(
         }
     }
 
-    LaunchedEffect(enabled) {
-        if (!enabled) finishDragging()
-    }
+    LaunchedEffect(enabled) { if (!enabled) finishDragging() }
 
     return onFocusChanged {
         if (!it.isFocused) {
             isKeyPressed = false
             finishDragging()
         }
-    }.onKeyEvent { event ->
-        val direction = when (event.key) {
-            Key.DirectionLeft -> -1
-            Key.DirectionRight -> 1
-            else -> return@onKeyEvent false
-        }
-
-        when (event.type) {
-            KeyEventType.KeyDown -> {
-                if (!enabled) return@onKeyEvent isKeyPressed
-                isKeyPressed = true
-                // The first key down is a single step; repeats indicate a held key, which scrubs.
-                // Accumulate repeats from SliderState because external values may update later.
-                if (event.nativeKeyEvent.repeatCount == 0) {
-                    state.value += direction * keyStep
-                } else {
-                    state.isDragging = true
-                    state.value += direction * keyRepeatStep
-                }
-                currentOnValueChange(state.value)
-                true
-            }
-
-            KeyEventType.KeyUp -> {
-                if (!isKeyPressed) return@onKeyEvent enabled
-                isKeyPressed = false
-                if (state.isDragging) {
-                    finishDragging()
-                } else if (enabled) {
-                    currentOnValueChangeFinished?.invoke()
-                }
-                true
-            }
-
-            else -> false
-        }
     }
+        .onKeyEvent { event ->
+            val direction =
+                when (event.key) {
+                    Key.DirectionLeft -> -1
+                    Key.DirectionRight -> 1
+                    else -> return@onKeyEvent false
+                }
+
+            when (event.type) {
+                KeyEventType.KeyDown -> {
+                    if (!enabled) return@onKeyEvent isKeyPressed
+                    isKeyPressed = true
+                    // The first key down is a single step; repeats indicate a held key, which
+                    // scrubs.
+                    // Accumulate repeats from SliderState because external values may update later.
+                    if (event.nativeKeyEvent.repeatCount == 0) {
+                        state.value += direction * keyStep
+                    } else {
+                        state.isDragging = true
+                        state.value += direction * keyRepeatStep
+                    }
+                    currentOnValueChange(state.value)
+                    true
+                }
+
+                KeyEventType.KeyUp -> {
+                    if (!isKeyPressed) return@onKeyEvent enabled
+                    isKeyPressed = false
+                    if (state.isDragging) {
+                        finishDragging()
+                    } else if (enabled) {
+                        currentOnValueChangeFinished?.invoke()
+                    }
+                    true
+                }
+
+                else -> false
+            }
+        }
 }
 
 @Composable
@@ -440,39 +434,43 @@ private fun SliderLayout(
     state: SliderState,
     modifier: Modifier,
     thumb: @Composable (SliderState) -> Unit,
-    track: @Composable (SliderState) -> Unit
+    track: @Composable (SliderState) -> Unit,
 ) {
     Layout(
         modifier = modifier,
         content = {
             Box(Modifier.layoutId(TrackLayoutId)) { track(state) }
             Box(Modifier.layoutId(ThumbLayoutId)) { thumb(state) }
-        }
+        },
     ) { measurables, constraints ->
         val thumbSize = ThumbSize.roundToPx()
         val width = constraints.maxWidth
         val height = thumbSize.coerceIn(constraints.minHeight, constraints.maxHeight)
         val trackWidth = (width - thumbSize).coerceAtLeast(0)
-        val track = measurables.first { it.layoutId == TrackLayoutId }.measure(
-            Constraints(
-                minWidth = trackWidth,
-                maxWidth = trackWidth,
-                maxHeight = height
-            )
-        )
-        val thumb = measurables.first { it.layoutId == ThumbLayoutId }.measure(
-            Constraints(maxWidth = width, maxHeight = height)
-        )
+        val track =
+            measurables
+                .first { it.layoutId == TrackLayoutId }
+                .measure(
+                    Constraints(
+                        minWidth = trackWidth,
+                        maxWidth = trackWidth,
+                        maxHeight = height,
+                    )
+                )
+        val thumb =
+            measurables
+                .first { it.layoutId == ThumbLayoutId }
+                .measure(Constraints(maxWidth = width, maxHeight = height))
         val thumbCenterX = thumbSize / 2 + (trackWidth * state.coercedValueAsFraction).roundToInt()
 
         layout(width, height) {
             track.place(
                 x = thumbSize / 2,
-                y = (height - track.height) / 2
+                y = (height - track.height) / 2,
             )
             thumb.place(
                 x = thumbCenterX - thumb.width / 2,
-                y = (height - thumb.height) / 2
+                y = (height - thumb.height) / 2,
             )
         }
     }

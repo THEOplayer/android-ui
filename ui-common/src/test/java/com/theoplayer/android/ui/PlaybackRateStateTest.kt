@@ -2,9 +2,9 @@ package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import io.mockk.verify
-import org.junit.Assert.assertEquals
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PlaybackRateStateTest {

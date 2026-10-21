@@ -16,13 +16,17 @@ import org.junit.Test
 class TextTrackMarginsUpdaterTest {
     private var styleMarginTop = 0
     private var styleMarginBottom = 0
-    private val style = mockk<TextTrackStyle> {
-        val newMargin = slot<Int>()
-        every { marginTop } answers { styleMarginTop }
-        every { marginTop = capture(newMargin) } answers { styleMarginTop = newMargin.captured }
-        every { marginBottom } answers { styleMarginBottom }
-        every { marginBottom = capture(newMargin) } answers { styleMarginBottom = newMargin.captured }
-    }
+    private val style =
+        mockk<TextTrackStyle> {
+            val newMargin = slot<Int>()
+            every { marginTop } answers { styleMarginTop }
+            every { marginTop = capture(newMargin) } answers { styleMarginTop = newMargin.captured }
+            every { marginBottom } answers { styleMarginBottom }
+            every { marginBottom = capture(newMargin) } answers
+                {
+                    styleMarginBottom = newMargin.captured
+                }
+        }
     private val updater = TextTrackMarginsUpdater()
 
     @Before

@@ -22,7 +22,7 @@ class EventDispatcherUtilTest {
 
         assertEquals(
             listOf(PlayerEventTypes.PLAY, PlayerEventTypes.PAUSE),
-            mock.playerListeners.map { it.first }
+            mock.playerListeners.map { it.first },
         )
         assertSame(mock.playerListeners[0].second, mock.playerListeners[1].second)
 
@@ -54,9 +54,7 @@ class EventDispatcherUtilTest {
     fun `a captured listener does not call onEvent after cancel`() = runTest {
         val mock = MockPlayer()
         var calls = 0
-        val job = launchObserve {
-            mock.player.listen(PlayerEventTypes.PLAY) { calls++ }
-        }
+        val job = launchObserve { mock.player.listen(PlayerEventTypes.PLAY) { calls++ } }
         val captured = mock.playerListeners.single().second as EventListener<PlayerEvent<*>>
         mock.firePlayerEvent(PlayerEventTypes.PLAY)
         assertEquals(1, calls)

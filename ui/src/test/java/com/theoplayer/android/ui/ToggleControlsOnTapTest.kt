@@ -23,8 +23,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class ToggleControlsOnTapTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private class Fixture {
         val controlsVisible = mutableStateOf<State<Boolean>>(mutableStateOf(true))
@@ -36,13 +35,12 @@ class ToggleControlsOnTapTest {
         val fixture = Fixture()
         composeRule.setContent {
             Box(
-                Modifier
-                    .size(300.dp)
+                Modifier.size(300.dp)
                     .testTag("target")
                     .toggleControlsOnTap(
                         controlsVisible = fixture.controlsVisible.value,
                         showControlsTemporarily = fixture.showControlsTemporarily.value,
-                        hideControls = fixture.hideControls.value
+                        hideControls = fixture.hideControls.value,
                     )
             )
         }
@@ -67,9 +65,7 @@ class ToggleControlsOnTapTest {
         composeRule.waitForIdle()
 
         tap()
-        composeRule.runOnIdle {
-            assertEquals(1, hideCount)
-        }
+        composeRule.runOnIdle { assertEquals(1, hideCount) }
 
         // Swap the State instance; the running gesture handler must observe it.
         composeRule.runOnIdle {
@@ -89,9 +85,7 @@ class ToggleControlsOnTapTest {
     @Test
     fun usesLatestCallbacks() {
         val fixture = setUpFixture()
-        composeRule.runOnIdle {
-            fixture.controlsVisible.value = mutableStateOf(false)
-        }
+        composeRule.runOnIdle { fixture.controlsVisible.value = mutableStateOf(false) }
         composeRule.waitForIdle()
 
         var showCount1 = 0
@@ -103,9 +97,7 @@ class ToggleControlsOnTapTest {
         composeRule.waitForIdle()
 
         tap()
-        composeRule.runOnIdle {
-            assertEquals(2, showCount1)
-        }
+        composeRule.runOnIdle { assertEquals(2, showCount1) }
 
         val showCount1BeforeSwap = showCount1
         val hideCount1BeforeSwap = hideCount1
