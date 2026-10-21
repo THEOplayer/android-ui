@@ -33,8 +33,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class UIControllerTapTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun tapShowsControlsAfterAutoHideAndTapAgainHides() {
@@ -46,9 +45,7 @@ class UIControllerTapTest {
                 UIController(
                     modifier = Modifier.fillMaxSize().testTag("controller"),
                     theoplayerView = theoplayerView,
-                    bottomChrome = {
-                        Box(Modifier.size(1.dp).testTag("controls-visible"))
-                    }
+                    bottomChrome = { Box(Modifier.size(1.dp).testTag("controls-visible")) },
                 )
             }
         }
@@ -70,9 +67,7 @@ class UIControllerTapTest {
         composeRule.mainClock.advanceTimeBy(3_000)
         composeRule.waitForIdle()
         assertTrue(
-            composeRule.onAllNodesWithTag("controls-visible")
-                .fetchSemanticsNodes()
-                .isEmpty()
+            composeRule.onAllNodesWithTag("controls-visible").fetchSemanticsNodes().isEmpty()
         )
 
         // Tap to show controls.
@@ -80,9 +75,7 @@ class UIControllerTapTest {
         composeRule.mainClock.advanceTimeBy(1_000)
         composeRule.waitForIdle()
         assertTrue(
-            composeRule.onAllNodesWithTag("controls-visible")
-                .fetchSemanticsNodes()
-                .isNotEmpty()
+            composeRule.onAllNodesWithTag("controls-visible").fetchSemanticsNodes().isNotEmpty()
         )
 
         // Tap again to hide.
@@ -90,47 +83,42 @@ class UIControllerTapTest {
         composeRule.mainClock.advanceTimeBy(1_000)
         composeRule.waitForIdle()
         assertTrue(
-            composeRule.onAllNodesWithTag("controls-visible")
-                .fetchSemanticsNodes()
-                .isEmpty()
+            composeRule.onAllNodesWithTag("controls-visible").fetchSemanticsNodes().isEmpty()
         )
     }
 
     private class PlayerBackedTHEOplayerView(
         context: Context,
-        private val nativePlayer: NativePlayer
+        private val nativePlayer: NativePlayer,
     ) : THEOplayerView(context) {
         override fun getPlayer(): NativePlayer = nativePlayer
     }
 
     /**
-     * A mocked [NativePlayer] with a mutable [paused] state that records the
-     * listeners added to it, so tests can fire events at them.
+     * A mocked [NativePlayer] with a mutable [paused] state that records the listeners added to it,
+     * so tests can fire events at them.
      */
     private class MockPlayer(var paused: Boolean = true) {
         val listeners = mutableListOf<Pair<EventType<*>, EventListener<*>>>()
 
-        val ads: Ads = mockk(relaxed = true) {
-            every { isPlaying } returns false
-        }
+        val ads: Ads = mockk(relaxed = true) { every { isPlaying } returns false }
 
-        val player: NativePlayer = mockk(relaxed = true) {
-            every { isPaused } answers { this@MockPlayer.paused }
-            every { isEnded } returns false
-            every { getAds() } returns this@MockPlayer.ads
-            every {
-                addEventListener(any<EventType<out PlayerEvent<*>>>(), any())
-            } answers {
-                listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-                Unit
+        val player: NativePlayer =
+            mockk(relaxed = true) {
+                every { isPaused } answers { this@MockPlayer.paused }
+                every { isEnded } returns false
+                every { getAds() } returns this@MockPlayer.ads
+                every { addEventListener(any<EventType<out PlayerEvent<*>>>(), any()) } answers
+                    {
+                        listeners.add(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                        Unit
+                    }
+                every { removeEventListener(any<EventType<out PlayerEvent<*>>>(), any()) } answers
+                    {
+                        listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
+                        Unit
+                    }
             }
-            every {
-                removeEventListener(any<EventType<out PlayerEvent<*>>>(), any())
-            } answers {
-                listeners.remove(firstArg<EventType<*>>() to secondArg<EventListener<*>>())
-                Unit
-            }
-        }
 
         fun firePlayerEvent(type: EventType<*>) {
             listeners.toList().forEach { (eventType, listener) ->

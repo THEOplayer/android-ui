@@ -29,7 +29,7 @@ import com.theoplayer.android.ui.rememberVideoQualityState
 fun MenuScope.SettingsMenu() {
     SettingsMenu(
         videoQualityState = rememberVideoQualityState(LocalTHEOplayerView.current?.player),
-        playbackRateState = rememberPlaybackRateState(LocalTHEOplayerView.current?.player)
+        playbackRateState = rememberPlaybackRateState(LocalTHEOplayerView.current?.player),
     )
 }
 
@@ -48,39 +48,32 @@ fun MenuScope.SettingsMenu() {
 @Composable
 fun MenuScope.SettingsMenu(
     videoQualityState: VideoQualityState,
-    playbackRateState: PlaybackRateState
+    playbackRateState: PlaybackRateState,
 ) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_settings)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_settings)) }) {
         MenuSubmenuItem(
             onClick = { openMenu { QualityMenu() } },
             headlineContent = {
                 Text(text = stringResource(CommonR.string.theoplayer_ui_menu_quality))
             },
-            leadingContent = {
-                Icon(Icons.Rounded.HighQuality, contentDescription = null)
-            },
+            leadingContent = { Icon(Icons.Rounded.HighQuality, contentDescription = null) },
             supportingContent = {
                 Text(
-                    text = formatActiveQualityLabel(
-                        videoQualityState.targetVideoQuality,
-                        videoQualityState.activeVideoQuality
-                    )
+                    text =
+                        formatActiveQualityLabel(
+                            videoQualityState.targetVideoQuality,
+                            videoQualityState.activeVideoQuality,
+                        )
                 )
-            }
+            },
         )
         MenuSubmenuItem(
             onClick = { openMenu { PlaybackRateMenu() } },
             headlineContent = {
                 Text(text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate))
             },
-            leadingContent = {
-                Icon(Icons.Rounded.Speed, contentDescription = null)
-            },
-            supportingContent = {
-                Text(text = formatPlaybackRate(playbackRateState.playbackRate))
-            }
+            leadingContent = { Icon(Icons.Rounded.Speed, contentDescription = null) },
+            supportingContent = { Text(text = formatPlaybackRate(playbackRateState.playbackRate)) },
         )
     }
 }
@@ -108,9 +101,7 @@ fun MenuScope.QualityMenu() {
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.QualityMenu(state: VideoQualityState) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_quality)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_quality)) }) {
         QualityList(state, onClick = { closeCurrentMenu() })
     }
 }
@@ -138,9 +129,7 @@ fun MenuScope.PlaybackRateMenu() {
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.PlaybackRateMenu(state: PlaybackRateState) {
-    Menu(
-        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate)) }
-    ) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate)) }) {
         PlaybackRateList(state, onClick = { closeCurrentMenu() })
     }
 }

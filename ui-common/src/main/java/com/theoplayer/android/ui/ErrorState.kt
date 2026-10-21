@@ -14,21 +14,19 @@ import com.theoplayer.android.api.player.Player
 /**
  * State holder for an error display, such as [ErrorDisplay].
  *
- * The error is only captured from the player's `error` event. Create this state *before*
- * an error can happen, for example at the top of your UI instead of inside the error overlay
- * that is only shown once there's an error, because a state created after the error
- * will not see it.
+ * The error is only captured from the player's `error` event. Create this state *before* an error
+ * can happen, for example at the top of your UI instead of inside the error overlay that is only
+ * shown once there's an error, because a state created after the error will not see it.
  *
  * Create an instance with [rememberErrorState].
  */
 @ExperimentalPlayerStateApi
-class ErrorState internal constructor(
+class ErrorState
+internal constructor(
     private val player: Player?,
-    initialError: THEOplayerException? = null
+    initialError: THEOplayerException? = null,
 ) {
-    /**
-     * The fatal error the player has encountered, if any.
-     */
+    /** The fatal error the player has encountered, if any. */
     var error by mutableStateOf(initialError)
         private set
 
@@ -43,10 +41,10 @@ class ErrorState internal constructor(
 /**
  * Creates an [ErrorState] that's remembered across compositions.
  *
- * The error is only captured from the player's `error` event, so create this state *before*
- * an error can happen. For example, create it at the top of your UI and pass it down to the
- * error overlay, instead of creating it inside the error overlay that is only shown
- * once there's an error.
+ * The error is only captured from the player's `error` event, so create this state *before* an
+ * error can happen. For example, create it at the top of your UI and pass it down to the error
+ * overlay, instead of creating it inside the error overlay that is only shown once there's an
+ * error.
  */
 @ExperimentalPlayerStateApi
 @Composable

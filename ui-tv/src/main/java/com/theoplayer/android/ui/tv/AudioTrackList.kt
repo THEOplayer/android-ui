@@ -10,8 +10,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
@@ -31,12 +31,12 @@ import com.theoplayer.android.ui.rememberAudioTrackState
 @Composable
 fun AudioTrackList(
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     AudioTrackList(
         state = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -53,7 +53,7 @@ fun AudioTrackList(
 fun AudioTrackList(
     state: AudioTrackState,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     val selectedIndex = state.audioTracks.indexOf(state.activeAudioTrack).coerceAtLeast(0)
     val selectedRequester = remember { FocusRequester() }
@@ -62,11 +62,11 @@ fun AudioTrackList(
         modifier = modifier.focusRestorer(selectedRequester),
         state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex),
         contentPadding = PaddingValues(vertical = menuItemFocusOverflowPadding),
-        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
+        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing),
     ) {
         items(
             count = state.audioTracks.size,
-            key = { state.audioTracks[it].uid }
+            key = { state.audioTracks[it].uid },
         ) { index ->
             val audioTrack = state.audioTracks[index]
             val isActive = state.activeAudioTrack == audioTrack
@@ -78,16 +78,18 @@ fun AudioTrackList(
                 },
                 colors = menuItemColors(),
                 headlineContent = { Text(text = formatTrackName(audioTrack)) },
-                trailingContent = if (isActive) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null) }
-                } else {
-                    null
-                },
-                modifier = if (index == selectedIndex) {
-                    Modifier.focusRequester(selectedRequester)
-                } else {
-                    Modifier
-                }
+                trailingContent =
+                    if (isActive) {
+                        { Icon(Icons.Rounded.Check, contentDescription = null) }
+                    } else {
+                        null
+                    },
+                modifier =
+                    if (index == selectedIndex) {
+                        Modifier.focusRequester(selectedRequester)
+                    } else {
+                        Modifier
+                    },
             )
         }
     }

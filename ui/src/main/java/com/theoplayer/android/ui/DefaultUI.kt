@@ -24,13 +24,12 @@ import com.theoplayer.android.ui.theme.THEOplayerTheme
 /**
  * A default THEOplayer UI component.
  *
- * This component provides a great player experience out-of-the-box, that works for all types
- * of streams. It provides all the common playback controls for playing, seeking, changing
- * languages and qualities.
+ * This component provides a great player experience out-of-the-box, that works for all types of
+ * streams. It provides all the common playback controls for playing, seeking, changing languages
+ * and qualities.
  *
- * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
- * For more extensive customizations, we recommend defining your own custom UI using
- * a [UIController].
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme]. For more
+ * extensive customizations, we recommend defining your own custom UI using a [UIController].
  *
  * @param modifier the [Modifier] to be applied to this UI
  * @param config the player configuration to be used when constructing the [THEOplayerView]
@@ -43,26 +42,28 @@ fun DefaultUI(
     modifier: Modifier = Modifier,
     config: THEOplayerConfig,
     source: SourceDescription? = null,
-    title: String? = null
+    title: String? = null,
 ) {
     val theoplayerView = rememberTHEOplayerViewInternal(config)
-    LaunchedEffect(theoplayerView, source) {
-        theoplayerView?.player?.source = source
-    }
+    LaunchedEffect(theoplayerView, source) { theoplayerView?.player?.source = source }
 
-    DefaultUIImpl(modifier = modifier, theoplayerView = theoplayerView, player = null, title = title)
+    DefaultUIImpl(
+        modifier = modifier,
+        theoplayerView = theoplayerView,
+        player = null,
+        title = title,
+    )
 }
 
 /**
  * A default THEOplayer UI component.
  *
- * This component provides a great player experience out-of-the-box, that works for all types
- * of streams. It provides all the common playback controls for playing, seeking, changing
- * languages and qualities.
+ * This component provides a great player experience out-of-the-box, that works for all types of
+ * streams. It provides all the common playback controls for playing, seeking, changing languages
+ * and qualities.
  *
- * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
- * For more extensive customizations, we recommend defining your own custom UI using
- * a [UIController].
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme]. For more
+ * extensive customizations, we recommend defining your own custom UI using a [UIController].
  *
  * @param modifier the [Modifier] to be applied to this UI
  * @param player the player. This should always be created using [rememberPlayer].
@@ -73,34 +74,32 @@ fun DefaultUI(
 fun DefaultUI(
     modifier: Modifier = Modifier,
     player: Player = rememberPlayer(),
-    title: String? = null
+    title: String? = null,
 ) {
     DefaultUIImpl(
         modifier = modifier,
         theoplayerView = player.theoplayerView,
         player = player,
-        title = title
+        title = title,
     )
 }
 
 /**
  * A default THEOplayer UI component.
  *
- * This component provides a great player experience out-of-the-box, that works for all types
- * of streams. It provides all the common playback controls for playing, seeking, changing
- * languages and qualities.
+ * This component provides a great player experience out-of-the-box, that works for all types of
+ * streams. It provides all the common playback controls for playing, seeking, changing languages
+ * and qualities.
  *
- * No [Player] is created unless [UIControllerScope.player] is accessed, so
- * [Player.current] is `null` inside this UI: use [LocalTHEOplayerView] and the experimental
- * state holders instead.
+ * No [Player] is created unless [UIControllerScope.player] is accessed, so [Player.current] is
+ * `null` inside this UI: use [LocalTHEOplayerView] and the experimental state holders instead.
  *
- * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
- * create a view owned by the composition, or forward [THEOplayerView.onPause],
- * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to create a
+ * view owned by the composition, or forward [THEOplayerView.onPause], [THEOplayerView.onResume] and
+ * [THEOplayerView.onDestroy] yourself.
  *
- * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
- * For more extensive customizations, we recommend defining your own custom UI using
- * a [UIController].
+ * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme]. For more
+ * extensive customizations, we recommend defining your own custom UI using a [UIController].
  *
  * @param modifier the [Modifier] to be applied to this UI
  * @param theoplayerView the THEOplayer view to host in this UI
@@ -112,13 +111,13 @@ fun DefaultUI(
 fun DefaultUI(
     modifier: Modifier = Modifier,
     theoplayerView: THEOplayerView,
-    title: String? = null
+    title: String? = null,
 ) {
     DefaultUIImpl(
         modifier = modifier,
         theoplayerView = theoplayerView.takeUnless { it.isInEditMode },
         player = null,
-        title = title
+        title = title,
     )
 }
 
@@ -128,7 +127,7 @@ private fun DefaultUIImpl(
     modifier: Modifier,
     theoplayerView: THEOplayerView?,
     player: Player?,
-    title: String?
+    title: String?,
 ) {
     val firstPlayState = rememberFirstPlayState(theoplayerView?.player)
     val adState = rememberAdState(theoplayerView?.player)
@@ -153,7 +152,7 @@ private fun DefaultUIImpl(
                     title?.let {
                         Text(
                             modifier = Modifier.padding(8.dp),
-                            text = it
+                            text = it,
                         )
                     }
                     Spacer(modifier = Modifier.weight(1f))
@@ -191,7 +190,7 @@ private fun DefaultUIImpl(
                         if (playbackTimeState.streamType != StreamType.Live) {
                             CurrentTimeDisplay(
                                 showRemaining = playbackTimeState.streamType == StreamType.Dvr,
-                                showDuration = playbackTimeState.streamType == StreamType.Vod
+                                showDuration = playbackTimeState.streamType == StreamType.Vod,
                             )
                         }
                     }
@@ -206,17 +205,20 @@ private fun DefaultUIImpl(
                 ErrorDisplay()
                 // Ensure the user can still exit fullscreen
                 if (fullscreenState.fullscreen) {
-                    FullscreenButton(fullscreenState, modifier = Modifier.align(Alignment.BottomEnd))
+                    FullscreenButton(
+                        fullscreenState,
+                        modifier = Modifier.align(Alignment.BottomEnd),
+                    )
                 }
             }
-        }
+        },
     )
 }
 
 @Preview(
     showBackground = true,
     backgroundColor = 0xFF000000,
-    device = "spec:width=411dp,height=891dp,orientation=landscape"
+    device = "spec:width=411dp,height=891dp,orientation=landscape",
 )
 @Composable
 private fun DefaultUIPreview() {
@@ -224,7 +226,7 @@ private fun DefaultUIPreview() {
         Surface {
             DefaultUI(
                 theoplayerView = rememberTHEOplayerView(),
-                title = "Big Buck Bunny"
+                title = "Big Buck Bunny",
             )
         }
     }

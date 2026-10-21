@@ -40,8 +40,7 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(InternalUiApi::class)
 class PlayerKeysTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun hiddenControlsShowAndConsumeDpadKey() {
@@ -53,7 +52,7 @@ class PlayerKeysTest {
             onChildKey = {
                 childSawKey = true
                 true
-            }
+            },
         )
 
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
@@ -71,7 +70,7 @@ class PlayerKeysTest {
             onChildKey = {
                 childSawKey = true
                 true
-            }
+            },
         )
 
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_DOWN))
@@ -180,7 +179,7 @@ class PlayerKeysTest {
             onChildKey = {
                 childSawKey = true
                 false
-            }
+            },
         )
 
         dispatchKey(KeyEvent.KEYCODE_BACK)
@@ -205,17 +204,16 @@ class PlayerKeysTest {
             Box(Modifier.fillMaxSize()) {
                 PlayerContainer(
                     theoplayerView = view,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .handlePlayerKeys(
-                            player = player,
-                            controlsVisible = { true },
-                            showControls = { showControlsCalls.intValue++ }
-                        )
+                    modifier =
+                        Modifier.fillMaxSize()
+                            .handlePlayerKeys(
+                                player = player,
+                                controlsVisible = { true },
+                                showControls = { showControlsCalls.intValue++ },
+                            ),
                 ) {
                     Box(
-                        Modifier
-                            .fillMaxSize()
+                        Modifier.fillMaxSize()
                             .focusRequester(focusRequester)
                             .onFocusChanged { focused = it.isFocused }
                             .onKeyEvent {
@@ -230,34 +228,38 @@ class PlayerKeysTest {
         }
 
         composeRule.waitUntil(10_000) {
-            val playerUiContainer = theoplayerView.findViewById<ViewGroup>(
-                com.theoplayer.android.R.id.theo_ui_container
-            )
-            (0 until playerUiContainer.childCount)
-                .any { playerUiContainer.getChildAt(it) is ComposeView }
+            val playerUiContainer =
+                theoplayerView.findViewById<ViewGroup>(
+                    com.theoplayer.android.R.id.theo_ui_container
+                )
+            (0 until playerUiContainer.childCount).any {
+                playerUiContainer.getChildAt(it) is ComposeView
+            }
         }
         composeRule.runOnIdle { focusRequester.requestFocus() }
         composeRule.waitUntil(10_000) { focused }
 
-        val container = theoplayerView.findViewById<ViewGroup>(
-            com.theoplayer.android.R.id.theo_ui_container
-        )
-        val hostedComposeView = (0 until container.childCount)
-            .map(container::getChildAt)
-            .filterIsInstance<ComposeView>()
-            .single()
+        val container =
+            theoplayerView.findViewById<ViewGroup>(com.theoplayer.android.R.id.theo_ui_container)
+        val hostedComposeView =
+            (0 until container.childCount)
+                .map(container::getChildAt)
+                .filterIsInstance<ComposeView>()
+                .single()
         val hostedComposeViewIndex = container.indexOfChild(hostedComposeView)
         var addedViews = 0
         var removedViews = 0
-        container.setOnHierarchyChangeListener(object : ViewGroup.OnHierarchyChangeListener {
-            override fun onChildViewAdded(parent: View?, child: View?) {
-                addedViews++
-            }
+        container.setOnHierarchyChangeListener(
+            object : ViewGroup.OnHierarchyChangeListener {
+                override fun onChildViewAdded(parent: View?, child: View?) {
+                    addedViews++
+                }
 
-            override fun onChildViewRemoved(parent: View?, child: View?) {
-                removedViews++
+                override fun onChildViewRemoved(parent: View?, child: View?) {
+                    removedViews++
+                }
             }
-        })
+        )
 
         assertTrue(
             composeRule.activity.dispatchKeyEvent(
@@ -278,18 +280,13 @@ class PlayerKeysTest {
         player: Player? = null,
         controlsVisible: () -> Boolean = { false },
         showControls: () -> Unit = {},
-        onChildKey: (ComposeKeyEvent) -> Boolean = { false }
+        onChildKey: (ComposeKeyEvent) -> Boolean = { false },
     ) {
         val focusRequester = FocusRequester()
         composeRule.setContent {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .handlePlayerKeys(player, controlsVisible, showControls)
-            ) {
+            Box(Modifier.fillMaxSize().handlePlayerKeys(player, controlsVisible, showControls)) {
                 Box(
-                    Modifier
-                        .size(100.dp)
+                    Modifier.size(100.dp)
                         .focusRequester(focusRequester)
                         .onKeyEvent(onChildKey)
                         .focusable()
@@ -299,16 +296,15 @@ class PlayerKeysTest {
         composeRule.runOnIdle { focusRequester.requestFocus() }
     }
 
-    private fun dispatchKey(keyCode: Int): Boolean = composeRule.activity.dispatchKeyEvent(
-        KeyEvent(KeyEvent.ACTION_DOWN, keyCode)
-    )
+    private fun dispatchKey(keyCode: Int): Boolean =
+        composeRule.activity.dispatchKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, keyCode))
 
     private fun mockPlayer(
         paused: Boolean = true,
         ended: Boolean = false,
         currentTime: Double = 40.0,
         duration: Double = 100.0,
-        adPlaying: Boolean = false
+        adPlaying: Boolean = false,
     ): Player {
         val ads = mockk<Ads>(relaxed = true)
         every { ads.isPlaying } returns adPlaying

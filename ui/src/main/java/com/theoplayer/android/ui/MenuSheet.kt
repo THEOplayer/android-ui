@@ -30,21 +30,19 @@ private val menuSheetMinHeight = 240.dp
 private const val menuSheetAlpha = 0.9f
 
 /**
- * Draws a menu sheet on top of the player: a click-outside scrim plus a sheet surface.
- * On compact players the sheet sits at the bottom and wraps its content, between
- * 240dp (or the full player height on players shorter than that) and 60% of the
- * player height. On wide players (at least 600dp) it is a 400dp-wide side sheet at
- * the end of the player.
+ * Draws a menu sheet on top of the player: a click-outside scrim plus a sheet surface. On compact
+ * players the sheet sits at the bottom and wraps its content, between 240dp (or the full player
+ * height on players shorter than that) and 60% of the player height. On wide players (at least
+ * 600dp) it is a 400dp-wide side sheet at the end of the player.
  */
 @Composable
 internal fun MenuSheet(
     onDismiss: () -> Unit,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(
-        modifier = Modifier
-            .fillMaxSize()
-            .pointerInput(onDismiss) {
+        modifier =
+            Modifier.fillMaxSize().pointerInput(onDismiss) {
                 // Consumes taps instead of `clickable`: the scrim must not merge
                 // the semantics of the sheet content into its own click action.
                 detectTapGestures { onDismiss() }
@@ -55,34 +53,30 @@ internal fun MenuSheet(
         val maxSheetHeight = maxOf(maxHeight * 0.6f, minHeight)
         val fillsPlayer = !wide && minHeight >= maxHeight
         Surface(
-            modifier = (
-                    if (wide) {
-                        Modifier
-                            .align(Alignment.CenterEnd)
-                            .fillMaxHeight()
-                            .width(menuSheetWidth)
+            modifier =
+                (if (wide) {
+                        Modifier.align(Alignment.CenterEnd).fillMaxHeight().width(menuSheetWidth)
                     } else {
-                        Modifier
-                            .align(Alignment.BottomCenter)
+                        Modifier.align(Alignment.BottomCenter)
                             .widthIn(max = menuSheetMaxWidth)
                             .fillMaxWidth()
                             .heightIn(min = minHeight, max = maxSheetHeight)
-                    }
-                    )
-                .testTag("menu-sheet")
-                .pointerInput(Unit) {
-                    // Blocks taps on the sheet from reaching the scrim.
-                    detectTapGestures { }
+                    })
+                    .testTag("menu-sheet")
+                    .pointerInput(Unit) {
+                        // Blocks taps on the sheet from reaching the scrim.
+                        detectTapGestures {}
+                    },
+            shape =
+                if (wide) {
+                    RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
+                } else if (fillsPlayer) {
+                    RectangleShape
+                } else {
+                    RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                 },
-            shape = if (wide) {
-                RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
-            } else if (fillsPlayer) {
-                RectangleShape
-            } else {
-                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-            },
             color = MaterialTheme.colorScheme.surface.copy(alpha = menuSheetAlpha),
-            contentColor = MaterialTheme.colorScheme.onSurface
+            contentColor = MaterialTheme.colorScheme.onSurface,
         ) {
             content()
         }

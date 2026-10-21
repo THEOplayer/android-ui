@@ -13,51 +13,73 @@ val streams by lazy {
         Stream(
             title = "Bip Bop (HLS)",
             description = "HLS · VOD",
-            source = SourceDescription.Builder(
-                TypedSource.Builder("https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8")
-                    .build()
-            ).build()
+            source =
+                SourceDescription.Builder(
+                        TypedSource.Builder(
+                                "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_16x9/bipbop_16x9_variant.m3u8"
+                            )
+                            .build()
+                    )
+                    .build(),
         ),
         Stream(
             title = "Elephant's Dream (HLS)",
             description = "HLS · VOD",
-            source = SourceDescription.Builder(
-                TypedSource.Builder("https://cdn.theoplayer.com/video/elephants-dream/playlist.m3u8")
-                    .build()
-            ).build()
+            source =
+                SourceDescription.Builder(
+                        TypedSource.Builder(
+                                "https://cdn.theoplayer.com/video/elephants-dream/playlist.m3u8"
+                            )
+                            .build()
+                    )
+                    .build(),
         ),
         Stream(
             title = "Sintel (DASH) with preroll ad",
             description = "DASH · VOD · Preroll ad",
-            source = SourceDescription.Builder(
-                TypedSource.Builder("https://cdn.theoplayer.com/video/dash/webvtt-embedded-in-isobmff/Manifest.mpd")
-                    .build()
-            ).ads(
-                GoogleImaAdDescription.Builder("https://cdn.theoplayer.com/demos/ads/vast/dfp-preroll-no-skip.xml")
-                    .timeOffset("start")
-                    .build()
-            ).build()
+            source =
+                SourceDescription.Builder(
+                        TypedSource.Builder(
+                                "https://cdn.theoplayer.com/video/dash/webvtt-embedded-in-isobmff/Manifest.mpd"
+                            )
+                            .build()
+                    )
+                    .ads(
+                        GoogleImaAdDescription.Builder(
+                                "https://cdn.theoplayer.com/demos/ads/vast/dfp-preroll-no-skip.xml"
+                            )
+                            .timeOffset("start")
+                            .build()
+                    )
+                    .build(),
         ),
         Stream(
             title = "DASH-IF Livesim",
             description = "DASH · Live",
-            source = SourceDescription.Builder(
-                TypedSource.Builder("https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd")
-                    .build()
-            ).build()
+            source =
+                SourceDescription.Builder(
+                        TypedSource.Builder(
+                                "https://livesim.dashif.org/livesim/testpic_2s/Manifest.mpd"
+                            )
+                            .build()
+                    )
+                    .build(),
         ),
         Stream(
             title = "Test card (with CEA tracks)",
             description = "DASH · VOD · CEA-608 captions",
-            source = SourceDescription.Builder(
-                TypedSource.Builder("https://livesim2.dashif.org/vod/testpic_2s/cea608.mpd")
-                    .build()
-            ).build()
+            source =
+                SourceDescription.Builder(
+                        TypedSource.Builder("https://livesim2.dashif.org/vod/testpic_2s/cea608.mpd")
+                            .build()
+                    )
+                    .build(),
         ),
     )
 }
 
 object StreamSaver : Saver<Stream, Int> {
     override fun restore(value: Int): Stream? = streams.getOrNull(value)
+
     override fun SaverScope.save(value: Stream): Int = streams.indexOf(value)
 }

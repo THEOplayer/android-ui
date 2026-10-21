@@ -1,16 +1,14 @@
 package com.theoplayer.android.ui
 
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class VideoQualityStateTest {
     private fun playerWithTracks(vararg tracks: MockVideoTrack): MockPlayer {
-        return MockPlayer().also { mock ->
-            mock.videoTrackList.addAll(tracks.map { it.track })
-        }
+        return MockPlayer().also { mock -> mock.videoTrackList.addAll(tracks.map { it.track }) }
     }
 
     @Test
@@ -31,7 +29,8 @@ class VideoQualityStateTest {
     @Test
     fun `seeds qualities from the enabled track`() = runTest {
         val quality = mockVideoQuality()
-        val enabled = MockVideoTrack(enabled = true, activeQuality = quality, qualities = listOf(quality))
+        val enabled =
+            MockVideoTrack(enabled = true, activeQuality = quality, qualities = listOf(quality))
         val mock = playerWithTracks(enabled)
         val state = VideoQualityState(mock.player)
         launchObserve { state.observe() }
@@ -44,7 +43,8 @@ class VideoQualityStateTest {
     fun `observe refreshes qualities changed since construction`() = runTest {
         val first = mockVideoQuality()
         val second = mockVideoQuality()
-        val enabled = MockVideoTrack(enabled = true, activeQuality = first, qualities = listOf(first))
+        val enabled =
+            MockVideoTrack(enabled = true, activeQuality = first, qualities = listOf(first))
         val mock = playerWithTracks(enabled)
         val state = VideoQualityState(mock.player)
 
@@ -60,7 +60,8 @@ class VideoQualityStateTest {
     fun `quality events update active and target`() = runTest {
         val old = mockVideoQuality()
         val new = mockVideoQuality()
-        val enabled = MockVideoTrack(enabled = true, activeQuality = old, qualities = listOf(old, new))
+        val enabled =
+            MockVideoTrack(enabled = true, activeQuality = old, qualities = listOf(old, new))
         val mock = playerWithTracks(enabled)
         val state = VideoQualityState(mock.player)
         launchObserve { state.observe() }

@@ -16,7 +16,6 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Text
-import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.ui.InternalUiApi
@@ -25,6 +24,8 @@ import com.theoplayer.android.ui.theme.PlayerAnimations
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 import io.mockk.every
 import io.mockk.mockk
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Rule
@@ -32,15 +33,12 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 @OptIn(ExperimentalTvUiApi::class, InternalUiApi::class)
 class MenuSheetTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun submenuPushesInsideOneSharedSheet() {
@@ -52,8 +50,7 @@ class MenuSheetTest {
         // Push the submenu: mid-transition the contents animate inside the
         // same sheet, which does not move.
         composeRule.mainClock.autoAdvance = false
-        composeRule.onNodeWithTag("menu-content")
-            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.onNodeWithTag("menu-content").performSemanticsAction(SemanticsActions.OnClick)
         composeRule.mainClock.advanceTimeBy(100)
         assertEquals(1, sheetCount())
         val midBounds = boundsOf("menu-sheet")!!
@@ -64,8 +61,10 @@ class MenuSheetTest {
         composeRule.waitForIdle()
         assertEquals(1, sheetCount())
         assertTrue(
-            composeRule.onAllNodesWithTag("submenu-content", useUnmergedTree = true)
-                .fetchSemanticsNodes().isNotEmpty()
+            composeRule
+                .onAllNodesWithTag("submenu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
         )
     }
 
@@ -80,8 +79,7 @@ class MenuSheetTest {
         composeRule.mainClock.autoAdvance = false
         // Invoke the click semantics action directly: under Robolectric the
         // sheet's clipped Surface is opaque to touch hit-testing.
-        composeRule.onNodeWithTag("menu-content")
-            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.onNodeWithTag("menu-content").performSemanticsAction(SemanticsActions.OnClick)
         // Let the recomposition apply the push before measuring.
         composeRule.mainClock.advanceTimeByFrame()
         val midIncomingLefts = mutableListOf<Float>()
@@ -101,39 +99,41 @@ class MenuSheetTest {
         // distance — not the full sheet width.
         assertTrue(
             "incomingLefts=$midIncomingLefts final=$finalIncomingLeft slidePx=$slidePx",
-            midIncomingLefts.isNotEmpty() && midIncomingLefts.all { left ->
-                left - finalIncomingLeft in -slidePx - 1f..slidePx + 1f
-            } && midIncomingLefts.any { it - finalIncomingLeft > 1f }
+            midIncomingLefts.isNotEmpty() &&
+                midIncomingLefts.all { left ->
+                    left - finalIncomingLeft in -slidePx - 1f..slidePx + 1f
+                } &&
+                midIncomingLefts.any { it - finalIncomingLeft > 1f },
         )
         // The outgoing content remained visible while the incoming one arrived
         // (fade-through), then only the submenu content remains.
         assertTrue(outgoingVisibleMidTransition)
         assertEquals(menuStartLeft, finalIncomingLeft, 1f)
         assertTrue(
-            composeRule.onAllNodesWithTag("menu-content", useUnmergedTree = true)
-                .fetchSemanticsNodes().isEmpty()
+            composeRule
+                .onAllNodesWithTag("menu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isEmpty()
         )
     }
 
     @Test
     fun menuTransitionDurationIsConfigurable() {
         setControllerAndOpenMenu(
-            playerAnimations = PlayerAnimations(
-                menuTransitionDuration = 1000.milliseconds
-            )
+            playerAnimations = PlayerAnimations(menuTransitionDuration = 1000.milliseconds)
         )
         composeRule.waitForIdle()
 
         composeRule.mainClock.autoAdvance = false
-        composeRule.onNodeWithTag("menu-content")
-            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.onNodeWithTag("menu-content").performSemanticsAction(SemanticsActions.OnClick)
         composeRule.mainClock.advanceTimeByFrame()
 
         // At 600ms the outgoing menu is still visible: it would already be
         // gone at the default 300ms duration.
         composeRule.mainClock.advanceTimeBy(600)
         fun menuContentNodes() =
-            composeRule.onAllNodesWithTag("menu-content", useUnmergedTree = true)
+            composeRule
+                .onAllNodesWithTag("menu-content", useUnmergedTree = true)
                 .fetchSemanticsNodes()
         assertTrue(menuContentNodes().isNotEmpty())
 
@@ -147,34 +147,30 @@ class MenuSheetTest {
         }
         assertTrue(
             "menu-content still present after ${advanced}ms",
-            menuContentNodes().isEmpty()
+            menuContentNodes().isEmpty(),
         )
         assertTrue(
             "transition took only ${advanced}ms, expected more than the default",
-            advanced > 800L
+            advanced > 800L,
         )
         assertTrue(
             composeRule.onAllNodesWithTag("submenu-content").fetchSemanticsNodes().isNotEmpty()
         )
     }
 
-    private fun setControllerAndOpenMenu(
-        playerAnimations: PlayerAnimations? = null
-    ) {
+    private fun setControllerAndOpenMenu(playerAnimations: PlayerAnimations? = null) {
         val player = mockPlayingPlayer()
         var controllerScope: UIControllerScope? = null
         composeRule.setContent {
-            val view = remember {
-                PlayerBackedTHEOplayerView(composeRule.activity, player)
-            }
+            val view = remember { PlayerBackedTHEOplayerView(composeRule.activity, player) }
             THEOplayerTvTheme(
-                playerAnimations = playerAnimations
-                    ?: PlayerAnimations(controlsHideDelay = 5.seconds)
+                playerAnimations =
+                    playerAnimations ?: PlayerAnimations(controlsHideDelay = 5.seconds)
             ) {
                 UIController(
                     modifier = Modifier.fillMaxSize(),
                     theoplayerView = view,
-                    centerOverlay = { controllerScope = this }
+                    centerOverlay = { controllerScope = this },
                 )
             }
         }
@@ -183,22 +179,17 @@ class MenuSheetTest {
             controllerScope!!.openMenu {
                 Menu(title = { Text("Menu") }) {
                     Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(100.dp)
-                            .testTag("menu-content")
-                            .clickable {
-                                openMenu {
-                                    Menu(title = { Text("Submenu") }) {
-                                        Box(
-                                            Modifier
-                                                .fillMaxWidth()
-                                                .height(50.dp)
-                                                .testTag("submenu-content")
-                                        )
-                                    }
+                        Modifier.fillMaxWidth().height(100.dp).testTag("menu-content").clickable {
+                            openMenu {
+                                Menu(title = { Text("Submenu") }) {
+                                    Box(
+                                        Modifier.fillMaxWidth()
+                                            .height(50.dp)
+                                            .testTag("submenu-content")
+                                    )
                                 }
                             }
+                        }
                     )
                 }
             }
@@ -206,12 +197,17 @@ class MenuSheetTest {
     }
 
     private fun sheetCount() =
-        composeRule.onAllNodesWithTag("menu-sheet", useUnmergedTree = true)
-            .fetchSemanticsNodes().size
+        composeRule
+            .onAllNodesWithTag("menu-sheet", useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .size
 
     private fun boundsOf(tag: String) =
-        composeRule.onAllNodesWithTag(tag, useUnmergedTree = true)
-            .fetchSemanticsNodes().firstOrNull()?.boundsInRoot
+        composeRule
+            .onAllNodesWithTag(tag, useUnmergedTree = true)
+            .fetchSemanticsNodes()
+            .firstOrNull()
+            ?.boundsInRoot
 
     private fun mockPlayingPlayer(): Player {
         val ads = mockk<Ads>(relaxed = true)

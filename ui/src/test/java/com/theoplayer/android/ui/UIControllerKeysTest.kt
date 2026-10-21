@@ -34,8 +34,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class UIControllerKeysTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun dpadDownReachesOpenMenuWhenPlayingControlsAreHidden() {
@@ -54,29 +53,22 @@ class UIControllerKeysTest {
                     uiControllerScope = this
                     Box(Modifier.size(1.dp).testTag("center-overlay"))
                 },
-                bottomChrome = {
-                    Box(Modifier.size(1.dp).testTag("controls-visible"))
-                }
+                bottomChrome = { Box(Modifier.size(1.dp).testTag("controls-visible")) },
             )
         }
 
         composeRule.mainClock.advanceTimeBy(100)
         composeRule.waitForIdle()
         assertTrue(
-            composeRule.onAllNodesWithTag("center-overlay")
-                .fetchSemanticsNodes()
-                .isNotEmpty()
+            composeRule.onAllNodesWithTag("center-overlay").fetchSemanticsNodes().isNotEmpty()
         )
         assertTrue(
-            composeRule.onAllNodesWithTag("controls-visible")
-                .fetchSemanticsNodes()
-                .isEmpty()
+            composeRule.onAllNodesWithTag("controls-visible").fetchSemanticsNodes().isEmpty()
         )
         composeRule.runOnIdle {
             uiControllerScope.openMenu {
                 Box(
-                    Modifier
-                        .fillMaxSize()
+                    Modifier.fillMaxSize()
                         .focusRequester(menuFocusRequester)
                         .onGloballyPositioned { menuItemComposed = true }
                         .onFocusChanged { menuItemFocused = it.isFocused }
@@ -108,40 +100,35 @@ class UIControllerKeysTest {
         val nativePlayer = mockPlayingPlayer()
         val theoplayerView = PlayerBackedTHEOplayerView(composeRule.activity, nativePlayer)
         var activityBackCalls = 0
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                activityBackCalls++
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    activityBackCalls++
+                }
             }
-        }
         composeRule.activity.onBackPressedDispatcher.addCallback(callback)
         lateinit var uiControllerScope: UIControllerScope
 
         composeRule.setContent {
             UIController(
                 theoplayerView = theoplayerView,
-                centerOverlay = { uiControllerScope = this }
+                centerOverlay = { uiControllerScope = this },
             )
         }
         composeRule.waitForIdle()
         composeRule.runOnIdle {
-            uiControllerScope.openMenu {
-                Box(Modifier.size(20.dp).testTag("menu"))
-            }
+            uiControllerScope.openMenu { Box(Modifier.size(20.dp).testTag("menu")) }
         }
         composeRule.waitUntil(10_000) {
             composeRule.onAllNodesWithTag("menu").fetchSemanticsNodes().isNotEmpty()
         }
 
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeRule.waitForIdle()
 
         assertTrue(composeRule.onAllNodesWithTag("menu").fetchSemanticsNodes().isEmpty())
         assertEquals(0, activityBackCalls)
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
         composeRule.waitForIdle()
         assertEquals(1, activityBackCalls)
     }
@@ -151,20 +138,17 @@ class UIControllerKeysTest {
         val nativePlayer = mockPlayingPlayer()
         val theoplayerView = PlayerBackedTHEOplayerView(composeRule.activity, nativePlayer)
         var activityBackCalls = 0
-        val callback = object : OnBackPressedCallback(true) {
-            override fun handleOnBackPressed() {
-                activityBackCalls++
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    activityBackCalls++
+                }
             }
-        }
         composeRule.activity.onBackPressedDispatcher.addCallback(callback)
 
-        composeRule.setContent {
-            UIController(theoplayerView = theoplayerView)
-        }
+        composeRule.setContent { UIController(theoplayerView = theoplayerView) }
         composeRule.waitForIdle()
-        composeRule.runOnIdle {
-            composeRule.activity.onBackPressedDispatcher.onBackPressed()
-        }
+        composeRule.runOnIdle { composeRule.activity.onBackPressedDispatcher.onBackPressed() }
 
         assertEquals(1, activityBackCalls)
     }
@@ -181,7 +165,7 @@ class UIControllerKeysTest {
 
     private class PlayerBackedTHEOplayerView(
         context: Context,
-        private val nativePlayer: NativePlayer
+        private val nativePlayer: NativePlayer,
     ) : THEOplayerView(context) {
         override fun getPlayer(): NativePlayer = nativePlayer
     }

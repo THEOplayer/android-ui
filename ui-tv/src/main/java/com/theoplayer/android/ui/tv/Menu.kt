@@ -34,8 +34,8 @@ import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 /**
  * A side menu displayed at the end edge of the player.
  *
- * Inside a [UIController] the menu is rendered in the shared menu sheet at the end
- * edge, so opening a submenu only animates the menu contents inside it.
+ * Inside a [UIController] the menu is rendered in the shared menu sheet at the end edge, so opening
+ * a submenu only animates the menu contents inside it.
  *
  * @param modifier the [Modifier] to be applied to this menu's contents
  * @param title the title
@@ -46,34 +46,32 @@ import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
 fun MenuScope.Menu(
     modifier: Modifier = Modifier,
     title: @Composable () -> Unit,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
-        focusRequester.requestFocus()
-    }
+    LaunchedEffect(Unit) { focusRequester.requestFocus() }
 
     Column(modifier = modifier.fillMaxSize()) {
         ProvideTextStyle(MaterialTheme.typography.titleLarge) {
             Box(
-                modifier = Modifier
-                    .padding(
+                modifier =
+                    Modifier.padding(
                         start = menuTitlePadding,
                         top = menuTitlePadding,
                         end = menuTitlePadding,
-                        bottom = menuTitleBottomSpacing
+                        bottom = menuTitleBottomSpacing,
                     )
             ) {
                 title()
             }
         }
         Column(
-            modifier = Modifier
-                .padding(horizontal = menuContentPadding)
-                .focusRequester(focusRequester)
-                .focusGroup(),
-            verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
+            modifier =
+                Modifier.padding(horizontal = menuContentPadding)
+                    .focusRequester(focusRequester)
+                    .focusGroup(),
+            verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing),
         ) {
             content()
         }
@@ -86,7 +84,7 @@ internal fun MenuSubmenuItem(
     onClick: () -> Unit,
     headlineContent: @Composable () -> Unit,
     supportingContent: @Composable () -> Unit,
-    leadingContent: @Composable BoxScope.() -> Unit
+    leadingContent: @Composable BoxScope.() -> Unit,
 ) {
     ListItem(
         selected = false,
@@ -95,14 +93,13 @@ internal fun MenuSubmenuItem(
         headlineContent = headlineContent,
         supportingContent = supportingContent,
         leadingContent = leadingContent,
-        trailingContent = { Icon(Icons.Rounded.ChevronRight, contentDescription = null) }
+        trailingContent = { Icon(Icons.Rounded.ChevronRight, contentDescription = null) },
     )
 }
 
 @Composable
-internal fun menuItemColors() = ListItemDefaults.colors(
-    containerColor = MaterialTheme.colorScheme.surfaceVariant
-)
+internal fun menuItemColors() =
+    ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
 
 internal val menuItemVerticalSpacing = 8.dp
 
@@ -117,21 +114,19 @@ private val menuContentPadding = 12.dp
 @Preview(
     showBackground = true,
     backgroundColor = 0xFF000000,
-    device = "spec:width=960dp,height=540dp"
+    device = "spec:width=960dp,height=540dp",
 )
 @Composable
 private fun MenuPreview() {
     THEOplayerTvTheme {
         MenuSheet {
-            PreviewMenuScope.Menu(
-                title = { Text("Language") }
-            ) {
+            PreviewMenuScope.Menu(title = { Text("Language") }) {
                 ListItem(
                     selected = true,
                     onClick = {},
                     colors = menuItemColors(),
                     headlineContent = { Text("English") },
-                    trailingContent = { Icon(Icons.Rounded.Check, contentDescription = null) }
+                    trailingContent = { Icon(Icons.Rounded.Check, contentDescription = null) },
                 )
                 ListItem(
                     selected = false,
@@ -142,7 +137,9 @@ private fun MenuPreview() {
                     leadingContent = {
                         Icon(Icons.Rounded.ClosedCaption, contentDescription = null)
                     },
-                    trailingContent = { Icon(Icons.Rounded.ChevronRight, contentDescription = null) }
+                    trailingContent = {
+                        Icon(Icons.Rounded.ChevronRight, contentDescription = null)
+                    },
                 )
             }
         }

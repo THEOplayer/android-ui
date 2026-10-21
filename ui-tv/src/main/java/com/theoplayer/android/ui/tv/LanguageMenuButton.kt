@@ -34,24 +34,24 @@ fun MenuScope.LanguageMenuButton(
     content: @Composable () -> Unit = {
         Icon(
             painter = painterResource(id = CommonR.drawable.language),
-            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_language)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_language),
         )
-    }
+    },
 ) {
     LanguageMenuButton(
         audioTrackState = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
         subtitleTrackState = rememberSubtitleTrackState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
 /**
  * A button that opens the [language menu][LanguageMenu].
  *
- * The states are only used to decide whether the button is shown. The opened menu remembers its
- * own states.
+ * The states are only used to decide whether the button is shown. The opened menu remembers its own
+ * states.
  *
  * @param audioTrackState the [AudioTrackState] to read
  * @param subtitleTrackState the [SubtitleTrackState] to read
@@ -70,9 +70,9 @@ fun MenuScope.LanguageMenuButton(
     content: @Composable () -> Unit = {
         Icon(
             painter = painterResource(id = CommonR.drawable.language),
-            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_language)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_menu_language),
         )
-    }
+    },
 ) {
     if (!showLanguageMenuButton(audioTrackState, subtitleTrackState)) {
         return
@@ -80,17 +80,15 @@ fun MenuScope.LanguageMenuButton(
 
     IconButton(
         modifier = modifier,
-        onClick = { openMenu { LanguageMenu() } }
+        onClick = { openMenu { LanguageMenu() } },
     ) {
-        Box(Modifier.padding(contentPadding)) {
-            content()
-        }
+        Box(Modifier.padding(contentPadding)) { content() }
     }
 }
 
 internal fun showLanguageMenuButton(
     audioTrackState: AudioTrackState,
-    subtitleTrackState: SubtitleTrackState
+    subtitleTrackState: SubtitleTrackState,
 ): Boolean {
     return showAudioTracks(audioTrackState) || showSubtitleTracks(subtitleTrackState)
 }

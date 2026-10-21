@@ -16,15 +16,11 @@ import com.theoplayer.android.api.player.Player
  */
 @ExperimentalPlayerStateApi
 class PlayButtonState internal constructor(private val player: Player?) {
-    /**
-     * Whether the player is paused.
-     */
+    /** Whether the player is paused. */
     var paused by mutableStateOf(true)
         private set
 
-    /**
-     * Whether playback has reached the end of the media.
-     */
+    /** Whether playback has reached the end of the media. */
     var ended by mutableStateOf(false)
         private set
 
@@ -48,13 +44,13 @@ class PlayButtonState internal constructor(private val player: Player?) {
             PlayerEventTypes.SEEKED,
             PlayerEventTypes.READYSTATECHANGE,
             PlayerEventTypes.SOURCECHANGE,
-            PlayerEventTypes.ERROR
-        ) { updatePlaybackState() }
+            PlayerEventTypes.ERROR,
+        ) {
+            updatePlaybackState()
+        }
     }
 
-    /**
-     * Toggles between play and pause.
-     */
+    /** Toggles between play and pause. */
     fun onClick() {
         if (paused) {
             player?.play()
@@ -64,9 +60,7 @@ class PlayButtonState internal constructor(private val player: Player?) {
     }
 }
 
-/**
- * Creates a [PlayButtonState] that's remembered across compositions.
- */
+/** Creates a [PlayButtonState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberPlayButtonState(player: Player?): PlayButtonState {

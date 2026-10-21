@@ -81,7 +81,7 @@ fun UIController(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null,
 ) {
     val theoplayerView = rememberTHEOplayerView(config)
     LaunchedEffect(theoplayerView, source) {
@@ -98,16 +98,16 @@ fun UIController(
         errorOverlay = errorOverlay,
         topChrome = topChrome,
         centerChrome = centerChrome,
-        bottomChrome = bottomChrome
+        bottomChrome = bottomChrome,
     )
 }
 
 /**
  * A TV-oriented UI controller for a THEOplayer view.
  *
- * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
- * create a view owned by the composition, or forward [THEOplayerView.onPause],
- * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to create a
+ * view owned by the composition, or forward [THEOplayerView.onPause], [THEOplayerView.onResume] and
+ * [THEOplayerView.onDestroy] yourself.
  *
  * @param modifier the [Modifier] to be applied to this controller
  * @param theoplayerView the THEOplayer view to host
@@ -129,7 +129,7 @@ fun UIController(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null,
 ) {
     val view = theoplayerView.takeUnless { it.isInEditMode }
     val nativePlayer = view?.player
@@ -137,18 +137,20 @@ fun UIController(
     val playButtonState = rememberPlayButtonState(nativePlayer)
     val errorState = rememberErrorState(nativePlayer)
     val scope = rememberUIControllerScope(view, player = null)
-    val uiState = rememberUIState(
-        scope = scope,
-        errorState = errorState,
-        pictureInPictureState = null
-    )
+    val uiState =
+        rememberUIState(
+            scope = scope,
+            errorState = errorState,
+            pictureInPictureState = null,
+        )
     val playerAnimations = LocalPlayerAnimations.current
-    val controls = rememberControlsVisibility(
-        firstPlay = firstPlayState.firstPlay,
-        paused = playButtonState.paused,
-        forceVisible = false,
-        hideDelay = playerAnimations.controlsHideDelay
-    )
+    val controls =
+        rememberControlsVisibility(
+            firstPlay = firstPlayState.firstPlay,
+            paused = playButtonState.paused,
+            forceVisible = false,
+            hideDelay = playerAnimations.controlsHideDelay,
+        )
     val focusRequester = remember { FocusRequester() }
     val hiddenFocusRequester = remember { FocusRequester() }
     val currentUiState = uiState.value
@@ -158,29 +160,30 @@ fun UIController(
         menuOpen = scope.currentMenu != null,
         controls = controls,
         focusRequester = focusRequester,
-        hiddenFocusRequester = hiddenFocusRequester
+        hiddenFocusRequester = hiddenFocusRequester,
     )
     BackHandler(
-        enabled = currentUiState is UIState.Controls &&
-                controls.visible.value && firstPlayState.firstPlay
+        enabled =
+            currentUiState is UIState.Controls && controls.visible.value && firstPlayState.firstPlay
     ) {
         controls.hide()
     }
 
     Box(
-        modifier = modifier.tvHiddenControlsKeys(
-            player = nativePlayer,
-            controlsVisible = { uiState.value.isVisible(controls.visible.value) },
-            showControls = controls.show
-        )
+        modifier =
+            modifier.tvHiddenControlsKeys(
+                player = nativePlayer,
+                controlsVisible = { uiState.value.isVisible(controls.visible.value) },
+                showControls = controls.show,
+            )
     ) {
         // Holds focus while the controls are hidden, so key events still reach this controller.
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .focusRequester(hiddenFocusRequester)
-                .focusProperties { canFocus = !uiState.value.isVisible(controls.visible.value) }
-                .focusable()
+            modifier =
+                Modifier.fillMaxSize()
+                    .focusRequester(hiddenFocusRequester)
+                    .focusProperties { canFocus = !uiState.value.isVisible(controls.visible.value) }
+                    .focusable()
         )
         UIControllerCore(
             modifier = Modifier.fillMaxSize(),
@@ -193,22 +196,19 @@ fun UIController(
             color = color,
             contentTransform = tvContentTransform(LocalLayoutDirection.current),
             menuContainer = { menuContent -> MenuSheet(content = menuContent) },
-            controlsModifier = Modifier
-                .focusRequester(focusRequester)
-                .focusRestorer()
-                .focusGroup(),
+            controlsModifier = Modifier.focusRequester(focusRequester).focusRestorer().focusGroup(),
             centerOverlay = centerOverlay,
             errorOverlay = errorOverlay,
             topChrome = topChrome,
             centerChrome = centerChrome,
-            bottomChrome = bottomChrome
+            bottomChrome = bottomChrome,
         )
     }
 }
 
 /**
- * Restores focus to controls when they become visible or a menu closes,
- * and moves focus to [hiddenFocusRequester] when the controls are hidden.
+ * Restores focus to controls when they become visible or a menu closes, and moves focus to
+ * [hiddenFocusRequester] when the controls are hidden.
  */
 @OptIn(InternalUiApi::class)
 @Composable
@@ -217,13 +217,11 @@ private fun rememberControlsFocus(
     menuOpen: Boolean,
     controls: ControlsVisibility,
     focusRequester: FocusRequester,
-    hiddenFocusRequester: FocusRequester
+    hiddenFocusRequester: FocusRequester,
 ) {
     var menuWasOpen by remember { mutableStateOf(false) }
     LaunchedEffect(controls.visible.value, menuOpen, uiState) {
-        if (uiState is UIState.Controls && !menuOpen &&
-            (controls.visible.value || menuWasOpen)
-        ) {
+        if (uiState is UIState.Controls && !menuOpen && (controls.visible.value || menuWasOpen)) {
             focusRequester.requestFocus()
         } else if (uiState is UIState.Controls && !menuOpen && !controls.visible.value) {
             hiddenFocusRequester.requestFocus()
@@ -232,39 +230,32 @@ private fun rememberControlsFocus(
     }
 }
 
-/**
- * Returns transitions for TV menus.
- */
+/** Returns transitions for TV menus. */
 private fun tvContentTransform(
     layoutDirection: LayoutDirection
 ): AnimatedContentTransitionScope<UIState>.() -> ContentTransform = {
     when {
-        targetState is UIState.Error ->
-            EnterTransition.None togetherWith ExitTransition.None
+        targetState is UIState.Error -> EnterTransition.None togetherWith ExitTransition.None
         initialState == UIState.Controls && targetState is UIState.Menu ->
-            slideInHorizontally {
-                if (layoutDirection == LayoutDirection.Ltr) it else -it
-            } + fadeIn() togetherWith fadeOut()
+            slideInHorizontally { if (layoutDirection == LayoutDirection.Ltr) it else -it } +
+                fadeIn() togetherWith fadeOut()
         initialState is UIState.Menu && targetState == UIState.Controls ->
-            fadeIn() togetherWith slideOutHorizontally {
-                if (layoutDirection == LayoutDirection.Ltr) it else -it
-            } + fadeOut()
+            fadeIn() togetherWith
+                slideOutHorizontally { if (layoutDirection == LayoutDirection.Ltr) it else -it } +
+                    fadeOut()
         initialState is UIState.Menu && targetState is UIState.Menu ->
             // Menus are drawn inside one shared sheet: only their contents animate.
             EnterTransition.None togetherWith ExitTransition.None
-        else ->
-            EnterTransition.None togetherWith ExitTransition.None
+        else -> EnterTransition.None togetherWith ExitTransition.None
     }
 }
 
-/**
- * Handles TV transport keys while controls are hidden.
- */
+/** Handles TV transport keys while controls are hidden. */
 @OptIn(InternalUiApi::class)
 private fun Modifier.tvHiddenControlsKeys(
     player: Player?,
     controlsVisible: () -> Boolean,
-    showControls: () -> Unit
+    showControls: () -> Unit,
 ): Modifier = onPreviewKeyEvent { event ->
     if (controlsVisible() || event.type != KeyEventType.KeyDown) {
         return@onPreviewKeyEvent false

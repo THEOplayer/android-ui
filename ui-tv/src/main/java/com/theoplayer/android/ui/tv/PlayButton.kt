@@ -24,7 +24,7 @@ import com.theoplayer.android.ui.rememberPlayButtonState
  * @param modifier the [Modifier] to be applied to this button
  * @param iconModifier the [Modifier] to be applied to the [Icon]s inside this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param play button content when the player is paused but not ended, typically a "play" icon
  * @param pause button content when the player is playing, typically a "pause" icon
  * @param replay button content when the player is paused and ended, typically a "replay" icon
@@ -40,23 +40,23 @@ fun PlayButton(
         Icon(
             painter = painterResource(R.drawable.play),
             modifier = iconModifier,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_play)
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_play),
         )
     },
     pause: @Composable () -> Unit = {
         Icon(
             painter = painterResource(R.drawable.pause),
             modifier = iconModifier,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_pause)
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_pause),
         )
     },
     replay: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Replay,
             modifier = iconModifier,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_replay)
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_replay),
         )
-    }
+    },
 ) {
     PlayButton(
         state = rememberPlayButtonState(LocalTHEOplayerView.current?.player),
@@ -65,7 +65,7 @@ fun PlayButton(
         contentPadding = contentPadding,
         play = play,
         pause = pause,
-        replay = replay
+        replay = replay,
     )
 }
 
@@ -76,7 +76,7 @@ fun PlayButton(
  * @param modifier the [Modifier] to be applied to this button
  * @param iconModifier the [Modifier] to be applied to the [Icon]s inside this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param play button content when the player is paused but not ended, typically a "play" icon
  * @param pause button content when the player is playing, typically a "pause" icon
  * @param replay button content when the player is paused and ended, typically a "replay" icon
@@ -93,23 +93,23 @@ fun PlayButton(
         Icon(
             painter = painterResource(R.drawable.play),
             modifier = iconModifier,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_play)
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_play),
         )
     },
     pause: @Composable () -> Unit = {
         Icon(
             painter = painterResource(R.drawable.pause),
             modifier = iconModifier,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_pause)
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_pause),
         )
     },
     replay: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Replay,
             modifier = iconModifier,
-            contentDescription = stringResource(R.string.theoplayer_ui_btn_replay)
+            contentDescription = stringResource(R.string.theoplayer_ui_btn_replay),
         )
-    }
+    },
 ) {
     IconButton(onClick = state::onClick, modifier = modifier) {
         Box(Modifier.padding(contentPadding)) {

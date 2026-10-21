@@ -1,8 +1,8 @@
 package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.player.PlayerEventTypes
-import org.junit.Assert.assertEquals
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class PlaybackTimeStateTest {
@@ -20,7 +20,7 @@ class PlaybackTimeStateTest {
         launchObserve { PlaybackTimeState(mock.player).observe() }
         assertEquals(
             playbackEventTypes + PlayerEventTypes.DURATIONCHANGE,
-            mock.playerEventTypes
+            mock.playerEventTypes,
         )
     }
 
@@ -28,25 +28,25 @@ class PlaybackTimeStateTest {
     fun `streamTypeOf classifies vod, live and dvr`() = runTest {
         assertEquals(
             StreamType.Vod,
-            streamTypeOf(100.0, com.theoplayer.android.ui.TimeRanges(listOf(0.0..100.0)))
+            streamTypeOf(100.0, com.theoplayer.android.ui.TimeRanges(listOf(0.0..100.0))),
         )
         assertEquals(
             StreamType.Vod,
-            streamTypeOf(Double.NaN, com.theoplayer.android.ui.TimeRanges.empty())
+            streamTypeOf(Double.NaN, com.theoplayer.android.ui.TimeRanges.empty()),
         )
         assertEquals(
             StreamType.Live,
             streamTypeOf(
                 Double.POSITIVE_INFINITY,
-                com.theoplayer.android.ui.TimeRanges(listOf(0.0..30.0))
-            )
+                com.theoplayer.android.ui.TimeRanges(listOf(0.0..30.0)),
+            ),
         )
         assertEquals(
             StreamType.Dvr,
             streamTypeOf(
                 Double.POSITIVE_INFINITY,
-                com.theoplayer.android.ui.TimeRanges(listOf(0.0..60.0))
-            )
+                com.theoplayer.android.ui.TimeRanges(listOf(0.0..60.0)),
+            ),
         )
     }
 
@@ -66,10 +66,11 @@ class PlaybackTimeStateTest {
 
     @Test
     fun `duration prefers end of seekable range`() = runTest {
-        val mock = MockPlayer(
-            duration = Double.POSITIVE_INFINITY,
-            seekableRanges = listOf(10.0 to 70.0)
-        )
+        val mock =
+            MockPlayer(
+                duration = Double.POSITIVE_INFINITY,
+                seekableRanges = listOf(10.0 to 70.0),
+            )
         val state = PlaybackTimeState(mock.player)
         launchObserve { state.observe() }
 
@@ -78,12 +79,23 @@ class PlaybackTimeStateTest {
 
     @Test
     fun `reports live and dvr stream types`() = runTest {
-        val live = MockPlayer(duration = Double.POSITIVE_INFINITY, seekableRanges = listOf(0.0 to 30.0))
-        val dvr = MockPlayer(duration = Double.POSITIVE_INFINITY, seekableRanges = listOf(0.0 to 120.0))
+        val live =
+            MockPlayer(duration = Double.POSITIVE_INFINITY, seekableRanges = listOf(0.0 to 30.0))
+        val dvr =
+            MockPlayer(duration = Double.POSITIVE_INFINITY, seekableRanges = listOf(0.0 to 120.0))
         val vod = MockPlayer(duration = 100.0)
 
-        assertEquals(StreamType.Live, PlaybackTimeState(live.player).also { launchObserve { it.observe() } }.streamType)
-        assertEquals(StreamType.Dvr, PlaybackTimeState(dvr.player).also { launchObserve { it.observe() } }.streamType)
-        assertEquals(StreamType.Vod, PlaybackTimeState(vod.player).also { launchObserve { it.observe() } }.streamType)
+        assertEquals(
+            StreamType.Live,
+            PlaybackTimeState(live.player).also { launchObserve { it.observe() } }.streamType,
+        )
+        assertEquals(
+            StreamType.Dvr,
+            PlaybackTimeState(dvr.player).also { launchObserve { it.observe() } }.streamType,
+        )
+        assertEquals(
+            StreamType.Vod,
+            PlaybackTimeState(vod.player).also { launchObserve { it.observe() } }.streamType,
+        )
     }
 }

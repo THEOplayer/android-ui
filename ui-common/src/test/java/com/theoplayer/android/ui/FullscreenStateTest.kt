@@ -6,30 +6,35 @@ import com.theoplayer.android.ui.common.R
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertSame
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 /**
- * A [FullscreenHandler] that records its listeners and request calls,
- * so tests can fire fullscreen changes at them.
+ * A [FullscreenHandler] that records its listeners and request calls, so tests can fire fullscreen
+ * changes at them.
  */
 internal class FakeFullscreenHandler : FullscreenHandler {
     override var fullscreen: Boolean = false
         private set
+
     val listeners = mutableListOf<FullscreenHandler.OnFullscreenChangeListener>()
     var requestCount = 0
     var exitCount = 0
 
-    override fun addOnFullscreenChangeListener(listener: FullscreenHandler.OnFullscreenChangeListener) {
+    override fun addOnFullscreenChangeListener(
+        listener: FullscreenHandler.OnFullscreenChangeListener
+    ) {
         listeners.add(listener)
     }
 
-    override fun removeOnFullscreenChangeListener(listener: FullscreenHandler.OnFullscreenChangeListener) {
+    override fun removeOnFullscreenChangeListener(
+        listener: FullscreenHandler.OnFullscreenChangeListener
+    ) {
         listeners.remove(listener)
     }
 
@@ -145,10 +150,13 @@ class FullscreenStateTest {
 
     @Test
     fun `fullscreenHandler returns null without a container`() = runTest {
-        val view = mockk<THEOplayerView> {
-            every { getTag(R.id.theoplayer_ui_fullscreen_handler) } returns null
-            every { findViewById<View>(com.theoplayer.android.R.id.theo_player_container) } returns null
-        }
+        val view =
+            mockk<THEOplayerView> {
+                every { getTag(R.id.theoplayer_ui_fullscreen_handler) } returns null
+                every {
+                    findViewById<View>(com.theoplayer.android.R.id.theo_player_container)
+                } returns null
+            }
 
         assertEquals(null, view.fullscreenHandler)
     }

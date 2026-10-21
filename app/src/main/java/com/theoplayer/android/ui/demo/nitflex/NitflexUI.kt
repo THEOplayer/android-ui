@@ -49,7 +49,7 @@ fun NitflexUI(
     modifier: Modifier = Modifier,
     config: THEOplayerConfig,
     source: SourceDescription? = null,
-    title: String? = null
+    title: String? = null,
 ) {
     val theoplayerView = rememberTHEOplayerView(config)
     LaunchedEffect(theoplayerView, source) {
@@ -66,7 +66,7 @@ fun NitflexUI(
 fun NitflexUI(
     modifier: Modifier = Modifier,
     theoplayerView: THEOplayerView,
-    title: String? = null
+    title: String? = null,
 ) {
     val view = theoplayerView.takeUnless { it.isInEditMode }
     val firstPlayState = rememberFirstPlayState(view?.player)
@@ -85,14 +85,14 @@ fun NitflexUI(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         title?.let {
                             Text(
                                 modifier = Modifier.padding(8.dp),
                                 text = it,
                                 textAlign = TextAlign.Center,
-                                style = TextStyle(fontWeight = FontWeight.Bold)
+                                style = TextStyle(fontWeight = FontWeight.Bold),
                             )
                         }
                     }
@@ -101,24 +101,24 @@ fun NitflexUI(
             centerChrome = {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                 ) {
                     if (firstPlayState.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = -10,
                             iconSize = 48.dp,
-                            contentPadding = PaddingValues(8.dp)
+                            contentPadding = PaddingValues(8.dp),
                         )
                     }
                     NitflexPlayButton(
                         iconModifier = Modifier.size(48.dp),
-                        contentPadding = PaddingValues(8.dp)
+                        contentPadding = PaddingValues(8.dp),
                     )
                     if (firstPlayState.firstPlay) {
                         NitflexSeekButton(
                             seekOffset = 10,
                             iconSize = 48.dp,
-                            contentPadding = PaddingValues(8.dp)
+                            contentPadding = PaddingValues(8.dp),
                         )
                     }
                 }
@@ -127,7 +127,7 @@ fun NitflexUI(
                 if (firstPlayState.firstPlay) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         NitflexSeekBar(modifier = Modifier.weight(1f))
                         CurrentTimeDisplay(showRemaining = true)
@@ -135,37 +135,40 @@ fun NitflexUI(
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                     ) {
                         TextButton(
                             shape = MaterialTheme.shapes.small,
-                            onClick = { openMenu { PlaybackRateMenu() } }) {
+                            onClick = { openMenu { PlaybackRateMenu() } },
+                        ) {
                             Icon(
                                 Icons.Sharp.Speed,
                                 tint = Color.White,
-                                contentDescription = null
+                                contentDescription = null,
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                             Text(text = "Speed")
                         }
                         TextButton(
                             shape = MaterialTheme.shapes.small,
-                            onClick = { openMenu { LanguageMenu() } }) {
+                            onClick = { openMenu { LanguageMenu() } },
+                        ) {
                             Icon(
                                 Icons.Sharp.Subtitles,
                                 tint = Color.White,
-                                contentDescription = null
+                                contentDescription = null,
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                             Text(text = "Audio and subtitles")
                         }
                         TextButton(
                             shape = MaterialTheme.shapes.small,
-                            onClick = { /* TODO */ }) {
+                            onClick = { /* TODO */ },
+                        ) {
                             Icon(
                                 Icons.Sharp.SkipNext,
                                 tint = Color.White,
-                                contentDescription = null
+                                contentDescription = null,
                             )
                             Spacer(Modifier.size(ButtonDefaults.IconSpacing))
                             Text(text = "Next episode")
@@ -178,10 +181,13 @@ fun NitflexUI(
                     ErrorDisplay()
                     // Ensure the user can still exit fullscreen
                     if (fullscreenState.fullscreen) {
-                        FullscreenButton(fullscreenState, modifier = Modifier.align(Alignment.BottomEnd))
+                        FullscreenButton(
+                            fullscreenState,
+                            modifier = Modifier.align(Alignment.BottomEnd),
+                        )
                     }
                 }
-            }
+            },
         )
     }
 }
@@ -189,7 +195,5 @@ fun NitflexUI(
 @Preview(showBackground = true)
 @Composable
 fun NitflexPreview() {
-    NitflexTheme {
-        NitflexUI(config = THEOplayerConfig.Builder().build())
-    }
+    NitflexTheme { NitflexUI(config = THEOplayerConfig.Builder().build()) }
 }

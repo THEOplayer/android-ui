@@ -17,14 +17,10 @@ import androidx.core.app.PictureInPictureUiStateCompat
 import androidx.core.util.Consumer
 import com.theoplayer.android.ui.InternalUiApi
 
-/**
- * From [android.content.pm.ActivityInfo]
- */
+/** From [android.content.pm.ActivityInfo] */
 private const val FLAG_SUPPORTS_PICTURE_IN_PICTURE = 0x400000
 
-/**
- * Check if the given activity supports [Activity.enterPictureInPictureMode].
- */
+/** Check if the given activity supports [Activity.enterPictureInPictureMode]. */
 internal fun Activity.supportsPictureInPictureMode(): Boolean {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) return false
     if (!packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) return false
@@ -46,19 +42,24 @@ fun rememberIsInPipMode(): Boolean {
     var pipMode by remember { mutableStateOf(activity.isInPictureInPictureMode) }
     if (activity is OnPictureInPictureModeChangedProvider) {
         DisposableEffect(activity) {
-            val observer = Consumer<PictureInPictureModeChangedInfo> { info ->
-                pipMode = info.isInPictureInPictureMode
-            }
+            val observer =
+                Consumer<PictureInPictureModeChangedInfo> { info ->
+                    pipMode = info.isInPictureInPictureMode
+                }
             activity.addOnPictureInPictureModeChangedListener(observer)
             onDispose { activity.removeOnPictureInPictureModeChangedListener(observer) }
         }
     }
     var transitioningToPip by remember { mutableStateOf(false) }
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM && activity is OnPictureInPictureUiStateChangedProvider) {
+    if (
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM &&
+            activity is OnPictureInPictureUiStateChangedProvider
+    ) {
         DisposableEffect(activity) {
-            val observer = Consumer<PictureInPictureUiStateCompat> { info ->
-                transitioningToPip = info.isTransitioningToPip
-            }
+            val observer =
+                Consumer<PictureInPictureUiStateCompat> { info ->
+                    transitioningToPip = info.isTransitioningToPip
+                }
             activity.addOnPictureInPictureUiStateChangedListener(observer)
             onDispose { activity.removeOnPictureInPictureUiStateChangedListener(observer) }
         }

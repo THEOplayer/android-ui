@@ -23,50 +23,49 @@ import kotlin.math.absoluteValue
  * A button that seeks forward or backward by a fixed offset.
  *
  * This draws a seek forward or backward icon inside the button, with the seek offset centered
- * within the icon. If you want to use a different icon, use the other overload that accepts
- * custom `content`.
+ * within the icon. If you want to use a different icon, use the other overload that accepts custom
+ * `content`.
  *
  * @param modifier the [Modifier] to be applied to this button
- * @param seekOffset the offset (in seconds) by which to seek forward (if positive)
- * or backward (if negative)
+ * @param seekOffset the offset (in seconds) by which to seek forward (if positive) or backward (if
+ *   negative)
  * @param iconSize the size of the icon
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  */
 @Composable
 fun SeekButton(
     modifier: Modifier = Modifier,
     seekOffset: Int = 10,
     iconSize: Dp = 24.dp,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     SeekButton(
         modifier = modifier,
         seekOffset = seekOffset,
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
     ) {
         Box {
             Icon(
                 Icons.Rounded.Replay,
-                modifier = Modifier
-                    .size(iconSize)
-                    .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
-                contentDescription = pluralStringResource(
-                    if (seekOffset >= 0) {
-                        CommonR.plurals.theoplayer_ui_btn_seek_forward
-                    } else {
-                        CommonR.plurals.theoplayer_ui_btn_seek_backward
-                    },
-                    seekOffset.absoluteValue,
-                    seekOffset.absoluteValue
-                )
+                modifier =
+                    Modifier.size(iconSize)
+                        .scale(scaleX = if (seekOffset >= 0) -1f else 1f, scaleY = 1f),
+                contentDescription =
+                    pluralStringResource(
+                        if (seekOffset >= 0) {
+                            CommonR.plurals.theoplayer_ui_btn_seek_forward
+                        } else {
+                            CommonR.plurals.theoplayer_ui_btn_seek_backward
+                        },
+                        seekOffset.absoluteValue,
+                        seekOffset.absoluteValue,
+                    ),
             )
             Text(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(y = iconSize * 0.1f),
+                modifier = Modifier.align(Alignment.Center).offset(y = iconSize * 0.1f),
                 text = "${seekOffset.absoluteValue}",
-                fontSize = 6.sp * (iconSize / 24.dp)
+                fontSize = 6.sp * (iconSize / 24.dp),
             )
         }
     }
@@ -76,23 +75,23 @@ fun SeekButton(
  * A button that seeks forward or backward by a fixed offset.
  *
  * @param modifier the [Modifier] to be applied to this button
- * @param seekOffset the offset (in seconds) by which to seek forward (if positive)
- * or backward (if negative)
+ * @param seekOffset the offset (in seconds) by which to seek forward (if positive) or backward (if
+ *   negative)
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  */
 @Composable
 fun SeekButton(
     modifier: Modifier = Modifier,
     seekOffset: Int = 10,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     SeekButton(
         state = rememberSeekButtonState(LocalTHEOplayerView.current?.player, seekOffset),
         modifier = modifier,
         contentPadding = contentPadding,
-        content = content
+        content = content,
     )
 }
 
@@ -102,7 +101,7 @@ fun SeekButton(
  * @param state the [SeekButtonState] to read and control
  * @param modifier the [Modifier] to be applied to this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  */
 @ExperimentalPlayerStateApi
 @Composable
@@ -110,13 +109,13 @@ fun SeekButton(
     state: SeekButtonState,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
         enabled = state.enabled,
         onClick = { state.onClick() },
-        content = content
+        content = content,
     )
 }

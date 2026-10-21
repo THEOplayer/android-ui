@@ -1,8 +1,8 @@
 import com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask
 import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
-import org.jetbrains.changelog.date
 import java.time.Year
 import kotlin.text.Typography.copyright
+import org.jetbrains.changelog.date
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
@@ -16,6 +16,7 @@ buildscript {
         classpath(libs.kotlin.gradle.plugin)
     }
 }
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
@@ -25,9 +26,7 @@ plugins {
     alias(libs.plugins.ktfmt)
 }
 
-ktfmt {
-    kotlinLangStyle()
-}
+ktfmt { kotlinLangStyle() }
 
 tasks.register<KtfmtCheckTask>("ktfmtCheckBuildSrc") {
     source = project.fileTree("buildSrc")
@@ -39,15 +38,19 @@ tasks.register<KtfmtFormatTask>("ktfmtFormatBuildSrc") {
     include("**/*.kts")
 }
 
-val ktfmtCheck = tasks.findByName("ktfmtCheck")?.let { tasks.named("ktfmtCheck") }
-    ?: tasks.register("ktfmtCheck")
+val ktfmtCheck =
+    tasks.findByName("ktfmtCheck")?.let { tasks.named("ktfmtCheck") }
+        ?: tasks.register("ktfmtCheck")
+
 ktfmtCheck.configure {
     dependsOn("ktfmtCheckScripts", "ktfmtCheckBuildSrc")
     dependsOn(subprojects.map { "${it.path}:ktfmtCheck" })
 }
 
-val ktfmtFormat = tasks.findByName("ktfmtFormat")?.let { tasks.named("ktfmtFormat") }
-    ?: tasks.register("ktfmtFormat")
+val ktfmtFormat =
+    tasks.findByName("ktfmtFormat")?.let { tasks.named("ktfmtFormat") }
+        ?: tasks.register("ktfmtFormat")
+
 ktfmtFormat.configure {
     dependsOn("ktfmtFormatScripts", "ktfmtFormatBuildSrc")
     dependsOn(subprojects.map { "${it.path}:ktfmtFormat" })
@@ -64,12 +67,11 @@ dokka {
 
     pluginsConfiguration.html {
         customAssets.from("ui/assets/logo-icon.svg")
-        footerMessage = "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
+        footerMessage =
+            "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
     }
 
-    dokkaPublications.html {
-        outputDirectory = rootDir.resolve("site/api")
-    }
+    dokkaPublications.html { outputDirectory = rootDir.resolve("site/api") }
 }
 
 changelog {
@@ -87,7 +89,8 @@ changelog {
         > - 📝 Documentation
         > - 🏠 Internal
         > - 💅 Polish
-        """.trimIndent()
+        """
+            .trimIndent()
     itemPrefix = "*"
     keepUnreleasedSection = true
     unreleasedTerm = "Unreleased"

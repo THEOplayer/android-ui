@@ -19,15 +19,11 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 @ExperimentalPlayerStateApi
 class SubtitleTrackState internal constructor(private val player: Player?) {
 
-    /**
-     * The available subtitle tracks.
-     */
+    /** The available subtitle tracks. */
     var subtitleTracks by mutableStateOf<List<TextTrack>>(listOf())
         private set
 
-    /**
-     * The currently shown subtitle track, if any.
-     */
+    /** The currently shown subtitle track, if any. */
     var activeSubtitleTrack by mutableStateOf<TextTrack?>(null)
         private set
 
@@ -49,13 +45,15 @@ class SubtitleTrackState internal constructor(private val player: Player?) {
         player.textTracks.listen(
             TextTrackListEventTypes.ADDTRACK,
             TextTrackListEventTypes.REMOVETRACK,
-            TextTrackListEventTypes.TRACKLISTCHANGE
-        ) { update() }
+            TextTrackListEventTypes.TRACKLISTCHANGE,
+        ) {
+            update()
+        }
     }
 
     /**
-     * Selects the subtitle track to show, or `null` to hide all subtitles.
-     * All other subtitle tracks are disabled; non-subtitle text tracks are not touched.
+     * Selects the subtitle track to show, or `null` to hide all subtitles. All other subtitle
+     * tracks are disabled; non-subtitle text tracks are not touched.
      */
     fun select(track: TextTrack?) {
         activeSubtitleTrack = track
@@ -67,9 +65,7 @@ class SubtitleTrackState internal constructor(private val player: Player?) {
     }
 }
 
-/**
- * Creates a [SubtitleTrackState] that's remembered across compositions.
- */
+/** Creates a [SubtitleTrackState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberSubtitleTrackState(player: Player?): SubtitleTrackState {

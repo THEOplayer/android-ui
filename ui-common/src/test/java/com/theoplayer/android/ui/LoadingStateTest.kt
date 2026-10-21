@@ -2,10 +2,10 @@ package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.ReadyState
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class LoadingStateTest {
@@ -18,9 +18,23 @@ class LoadingStateTest {
 
     @Test
     fun `loading truth table`() = runTest {
-        fun state(paused: Boolean, ended: Boolean = false, seeking: Boolean = false, readyState: ReadyState) =
-            LoadingState(MockPlayer(paused = paused, ended = ended, seeking = seeking, readyState = readyState).player)
-                .also { launchObserve { it.observe() } }.loading
+        fun state(
+            paused: Boolean,
+            ended: Boolean = false,
+            seeking: Boolean = false,
+            readyState: ReadyState,
+        ) =
+            LoadingState(
+                    MockPlayer(
+                            paused = paused,
+                            ended = ended,
+                            seeking = seeking,
+                            readyState = readyState,
+                        )
+                        .player
+                )
+                .also { launchObserve { it.observe() } }
+                .loading
 
         assertFalse(state(paused = false, readyState = ReadyState.HAVE_ENOUGH_DATA))
         assertTrue(state(paused = false, readyState = ReadyState.HAVE_CURRENT_DATA))

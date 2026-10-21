@@ -2,11 +2,11 @@ package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import io.mockk.verify
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class SeekBarStateTest {
@@ -16,7 +16,7 @@ class SeekBarStateTest {
         launchObserve { SeekBarState(mock.player).observe() }
         assertEquals(
             playbackEventTypes + PlayerEventTypes.DURATIONCHANGE,
-            mock.playerEventTypes
+            mock.playerEventTypes,
         )
         assertEquals(adEventTypes, mock.adEventTypes)
     }
@@ -48,11 +48,12 @@ class SeekBarStateTest {
 
     @Test
     fun `huge seekable start maps to zero-based range`() = runTest {
-        val mock = MockPlayer(
-            currentTime = 1.7e9 + 30.0,
-            duration = 1.7e9 + 100.0,
-            seekableRanges = listOf(1.7e9 to 1.7e9 + 100.0)
-        )
+        val mock =
+            MockPlayer(
+                currentTime = 1.7e9 + 30.0,
+                duration = 1.7e9 + 100.0,
+                seekableRanges = listOf(1.7e9 to 1.7e9 + 100.0),
+            )
         val state = SeekBarState(mock.player)
         launchObserve { state.observe() }
 

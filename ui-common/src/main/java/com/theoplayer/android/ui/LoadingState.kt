@@ -17,12 +17,12 @@ import com.theoplayer.android.api.player.ReadyState
  */
 @ExperimentalPlayerStateApi
 class LoadingState internal constructor(private val player: Player?) {
-    /**
-     * Whether the player is currently waiting for more data to resume playback.
-     */
+    /** Whether the player is currently waiting for more data to resume playback. */
     val loading: Boolean
-        get() = !paused && !ended &&
-            (seeking || readyState.ordinal < ReadyState.HAVE_FUTURE_DATA.ordinal)
+        get() =
+            !paused &&
+                !ended &&
+                (seeking || readyState.ordinal < ReadyState.HAVE_FUTURE_DATA.ordinal)
 
     private var paused by mutableStateOf(true)
     private var ended by mutableStateOf(false)
@@ -51,14 +51,14 @@ class LoadingState internal constructor(private val player: Player?) {
             PlayerEventTypes.SEEKED,
             PlayerEventTypes.READYSTATECHANGE,
             PlayerEventTypes.SOURCECHANGE,
-            PlayerEventTypes.ERROR
-        ) { update() }
+            PlayerEventTypes.ERROR,
+        ) {
+            update()
+        }
     }
 }
 
-/**
- * Creates a [LoadingState] that's remembered across compositions.
- */
+/** Creates a [LoadingState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberLoadingState(player: Player?): LoadingState {

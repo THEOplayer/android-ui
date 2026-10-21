@@ -17,7 +17,7 @@ import com.theoplayer.android.ui.rememberSeekBarState
  *
  * @param modifier the [Modifier] to be applied to this seek bar
  * @param colors [SliderColors] that resolve the seek bar colors for enabled and disabled states.
- * See [SliderDefaults.colors].
+ *   See [SliderDefaults.colors].
  * @param seekOffset the number of seconds to seek on a single Left or Right press
  */
 @ExperimentalTvUiApi
@@ -26,13 +26,13 @@ import com.theoplayer.android.ui.rememberSeekBarState
 fun SeekBar(
     modifier: Modifier = Modifier,
     colors: SliderColors = SliderDefaults.colors(),
-    seekOffset: Int = 10
+    seekOffset: Int = 10,
 ) {
     SeekBar(
         state = rememberSeekBarState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         colors = colors,
-        seekOffset = seekOffset
+        seekOffset = seekOffset,
     )
 }
 
@@ -45,7 +45,7 @@ fun SeekBar(
  * @param state the [SeekBarState] to read and control
  * @param modifier the [Modifier] to be applied to this seek bar
  * @param colors [SliderColors] that resolve the seek bar colors for enabled and disabled states.
- * See [SliderDefaults.colors].
+ *   See [SliderDefaults.colors].
  * @param seekOffset the number of seconds to seek on a single Left or Right press
  */
 @ExperimentalTvUiApi
@@ -55,7 +55,7 @@ fun SeekBar(
     state: SeekBarState,
     modifier: Modifier = Modifier,
     colors: SliderColors = SliderDefaults.colors(),
-    seekOffset: Int = 10
+    seekOffset: Int = 10,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val sliderState = rememberSyncedSliderState(state.value, state.valueRange)
@@ -80,7 +80,7 @@ fun SeekBar(
                 SliderDefaults.Thumb(
                     interactionSource = interactionSource,
                     colors = colors,
-                    enabled = state.enabled
+                    enabled = state.enabled,
                 )
             }
         },
@@ -88,8 +88,8 @@ fun SeekBar(
             SliderDefaults.Track(
                 sliderState = sliderState,
                 colors = colors,
-                enabled = state.enabled
+                enabled = state.enabled,
             )
-        }
+        },
     )
 }

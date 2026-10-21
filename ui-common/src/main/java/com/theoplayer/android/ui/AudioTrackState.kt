@@ -18,15 +18,11 @@ import com.theoplayer.android.api.player.track.mediatrack.quality.AudioQuality
  */
 @ExperimentalPlayerStateApi
 class AudioTrackState internal constructor(private val player: Player?) {
-    /**
-     * The available audio tracks.
-     */
+    /** The available audio tracks. */
     var audioTracks by mutableStateOf<List<MediaTrack<AudioQuality>>>(listOf())
         private set
 
-    /**
-     * The currently enabled audio track, if any.
-     */
+    /** The currently enabled audio track, if any. */
     var activeAudioTrack by mutableStateOf<MediaTrack<AudioQuality>?>(null)
         private set
 
@@ -48,13 +44,13 @@ class AudioTrackState internal constructor(private val player: Player?) {
         player.audioTracks.listen(
             AudioTrackListEventTypes.ADDTRACK,
             AudioTrackListEventTypes.REMOVETRACK,
-            AudioTrackListEventTypes.TRACKLISTCHANGE
-        ) { update() }
+            AudioTrackListEventTypes.TRACKLISTCHANGE,
+        ) {
+            update()
+        }
     }
 
-    /**
-     * Selects the active audio track, or `null` to disable all audio tracks.
-     */
+    /** Selects the active audio track, or `null` to disable all audio tracks. */
     fun select(track: MediaTrack<AudioQuality>?) {
         activeAudioTrack = track
         if (track != null) {
@@ -65,9 +61,7 @@ class AudioTrackState internal constructor(private val player: Player?) {
     }
 }
 
-/**
- * Creates an [AudioTrackState] that's remembered across compositions.
- */
+/** Creates an [AudioTrackState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberAudioTrackState(player: Player?): AudioTrackState {

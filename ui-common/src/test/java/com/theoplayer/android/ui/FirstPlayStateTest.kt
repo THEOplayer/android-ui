@@ -1,9 +1,9 @@
 package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.player.PlayerEventTypes
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class FirstPlayStateTest {

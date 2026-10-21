@@ -23,18 +23,15 @@ import kotlinx.coroutines.awaitCancellation
 class PictureInPictureState internal constructor(private val theoplayerView: THEOplayerView?) {
     private var pendingPiPListener: FullscreenHandler.OnFullscreenChangeListener? = null
 
-    /**
-     * Whether the activity and player support picture-in-picture mode.
-     */
-    val pictureInPictureSupported: Boolean = theoplayerView?.let { view ->
-        (view.context as? Activity)?.let { activity ->
-            view.piPManager != null && activity.supportsPictureInPictureMode()
-        }
-    } ?: false
+    /** Whether the activity and player support picture-in-picture mode. */
+    val pictureInPictureSupported: Boolean =
+        theoplayerView?.let { view ->
+            (view.context as? Activity)?.let { activity ->
+                view.piPManager != null && activity.supportsPictureInPictureMode()
+            }
+        } ?: false
 
-    /**
-     * Whether the player is in (or transitioning to) picture-in-picture mode.
-     */
+    /** Whether the player is in (or transitioning to) picture-in-picture mode. */
     val pictureInPicture: Boolean
         get() = activityInPipMode || pipManagerInPipMode
 
@@ -58,9 +55,7 @@ class PictureInPictureState internal constructor(private val theoplayerView: THE
         }
     }
 
-    /**
-     * Enters picture-in-picture mode, leaving fullscreen first if needed.
-     */
+    /** Enters picture-in-picture mode, leaving fullscreen first if needed. */
     fun enterPictureInPicture(pipType: PiPType) {
         val piPManager = theoplayerView?.piPManager
         val handler = theoplayerView?.fullscreenHandler
@@ -68,7 +63,9 @@ class PictureInPictureState internal constructor(private val theoplayerView: THE
             pendingPiPListener?.let { handler.removeOnFullscreenChangeListener(it) }
             val listener = FullscreenHandler.OnFullscreenChangeListener { fullscreen ->
                 if (!fullscreen) {
-                    handler.removeOnFullscreenChangeListener(pendingPiPListener ?: return@OnFullscreenChangeListener)
+                    handler.removeOnFullscreenChangeListener(
+                        pendingPiPListener ?: return@OnFullscreenChangeListener
+                    )
                     pendingPiPListener = null
                     piPManager?.enterPiP(pipType)
                 }
@@ -81,17 +78,13 @@ class PictureInPictureState internal constructor(private val theoplayerView: THE
         }
     }
 
-    /**
-     * Leaves picture-in-picture mode.
-     */
+    /** Leaves picture-in-picture mode. */
     fun exitPictureInPicture() {
         theoplayerView?.piPManager?.exitPiP()
     }
 }
 
-/**
- * Creates a [PictureInPictureState] that's remembered across compositions.
- */
+/** Creates a [PictureInPictureState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberPictureInPictureState(theoplayerView: THEOplayerView?): PictureInPictureState {

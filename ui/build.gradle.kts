@@ -1,13 +1,9 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 import java.time.Year
 import kotlin.text.Typography.copyright
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 
-buildscript {
-    dependencies {
-        classpath(libs.dokka.base)
-    }
-}
+buildscript { dependencies { classpath(libs.dokka.base) } }
 
 plugins {
     alias(libs.plugins.android.library)
@@ -18,9 +14,7 @@ plugins {
     id("android-ui.library-conventions")
 }
 
-ktfmt {
-    kotlinLangStyle()
-}
+ktfmt { kotlinLangStyle() }
 
 android {
     namespace = "com.theoplayer.android.ui"
@@ -30,9 +24,7 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables { useSupportLibrary = true }
     }
 
     buildTypes {
@@ -40,7 +32,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -48,17 +40,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    buildFeatures {
-        compose = true
-    }
-    testOptions {
-        unitTests.isIncludeAndroidResources = true
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
-    }
+    buildFeatures { compose = true }
+    testOptions { unitTests.isIncludeAndroidResources = true }
+    packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
     publishing {
         singleVariant("release") {
             withSourcesJar()
@@ -124,27 +108,29 @@ dokka {
         externalDocumentationLinks {
             register("com.theoplayer.android.api") {
                 url("https://optiview.dolby.com/docs/theoplayer/v11/api-reference/android/")
-                packageListUrl("https://optiview.dolby.com/docs/theoplayer/v11/api-reference/android/package-list")
+                packageListUrl(
+                    "https://optiview.dolby.com/docs/theoplayer/v11/api-reference/android/package-list"
+                )
             }
         }
     }
 
     pluginsConfiguration.html {
         customAssets.from("assets/logo-icon.svg")
-        footerMessage = "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
+        footerMessage =
+            "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
     }
 
-    dokkaPublications.javadoc {
-        enabled = true
-    }
+    dokkaPublications.javadoc { enabled = true }
 }
 
-val dokkaJavadocJar = tasks.register<Jar>("dokkaJavadocJar") {
-    group = "dokka"
-    from(tasks.dokkaGeneratePublicationJavadoc)
-    dependsOn(tasks.dokkaGeneratePublicationJavadoc)
-    archiveClassifier.set("javadoc")
-}
+val dokkaJavadocJar =
+    tasks.register<Jar>("dokkaJavadocJar") {
+        group = "dokka"
+        from(tasks.dokkaGeneratePublicationJavadoc)
+        dependsOn(tasks.dokkaGeneratePublicationJavadoc)
+        archiveClassifier.set("javadoc")
+    }
 
 publishing {
     publications {
@@ -153,9 +139,7 @@ publishing {
             artifactId = "android-ui"
             version = project.version as String
             artifact(dokkaJavadocJar)
-            afterEvaluate {
-                from(components["release"])
-            }
+            afterEvaluate { from(components["release"]) }
         }
     }
 }

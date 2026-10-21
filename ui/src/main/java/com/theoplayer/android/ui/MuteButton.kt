@@ -1,6 +1,5 @@
 package com.theoplayer.android.ui
 
-import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.VolumeOff
@@ -10,13 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.theoplayer.android.ui.common.R as CommonR
 
 /**
  * A button that toggles whether audio is muted or not.
  *
  * @param modifier the [Modifier] to be applied to this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param mute button content when the player is unmuted, typically a "mute" icon
  * @param unmute button content when the player is muted, typically an "unmute" icon
  */
@@ -27,22 +27,22 @@ fun MuteButton(
     mute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeUp,
-            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_mute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_mute),
         )
     },
     unmute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeOff,
-            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_unmute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_unmute),
         )
-    }
+    },
 ) {
     MuteButton(
         state = rememberMuteButtonState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         contentPadding = contentPadding,
         mute = mute,
-        unmute = unmute
+        unmute = unmute,
     )
 }
 
@@ -52,7 +52,7 @@ fun MuteButton(
  * @param state the [MuteButtonState] to read and control
  * @param modifier the [Modifier] to be applied to this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param mute button content when the player is unmuted, typically a "mute" icon
  * @param unmute button content when the player is muted, typically an "unmute" icon
  */
@@ -65,20 +65,21 @@ fun MuteButton(
     mute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeUp,
-            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_mute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_mute),
         )
     },
     unmute: @Composable () -> Unit = {
         Icon(
             Icons.AutoMirrored.Rounded.VolumeOff,
-            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_unmute)
+            contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_unmute),
         )
-    }
+    },
 ) {
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
-        onClick = { state.onClick() }) {
+        onClick = { state.onClick() },
+    ) {
         if (state.muted) {
             unmute()
         } else {

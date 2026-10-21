@@ -9,8 +9,8 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 
@@ -23,12 +23,12 @@ import androidx.compose.ui.semantics.Role
 @Composable
 fun AudioTrackList(
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     AudioTrackList(
         state = rememberAudioTrackState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -44,24 +44,26 @@ fun AudioTrackList(
 fun AudioTrackList(
     state: AudioTrackState,
     modifier: Modifier = Modifier,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     val selectedIndex = state.audioTracks.indexOf(state.activeAudioTrack).coerceAtLeast(0)
-    val listState = rememberLazyListState(
-        initialFirstVisibleItemIndex = (selectedIndex - 1).coerceAtLeast(0),
-        initialFirstVisibleItemScrollOffset = if (selectedIndex > 0) {
-            with(LocalDensity.current) { menuListPeekOffset.toPx() }.toInt()
-        } else {
-            0
-        }
-    )
+    val listState =
+        rememberLazyListState(
+            initialFirstVisibleItemIndex = (selectedIndex - 1).coerceAtLeast(0),
+            initialFirstVisibleItemScrollOffset =
+                if (selectedIndex > 0) {
+                    with(LocalDensity.current) { menuListPeekOffset.toPx() }.toInt()
+                } else {
+                    0
+                },
+        )
     LazyColumn(
         modifier = modifier.selectableGroup().fadingEdges(listState),
-        state = listState
+        state = listState,
     ) {
         items(
             count = state.audioTracks.size,
-            key = { state.audioTracks[it].uid }
+            key = { state.audioTracks[it].uid },
         ) {
             val audioTrack = state.audioTracks[it]
             ListItem(
@@ -69,18 +71,19 @@ fun AudioTrackList(
                 leadingContent = {
                     RadioButton(
                         selected = (state.activeAudioTrack == audioTrack),
-                        onClick = null
+                        onClick = null,
                     )
                 },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.selectable(
-                    selected = state.activeAudioTrack == audioTrack,
-                    onClick = {
-                        state.select(audioTrack)
-                        onClick?.let { it() }
-                    },
-                    role = Role.RadioButton
-                )
+                modifier =
+                    Modifier.selectable(
+                        selected = state.activeAudioTrack == audioTrack,
+                        onClick = {
+                            state.select(audioTrack)
+                            onClick?.let { it() }
+                        },
+                        role = Role.RadioButton,
+                    ),
             )
         }
     }

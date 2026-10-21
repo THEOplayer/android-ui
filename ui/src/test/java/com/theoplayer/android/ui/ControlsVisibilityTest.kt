@@ -18,8 +18,7 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class ControlsVisibilityTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private val hideDelay = 2.seconds
 
@@ -33,12 +32,13 @@ class ControlsVisibilityTest {
     private fun setUpFixture(): Fixture {
         val fixture = Fixture()
         composeRule.setContent {
-            fixture.controls = rememberControlsVisibility(
-                firstPlay = fixture.firstPlay.value,
-                paused = fixture.paused.value,
-                forceVisible = fixture.forceVisible.value,
-                hideDelay = hideDelay
-            )
+            fixture.controls =
+                rememberControlsVisibility(
+                    firstPlay = fixture.firstPlay.value,
+                    paused = fixture.paused.value,
+                    forceVisible = fixture.forceVisible.value,
+                    hideDelay = hideDelay,
+                )
         }
         composeRule.waitForIdle()
         return fixture

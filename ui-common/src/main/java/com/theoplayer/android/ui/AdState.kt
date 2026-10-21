@@ -20,9 +20,7 @@ import kotlinx.coroutines.launch
  */
 @ExperimentalPlayerStateApi
 class AdState internal constructor(private val player: Player?) {
-    /**
-     * Whether an ad is currently playing.
-     */
+    /** Whether an ad is currently playing. */
     var playingAd by mutableStateOf(false)
         private set
 
@@ -43,8 +41,10 @@ class AdState internal constructor(private val player: Player?) {
                     ads.listen(
                         AdsEventTypes.AD_BREAK_BEGIN,
                         AdsEventTypes.AD_SKIP,
-                        AdsEventTypes.AD_BREAK_END
-                    ) { update() }
+                        AdsEventTypes.AD_BREAK_END,
+                    ) {
+                        update()
+                    }
                 }
             }
             player.listen(PlayerEventTypes.SOURCECHANGE, PlayerEventTypes.ERROR) { update() }
@@ -52,9 +52,7 @@ class AdState internal constructor(private val player: Player?) {
     }
 }
 
-/**
- * Creates an [AdState] that's remembered across compositions.
- */
+/** Creates an [AdState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberAdState(player: Player?): AdState {

@@ -22,14 +22,13 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
 class UIControllerDisposeTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     private var active by mutableIntStateOf(0)
 
     /**
-     * When a [UIController] leaves the composition while the activity lives on,
-     * the composition inside its inner [ComposeView] must be disposed as well.
+     * When a [UIController] leaves the composition while the activity lives on, the composition
+     * inside its inner [ComposeView] must be disposed as well.
      */
     @Test
     fun controlsAreDisposedWhenUIControllerLeavesComposition() {
@@ -44,7 +43,7 @@ class UIControllerDisposeTest {
                             active++
                             onDispose { active-- }
                         }
-                    }
+                    },
                 )
             } else {
                 Box(Modifier.size(1.dp))

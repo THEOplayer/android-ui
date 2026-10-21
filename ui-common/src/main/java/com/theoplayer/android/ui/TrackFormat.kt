@@ -1,6 +1,5 @@
 package com.theoplayer.android.ui
 
-import com.theoplayer.android.ui.common.R as CommonR
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.res.stringResource
@@ -8,12 +7,11 @@ import com.theoplayer.android.api.player.track.Track
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.ui.common.R as CommonR
 import com.theoplayer.android.ui.util.constructLabel
 import java.text.DecimalFormat
 
-/**
- * Returns a human-readable label for the given media track or text track.
- */
+/** Returns a human-readable label for the given media track or text track. */
 @InternalUiApi
 @Composable
 fun formatTrackName(track: Track): String {
@@ -26,9 +24,7 @@ fun formatTrackName(track: Track): String {
     } ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
 }
 
-/**
- * Returns a human-readable label for the given media track.
- */
+/** Returns a human-readable label for the given media track. */
 @InternalUiApi
 @Composable
 fun formatTrackName(track: MediaTrack<*>): String {
@@ -36,9 +32,7 @@ fun formatTrackName(track: MediaTrack<*>): String {
         ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
 }
 
-/**
- * Returns a human-readable label for the given text track.
- */
+/** Returns a human-readable label for the given text track. */
 @InternalUiApi
 @Composable
 fun formatTrackName(track: TextTrack): String {
@@ -46,15 +40,10 @@ fun formatTrackName(track: TextTrack): String {
         ?: stringResource(CommonR.string.theoplayer_ui_track_unknown)
 }
 
-/**
- * The default playback rates shown in playback rate lists.
- */
-@InternalUiApi
-val defaultPlaybackRates = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0)
+/** The default playback rates shown in playback rate lists. */
+@InternalUiApi val defaultPlaybackRates = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0)
 
-/**
- * Formats a playback rate for display.
- */
+/** Formats a playback rate for display. */
 @InternalUiApi
 @Composable
 fun formatPlaybackRate(rate: Double): String {
@@ -67,43 +56,40 @@ fun formatPlaybackRate(rate: Double): String {
     }
 }
 
-/**
- * Formats a bandwidth for display.
- */
+/** Formats a bandwidth for display. */
 @InternalUiApi
 @Composable
 fun formatBandwidth(bandwidth: Long): String {
-    val format = stringResource(
-        if (bandwidth >= 1e7) {
-            CommonR.string.theoplayer_ui_bandwidth_format_10mbps
-        } else if (bandwidth >= 1e6) {
-            CommonR.string.theoplayer_ui_bandwidth_format_1mbps
-        } else {
-            CommonR.string.theoplayer_ui_bandwidth_format_kbps
-        }
-    )
+    val format =
+        stringResource(
+            if (bandwidth >= 1e7) {
+                CommonR.string.theoplayer_ui_bandwidth_format_10mbps
+            } else if (bandwidth >= 1e6) {
+                CommonR.string.theoplayer_ui_bandwidth_format_1mbps
+            } else {
+                CommonR.string.theoplayer_ui_bandwidth_format_kbps
+            }
+        )
     val decimalFormat = remember(format) { DecimalFormat(format) }
     return decimalFormat.format(bandwidth / (if (bandwidth >= 1e6) 1e6 else 1e3))
 }
 
-/**
- * Formats the active or target video quality for display.
- */
+/** Formats the active or target video quality for display. */
 @InternalUiApi
 @Composable
 fun formatActiveQualityLabel(
     targetVideoQuality: VideoQuality?,
-    activeVideoQuality: VideoQuality?
+    activeVideoQuality: VideoQuality?,
 ): String {
     return if (targetVideoQuality != null) {
         stringResource(
             CommonR.string.theoplayer_ui_quality_with_height,
-            targetVideoQuality.height
+            targetVideoQuality.height,
         )
     } else if (activeVideoQuality != null) {
         stringResource(
             CommonR.string.theoplayer_ui_quality_automatic_with_height,
-            activeVideoQuality.height
+            activeVideoQuality.height,
         )
     } else {
         stringResource(CommonR.string.theoplayer_ui_quality_automatic)

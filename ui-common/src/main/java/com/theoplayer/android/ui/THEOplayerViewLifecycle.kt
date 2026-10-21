@@ -24,12 +24,11 @@ import com.theoplayer.android.api.THEOplayerView
  *
  * This couples the lifecycle of the view to the current activity: it automatically calls
  * [THEOplayerView.onPause] and [THEOplayerView.onResume] whenever the current activity is
- * [paused][Activity.onPause] or [resumed][Activity.onResume] (resuming an ad that was
- * interrupted), and it destroys the view when it leaves the composition.
+ * [paused][Activity.onPause] or [resumed][Activity.onResume] (resuming an ad that was interrupted),
+ * and it destroys the view when it leaves the composition.
  *
- * In previews, the SDK does not initialize the view ([View.isInEditMode]), so do not
- * access its [THEOplayerView.player] there. [UIController] and [DefaultUI] handle this
- * automatically.
+ * In previews, the SDK does not initialize the view ([View.isInEditMode]), so do not access its
+ * [THEOplayerView.player] there. [UIController] and [DefaultUI] handle this automatically.
  *
  * @param config the player configuration
  */
@@ -42,11 +41,7 @@ fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
     }
     if (!theoplayerView.isInEditMode) {
         setupTHEOplayerView(theoplayerView, destroyOnLifecycleDestroy = false)
-        DisposableEffect(theoplayerView) {
-            onDispose {
-                theoplayerView.onDestroy()
-            }
-        }
+        DisposableEffect(theoplayerView) { onDispose { theoplayerView.onDestroy() } }
     }
     return theoplayerView
 }
@@ -54,8 +49,8 @@ fun rememberTHEOplayerView(config: THEOplayerConfig? = null): THEOplayerView {
 /**
  * A context for creating a [THEOplayerView] in a preview.
  *
- * The [THEOplayerView] constructor casts the application context to [Application],
- * but layoutlib's application context is not an [Application].
+ * The [THEOplayerView] constructor casts the application context to [Application], but layoutlib's
+ * application context is not an [Application].
  */
 private class PreviewContext(base: Context) : ContextWrapper(base) {
     private val application = PreviewApplication(base.applicationContext)
@@ -69,23 +64,19 @@ private class PreviewApplication(base: Context) : Application() {
     }
 }
 
-/**
- * Remembers a THEOplayer view for use by a UI module.
- */
+/** Remembers a THEOplayer view for use by a UI module. */
 @InternalUiApi
 @Composable
 fun rememberTHEOplayerViewInternal(config: THEOplayerConfig?): THEOplayerView? {
     return if (LocalInspectionMode.current) null else rememberTHEOplayerView(config)
 }
 
-/**
- * Couples a THEOplayer view to the current lifecycle owner.
- */
+/** Couples a THEOplayer view to the current lifecycle owner. */
 @InternalUiApi
 @Composable
 fun setupTHEOplayerView(
     theoplayerView: THEOplayerView,
-    destroyOnLifecycleDestroy: Boolean = true
+    destroyOnLifecycleDestroy: Boolean = true,
 ): THEOplayerView {
     var wasPlayingAd by remember { mutableStateOf(false) }
 
@@ -115,9 +106,7 @@ fun setupTHEOplayerView(
             }
         }
         lifecycle.addObserver(lifecycleObserver)
-        onDispose {
-            lifecycle.removeObserver(lifecycleObserver)
-        }
+        onDispose { lifecycle.removeObserver(lifecycleObserver) }
     }
 
     return theoplayerView

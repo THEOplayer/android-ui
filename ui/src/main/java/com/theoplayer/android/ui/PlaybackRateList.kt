@@ -9,8 +9,8 @@ import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 
@@ -26,13 +26,13 @@ import androidx.compose.ui.semantics.Role
 fun PlaybackRateList(
     modifier: Modifier = Modifier,
     playbackRates: List<Double> = defaultPlaybackRates,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     PlaybackRateList(
         state = rememberPlaybackRateState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         playbackRates = playbackRates,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -51,24 +51,26 @@ fun PlaybackRateList(
     state: PlaybackRateState,
     modifier: Modifier = Modifier,
     playbackRates: List<Double> = defaultPlaybackRates,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     val selectedIndex = playbackRates.indexOf(state.playbackRate).coerceAtLeast(0)
-    val listState = rememberLazyListState(
-        initialFirstVisibleItemIndex = (selectedIndex - 1).coerceAtLeast(0),
-        initialFirstVisibleItemScrollOffset = if (selectedIndex > 0) {
-            with(LocalDensity.current) { menuListPeekOffset.toPx() }.toInt()
-        } else {
-            0
-        }
-    )
+    val listState =
+        rememberLazyListState(
+            initialFirstVisibleItemIndex = (selectedIndex - 1).coerceAtLeast(0),
+            initialFirstVisibleItemScrollOffset =
+                if (selectedIndex > 0) {
+                    with(LocalDensity.current) { menuListPeekOffset.toPx() }.toInt()
+                } else {
+                    0
+                },
+        )
     LazyColumn(
         modifier = modifier.selectableGroup().fadingEdges(listState),
-        state = listState
+        state = listState,
     ) {
         items(
             count = playbackRates.size,
-            key = { playbackRates[it] }
+            key = { playbackRates[it] },
         ) {
             val playbackRate = playbackRates[it]
             ListItem(
@@ -76,18 +78,19 @@ fun PlaybackRateList(
                 leadingContent = {
                     RadioButton(
                         selected = (state.playbackRate == playbackRate),
-                        onClick = null
+                        onClick = null,
                     )
                 },
                 colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-                modifier = Modifier.selectable(
-                    selected = state.playbackRate == playbackRate,
-                    onClick = {
-                        state.select(playbackRate)
-                        onClick?.let { it() }
-                    },
-                    role = Role.RadioButton
-                )
+                modifier =
+                    Modifier.selectable(
+                        selected = state.playbackRate == playbackRate,
+                        onClick = {
+                            state.select(playbackRate)
+                            onClick?.let { it() }
+                        },
+                        role = Role.RadioButton,
+                    ),
             )
         }
     }

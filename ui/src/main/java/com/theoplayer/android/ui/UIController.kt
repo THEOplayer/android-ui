@@ -38,8 +38,8 @@ import com.theoplayer.android.ui.util.rememberIsInPipMode
 /**
  * A container component for a THEOplayer UI.
  *
- * This component provides a basic layout structure for a player UI,
- * and handles the creation and management of a [Player] instance for this UI.
+ * This component provides a basic layout structure for a player UI, and handles the creation and
+ * management of a [Player] instance for this UI.
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
@@ -48,12 +48,13 @@ import com.theoplayer.android.ui.util.rememberIsInPipMode
  * @param source the source description to load into the player
  * @param color the background color for the overlay while showing the UI controls
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
- * @param errorOverlay content to show when the player encountered a fatal error,
- * typically an [ErrorDisplay].
+ * @param errorOverlay content to show when the player encountered a fatal error, typically an
+ *   [ErrorDisplay].
  * @param topChrome controls to show at the top of the player, for example the stream's title.
- * @param centerChrome controls to show in the center of the player, for example a large [PlayButton].
- * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
- * or a [Row] containing a [MuteButton] and a [FullscreenButton].
+ * @param centerChrome controls to show in the center of the player, for example a large
+ *   [PlayButton].
+ * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar] or a
+ *   [Row] containing a [MuteButton] and a [FullscreenButton].
  */
 @Composable
 fun UIController(
@@ -65,12 +66,10 @@ fun UIController(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null,
 ) {
     val theoplayerView = rememberTHEOplayerViewInternal(config)
-    LaunchedEffect(theoplayerView, source) {
-        theoplayerView?.player?.source = source
-    }
+    LaunchedEffect(theoplayerView, source) { theoplayerView?.player?.source = source }
 
     UIControllerImpl(
         modifier = modifier,
@@ -81,7 +80,7 @@ fun UIController(
         errorOverlay = errorOverlay,
         topChrome = topChrome,
         centerChrome = centerChrome,
-        bottomChrome = bottomChrome
+        bottomChrome = bottomChrome,
     )
 }
 
@@ -96,12 +95,13 @@ fun UIController(
  * @param player the player. This should always be created using [rememberPlayer].
  * @param color the background color for the overlay while showing the UI controls
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
- * @param errorOverlay content to show when the player encountered a fatal error,
- * typically an [ErrorDisplay].
+ * @param errorOverlay content to show when the player encountered a fatal error, typically an
+ *   [ErrorDisplay].
  * @param topChrome controls to show at the top of the player, for example the stream's title.
- * @param centerChrome controls to show in the center of the player, for example a large [PlayButton].
- * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
- * or a [Row] containing a [MuteButton] and a [FullscreenButton].
+ * @param centerChrome controls to show in the center of the player, for example a large
+ *   [PlayButton].
+ * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar] or a
+ *   [Row] containing a [MuteButton] and a [FullscreenButton].
  */
 @Composable
 fun UIController(
@@ -112,7 +112,7 @@ fun UIController(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null,
 ) {
     UIControllerImpl(
         modifier = modifier,
@@ -123,7 +123,7 @@ fun UIController(
         errorOverlay = errorOverlay,
         topChrome = topChrome,
         centerChrome = centerChrome,
-        bottomChrome = bottomChrome
+        bottomChrome = bottomChrome,
     )
 }
 
@@ -131,13 +131,13 @@ fun UIController(
  * A container component for a THEOplayer UI.
  *
  * This component provides a basic layout structure for a player UI using the given
- * [theoplayerView]. No [Player] is created unless [UIControllerScope.player] is accessed,
- * so [Player.current] is `null` inside this UI: use [LocalTHEOplayerView] and the
- * experimental state holders instead.
+ * [theoplayerView]. No [Player] is created unless [UIControllerScope.player] is accessed, so
+ * [Player.current] is `null` inside this UI: use [LocalTHEOplayerView] and the experimental state
+ * holders instead.
  *
- * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to
- * create a view owned by the composition, or forward [THEOplayerView.onPause],
- * [THEOplayerView.onResume] and [THEOplayerView.onDestroy] yourself.
+ * This does not touch the lifecycle of the given view: use [rememberTHEOplayerView] to create a
+ * view owned by the composition, or forward [THEOplayerView.onPause], [THEOplayerView.onResume] and
+ * [THEOplayerView.onDestroy] yourself.
  *
  * The colors and fonts can be changed by wrapping this inside a [THEOplayerTheme].
  *
@@ -145,12 +145,13 @@ fun UIController(
  * @param theoplayerView the THEOplayer view to host in this container
  * @param color the background color for the overlay while showing the UI controls
  * @param centerOverlay content to show in the center of the player, typically a [LoadingSpinner].
- * @param errorOverlay content to show when the player encountered a fatal error,
- * typically an [ErrorDisplay].
+ * @param errorOverlay content to show when the player encountered a fatal error, typically an
+ *   [ErrorDisplay].
  * @param topChrome controls to show at the top of the player, for example the stream's title.
- * @param centerChrome controls to show in the center of the player, for example a large [PlayButton].
- * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar]
- * or a [Row] containing a [MuteButton] and a [FullscreenButton].
+ * @param centerChrome controls to show in the center of the player, for example a large
+ *   [PlayButton].
+ * @param bottomChrome controls to show at the bottom of the player, for example a [SeekBar] or a
+ *   [Row] containing a [MuteButton] and a [FullscreenButton].
  */
 @OptIn(ExperimentalPlayerStateApi::class)
 @Composable
@@ -162,7 +163,7 @@ fun UIController(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     topChrome: (@Composable UIControllerScope.() -> Unit)? = null,
     centerChrome: (@Composable UIControllerScope.() -> Unit)? = null,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)? = null,
 ) {
     UIControllerImpl(
         modifier = modifier,
@@ -173,7 +174,7 @@ fun UIController(
         errorOverlay = errorOverlay,
         topChrome = topChrome,
         centerChrome = centerChrome,
-        bottomChrome = bottomChrome
+        bottomChrome = bottomChrome,
     )
 }
 
@@ -188,7 +189,7 @@ internal fun UIControllerImpl(
     errorOverlay: (@Composable UIControllerScope.() -> Unit)?,
     topChrome: (@Composable UIControllerScope.() -> Unit)?,
     centerChrome: (@Composable UIControllerScope.() -> Unit)?,
-    bottomChrome: (@Composable UIControllerScope.() -> Unit)?
+    bottomChrome: (@Composable UIControllerScope.() -> Unit)?,
 ) {
     val nativePlayer = theoplayerView?.player
     val firstPlayState = rememberFirstPlayState(nativePlayer)
@@ -199,25 +200,27 @@ internal fun UIControllerImpl(
     val videoSizeState = rememberVideoSizeState(nativePlayer)
     val scope = rememberUIControllerScope(theoplayerView, player)
     val uiState = rememberUIState(scope, errorState, pictureInPictureState)
-    val controls = rememberControlsVisibility(
-        firstPlay = firstPlayState.firstPlay,
-        paused = playButtonState.paused,
-        forceVisible = castState.castState == PlayerCastState.CONNECTED,
-        hideDelay = THEOplayerTheme.playerAnimations.controlsHideDelay
-    )
+    val controls =
+        rememberControlsVisibility(
+            firstPlay = firstPlayState.firstPlay,
+            paused = playButtonState.paused,
+            forceVisible = castState.castState == PlayerCastState.CONNECTED,
+            hideDelay = THEOplayerTheme.playerAnimations.controlsHideDelay,
+        )
     var playerWidth by remember { mutableStateOf(0.dp) }
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
 
     UIControllerCore(
-        modifier = modifier
-            .playerAspectRatio(videoSizeState)
-            .onSizeChanged { playerWidth = with(density) { it.width.toDp() } }
-            .toggleControlsOnTap(
-                controlsVisible = controls.visible,
-                showControlsTemporarily = controls.show,
-                hideControls = controls.hide
-            ),
+        modifier =
+            modifier
+                .playerAspectRatio(videoSizeState)
+                .onSizeChanged { playerWidth = with(density) { it.width.toDp() } }
+                .toggleControlsOnTap(
+                    controlsVisible = controls.visible,
+                    showControlsTemporarily = controls.show,
+                    hideControls = controls.hide,
+                ),
         theoplayerView = theoplayerView,
         player = player,
         scope = scope,
@@ -225,30 +228,29 @@ internal fun UIControllerImpl(
         errorState = errorState,
         controls = controls,
         color = color,
-        contentTransform = mobileContentTransform(
-            isWide = { playerWidth >= menuSheetBreakpoint },
-            layoutDirection = layoutDirection
-        ),
+        contentTransform =
+            mobileContentTransform(
+                isWide = { playerWidth >= menuSheetBreakpoint },
+                layoutDirection = layoutDirection,
+            ),
         menuContainer = { menuContent ->
             MenuSheet(
                 onDismiss = { scope.closeCurrentMenu() },
-                content = menuContent
+                content = menuContent,
             )
         },
         centerOverlay = centerOverlay,
         errorOverlay = errorOverlay,
         topChrome = topChrome,
         centerChrome = centerChrome,
-        bottomChrome = bottomChrome
+        bottomChrome = bottomChrome,
     )
 }
 
-/**
- * Returns the mobile menu transitions.
- */
+/** Returns the mobile menu transitions. */
 private fun mobileContentTransform(
     isWide: () -> Boolean,
-    layoutDirection: LayoutDirection
+    layoutDirection: LayoutDirection,
 ): AnimatedContentTransitionScope<UIState>.() -> ContentTransform = {
     if (targetState is UIState.Error) {
         EnterTransition.None togetherWith ExitTransition.None
@@ -281,18 +283,15 @@ private fun mobileContentTransform(
  */
 @Composable
 fun rememberPlayer(config: THEOplayerConfig? = null): Player {
-    val theoplayerView = if (LocalInspectionMode.current) {
-        null
-    } else {
-        val context = LocalContext.current
-        remember { THEOplayerView(context, config) }
-    }
-
-    DisposableEffect(theoplayerView) {
-        onDispose {
-            theoplayerView?.onDestroy()
+    val theoplayerView =
+        if (LocalInspectionMode.current) {
+            null
+        } else {
+            val context = LocalContext.current
+            remember { THEOplayerView(context, config) }
         }
-    }
+
+    DisposableEffect(theoplayerView) { onDispose { theoplayerView?.onDestroy() } }
 
     return rememberPlayerInternal(theoplayerView)
 }
@@ -313,12 +312,12 @@ fun rememberPlayer(config: THEOplayerConfig? = null): Player {
  * val player = rememberPlayer(theoplayerView)
  * ```
  *
- * This couples the lifecycle of the given [THEOplayerView] to the current activity.
- * That is, it automatically calls [THEOplayerView.onPause] and [THEOplayerView.onResume]
- * whenever the current activity is [paused][Activity.onPause] or [resumed][Activity.onResume].
+ * This couples the lifecycle of the given [THEOplayerView] to the current activity. That is, it
+ * automatically calls [THEOplayerView.onPause] and [THEOplayerView.onResume] whenever the current
+ * activity is [paused][Activity.onPause] or [resumed][Activity.onResume].
  *
- * The [THEOplayerView] is **not** automatically destroyed when the composition is disposed.
- * If you need this, use a [DisposableEffect]:
+ * The [THEOplayerView] is **not** automatically destroyed when the composition is disposed. If you
+ * need this, use a [DisposableEffect]:
  * ```kotlin
  * val player = rememberPlayer(theoplayerView)
  * DisposableEffect(theoplayerView) {
@@ -340,11 +339,7 @@ internal fun rememberPlayerInternal(theoplayerView: THEOplayerView?): Player {
     theoplayerView?.let { setupTHEOplayerView(it) }
 
     val player = remember(theoplayerView) { PlayerImpl(theoplayerView) }
-    DisposableEffect(player) {
-        onDispose {
-            player.dispose()
-        }
-    }
+    DisposableEffect(player) { onDispose { player.dispose() } }
 
     player.activityInPipMode = rememberIsInPipMode()
 

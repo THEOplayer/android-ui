@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.tv.material3.Icon
 import androidx.tv.material3.ListItem
 import androidx.tv.material3.Text
@@ -35,13 +35,13 @@ import com.theoplayer.android.ui.rememberPlaybackRateState
 fun PlaybackRateList(
     modifier: Modifier = Modifier,
     playbackRates: List<Double> = defaultPlaybackRates,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     PlaybackRateList(
         state = rememberPlaybackRateState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         playbackRates = playbackRates,
-        onClick = onClick
+        onClick = onClick,
     )
 }
 
@@ -60,7 +60,7 @@ fun PlaybackRateList(
     state: PlaybackRateState,
     modifier: Modifier = Modifier,
     playbackRates: List<Double> = defaultPlaybackRates,
-    onClick: (() -> Unit)? = null
+    onClick: (() -> Unit)? = null,
 ) {
     val selectedIndex = playbackRates.indexOf(state.playbackRate).coerceAtLeast(0)
     val selectedRequester = remember { FocusRequester() }
@@ -69,11 +69,11 @@ fun PlaybackRateList(
         modifier = modifier.focusRestorer(selectedRequester),
         state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex),
         contentPadding = PaddingValues(vertical = menuItemFocusOverflowPadding),
-        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing)
+        verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing),
     ) {
         items(
             items = playbackRates,
-            key = { it }
+            key = { it },
         ) { playbackRate ->
             val isActive = state.playbackRate == playbackRate
             ListItem(
@@ -84,16 +84,18 @@ fun PlaybackRateList(
                 },
                 colors = menuItemColors(),
                 headlineContent = { Text(text = formatPlaybackRate(playbackRate)) },
-                trailingContent = if (isActive) {
-                    { Icon(Icons.Rounded.Check, contentDescription = null) }
-                } else {
-                    null
-                },
-                modifier = if (playbackRates.indexOf(playbackRate) == selectedIndex) {
-                    Modifier.focusRequester(selectedRequester)
-                } else {
-                    Modifier
-                }
+                trailingContent =
+                    if (isActive) {
+                        { Icon(Icons.Rounded.Check, contentDescription = null) }
+                    } else {
+                        null
+                    },
+                modifier =
+                    if (playbackRates.indexOf(playbackRate) == selectedIndex) {
+                        Modifier.focusRequester(selectedRequester)
+                    } else {
+                        Modifier
+                    },
             )
         }
     }

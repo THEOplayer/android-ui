@@ -1,10 +1,10 @@
 package com.theoplayer.android.ui
 
 import com.theoplayer.android.api.event.player.PlayerEventTypes
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class AdStateTest {
@@ -12,7 +12,10 @@ class AdStateTest {
     fun `registers sourcechange error and ad events`() = runTest {
         val mock = MockPlayer()
         launchObserve { AdState(mock.player).observe() }
-        assertEquals(setOf(PlayerEventTypes.SOURCECHANGE, PlayerEventTypes.ERROR), mock.playerEventTypes)
+        assertEquals(
+            setOf(PlayerEventTypes.SOURCECHANGE, PlayerEventTypes.ERROR),
+            mock.playerEventTypes,
+        )
         assertEquals(adEventTypes, mock.adEventTypes)
     }
 

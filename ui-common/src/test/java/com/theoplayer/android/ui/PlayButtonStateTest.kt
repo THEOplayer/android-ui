@@ -5,11 +5,11 @@ import com.theoplayer.android.api.event.EventType
 import com.theoplayer.android.api.event.player.PlayerEvent
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import io.mockk.verify
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class PlayButtonStateTest {
@@ -103,7 +103,7 @@ class PlayButtonStateTest {
             verify {
                 mock.player.removeEventListener(
                     type as EventType<PlayerEvent<*>>,
-                    listener as EventListener<PlayerEvent<*>>
+                    listener as EventListener<PlayerEvent<*>>,
                 )
             }
         }

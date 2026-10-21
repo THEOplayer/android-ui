@@ -1,4 +1,5 @@
 package com.theoplayer.android.ui.demo.nitflex
+
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.sharp.Pause
@@ -15,7 +16,7 @@ import com.theoplayer.android.ui.PlayButton
 fun NitflexPlayButton(
     modifier: Modifier = Modifier,
     iconModifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     PlayButton(
         modifier = modifier,
@@ -26,7 +27,7 @@ fun NitflexPlayButton(
                 Icons.Sharp.PlayArrow,
                 modifier = iconModifier,
                 tint = Color.White,
-                contentDescription = "Play"
+                contentDescription = "Play",
             )
         },
         pause = {
@@ -34,7 +35,7 @@ fun NitflexPlayButton(
                 Icons.Sharp.Pause,
                 modifier = iconModifier,
                 tint = Color.White,
-                contentDescription = "Pause"
+                contentDescription = "Pause",
             )
         },
         replay = {
@@ -42,8 +43,8 @@ fun NitflexPlayButton(
                 Icons.Sharp.Replay,
                 modifier = iconModifier,
                 tint = Color.White,
-                contentDescription = "Replay"
+                contentDescription = "Replay",
             )
-        }
+        },
     )
 }

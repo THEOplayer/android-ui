@@ -9,6 +9,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import java.util.Locale
 import org.junit.After
 import org.junit.Assert
 import org.junit.Assert.assertEquals
@@ -18,7 +19,6 @@ import org.junit.experimental.runners.Enclosed
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.junit.runners.Parameterized
-import java.util.Locale
 
 @RunWith(Enclosed::class)
 class TrackExtsTest {
@@ -84,9 +84,7 @@ class TrackExtsTest {
     }
 
     @RunWith(Parameterized::class)
-    class ConstructLabelTest(
-        private val args: Args,
-    ) {
+    class ConstructLabelTest(private val args: Args) {
 
         private val track = mockk<TextTrack>()
 
@@ -134,121 +132,122 @@ class TrackExtsTest {
 
             @JvmStatic
             @Parameterized.Parameters(name = "{0}")
-            fun data() = arrayOf(
-                // Boundary checks.
-                Args(
-                    label = null,
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = null,
-                    playerVersion = "0.0.0",
-                    expectedLabel = null,
-                ),
+            fun data() =
+                arrayOf(
+                    // Boundary checks.
+                    Args(
+                        label = null,
+                        language = null,
+                        localizedLanguageName = null,
+                        captionChannel = null,
+                        playerVersion = "0.0.0",
+                        expectedLabel = null,
+                    ),
 
-                // v10.0 checks.
-                // - Track.captionChannel is never set
-                // - Track.label can be "CC1" or "CC2"
-                Args(
-                    label = "Hello world",
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10_0,
-                    expectedLabel = "Hello world",
-                ),
-                Args(
-                    label = null,
-                    language = "en",
-                    localizedLanguageName = "English",
-                    captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10_0,
-                    expectedLabel = "English",
-                ),
-                Args(
-                    label = "en",
-                    language = "en",
-                    localizedLanguageName = "English",
-                    captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10_0,
-                    expectedLabel = "English",
-                ),
-                Args(
-                    label = "en",
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10_0,
-                    expectedLabel = "en",
-                ),
-                Args(
-                    label = "CC1",
-                    language = "en",
-                    localizedLanguageName = "English",
-                    captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10_0,
-                    expectedLabel = "English",
-                ),
-                Args(
-                    label = "CC1",
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = null,
-                    playerVersion = TEST_PLAYER_VERSION_10_0,
-                    expectedLabel = "CC1",
-                ),
+                    // v10.0 checks.
+                    // - Track.captionChannel is never set
+                    // - Track.label can be "CC1" or "CC2"
+                    Args(
+                        label = "Hello world",
+                        language = null,
+                        localizedLanguageName = null,
+                        captionChannel = null,
+                        playerVersion = TEST_PLAYER_VERSION_10_0,
+                        expectedLabel = "Hello world",
+                    ),
+                    Args(
+                        label = null,
+                        language = "en",
+                        localizedLanguageName = "English",
+                        captionChannel = null,
+                        playerVersion = TEST_PLAYER_VERSION_10_0,
+                        expectedLabel = "English",
+                    ),
+                    Args(
+                        label = "en",
+                        language = "en",
+                        localizedLanguageName = "English",
+                        captionChannel = null,
+                        playerVersion = TEST_PLAYER_VERSION_10_0,
+                        expectedLabel = "English",
+                    ),
+                    Args(
+                        label = "en",
+                        language = null,
+                        localizedLanguageName = null,
+                        captionChannel = null,
+                        playerVersion = TEST_PLAYER_VERSION_10_0,
+                        expectedLabel = "en",
+                    ),
+                    Args(
+                        label = "CC1",
+                        language = "en",
+                        localizedLanguageName = "English",
+                        captionChannel = null,
+                        playerVersion = TEST_PLAYER_VERSION_10_0,
+                        expectedLabel = "English",
+                    ),
+                    Args(
+                        label = "CC1",
+                        language = null,
+                        localizedLanguageName = null,
+                        captionChannel = null,
+                        playerVersion = TEST_PLAYER_VERSION_10_0,
+                        expectedLabel = "CC1",
+                    ),
 
-                // v10.13 checks.
-                // - Track.captionChannel is always set
-                // - Track.label can be "CC1" or "CC2"
-                Args(
-                    label = "Hello world",
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_10_13,
-                    expectedLabel = "Hello world",
-                ),
-                Args(
-                    label = "CC1",
-                    language = "en",
-                    localizedLanguageName = "English",
-                    captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_10_13,
-                    expectedLabel = "English",
-                ),
-                Args(
-                    label = "en",
-                    language = "en",
-                    localizedLanguageName = "English",
-                    captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_10_13,
-                    expectedLabel = "English",
-                ),
-                Args(
-                    label = "en",
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_10_13,
-                    expectedLabel = "en",
-                ),
-                Args(
-                    label = "CC1",
-                    language = "en",
-                    localizedLanguageName = "English",
-                    captionChannel = 1,
-                    playerVersion = TEST_PLAYER_VERSION_10_13,
-                    expectedLabel = "English",
-                ),
-                Args(
-                    label = "CC4",
-                    language = null,
-                    localizedLanguageName = null,
-                    captionChannel = 4,
-                    playerVersion = TEST_PLAYER_VERSION_10_13,
-                    expectedLabel = "CC4",
-                ),
-            )
+                    // v10.13 checks.
+                    // - Track.captionChannel is always set
+                    // - Track.label can be "CC1" or "CC2"
+                    Args(
+                        label = "Hello world",
+                        language = null,
+                        localizedLanguageName = null,
+                        captionChannel = 1,
+                        playerVersion = TEST_PLAYER_VERSION_10_13,
+                        expectedLabel = "Hello world",
+                    ),
+                    Args(
+                        label = "CC1",
+                        language = "en",
+                        localizedLanguageName = "English",
+                        captionChannel = 1,
+                        playerVersion = TEST_PLAYER_VERSION_10_13,
+                        expectedLabel = "English",
+                    ),
+                    Args(
+                        label = "en",
+                        language = "en",
+                        localizedLanguageName = "English",
+                        captionChannel = 1,
+                        playerVersion = TEST_PLAYER_VERSION_10_13,
+                        expectedLabel = "English",
+                    ),
+                    Args(
+                        label = "en",
+                        language = null,
+                        localizedLanguageName = null,
+                        captionChannel = 1,
+                        playerVersion = TEST_PLAYER_VERSION_10_13,
+                        expectedLabel = "en",
+                    ),
+                    Args(
+                        label = "CC1",
+                        language = "en",
+                        localizedLanguageName = "English",
+                        captionChannel = 1,
+                        playerVersion = TEST_PLAYER_VERSION_10_13,
+                        expectedLabel = "English",
+                    ),
+                    Args(
+                        label = "CC4",
+                        language = null,
+                        localizedLanguageName = null,
+                        captionChannel = 4,
+                        playerVersion = TEST_PLAYER_VERSION_10_13,
+                        expectedLabel = "CC4",
+                    ),
+                )
         }
     }
 }

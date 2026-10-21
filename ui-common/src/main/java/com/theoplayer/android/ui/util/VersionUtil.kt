@@ -5,22 +5,14 @@ import com.theoplayer.android.ui.InternalUiApi
 
 private const val VERSION_DELIMITER = '.'
 
-/**
- * A [semver](https://semver.org/) version.
- */
+/** A [semver](https://semver.org/) version. */
 @InternalUiApi
 data class Version(
-    /**
-     * The major version.
-     */
+    /** The major version. */
     val major: Int,
-    /**
-     * The minor version.
-     */
+    /** The minor version. */
     val minor: Int,
-    /**
-     * The patch (and prerelease) version.
-     */
+    /** The patch (and prerelease) version. */
     val patchAndPrerelease: String,
 ) : Comparable<Version> {
     override fun toString() = buildString {
@@ -47,7 +39,7 @@ data class Version(
                 return Version(
                     major = major.toInt(),
                     minor = minor.toInt(),
-                    patchAndPrerelease = patchAndPrerelease
+                    patchAndPrerelease = patchAndPrerelease,
                 )
             } catch (e: IllegalArgumentException) {
                 throw IllegalArgumentException("Invalid version", e)
@@ -58,8 +50,6 @@ data class Version(
 
 @InternalUiApi
 object THEOplayerGlobalExt {
-    /**
-     * Returns the version of THEOplayer, as a [Version].
-     */
+    /** Returns the version of THEOplayer, as a [Version]. */
     val version: Version by lazy { Version.parse(THEOplayerGlobal.getVersion()) }
 }

@@ -16,35 +16,27 @@ import kotlinx.coroutines.launch
 /**
  * State holder for a seek bar, such as [SeekBar].
  *
- * While the user drags the seek bar (see [onValueChange]), the player is temporarily paused,
- * and resumed on [onValueChangeFinished] if it was playing.
+ * While the user drags the seek bar (see [onValueChange]), the player is temporarily paused, and
+ * resumed on [onValueChangeFinished] if it was playing.
  *
  * Create an instance with [rememberSeekBarState].
  */
 @ExperimentalPlayerStateApi
 class SeekBarState internal constructor(private val player: Player?) {
 
-    /**
-     * The current scrub position of the seek bar, relative to the start of [seekableRange].
-     */
+    /** The current scrub position of the seek bar, relative to the start of [seekableRange]. */
     val value: Float
         get() = seekTime ?: (currentTime - seekableRange.start).toFloat()
 
-    /**
-     * The range of [value]. Always starts at zero.
-     */
+    /** The range of [value]. Always starts at zero. */
     val valueRange: ClosedFloatingPointRange<Float>
         get() = 0f..(seekableRange.endInclusive - seekableRange.start).toFloat()
 
-    /**
-     * Whether the seek bar can be interacted with.
-     */
+    /** Whether the seek bar can be interacted with. */
     val enabled: Boolean
         get() = !playingAd && seekable.isNotEmpty()
 
-    /**
-     * Whether to show the seek bar's thumb. Hidden while an ad is playing.
-     */
+    /** Whether to show the seek bar's thumb. Hidden while an ad is playing. */
     val showThumb: Boolean
         get() = !playingAd
 
@@ -58,9 +50,9 @@ class SeekBarState internal constructor(private val player: Player?) {
     // Seekable start can be very large (e.g. a Unix timestamp), which can lead to precision loss
     // when converted to a float. Instead, make the slider always start at zero.
     private val seekableRange: ClosedFloatingPointRange<Double>
-        get() = seekable.bounds ?: run {
-            0.0..(if (duration.isFinite()) duration.coerceAtLeast(0.0) else 0.0)
-        }
+        get() =
+            seekable.bounds
+                ?: run { 0.0..(if (duration.isFinite()) duration.coerceAtLeast(0.0) else 0.0) }
 
     private fun update() {
         currentTime = player?.currentTime ?: 0.0
@@ -82,8 +74,10 @@ class SeekBarState internal constructor(private val player: Player?) {
                     ads.listen(
                         AdsEventTypes.AD_BREAK_BEGIN,
                         AdsEventTypes.AD_SKIP,
-                        AdsEventTypes.AD_BREAK_END
-                    ) { update() }
+                        AdsEventTypes.AD_BREAK_END,
+                    ) {
+                        update()
+                    }
                 }
             }
             player.listen(
@@ -96,14 +90,16 @@ class SeekBarState internal constructor(private val player: Player?) {
                 PlayerEventTypes.READYSTATECHANGE,
                 PlayerEventTypes.DURATIONCHANGE,
                 PlayerEventTypes.SOURCECHANGE,
-                PlayerEventTypes.ERROR
-            ) { update() }
+                PlayerEventTypes.ERROR,
+            ) {
+                update()
+            }
         }
     }
 
     /**
-     * Called while the user drags the seek bar. Temporarily pauses a playing player and seeks
-     * to the given position within [valueRange].
+     * Called while the user drags the seek bar. Temporarily pauses a playing player and seeks to
+     * the given position within [valueRange].
      */
     fun onValueChange(value: Float) {
         seekTime = value
@@ -116,17 +112,15 @@ class SeekBarState internal constructor(private val player: Player?) {
         }
     }
 
-    /**
-     * Seeks to a position within [valueRange] without changing playback state.
-     */
+    /** Seeks to a position within [valueRange] without changing playback state. */
     fun seekTo(value: Float) {
         if (!enabled) return
         player?.currentTime = seekableRange.start + value.toDouble()
     }
 
     /**
-     * Called when the user stops dragging the seek bar. Resumes playback if the player was
-     * playing before the drag started.
+     * Called when the user stops dragging the seek bar. Resumes playback if the player was playing
+     * before the drag started.
      */
     fun onValueChangeFinished() {
         seekTime = null
@@ -137,9 +131,7 @@ class SeekBarState internal constructor(private val player: Player?) {
     }
 }
 
-/**
- * Creates a [SeekBarState] that's remembered across compositions.
- */
+/** Creates a [SeekBarState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberSeekBarState(player: Player?): SeekBarState {

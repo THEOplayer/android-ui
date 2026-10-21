@@ -1,17 +1,15 @@
 package com.theoplayer.android.ui
 
+import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.test.runTest
 import org.junit.Test
 
 class AudioTrackStateTest {
     private fun playerWithTracks(vararg tracks: MockAudioTrack): MockPlayer {
-        return MockPlayer().also { mock ->
-            mock.audioTrackList.addAll(tracks.map { it.track })
-        }
+        return MockPlayer().also { mock -> mock.audioTrackList.addAll(tracks.map { it.track }) }
     }
 
     @Test

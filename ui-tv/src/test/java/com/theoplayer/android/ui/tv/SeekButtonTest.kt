@@ -28,16 +28,19 @@ import org.robolectric.annotation.Config
 @Config(sdk = [34])
 @OptIn(ExperimentalTvUiApi::class)
 class SeekButtonTest {
-    @get:Rule
-    val composeRule = createAndroidComposeRule<ComponentActivity>()
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
 
     @Test
     fun forwardButtonSeeksForward() {
         val player = TestPlayer(currentTime = 50.0)
         val focusRequester = FocusRequester()
         setSeekButton(player, seekOffset = 10, Modifier.focusRequester(focusRequester))
-        val description = composeRule.activity.resources
-            .getQuantityString(R.plurals.theoplayer_ui_btn_seek_forward, 10, 10)
+        val description =
+            composeRule.activity.resources.getQuantityString(
+                R.plurals.theoplayer_ui_btn_seek_forward,
+                10,
+                10,
+            )
 
         composeRule.onNodeWithContentDescription(description).assertExists()
         focusSeekButton(focusRequester)
@@ -51,8 +54,12 @@ class SeekButtonTest {
         val player = TestPlayer(currentTime = 50.0)
         val focusRequester = FocusRequester()
         setSeekButton(player, seekOffset = -10, Modifier.focusRequester(focusRequester))
-        val description = composeRule.activity.resources
-            .getQuantityString(R.plurals.theoplayer_ui_btn_seek_backward, 10, 10)
+        val description =
+            composeRule.activity.resources.getQuantityString(
+                R.plurals.theoplayer_ui_btn_seek_backward,
+                10,
+                10,
+            )
 
         composeRule.onNodeWithContentDescription(description).assertExists()
         focusSeekButton(focusRequester)
@@ -91,7 +98,7 @@ class SeekButtonTest {
             assertTrue(
                 dispatchKeyEvent(
                     composeRule.activity,
-                    KeyEvent(action, KeyEvent.KEYCODE_DPAD_CENTER)
+                    KeyEvent(action, KeyEvent.KEYCODE_DPAD_CENTER),
                 )
             )
         }

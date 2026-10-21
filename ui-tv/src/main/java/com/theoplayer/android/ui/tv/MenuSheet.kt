@@ -18,29 +18,23 @@ private val menuWidth = 320.dp
 private val menuCornerRadius = 16.dp
 
 /**
- * Draws the menu sheet on top of the player: a 320dp surface at the end edge,
- * covering the full player height.
+ * Draws the menu sheet on top of the player: a 320dp surface at the end edge, covering the full
+ * player height.
  */
 @Composable
-internal fun MenuSheet(
-    content: @Composable () -> Unit
-) {
+internal fun MenuSheet(content: @Composable () -> Unit) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.CenterEnd
+        contentAlignment = Alignment.CenterEnd,
     ) {
         Surface(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(menuWidth)
-                .testTag("menu-sheet"),
-            shape = RoundedCornerShape(
-                topStart = menuCornerRadius,
-                bottomStart = menuCornerRadius
-            ),
-            colors = SurfaceDefaults.colors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
+            modifier = Modifier.fillMaxHeight().width(menuWidth).testTag("menu-sheet"),
+            shape =
+                RoundedCornerShape(
+                    topStart = menuCornerRadius,
+                    bottomStart = menuCornerRadius,
+                ),
+            colors = SurfaceDefaults.colors(containerColor = MaterialTheme.colorScheme.surface),
         ) {
             content()
         }

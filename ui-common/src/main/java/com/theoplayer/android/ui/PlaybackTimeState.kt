@@ -16,9 +16,7 @@ import com.theoplayer.android.api.player.Player
  */
 @ExperimentalPlayerStateApi
 class PlaybackTimeState internal constructor(private val player: Player?) {
-    /**
-     * The current playback position of the media, in seconds.
-     */
+    /** The current playback position of the media, in seconds. */
     var currentTime by mutableStateOf(0.0)
         private set
 
@@ -33,9 +31,7 @@ class PlaybackTimeState internal constructor(private val player: Player?) {
     private var seekable by mutableStateOf(TimeRanges.empty())
     private var rawDuration by mutableStateOf(Double.NaN)
 
-    /**
-     * The [StreamType] of the media.
-     */
+    /** The [StreamType] of the media. */
     val streamType: StreamType
         get() = streamTypeOf(rawDuration, seekable)
 
@@ -63,14 +59,14 @@ class PlaybackTimeState internal constructor(private val player: Player?) {
             PlayerEventTypes.READYSTATECHANGE,
             PlayerEventTypes.DURATIONCHANGE,
             PlayerEventTypes.SOURCECHANGE,
-            PlayerEventTypes.ERROR
-        ) { update() }
+            PlayerEventTypes.ERROR,
+        ) {
+            update()
+        }
     }
 }
 
-/**
- * Creates a [PlaybackTimeState] that's remembered across compositions.
- */
+/** Creates a [PlaybackTimeState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberPlaybackTimeState(player: Player?): PlaybackTimeState {

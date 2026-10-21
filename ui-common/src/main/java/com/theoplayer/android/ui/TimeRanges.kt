@@ -8,40 +8,33 @@ package com.theoplayer.android.ui
 data class TimeRanges(private val ranges: List<ClosedFloatingPointRange<Double>>) :
     List<ClosedFloatingPointRange<Double>> by ranges {
 
-    /**
-     * Returns the start of the first range, or `null` if [empty][isEmpty].
-     */
+    /** Returns the start of the first range, or `null` if [empty][isEmpty]. */
     val firstStart: Double?
         get() = firstOrNull()?.start
 
-    /**
-     * Returns the end of the last range, or `null` if [empty][isEmpty].
-     */
+    /** Returns the end of the last range, or `null` if [empty][isEmpty]. */
     val lastEnd: Double?
         get() = lastOrNull()?.endInclusive
 
     /**
-     * Returns the bounding time range from [firstStart] to [lastEnd], or `null` if [empty][isEmpty].
+     * Returns the bounding time range from [firstStart] to [lastEnd], or `null` if
+     * [empty][isEmpty].
      */
     val bounds: ClosedFloatingPointRange<Double>?
-        get() = if (isEmpty()) {
-            null
-        } else {
-            first().start..last().endInclusive
-        }
+        get() =
+            if (isEmpty()) {
+                null
+            } else {
+                first().start..last().endInclusive
+            }
 
     companion object {
         private val _empty by lazy(mode = LazyThreadSafetyMode.NONE) { TimeRanges(listOf()) }
 
-        /**
-         * Returns an empty [TimeRanges].
-         */
-        @JvmStatic
-        fun empty(): TimeRanges = _empty
+        /** Returns an empty [TimeRanges]. */
+        @JvmStatic fun empty(): TimeRanges = _empty
 
-        /**
-         * Converts a [com.theoplayer.android.api.timerange.TimeRanges] to a [TimeRanges].
-         */
+        /** Converts a [com.theoplayer.android.api.timerange.TimeRanges] to a [TimeRanges]. */
         @JvmStatic
         fun fromTHEOplayer(ranges: com.theoplayer.android.api.timerange.TimeRanges): TimeRanges {
             return TimeRanges(ranges.map { range -> range.start..range.end })

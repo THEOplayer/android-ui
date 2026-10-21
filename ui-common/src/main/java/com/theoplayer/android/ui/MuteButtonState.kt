@@ -16,9 +16,7 @@ import com.theoplayer.android.api.player.Player
  */
 @ExperimentalPlayerStateApi
 class MuteButtonState internal constructor(private val player: Player?) {
-    /**
-     * Whether the audio is muted.
-     */
+    /** Whether the audio is muted. */
     var muted by mutableStateOf(false)
         private set
 
@@ -36,9 +34,7 @@ class MuteButtonState internal constructor(private val player: Player?) {
         player.listen(PlayerEventTypes.VOLUMECHANGE) { update() }
     }
 
-    /**
-     * Toggles whether the audio is muted.
-     */
+    /** Toggles whether the audio is muted. */
     fun onClick() {
         player?.let {
             val newMuted = !it.isMuted
@@ -48,9 +44,7 @@ class MuteButtonState internal constructor(private val player: Player?) {
     }
 }
 
-/**
- * Creates a [MuteButtonState] that's remembered across compositions.
- */
+/** Creates a [MuteButtonState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberMuteButtonState(player: Player?): MuteButtonState {

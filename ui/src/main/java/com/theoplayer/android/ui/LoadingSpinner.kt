@@ -21,22 +21,23 @@ import kotlin.time.DurationUnit
  * @param modifier the [Modifier] to be applied to this indicator
  * @param color color of this progress indicator
  * @param strokeWidth stroke width of this progress indicator
- * @param delay delay for the progress indicator to become visible after the player starts buffering.
- * In general, it's less jarring to *not* show the indicator for very short buffering periods.
+ * @param delay delay for the progress indicator to become visible after the player starts
+ *   buffering. In general, it's less jarring to *not* show the indicator for very short buffering
+ *   periods.
  */
 @Composable
 fun LoadingSpinner(
     modifier: Modifier = Modifier,
     color: Color = ProgressIndicatorDefaults.circularColor,
     strokeWidth: Dp = ProgressIndicatorDefaults.CircularStrokeWidth,
-    delay: Duration = THEOplayerTheme.playerAnimations.loadingSpinnerDelay
+    delay: Duration = THEOplayerTheme.playerAnimations.loadingSpinnerDelay,
 ) {
     LoadingSpinner(
         state = rememberLoadingState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         color = color,
         strokeWidth = strokeWidth,
-        delay = delay
+        delay = delay,
     )
 }
 
@@ -47,8 +48,9 @@ fun LoadingSpinner(
  * @param modifier the [Modifier] to be applied to this indicator
  * @param color color of this progress indicator
  * @param strokeWidth stroke width of this progress indicator
- * @param delay delay for the progress indicator to become visible after the player starts buffering.
- * In general, it's less jarring to *not* show the indicator for very short buffering periods.
+ * @param delay delay for the progress indicator to become visible after the player starts
+ *   buffering. In general, it's less jarring to *not* show the indicator for very short buffering
+ *   periods.
  */
 @ExperimentalPlayerStateApi
 @Composable
@@ -57,14 +59,14 @@ fun LoadingSpinner(
     modifier: Modifier = Modifier,
     color: Color = ProgressIndicatorDefaults.circularColor,
     strokeWidth: Dp = ProgressIndicatorDefaults.CircularStrokeWidth,
-    delay: Duration = THEOplayerTheme.playerAnimations.loadingSpinnerDelay
+    delay: Duration = THEOplayerTheme.playerAnimations.loadingSpinnerDelay,
 ) {
     AnimatedVisibility(
         visible = state.loading,
         // Show the loading spinner only after a small delay
         enter = fadeIn(snap(delayMillis = delay.toInt(DurationUnit.MILLISECONDS))),
         // Hide the loading spinner immediately when loaded
-        exit = ExitTransition.None
+        exit = ExitTransition.None,
     ) {
         CircularProgressIndicator(modifier = modifier, color = color, strokeWidth = strokeWidth)
     }
@@ -73,7 +75,5 @@ fun LoadingSpinner(
 @Preview(showBackground = true, backgroundColor = 0xFF000000)
 @Composable
 private fun CircularProgressIndicatorPreview() {
-    THEOplayerTheme(useDarkTheme = true) {
-        CircularProgressIndicator()
-    }
+    THEOplayerTheme(useDarkTheme = true) { CircularProgressIndicator() }
 }

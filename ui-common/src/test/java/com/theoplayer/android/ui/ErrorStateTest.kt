@@ -3,10 +3,10 @@ package com.theoplayer.android.ui
 import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import io.mockk.mockk
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class ErrorStateTest {
@@ -14,7 +14,10 @@ class ErrorStateTest {
     fun `registers error and sourcechange`() = runTest {
         val mock = MockPlayer()
         launchObserve { ErrorState(mock.player).observe() }
-        assertEquals(setOf(PlayerEventTypes.ERROR, PlayerEventTypes.SOURCECHANGE), mock.playerEventTypes)
+        assertEquals(
+            setOf(PlayerEventTypes.ERROR, PlayerEventTypes.SOURCECHANGE),
+            mock.playerEventTypes,
+        )
     }
 
     @Test

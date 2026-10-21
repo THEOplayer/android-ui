@@ -11,35 +11,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalInspectionMode
-import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
 
-/**
- * Visibility state and callbacks for player controls.
- */
+/** Visibility state and callbacks for player controls. */
 @InternalUiApi
 class ControlsVisibility(
     /**
-     * Whether the controls are currently visible. This [State] instance is stable
-     * across recompositions.
+     * Whether the controls are currently visible. This [State] instance is stable across
+     * recompositions.
      */
     val visible: State<Boolean>,
     val animationsActive: Boolean,
     val show: () -> Unit,
-    val hide: () -> Unit
+    val hide: () -> Unit,
 )
 
-/**
- * Remembers control visibility and interaction state.
- */
+/** Remembers control visibility and interaction state. */
 @InternalUiApi
 @Composable
 fun rememberControlsVisibility(
     firstPlay: Boolean,
     paused: Boolean,
     forceVisible: Boolean,
-    hideDelay: Duration
+    hideDelay: Duration,
 ): ControlsVisibility {
     var activityCount by remember { mutableIntStateOf(0) }
     var recentlyActive by remember { mutableStateOf(false) }
@@ -82,6 +78,6 @@ fun rememberControlsVisibility(
         hide = {
             forceControlsHidden = true
             activityCount++
-        }
+        },
     )
 }

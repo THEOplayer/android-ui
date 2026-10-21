@@ -14,31 +14,28 @@ interface UIControllerScope : MenuScope {
     /**
      * The player hosted in this [UIController].
      *
-     * If the UIController was created from a [THEOplayerView], the [Player] is created on
-     * first access (and only then adds its listeners). Prefer [theoplayerView] with the
-     * experimental state holders instead.
+     * If the UIController was created from a [THEOplayerView], the [Player] is created on first
+     * access (and only then adds its listeners). Prefer [theoplayerView] with the experimental
+     * state holders instead.
      */
     val player: Player
 
-    /**
-     * The THEOplayer view hosted in this [UIController], or `null` in inspection mode.
-     */
+    /** The THEOplayer view hosted in this [UIController], or `null` in inspection mode. */
     val theoplayerView: THEOplayerView?
         get() = player.theoplayerView
 }
 
-/**
- * Default implementation of [UIControllerScope], managing the menu stack.
- */
+/** Default implementation of [UIControllerScope], managing the menu stack. */
 @InternalUiApi
 class UIControllerScopeImpl(
     override val theoplayerView: THEOplayerView?,
-    private val providedPlayer: Player?
+    private val providedPlayer: Player?,
 ) : UIControllerScope {
     private var menuStack = mutableStateListOf<MenuContent>()
 
     val currentMenu: MenuContent?
         get() = menuStack.lastOrNull()
+
     var lastWasClosed: Boolean = false
         private set
 
@@ -69,8 +66,6 @@ class UIControllerScopeImpl(
     }
 
     override fun closeCurrentMenu() {
-        menuStack.removeLastOrNull()?.also {
-            lastWasClosed = true
-        }
+        menuStack.removeLastOrNull()?.also { lastWasClosed = true }
     }
 }

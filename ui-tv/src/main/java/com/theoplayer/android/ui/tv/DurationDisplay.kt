@@ -21,7 +21,7 @@ import com.theoplayer.android.ui.rememberPlaybackTimeState
 fun DurationDisplay(modifier: Modifier = Modifier) {
     DurationDisplay(
         state = rememberPlaybackTimeState(LocalTHEOplayerView.current?.player),
-        modifier = modifier
+        modifier = modifier,
     )
 }
 

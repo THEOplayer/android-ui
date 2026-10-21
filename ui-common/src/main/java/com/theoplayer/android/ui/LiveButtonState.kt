@@ -15,19 +15,16 @@ import com.theoplayer.android.api.player.Player
  * Create an instance with [rememberLiveButtonState].
  */
 @ExperimentalPlayerStateApi
-class LiveButtonState internal constructor(
+class LiveButtonState
+internal constructor(
     private val player: Player?,
-    private val liveThreshold: Double
+    private val liveThreshold: Double,
 ) {
-    /**
-     * Whether the button should be shown. Only live and DVR streams have a live point.
-     */
+    /** Whether the button should be shown. Only live and DVR streams have a live point. */
     val visible: Boolean
         get() = streamType == StreamType.Live || streamType == StreamType.Dvr
 
-    /**
-     * Whether the player is currently playing at the live point.
-     */
+    /** Whether the player is currently playing at the live point. */
     val isLive: Boolean
         get() = !paused && ((seekable.lastEnd ?: 0.0) - currentTime) <= liveThreshold
 
@@ -67,13 +64,13 @@ class LiveButtonState internal constructor(
             PlayerEventTypes.READYSTATECHANGE,
             PlayerEventTypes.DURATIONCHANGE,
             PlayerEventTypes.SOURCECHANGE,
-            PlayerEventTypes.ERROR
-        ) { update() }
+            PlayerEventTypes.ERROR,
+        ) {
+            update()
+        }
     }
 
-    /**
-     * Seeks to the live point and resumes playback.
-     */
+    /** Seeks to the live point and resumes playback. */
     fun onClick() {
         player?.let {
             it.currentTime = Double.POSITIVE_INFINITY
@@ -86,7 +83,7 @@ class LiveButtonState internal constructor(
  * Creates a [LiveButtonState] that's remembered across compositions.
  *
  * @param liveThreshold the maximum distance (in seconds) from the live point that the player's
- * current time can be for it to still be considered "at the live point"
+ *   current time can be for it to still be considered "at the live point"
  */
 @ExperimentalPlayerStateApi
 @Composable
