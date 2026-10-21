@@ -3,11 +3,15 @@ package com.theoplayer.android.ui
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.height
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.assertIsNotSelected
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.isSelectable
+import androidx.compose.ui.test.getBoundsInRoot
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
@@ -94,22 +98,62 @@ class MenuListTest {
         verify(exactly = 1) { player.playbackRate = 1.5 }
     }
 
+    @Test
+    fun subtitleTrackListShowsHalfItemPeekAboveSelected() {
+        val tracks = (1..12).map {
+            mockSubtitleTrack(uid = it, label = "Track $it", mode = if (it == 6) TextTrackMode.SHOWING else TextTrackMode.DISABLED)
+        }
+        val player = subtitlePlayer(tracks = tracks)
+        var state: SubtitleTrackState? = null
+        composeRule.setContent {
+            val subtitleState = rememberSubtitleTrackState(player)
+            state = subtitleState
+            SubtitleTrackList(
+                state = subtitleState,
+                // Bound the list height so the selected item can actually
+                // reach the top of the viewport.
+                modifier = Modifier.testTag("list").height(300.dp)
+            )
+        }
+        assertEquals(tracks[5], state?.activeSubtitleTrack)
+        assertEquals(6, state?.subtitleTracks?.indexOf(tracks[5])?.plus(1))
+
+        val listBounds = composeRule.onNodeWithTag("list").getBoundsInRoot()
+        // The item above the selected "Track 6" is partially scrolled off:
+        // its bounds extend above the list's top edge.
+        val track5Bounds = composeRule.onNodeWithText("Track 5").getBoundsInRoot()
+        assertTrue(
+            "top=${track5Bounds.top} listTop=${listBounds.top} bottom=${track5Bounds.bottom}",
+            track5Bounds.top <= listBounds.top
+        )
+        assertTrue(track5Bounds.bottom > listBounds.top)
+        // And earlier items are scrolled out of view entirely.
+        assertTrue(composeRule.onAllNodesWithText("Track 4").fetchSemanticsNodes().isEmpty())
+    }
+
     private fun playbackRatePlayer(rate: Double): THEOplayer {
         val player = mockk<THEOplayer>(relaxed = true)
         every { player.playbackRate } returns rate
         return player
     }
 
-    private fun mockSubtitleTrack(): TextTrack = mockk(relaxed = true) {
+    private fun mockSubtitleTrack(
+        uid: Int = 1,
+        label: String = "English",
+        mode: TextTrackMode = TextTrackMode.SHOWING
+    ): TextTrack = mockk(relaxed = true) {
+        every { this@mockk.uid } returns uid
+        every { this@mockk.label } returns label
         every { kind } returns TextTrackKind.SUBTITLES.type
-        every { mode } returns TextTrackMode.SHOWING
-        every { uid } returns 1
-        every { label } returns "English"
+        every { this@mockk.mode } returns mode
     }
 
-    private fun subtitlePlayer(track: TextTrack): THEOplayer {
+    private fun subtitlePlayer(track: TextTrack): THEOplayer =
+        subtitlePlayer(listOf(track))
+
+    private fun subtitlePlayer(tracks: List<TextTrack>): THEOplayer {
         val textTracks = mockk<TextTrackList>(relaxed = true) {
-            every { iterator() } answers { listOf(track).toMutableList().listIterator() }
+            every { iterator() } answers { tracks.toMutableList().listIterator() }
         }
         return mockk(relaxed = true) {
             every { this@mockk.textTracks } returns textTracks

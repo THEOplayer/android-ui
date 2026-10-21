@@ -9,7 +9,11 @@ typealias MenuContent = @Composable MenuScope.() -> Unit
 
 /**
  * Scope for the contents of a [Menu].
+ *
+ * This interface is implemented by `UIController`; implementing it yourself is not supported.
  */
+@OptIn(ExperimentalSubclassOptIn::class)
+@SubclassOptInRequired(InternalUiApi::class)
 interface MenuScope {
     /**
      * Open a new submenu.

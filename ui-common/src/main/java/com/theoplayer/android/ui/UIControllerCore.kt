@@ -30,12 +30,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.theme.LocalPlayerAnimations
+import kotlin.math.roundToInt
 import kotlin.time.DurationUnit
 
 /**
  * Renders the shared player UI around the active controls, menu, or error state.
+ *
+ * @param menuContainer the container that wraps all menus (e.g. a sheet). All menus are
+ * rendered inside it, so opening a submenu does not trigger the outer content transition;
+ * the menu contents animate with a push/pop transition inside the container instead.
  */
 @InternalUiApi
 @Composable
@@ -49,6 +56,7 @@ fun UIControllerCore(
     controls: ControlsVisibility,
     color: Color,
     contentTransform: AnimatedContentTransitionScope<UIState>.() -> ContentTransform,
+    menuContainer: @Composable (menuContent: @Composable () -> Unit) -> Unit,
     controlsModifier: Modifier = Modifier,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)? = null,
@@ -109,6 +117,7 @@ fun UIControllerCore(
             chromeBounds = chromeBounds,
             controlsModifier = controlsModifier,
             contentTransform = contentTransform,
+            menuContainer = menuContainer,
             centerOverlay = centerOverlay,
             errorOverlay = errorOverlay,
             topChrome = topChrome,
@@ -134,6 +143,7 @@ private fun UIControllerContent(
     chromeBounds: ChromeBounds,
     controlsModifier: Modifier,
     contentTransform: AnimatedContentTransitionScope<UIState>.() -> ContentTransform,
+    menuContainer: @Composable (menuContent: @Composable () -> Unit) -> Unit,
     centerOverlay: (@Composable UIControllerScope.() -> Unit)?,
     errorOverlay: (@Composable UIControllerScope.() -> Unit)?,
     topChrome: (@Composable UIControllerScope.() -> Unit)?,
@@ -151,11 +161,20 @@ private fun UIControllerContent(
                 .fillMaxSize()
                 .background(background),
             targetState = uiState,
-            transitionSpec = contentTransform
+            transitionSpec = contentTransform,
+            contentKey = { state ->
+                if (state is UIState.Menu) {
+                    // One stable content key while menus are open, so pushing a submenu
+                    // does not animate the whole menu container.
+                    menusOpenContentKey
+                } else {
+                    state
+                }
+            }
         ) { state ->
             when (state) {
                 UIState.Error -> errorOverlay?.let { scope.it() }
-                is UIState.Menu -> state.menu.let { scope.it() }
+                is UIState.Menu -> menuContainer { InnerMenus(scope) }
                 UIState.Controls -> scope.PlayerControls(
                     controlsVisible = controls.visible.value,
                     animationsActive = controls.animationsActive && !adPlaying,
@@ -254,6 +273,32 @@ private fun UIControllerScope.PlayerControls(
             }
         }
     }
+}
+
+private val menusOpenContentKey = UIState.Menu { }
+
+/**
+ * Renders the open menu stack, animating menu pushes and pops within the current
+ * [menuContainer][UIControllerCore].
+ */
+@Composable
+private fun InnerMenus(scope: UIControllerScopeImpl) {
+    val layoutDirection = LocalLayoutDirection.current
+    val slideDistance = with(LocalDensity.current) { SharedAxisSlideDistance.toPx() }.roundToInt()
+    val durationMillis = LocalPlayerAnimations.current.menuTransitionDuration
+        .inWholeMilliseconds.toInt()
+    AnimatedContent(
+        label = "InnerMenusAnimation",
+        targetState = scope.currentMenu,
+        transitionSpec = {
+            sharedAxisX(
+                forward = !scope.lastWasClosed,
+                slideDistance = slideDistance,
+                layoutDirection = layoutDirection,
+                durationMillis = durationMillis
+            )
+        }
+    ) { menu -> menu?.let { scope.it() } }
 }
 
 /**

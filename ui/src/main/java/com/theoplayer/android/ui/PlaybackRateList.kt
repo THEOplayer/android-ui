@@ -5,10 +5,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 
 /**
@@ -51,9 +54,17 @@ fun PlaybackRateList(
     onClick: (() -> Unit)? = null
 ) {
     val selectedIndex = playbackRates.indexOf(state.playbackRate).coerceAtLeast(0)
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = (selectedIndex - 1).coerceAtLeast(0),
+        initialFirstVisibleItemScrollOffset = if (selectedIndex > 0) {
+            with(LocalDensity.current) { menuListPeekOffset.toPx() }.toInt()
+        } else {
+            0
+        }
+    )
     LazyColumn(
-        modifier = modifier.selectableGroup(),
-        state = rememberLazyListState(initialFirstVisibleItemIndex = selectedIndex)
+        modifier = modifier.selectableGroup().fadingEdges(listState),
+        state = listState
     ) {
         items(
             count = playbackRates.size,
@@ -68,6 +79,7 @@ fun PlaybackRateList(
                         onClick = null
                     )
                 },
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                 modifier = Modifier.selectable(
                     selected = state.playbackRate == playbackRate,
                     onClick = {

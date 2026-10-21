@@ -5,7 +5,11 @@ import com.theoplayer.android.api.THEOplayerView
 
 /**
  * Scope for the contents of a [UIController].
+ *
+ * This interface is implemented by `UIController`; implementing it yourself is not supported.
  */
+@OptIn(ExperimentalSubclassOptIn::class)
+@SubclassOptInRequired(InternalUiApi::class)
 interface UIControllerScope : MenuScope {
     /**
      * The player hosted in this [UIController].

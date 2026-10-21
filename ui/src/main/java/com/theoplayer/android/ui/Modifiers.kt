@@ -2,11 +2,20 @@ package com.theoplayer.android.ui
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
@@ -20,7 +29,9 @@ import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSatisfiedBy
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
@@ -259,3 +270,49 @@ private class ConstrainedAspectRatioNode(
         return IntSize.Zero
     }
 }
+
+/**
+ * How far a menu list scrolls past the item above the selected item,
+ * so it peeks in half above it. Roughly half of a list item's height.
+ */
+internal val menuListPeekOffset = 28.dp
+
+/**
+ * Fades the edges of a scrollable list to indicate that it can scroll further:
+ * at the top while it can scroll backward, and at the bottom while it can scroll forward.
+ */
+internal fun Modifier.fadingEdges(
+    state: LazyListState,
+    height: Dp = 24.dp
+): Modifier = this
+    .graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+    .drawWithContent {
+        drawContent()
+        val fadeHeight = height.toPx()
+        if (state.canScrollBackward) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    0f to Color.Transparent,
+                    1f to Color.Black,
+                    startY = 0f,
+                    endY = fadeHeight
+                ),
+                topLeft = Offset.Zero,
+                size = Size(size.width, fadeHeight),
+                blendMode = BlendMode.DstIn
+            )
+        }
+        if (state.canScrollForward) {
+            drawRect(
+                brush = Brush.verticalGradient(
+                    0f to Color.Black,
+                    1f to Color.Transparent,
+                    startY = size.height - fadeHeight,
+                    endY = size.height
+                ),
+                topLeft = Offset(0f, size.height - fadeHeight),
+                size = Size(size.width, fadeHeight),
+                blendMode = BlendMode.DstIn
+            )
+        }
+    }

@@ -15,11 +15,19 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.chromecast.PlayerCastState
@@ -197,10 +205,14 @@ internal fun UIControllerImpl(
         forceVisible = castState.castState == PlayerCastState.CONNECTED,
         hideDelay = THEOplayerTheme.playerAnimations.controlsHideDelay
     )
+    var playerWidth by remember { mutableStateOf(0.dp) }
+    val density = LocalDensity.current
+    val layoutDirection = LocalLayoutDirection.current
 
     UIControllerCore(
         modifier = modifier
             .playerAspectRatio(videoSizeState)
+            .onSizeChanged { playerWidth = with(density) { it.width.toDp() } }
             .toggleControlsOnTap(
                 controlsVisible = controls.visible,
                 showControlsTemporarily = controls.show,
@@ -213,7 +225,16 @@ internal fun UIControllerImpl(
         errorState = errorState,
         controls = controls,
         color = color,
-        contentTransform = mobileContentTransform(scope),
+        contentTransform = mobileContentTransform(
+            isWide = { playerWidth >= menuSheetBreakpoint },
+            layoutDirection = layoutDirection
+        ),
+        menuContainer = { menuContent ->
+            MenuSheet(
+                onDismiss = { scope.closeCurrentMenu() },
+                content = menuContent
+            )
+        },
         centerOverlay = centerOverlay,
         errorOverlay = errorOverlay,
         topChrome = topChrome,
@@ -226,21 +247,28 @@ internal fun UIControllerImpl(
  * Returns the mobile menu transitions.
  */
 private fun mobileContentTransform(
-    scope: UIControllerScopeImpl
+    isWide: () -> Boolean,
+    layoutDirection: LayoutDirection
 ): AnimatedContentTransitionScope<UIState>.() -> ContentTransform = {
     if (targetState is UIState.Error) {
         EnterTransition.None togetherWith ExitTransition.None
     } else if (initialState is UIState.Menu && targetState is UIState.Menu) {
-        if (scope.lastWasClosed) {
-            slideInHorizontally { -it } togetherWith slideOutHorizontally { it }
-        } else {
-            slideInHorizontally(initialOffsetX = { it }) togetherWith
-                    slideOutHorizontally(targetOffsetX = { -it })
-        }
+        // Menus are drawn inside one shared sheet: only their contents animate.
+        EnterTransition.None togetherWith ExitTransition.None
     } else if (targetState is UIState.Menu) {
-        slideInVertically { it / 4 } + fadeIn() togetherWith fadeOut()
+        if (isWide()) {
+            val ltr = layoutDirection == LayoutDirection.Ltr
+            slideInHorizontally { if (ltr) it else -it } + fadeIn() togetherWith fadeOut()
+        } else {
+            slideInVertically { it } + fadeIn() togetherWith fadeOut()
+        }
     } else if (initialState is UIState.Menu) {
-        fadeIn() togetherWith slideOutVertically { it / 4 } + fadeOut()
+        if (isWide()) {
+            val ltr = layoutDirection == LayoutDirection.Ltr
+            fadeIn() togetherWith slideOutHorizontally { if (ltr) it else -it } + fadeOut()
+        } else {
+            fadeIn() togetherWith slideOutVertically { it } + fadeOut()
+        }
     } else {
         EnterTransition.None togetherWith ExitTransition.None
     }
