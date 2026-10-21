@@ -29,12 +29,12 @@ plugins {
 ktfmt { kotlinLangStyle() }
 
 tasks.register<KtfmtCheckTask>("ktfmtCheckBuildSrc") {
-    source = project.fileTree("buildSrc")
+    source = project.fileTree("buildSrc") { exclude("build/**") }
     include("**/*.kts")
 }
 
 tasks.register<KtfmtFormatTask>("ktfmtFormatBuildSrc") {
-    source = project.fileTree("buildSrc")
+    source = project.fileTree("buildSrc") { exclude("build/**") }
     include("**/*.kts")
 }
 
