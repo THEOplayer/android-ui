@@ -18,7 +18,7 @@
 * 🚀 `UIController` now moves subtitles up or down while the controls are visible, so they don't render behind the top or bottom chrome. Moving subtitles up requires THEOplayer 9.5.0 or higher. ([#129](https://github.com/THEOplayer/android-ui/pull/129))
 * 🐛 Fixed `AudioTrackList`, `SubtitleTrackList`, `QualityList` and `PlaybackRateList` not scrolling to the selected item, and not announcing it to accessibility services. ([#127](https://github.com/THEOplayer/android-ui/pull/127))
 * 🐛 Fixed `UIController` and `DefaultUI` not keeping the player at the aspect ratio of the video (or 16:9 before the video is loaded). ([#140](https://github.com/THEOplayer/android-ui/pull/140))
-* 💅 Menus in `android-ui` now open in a sheet with a translucent background, so they're easier to read on top of the video: a bottom sheet on narrow players, and a side sheet at the end of the player on wide players.
+* 💅 Menus in `android-ui` now open in a sheet with a translucent background, so they're easier to read on top of the video: a bottom sheet on narrow players, and a side sheet at the end of the player on wide players. Use `PlayerAnimations.menuTransitionDuration` to change how long switching between menus takes.
 * 📝 The API documentation now has a separate section for each module (`android-ui`, `android-ui-common` and `android-ui-tv`). ([#128](https://github.com/THEOplayer/android-ui/pull/128))
 
 ## [1.14.2] (2026-10-13)

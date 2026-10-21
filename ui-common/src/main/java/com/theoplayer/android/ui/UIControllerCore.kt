@@ -290,6 +290,8 @@ private val menusOpenContentKey = UIState.Menu { }
 private fun InnerMenus(scope: UIControllerScopeImpl) {
     val layoutDirection = LocalLayoutDirection.current
     val slideDistance = with(LocalDensity.current) { SharedAxisSlideDistance.toPx() }.roundToInt()
+    val durationMillis = LocalPlayerAnimations.current.menuTransitionDuration
+        .inWholeMilliseconds.toInt()
     AnimatedContent(
         label = "InnerMenusAnimation",
         targetState = scope.currentMenu,
@@ -297,7 +299,8 @@ private fun InnerMenus(scope: UIControllerScopeImpl) {
             sharedAxisX(
                 forward = !scope.lastWasClosed,
                 slideDistance = slideDistance,
-                layoutDirection = layoutDirection
+                layoutDirection = layoutDirection,
+                durationMillis = durationMillis
             )
         }
     ) { menu -> menu?.let { scope.it() } }

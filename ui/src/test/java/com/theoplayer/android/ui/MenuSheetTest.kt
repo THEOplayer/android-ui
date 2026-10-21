@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.ads.Ads
+import com.theoplayer.android.ui.theme.PlayerAnimations
+import com.theoplayer.android.ui.theme.THEOplayerTheme
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrackList
@@ -45,6 +47,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.time.Duration.Companion.milliseconds
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34])
@@ -345,6 +348,100 @@ class MenuSheetTest {
         assertTrue(
             composeRule.onAllNodesWithTag("menu-content", useUnmergedTree = true)
                 .fetchSemanticsNodes().isEmpty()
+        )
+    }
+
+    @Test
+    @Config(qualifiers = "w400dp-h800dp")
+    fun menuTransitionDurationIsConfigurable() {
+        val theoplayerView = object : THEOplayerView(composeRule.activity) {
+            private val nativePlayer = mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
+                every { isPaused } returns false
+                every { isEnded } returns false
+                every { ads } returns mockk<Ads>(relaxed = true) {
+                    every { isPlaying } returns false
+                }
+            }
+
+            override fun getPlayer() = nativePlayer
+        }
+        var controllerScope: UIControllerScope? = null
+        composeRule.setContent {
+            THEOplayerTheme(
+                useDarkTheme = true,
+                playerAnimations = PlayerAnimations(
+                    menuTransitionDuration = 1000.milliseconds
+                )
+            ) {
+                UIController(
+                    modifier = Modifier.fillMaxSize(),
+                    theoplayerView = theoplayerView,
+                    centerOverlay = { controllerScope = this }
+                )
+            }
+        }
+        composeRule.waitForIdle()
+
+        composeRule.runOnIdle {
+            controllerScope!!.openMenu {
+                Menu(title = { Text("Menu") }) {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .height(100.dp)
+                            .testTag("menu-content")
+                            .clickable {
+                                openMenu {
+                                    Menu(title = { Text("Submenu") }) {
+                                        Box(
+                                            Modifier
+                                                .fillMaxWidth()
+                                                .height(50.dp)
+                                                .testTag("submenu-content")
+                                        )
+                                    }
+                                }
+                            }
+                    )
+                }
+            }
+        }
+        composeRule.waitForIdle()
+
+        composeRule.mainClock.autoAdvance = false
+        // Invoke the click semantics action directly: under Robolectric the
+        // sheet's clipped Surface is opaque to touch hit-testing, so a real
+        // tap would fall through to the scrim.
+        composeRule.onNodeWithTag("menu-content")
+            .performSemanticsAction(SemanticsActions.OnClick)
+        composeRule.mainClock.advanceTimeByFrame()
+
+        // At 600ms the outgoing menu is still visible: it would already be
+        // gone at the default 300ms duration.
+        composeRule.mainClock.advanceTimeBy(600)
+        fun menuContentNodes() =
+            composeRule.onAllNodesWithTag("menu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+        assertTrue(menuContentNodes().isNotEmpty())
+
+        // Keep advancing past the configured 1000ms duration until only the
+        // submenu remains, and check it really took longer than the default
+        // 300ms (the transition starts a few frames into the first advance).
+        var advanced = 600L
+        while (menuContentNodes().isNotEmpty() && advanced < 3000L) {
+            composeRule.mainClock.advanceTimeBy(200)
+            advanced += 200
+        }
+        assertTrue(
+            "menu-content still present after ${advanced}ms",
+            menuContentNodes().isEmpty()
+        )
+        assertTrue(
+            "transition took only ${advanced}ms, expected more than the default",
+            advanced > 800L
+        )
+        assertTrue(
+            composeRule.onAllNodesWithTag("submenu-content").fetchSemanticsNodes().isNotEmpty()
         )
     }
 

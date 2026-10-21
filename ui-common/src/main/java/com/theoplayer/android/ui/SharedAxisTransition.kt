@@ -21,11 +21,6 @@ import androidx.compose.ui.unit.dp
 internal val SharedAxisSlideDistance: Dp = 30.dp
 
 /**
- * The total duration of a shared axis X transition.
- */
-internal const val SharedAxisDurationMillis: Int = 300
-
-/**
  * Material shared axis X transition: a fade-through with a short horizontal slide,
  * as described in
  * https://m3.material.io/styles/motion/transitions/transition-patterns
@@ -45,7 +40,7 @@ internal fun sharedAxisX(
     forward: Boolean,
     slideDistance: Int,
     layoutDirection: LayoutDirection,
-    durationMillis: Int = SharedAxisDurationMillis
+    durationMillis: Int
 ): ContentTransform {
     val fadeOutDuration = (durationMillis * 0.35f).toInt()
     val fadeInDuration = durationMillis - fadeOutDuration

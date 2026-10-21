@@ -27,7 +27,12 @@ data class PlayerAnimations(
     /**
      * How long the controls stay visible after user interaction while playing.
      */
-    val controlsHideDelay: Duration = 2.seconds
+    val controlsHideDelay: Duration = 2.seconds,
+    /**
+     * The animation duration when switching between menus, such as when opening a submenu
+     * or going back to the previous menu.
+     */
+    val menuTransitionDuration: Duration = 300.milliseconds
 )
 
 /**
