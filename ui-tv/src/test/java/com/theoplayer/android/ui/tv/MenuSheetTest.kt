@@ -20,8 +20,6 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.ui.InternalUiApi
-import com.theoplayer.android.ui.MenuContent
-import com.theoplayer.android.ui.MenuScope
 import com.theoplayer.android.ui.UIControllerScope
 import com.theoplayer.android.ui.theme.PlayerAnimations
 import com.theoplayer.android.ui.tv.theme.THEOplayerTvTheme
@@ -160,20 +158,6 @@ class MenuSheetTest {
         )
     }
 
-    @Test
-    fun menuOutsideControllerDrawsItsOwnSheet() {
-        composeRule.setContent {
-            THEOplayerTvTheme {
-                TestMenuScope().Menu(title = { Text("Menu") }) {
-                    Box(Modifier.fillMaxWidth().height(100.dp).testTag("menu-content"))
-                }
-            }
-        }
-
-        composeRule.waitForIdle()
-        assertEquals(1, sheetCount())
-    }
-
     private fun setControllerAndOpenMenu(
         playerAnimations: PlayerAnimations? = null
     ) {
@@ -237,11 +221,5 @@ class MenuSheetTest {
         every { player.isEnded } returns false
         every { player.ads } returns ads
         return player
-    }
-
-    private class TestMenuScope : MenuScope {
-        override fun openMenu(menu: MenuContent) = Unit
-
-        override fun closeCurrentMenu() = Unit
     }
 }

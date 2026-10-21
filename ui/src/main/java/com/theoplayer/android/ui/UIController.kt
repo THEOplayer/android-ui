@@ -13,7 +13,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -231,12 +230,10 @@ internal fun UIControllerImpl(
             layoutDirection = layoutDirection
         ),
         menuContainer = { menuContent ->
-            CompositionLocalProvider(LocalMenuSheet provides true) {
-                MenuSheet(
-                    onDismiss = { scope.closeCurrentMenu() },
-                    content = menuContent
-                )
-            }
+            MenuSheet(
+                onDismiss = { scope.closeCurrentMenu() },
+                content = menuContent
+            )
         },
         centerOverlay = centerOverlay,
         errorOverlay = errorOverlay,

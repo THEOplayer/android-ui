@@ -100,8 +100,10 @@ class MenuSheetTest {
     fun menuSheetIsCappedAtSixtyPercentOnCompactPlayer() {
         val scope = TestMenuScope()
         composeRule.setContent {
-            scope.Menu(title = { Text("Menu") }) {
-                Box(Modifier.fillMaxWidth().height(2000.dp).testTag("menu-content"))
+            MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+                scope.Menu(title = { Text("Menu") }) {
+                    Box(Modifier.fillMaxWidth().height(2000.dp).testTag("menu-content"))
+                }
             }
         }
 
@@ -142,8 +144,10 @@ class MenuSheetTest {
         val scope = TestMenuScope()
         composeRule.setContent {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                scope.Menu(title = { Text("Menu") }) {
-                    Box(Modifier.fillMaxWidth().height(100.dp).testTag("menu-content"))
+                MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+                    scope.Menu(title = { Text("Menu") }) {
+                        Box(Modifier.fillMaxWidth().height(100.dp).testTag("menu-content"))
+                    }
                 }
             }
         }
@@ -165,10 +169,12 @@ class MenuSheetTest {
             textTracks = listOf(mockSubtitleTrack())
         )
         composeRule.setContent {
-            scope.LanguageMenu(
-                audioTrackState = rememberAudioTrackState(player),
-                subtitleTrackState = rememberSubtitleTrackState(player)
-            )
+            MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+                scope.LanguageMenu(
+                    audioTrackState = rememberAudioTrackState(player),
+                    subtitleTrackState = rememberSubtitleTrackState(player)
+                )
+            }
         }
 
         // The 400dp side sheet means the expanded side-by-side layout (2 * 300dp)
@@ -461,8 +467,10 @@ class MenuSheetTest {
 
     private fun setMenuContent(scope: TestMenuScope) {
         composeRule.setContent {
-            scope.Menu(modifier = Modifier.testTag("menu-root"), title = { Text("Menu") }) {
-                Box(Modifier.fillMaxWidth().height(100.dp).testTag("menu-content"))
+            MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+                scope.Menu(modifier = Modifier.testTag("menu-root"), title = { Text("Menu") }) {
+                    Box(Modifier.fillMaxWidth().height(100.dp).testTag("menu-content"))
+                }
             }
         }
     }
