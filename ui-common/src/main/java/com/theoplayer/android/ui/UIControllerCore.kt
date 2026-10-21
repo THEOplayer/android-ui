@@ -12,9 +12,6 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,10 +30,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.unit.LayoutDirection
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.ui.theme.LocalPlayerAnimations
+import kotlin.math.roundToInt
 import kotlin.time.DurationUnit
 
 /**
@@ -291,18 +289,16 @@ private val menusOpenContentKey = UIState.Menu { }
 @Composable
 private fun InnerMenus(scope: UIControllerScopeImpl) {
     val layoutDirection = LocalLayoutDirection.current
+    val slideDistance = with(LocalDensity.current) { SharedAxisSlideDistance.toPx() }.roundToInt()
     AnimatedContent(
         label = "InnerMenusAnimation",
         targetState = scope.currentMenu,
         transitionSpec = {
-            val ltr = layoutDirection == LayoutDirection.Ltr
-            if (scope.lastWasClosed) {
-                slideInHorizontally { if (ltr) -it else it } togetherWith
-                        slideOutHorizontally { if (ltr) it else -it }
-            } else {
-                slideInHorizontally { if (ltr) it else -it } togetherWith
-                        slideOutHorizontally { if (ltr) -it else it }
-            }
+            sharedAxisX(
+                forward = !scope.lastWasClosed,
+                slideDistance = slideDistance,
+                layoutDirection = layoutDirection
+            )
         }
     ) { menu -> menu?.let { scope.it() } }
 }
