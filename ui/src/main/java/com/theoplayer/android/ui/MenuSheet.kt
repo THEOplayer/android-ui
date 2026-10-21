@@ -1,7 +1,6 @@
 package com.theoplayer.android.ui
 
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,7 +41,7 @@ internal fun MenuSheet(
     onDismiss: () -> Unit,
     content: @Composable () -> Unit
 ) {
-    Box(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
             .pointerInput(onDismiss) {
@@ -51,43 +50,41 @@ internal fun MenuSheet(
                 detectTapGestures { onDismiss() }
             }
     ) {
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val wide = maxWidth >= menuSheetBreakpoint
-            val minHeight = minOf(menuSheetMinHeight, maxHeight)
-            val maxSheetHeight = maxOf(maxHeight * 0.6f, minHeight)
-            val fillsPlayer = !wide && minHeight >= maxHeight
-            Surface(
-                modifier = (
-                        if (wide) {
-                            Modifier
-                                .align(Alignment.CenterEnd)
-                                .fillMaxHeight()
-                                .width(menuSheetWidth)
-                        } else {
-                            Modifier
-                                .align(Alignment.BottomCenter)
-                                .widthIn(max = menuSheetMaxWidth)
-                                .fillMaxWidth()
-                                .heightIn(min = minHeight, max = maxSheetHeight)
-                        }
-                        )
-                    .testTag("menu-sheet")
-                    .pointerInput(Unit) {
-                        // Blocks taps on the sheet from reaching the scrim.
-                        detectTapGestures { }
-                    },
-                shape = if (wide) {
-                    RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
-                } else if (fillsPlayer) {
-                    RectangleShape
-                } else {
-                    RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+        val wide = maxWidth >= menuSheetBreakpoint
+        val minHeight = minOf(menuSheetMinHeight, maxHeight)
+        val maxSheetHeight = maxOf(maxHeight * 0.6f, minHeight)
+        val fillsPlayer = !wide && minHeight >= maxHeight
+        Surface(
+            modifier = (
+                    if (wide) {
+                        Modifier
+                            .align(Alignment.CenterEnd)
+                            .fillMaxHeight()
+                            .width(menuSheetWidth)
+                    } else {
+                        Modifier
+                            .align(Alignment.BottomCenter)
+                            .widthIn(max = menuSheetMaxWidth)
+                            .fillMaxWidth()
+                            .heightIn(min = minHeight, max = maxSheetHeight)
+                    }
+                    )
+                .testTag("menu-sheet")
+                .pointerInput(Unit) {
+                    // Blocks taps on the sheet from reaching the scrim.
+                    detectTapGestures { }
                 },
-                color = MaterialTheme.colorScheme.surface.copy(alpha = menuSheetAlpha),
-                contentColor = MaterialTheme.colorScheme.onSurface
-            ) {
-                content()
-            }
+            shape = if (wide) {
+                RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
+            } else if (fillsPlayer) {
+                RectangleShape
+            } else {
+                RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+            },
+            color = MaterialTheme.colorScheme.surface.copy(alpha = menuSheetAlpha),
+            contentColor = MaterialTheme.colorScheme.onSurface
+        ) {
+            content()
         }
     }
 }
