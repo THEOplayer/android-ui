@@ -4,6 +4,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ktfmt)
+}
+
+ktfmt {
+    kotlinLangStyle()
 }
 
 android {

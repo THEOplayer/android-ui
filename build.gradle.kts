@@ -1,3 +1,5 @@
+import com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask
+import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
 import org.jetbrains.changelog.date
 import java.time.Year
 import kotlin.text.Typography.copyright
@@ -20,6 +22,35 @@ plugins {
     alias(libs.plugins.compose.compiler) apply false
     alias(libs.plugins.dokka)
     alias(libs.plugins.changelog)
+    alias(libs.plugins.ktfmt)
+}
+
+ktfmt {
+    kotlinLangStyle()
+}
+
+tasks.register<KtfmtCheckTask>("ktfmtCheckBuildSrc") {
+    source = project.fileTree("buildSrc")
+    include("**/*.kts")
+}
+
+tasks.register<KtfmtFormatTask>("ktfmtFormatBuildSrc") {
+    source = project.fileTree("buildSrc")
+    include("**/*.kts")
+}
+
+val ktfmtCheck = tasks.findByName("ktfmtCheck")?.let { tasks.named("ktfmtCheck") }
+    ?: tasks.register("ktfmtCheck")
+ktfmtCheck.configure {
+    dependsOn("ktfmtCheckScripts", "ktfmtCheckBuildSrc")
+    dependsOn(subprojects.map { "${it.path}:ktfmtCheck" })
+}
+
+val ktfmtFormat = tasks.findByName("ktfmtFormat")?.let { tasks.named("ktfmtFormat") }
+    ?: tasks.register("ktfmtFormat")
+ktfmtFormat.configure {
+    dependsOn("ktfmtFormatScripts", "ktfmtFormatBuildSrc")
+    dependsOn(subprojects.map { "${it.path}:ktfmtFormat" })
 }
 
 dependencies {

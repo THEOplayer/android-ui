@@ -14,7 +14,12 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.dokka)
     alias(libs.plugins.dokka.javadoc)
+    alias(libs.plugins.ktfmt)
     id("android-ui.library-conventions")
+}
+
+ktfmt {
+    kotlinLangStyle()
 }
 
 android {
