@@ -163,3 +163,12 @@ fun TvPlayer() {
 ```
 
 See the [Android TV getting started guide](https://optiview.dolby.com/docs/theoplayer/ui/android/open-video-ui/guides/android-tv/getting-started/) for more details, and [the TV demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/tv/TvActivity.kt) for a complete and working example.
+
+## Credits
+
+The Android TV demo app uses the following images:
+
+* Bip Bop: ["Oscilloscope sine square.jpg"](https://commons.wikimedia.org/wiki/File:Oscilloscope_sine_square.jpg) by Xato, Public domain.
+* Elephant's Dream: ["Elephants Dream s5 both.jpg"](https://commons.wikimedia.org/wiki/File:Elephants_Dream_s5_both.jpg) by © Blender Foundation / Ton Roosendaal et al., [CC BY 2.5](https://creativecommons.org/licenses/by/2.5).
+* Sintel: ["Sintel-screenshot-1.jpg"](https://commons.wikimedia.org/wiki/File:Sintel-screenshot-1.jpg) by © Blender Foundation (www.sintel.org), [CC BY 3.0](https://creativecommons.org/licenses/by/3.0).
+* DASH-IF Livesim and Test card: Frames of the DASH-IF Livesim test stream, captured in the demo app.
