@@ -20,8 +20,8 @@
 * 🐛 Fixed `AudioTrackList`, `SubtitleTrackList`, `QualityList` and `PlaybackRateList` not scrolling to the selected item, and not announcing it to accessibility services. ([#127](https://github.com/THEOplayer/android-ui/pull/127))
 * 🐛 Fixed `UIController` and `DefaultUI` not keeping the player at the aspect ratio of the video (or 16:9 before the video is loaded). ([#140](https://github.com/THEOplayer/android-ui/pull/140))
 * 🐛 Fixed menus losing their scroll position (and on Android TV, their focused item) when returning from a submenu. ([#143](https://github.com/THEOplayer/android-ui/pull/143))
-* 💅 Menus on mobile now open in a sheet with a translucent background, so they're easier to read on top of the video: a bottom sheet on narrow players, and a side sheet at the end of the player on wide players.
-* 💅 Opening a submenu or going back to the previous menu now only animates the menu's contents, with a short slide and a fade, on both mobile and TV. Use the new `PlayerAnimations.menuTransitionDuration` to change how long this takes.
+* 💅 Menus on mobile now open in a sheet with a translucent background, so they're easier to read on top of the video: a bottom sheet on narrow players, and a side sheet at the end of the player on wide players. ([#141](https://github.com/THEOplayer/android-ui/pull/141))
+* 💅 Opening a submenu or going back to the previous menu now only animates the menu's contents, with a short slide and a fade, on both mobile and TV. Use the new `PlayerAnimations.menuTransitionDuration` to change how long this takes. ([#141](https://github.com/THEOplayer/android-ui/pull/141))
 * 📝 The API documentation now has a separate section for each module (`android-ui`, `android-ui-common` and `android-ui-tv`). ([#128](https://github.com/THEOplayer/android-ui/pull/128))
 
 ## [1.14.2] (2026-10-13)
