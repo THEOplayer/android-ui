@@ -121,7 +121,7 @@ fun MenuScope.LanguageMenuCompact(
     audioTrackState: AudioTrackState,
     subtitleTrackState: SubtitleTrackState,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier.padding(start = 16.dp, end = 4.dp)) {
         if (showAudioTracks(audioTrackState)) {
             Row {
                 Text(

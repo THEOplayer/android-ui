@@ -64,7 +64,8 @@ fun MenuScope.TextTrackStyleMenu(state: TextTrackStyleState) {
         },
     ) {
         Column(
-            modifier = Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)
+            modifier =
+                Modifier.verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 4.dp)
         ) {
             textTrackStyleOptions
                 .filter { it.isAvailable(state) }
