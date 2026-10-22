@@ -94,7 +94,10 @@ private fun MenuScope.MenuImpl(
     content: @Composable () -> Unit,
 ) {
     Column(modifier = modifier.padding(top = 8.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             IconButton(onClick = { closeCurrentMenu() }) { backIcon() }
             ProvideTextStyle(value = MaterialTheme.typography.titleMedium) { title() }
             if (actions != null) {
