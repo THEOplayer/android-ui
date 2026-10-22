@@ -25,16 +25,34 @@ interface UIControllerScope : MenuScope {
         get() = player.theoplayerView
 }
 
+/**
+ * An entry on the menu stack, pairing a [MenuContent] with a stable [id].
+ *
+ * The [id] uniquely identifies the menu for as long as it is on the stack, so saved state (such as
+ * scroll positions) can be keyed to it.
+ */
+@InternalUiApi
+class MenuEntry
+internal constructor(
+    val id: Int,
+    val content: MenuContent,
+)
+
 /** Default implementation of [UIControllerScope], managing the menu stack. */
 @InternalUiApi
 class UIControllerScopeImpl(
     override val theoplayerView: THEOplayerView?,
     private val providedPlayer: Player?,
 ) : UIControllerScope {
-    private var menuStack = mutableStateListOf<MenuContent>()
+    private var menuStack = mutableStateListOf<MenuEntry>()
+    private var nextMenuId = 0
 
-    val currentMenu: MenuContent?
+    val currentMenu: MenuEntry?
         get() = menuStack.lastOrNull()
+
+    /** The ids of all menus currently on the stack, in stack order. */
+    val menuIds: List<Int>
+        get() = menuStack.map { it.id }
 
     var lastWasClosed: Boolean = false
         private set
@@ -61,7 +79,7 @@ class UIControllerScopeImpl(
     }
 
     override fun openMenu(menu: MenuContent) {
-        menuStack.add(menu)
+        menuStack.add(MenuEntry(nextMenuId++, menu))
         lastWasClosed = false
     }
 

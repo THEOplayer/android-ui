@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.focusRestorer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Icon
@@ -70,6 +71,7 @@ fun MenuScope.Menu(
             modifier =
                 Modifier.padding(horizontal = menuContentPadding)
                     .focusRequester(focusRequester)
+                    .focusRestorer()
                     .focusGroup(),
             verticalArrangement = Arrangement.spacedBy(menuItemVerticalSpacing),
         ) {
@@ -83,8 +85,8 @@ fun MenuScope.Menu(
 internal fun MenuSubmenuItem(
     onClick: () -> Unit,
     headlineContent: @Composable () -> Unit,
-    supportingContent: @Composable () -> Unit,
-    leadingContent: @Composable BoxScope.() -> Unit,
+    supportingContent: (@Composable () -> Unit)? = null,
+    leadingContent: (@Composable BoxScope.() -> Unit)? = null,
 ) {
     ListItem(
         selected = false,

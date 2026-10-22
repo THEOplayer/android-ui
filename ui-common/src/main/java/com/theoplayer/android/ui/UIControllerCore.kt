@@ -21,9 +21,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.SaveableStateHolder
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -147,6 +150,18 @@ private fun UIControllerContent(
     centerChrome: (@Composable UIControllerScope.() -> Unit)?,
     bottomChrome: (@Composable UIControllerScope.() -> Unit)?,
 ) {
+    // Keep the saved state (scroll positions, focus) of menus that are still on
+    // the stack alive while a submenu is open, and forget closed menus.
+    val saveableStateHolder = rememberSaveableStateHolder()
+    val knownMenuIds = remember { mutableSetOf<Int>() }
+    LaunchedEffect(scope.menuIds) {
+        val menuIds = scope.menuIds
+        knownMenuIds.removeAll { id ->
+            (id !in menuIds).also { removed -> if (removed) saveableStateHolder.removeState(id) }
+        }
+        knownMenuIds.addAll(menuIds)
+    }
+
     CompositionLocalProvider(
         LocalPlayer provides player,
         LocalTHEOplayerView provides theoplayerView,
@@ -161,7 +176,7 @@ private fun UIControllerContent(
                 if (state is UIState.Menu) {
                     // One stable content key while menus are open, so pushing a submenu
                     // does not animate the whole menu container.
-                    menusOpenContentKey
+                    MenusOpenContentKey
                 } else {
                     state
                 }
@@ -169,7 +184,7 @@ private fun UIControllerContent(
         ) { state ->
             when (state) {
                 UIState.Error -> errorOverlay?.let { scope.it() }
-                is UIState.Menu -> menuContainer { InnerMenus(scope) }
+                is UIState.Menu -> menuContainer { InnerMenus(scope, saveableStateHolder) }
                 UIState.Controls ->
                     scope.PlayerControls(
                         controlsVisible = controls.visible.value,
@@ -280,14 +295,17 @@ private fun UIControllerScope.PlayerControls(
     }
 }
 
-private val menusOpenContentKey = UIState.Menu {}
+private object MenusOpenContentKey
 
 /**
  * Renders the open menu stack, animating menu pushes and pops within the current
  * [menuContainer][UIControllerCore].
  */
 @Composable
-private fun InnerMenus(scope: UIControllerScopeImpl) {
+private fun InnerMenus(
+    scope: UIControllerScopeImpl,
+    saveableStateHolder: SaveableStateHolder,
+) {
     val layoutDirection = LocalLayoutDirection.current
     val slideDistance = with(LocalDensity.current) { SharedAxisSlideDistance.toPx() }.roundToInt()
     val durationMillis =
@@ -295,6 +313,7 @@ private fun InnerMenus(scope: UIControllerScopeImpl) {
     AnimatedContent(
         label = "InnerMenusAnimation",
         targetState = scope.currentMenu,
+        contentKey = { it?.id },
         transitionSpec = {
             sharedAxisX(
                 forward = !scope.lastWasClosed,
@@ -304,7 +323,7 @@ private fun InnerMenus(scope: UIControllerScopeImpl) {
             )
         },
     ) { menu ->
-        menu?.let { scope.it() }
+        menu?.let { saveableStateHolder.SaveableStateProvider(it.id) { it.content(scope) } }
     }
 }
 

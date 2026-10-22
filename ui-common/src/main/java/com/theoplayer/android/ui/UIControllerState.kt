@@ -14,7 +14,7 @@ import com.theoplayer.android.ui.util.rememberIsInPipMode
 sealed class UIState {
     data object Error : UIState()
 
-    data class Menu(val menu: MenuContent) : UIState()
+    data class Menu(val menu: MenuEntry) : UIState()
 
     data object Controls : UIState()
 

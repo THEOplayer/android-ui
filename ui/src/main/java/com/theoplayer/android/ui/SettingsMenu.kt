@@ -56,7 +56,7 @@ fun MenuScope.SettingsMenu(
             )
         },
     ) {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 4.dp)) {
             Row {
                 Text(
                     modifier = Modifier.weight(1f).alignByBaseline(),

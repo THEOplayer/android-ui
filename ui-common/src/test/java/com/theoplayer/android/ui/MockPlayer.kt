@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui
 
+import android.graphics.Typeface
 import com.theoplayer.android.api.ads.Ads
 import com.theoplayer.android.api.error.THEOplayerException
 import com.theoplayer.android.api.event.Event
@@ -55,6 +56,7 @@ import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.TextTrackKind
 import com.theoplayer.android.api.player.track.texttrack.TextTrackList
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
+import com.theoplayer.android.api.player.track.texttrack.TextTrackStyle
 import com.theoplayer.android.api.timerange.TimeRange
 import com.theoplayer.android.api.timerange.TimeRanges
 import io.mockk.every
@@ -88,6 +90,7 @@ internal class MockPlayer(
     val audioTrackList = mutableListOf<MediaTrack<AudioQuality>>()
     val textTrackList = mutableListOf<TextTrack>()
     val videoTrackList = mutableListOf<MediaTrack<VideoQuality>>()
+    val textTrackStyle = MockTextTrackStyle()
 
     val ads: Ads = mockk {
         every { isPlaying } answers { this@MockPlayer.adPlaying }
@@ -145,6 +148,7 @@ internal class MockPlayer(
         every { setPlaybackRate(any()) } answers { this@MockPlayer.playbackRate = firstArg() }
         every { getAudioTracks() } returns this@MockPlayer.audioTracks
         every { getTextTracks() } returns this@MockPlayer.textTracks
+        every { getTextTrackStyle() } returns this@MockPlayer.textTrackStyle.style
         every { getVideoTracks() } returns this@MockPlayer.videoTracks
         every { addEventListener(any<EventType<out PlayerEvent<*>>>(), any()) } answers
             {
@@ -265,6 +269,70 @@ internal class MockTextTrack(kind: TextTrackKind, var mode: TextTrackMode) {
         every { this@mockk.mode } answers { this@MockTextTrack.mode }
         every { setMode(any()) } answers { this@MockTextTrack.mode = firstArg() }
         every { this@mockk.uid } returns this@MockTextTrack.uid
+    }
+}
+
+/**
+ * A mocked [TextTrackStyle] backed by mutable fields, with the same built-in defaults as the SDK.
+ * [TextTrackStyle.reset] restores the defaults and zeroes the margins.
+ */
+internal class MockTextTrackStyle {
+    var fontColor = 0xFFFFFFFF.toInt()
+    var backgroundColor = 0xFF000000.toInt()
+    var windowColor = 0x00000000
+    var edgeColor = 0xFFFFFFFF.toInt()
+    var edgeType = TextTrackStyle.EdgeType.EDGE_TYPE_NONE
+    var fontSize = 100
+    var font: Typeface? = null
+    var marginLeft = 0
+    var marginRight = 0
+    var marginTop = 0
+    var marginBottom = 0
+
+    val style: TextTrackStyle = mockk {
+        every { getFontColor() } answers { this@MockTextTrackStyle.fontColor }
+        every { setFontColor(any()) } answers { this@MockTextTrackStyle.fontColor = firstArg() }
+        every { getBackgroundColor() } answers { this@MockTextTrackStyle.backgroundColor }
+        every { setBackgroundColor(any()) } answers
+            {
+                this@MockTextTrackStyle.backgroundColor = firstArg()
+            }
+        every { getWindowColor() } answers { this@MockTextTrackStyle.windowColor }
+        every { setWindowColor(any()) } answers { this@MockTextTrackStyle.windowColor = firstArg() }
+        every { getEdgeColor() } answers { this@MockTextTrackStyle.edgeColor }
+        every { setEdgeColor(any()) } answers { this@MockTextTrackStyle.edgeColor = firstArg() }
+        every { getEdgeType() } answers { this@MockTextTrackStyle.edgeType }
+        every { setEdgeType(any()) } answers { this@MockTextTrackStyle.edgeType = firstArg() }
+        every { getFontSize() } answers { this@MockTextTrackStyle.fontSize }
+        every { setFontSize(any()) } answers { this@MockTextTrackStyle.fontSize = firstArg() }
+        every { getFont() } answers { this@MockTextTrackStyle.font }
+        every { setFont(any<Typeface>()) } answers { this@MockTextTrackStyle.font = firstArg() }
+        every { setFont(isNull()) } answers { this@MockTextTrackStyle.font = null }
+        every { getMarginLeft() } answers { this@MockTextTrackStyle.marginLeft }
+        every { setMarginLeft(any()) } answers { this@MockTextTrackStyle.marginLeft = firstArg() }
+        every { getMarginRight() } answers { this@MockTextTrackStyle.marginRight }
+        every { setMarginRight(any()) } answers { this@MockTextTrackStyle.marginRight = firstArg() }
+        every { getMarginTop() } answers { this@MockTextTrackStyle.marginTop }
+        every { setMarginTop(any()) } answers { this@MockTextTrackStyle.marginTop = firstArg() }
+        every { getMarginBottom() } answers { this@MockTextTrackStyle.marginBottom }
+        every { setMarginBottom(any()) } answers
+            {
+                this@MockTextTrackStyle.marginBottom = firstArg()
+            }
+        every { reset() } answers
+            {
+                this@MockTextTrackStyle.fontColor = 0xFFFFFFFF.toInt()
+                this@MockTextTrackStyle.backgroundColor = 0xFF000000.toInt()
+                this@MockTextTrackStyle.windowColor = 0x00000000
+                this@MockTextTrackStyle.edgeColor = 0xFFFFFFFF.toInt()
+                this@MockTextTrackStyle.edgeType = TextTrackStyle.EdgeType.EDGE_TYPE_NONE
+                this@MockTextTrackStyle.fontSize = 100
+                this@MockTextTrackStyle.font = null
+                this@MockTextTrackStyle.marginLeft = 0
+                this@MockTextTrackStyle.marginRight = 0
+                this@MockTextTrackStyle.marginTop = 0
+                this@MockTextTrackStyle.marginBottom = 0
+            }
     }
 }
 

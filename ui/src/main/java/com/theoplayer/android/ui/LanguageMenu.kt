@@ -1,18 +1,22 @@
 package com.theoplayer.android.ui
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material.icons.rounded.Close
+import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -117,7 +121,7 @@ fun MenuScope.LanguageMenuCompact(
     audioTrackState: AudioTrackState,
     subtitleTrackState: SubtitleTrackState,
 ) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+    Column(modifier = Modifier.padding(start = 16.dp, end = 4.dp)) {
         if (showAudioTracks(audioTrackState)) {
             Row {
                 Text(
@@ -207,23 +211,43 @@ fun MenuScope.LanguageMenuExpanded(
     Row(modifier = Modifier.padding(horizontal = 16.dp)) {
         if (showAudioTracks(audioTrackState)) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
-                    text = stringResource(CommonR.string.theoplayer_ui_menu_audio),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(1f).heightIn(min = 48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
+                        text = stringResource(CommonR.string.theoplayer_ui_menu_audio),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
                 AudioTrackList(audioTrackState)
             }
         }
         if (showSubtitleTracks(subtitleTrackState)) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
-                    text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles),
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.titleMedium,
-                )
+                Box(
+                    modifier = Modifier.fillMaxWidth(1f).heightIn(min = 48.dp),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(1f).padding(0.dp, 8.dp),
+                        text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    IconButton(
+                        modifier = Modifier.align(Alignment.CenterEnd),
+                        onClick = { openMenu { TextTrackStyleMenu() } },
+                    ) {
+                        Icon(
+                            Icons.Rounded.Settings,
+                            contentDescription =
+                                stringResource(CommonR.string.theoplayer_ui_menu_text_track_style),
+                        )
+                    }
+                }
                 SubtitleTrackList(subtitleTrackState)
             }
         }
@@ -259,7 +283,11 @@ fun MenuScope.AudioTrackMenu(state: AudioTrackState) {
 /**
  * A [Menu] to change the subtitles of the stream.
  *
+ * Besides the subtitle tracks, this menu also links to the [TextTrackStyleMenu], to change the
+ * style of the subtitles.
+ *
  * @see SubtitleTrackList
+ * @see TextTrackStyleMenu
  */
 @Composable
 fun MenuScope.SubtitleMenu() {
@@ -271,13 +299,28 @@ fun MenuScope.SubtitleMenu() {
  *
  * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
  *
+ * Besides the subtitle tracks, this menu also links to the [TextTrackStyleMenu], to change the
+ * style of the subtitles.
+ *
  * @param state the [SubtitleTrackState] to read and control
  * @see SubtitleTrackList
+ * @see TextTrackStyleMenu
  */
 @ExperimentalPlayerStateApi
 @Composable
 fun MenuScope.SubtitleMenu(state: SubtitleTrackState) {
-    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) }) {
+    Menu(
+        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_subtitles)) },
+        actions = {
+            IconButton(onClick = { openMenu { TextTrackStyleMenu() } }) {
+                Icon(
+                    Icons.Rounded.Settings,
+                    contentDescription =
+                        stringResource(CommonR.string.theoplayer_ui_menu_text_track_style),
+                )
+            }
+        },
+    ) {
         SubtitleTrackList(state, onClick = { closeCurrentMenu() })
     }
 }
