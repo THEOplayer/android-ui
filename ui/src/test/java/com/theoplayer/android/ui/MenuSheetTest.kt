@@ -19,6 +19,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onParent
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
@@ -77,6 +78,70 @@ class MenuSheetTest {
             click(Offset(with(composeRule.density) { 200.dp.toPx() }, centerY))
         }
         assertEquals(1, scope.closeCalls)
+    }
+
+    @Test
+    @Config(qualifiers = "w900dp-h400dp")
+    fun tapOutsideSheetClosesAllMenus() {
+        setControllerAndOpenMenus()
+        composeRule.waitForIdle()
+        pushSubmenu()
+        composeRule.waitForIdle()
+        assertEquals(1, sheetCount())
+        assertTrue(
+            composeRule
+                .onAllNodesWithTag("submenu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        )
+
+        // Tapping the scrim to the left of the 400dp side sheet closes all
+        // menus, not just the top submenu.
+        composeRule.onNodeWithTag("menu-sheet").onParent().performTouchInput {
+            click(Offset(with(composeRule.density) { 200.dp.toPx() }, centerY))
+        }
+        composeRule.waitForIdle()
+
+        assertEquals(0, sheetCount())
+        assertTrue(
+            composeRule
+                .onAllNodesWithTag("menu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isEmpty()
+        )
+        assertTrue(
+            composeRule
+                .onAllNodesWithTag("submenu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isEmpty()
+        )
+    }
+
+    @Test
+    @Config(qualifiers = "w900dp-h400dp")
+    fun backFromSubmenuReturnsToParentMenu() {
+        setControllerAndOpenMenus()
+        composeRule.waitForIdle()
+        pushSubmenu()
+        composeRule.waitForIdle()
+
+        // Back only closes the top menu, returning to the parent menu.
+        composeRule.activity.onBackPressedDispatcher.onBackPressed()
+        composeRule.waitForIdle()
+
+        assertEquals(1, sheetCount())
+        assertTrue(
+            composeRule
+                .onAllNodesWithTag("menu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        )
+        assertTrue(
+            composeRule
+                .onAllNodesWithTag("submenu-content", useUnmergedTree = true)
+                .fetchSemanticsNodes()
+                .isEmpty()
+        )
     }
 
     @Test
@@ -435,6 +500,57 @@ class MenuSheetTest {
         )
     }
 
+    private fun setControllerAndOpenMenus(): UIControllerScope {
+        val theoplayerView =
+            object : THEOplayerView(composeRule.activity) {
+                private val nativePlayer =
+                    mockk<com.theoplayer.android.api.player.Player>(relaxed = true) {
+                        every { isPaused } returns false
+                        every { isEnded } returns false
+                        every { ads } returns
+                            mockk<Ads>(relaxed = true) { every { isPlaying } returns false }
+                    }
+
+                override fun getPlayer() = nativePlayer
+            }
+        var controllerScope: UIControllerScope? = null
+        composeRule.setContent {
+            UIController(
+                modifier = Modifier.fillMaxSize(),
+                theoplayerView = theoplayerView,
+                centerOverlay = { controllerScope = this },
+            )
+        }
+        composeRule.waitForIdle()
+        composeRule.runOnIdle {
+            controllerScope!!.openMenu {
+                Menu(title = { Text("Menu") }) {
+                    Box(
+                        Modifier.fillMaxWidth().height(100.dp).testTag("menu-content").clickable {
+                            openMenu {
+                                Menu(title = { Text("Submenu") }) {
+                                    Box(
+                                        Modifier.fillMaxWidth()
+                                            .height(50.dp)
+                                            .testTag("submenu-content")
+                                    )
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+        }
+        return controllerScope!!
+    }
+
+    // Invoke the click semantics action directly: under Robolectric the
+    // sheet's clipped Surface is opaque to touch hit-testing, so a real
+    // tap would fall through to the scrim.
+    private fun pushSubmenu() {
+        composeRule.onNodeWithTag("menu-content").performSemanticsAction(SemanticsActions.OnClick)
+    }
+
     private fun boundsOf(tag: String) =
         composeRule
             .onAllNodesWithTag(tag, useUnmergedTree = true)
@@ -471,6 +587,10 @@ class MenuSheetTest {
         override fun openMenu(menu: MenuContent) = Unit
 
         override fun closeCurrentMenu() {
+            closeCalls++
+        }
+
+        override fun closeAllMenus() {
             closeCalls++
         }
     }

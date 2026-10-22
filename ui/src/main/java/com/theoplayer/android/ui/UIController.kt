@@ -235,7 +235,7 @@ internal fun UIControllerImpl(
             ),
         menuContainer = { menuContent ->
             MenuSheet(
-                onDismiss = { scope.closeCurrentMenu() },
+                onDismiss = { scope.closeAllMenus() },
                 content = menuContent,
             )
         },

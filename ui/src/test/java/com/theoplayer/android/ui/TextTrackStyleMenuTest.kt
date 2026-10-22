@@ -152,6 +152,10 @@ class TextTrackStyleMenuTest {
         override fun closeCurrentMenu() {
             menuStack.removeLastOrNull()
         }
+
+        override fun closeAllMenus() {
+            menuStack.clear()
+        }
     }
 
     private class PlayerBackedTHEOplayerView(

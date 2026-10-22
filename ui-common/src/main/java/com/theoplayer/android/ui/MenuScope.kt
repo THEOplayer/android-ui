@@ -34,6 +34,9 @@ interface MenuScope {
      */
     fun openMenu(menu: MenuContent)
 
-    /** Close the currently open menu. */
+    /** Close the currently open menu, returning to the previous menu (if any). */
     fun closeCurrentMenu()
+
+    /** Close all open menus, including the current menu and all menus below it. */
+    fun closeAllMenus()
 }
