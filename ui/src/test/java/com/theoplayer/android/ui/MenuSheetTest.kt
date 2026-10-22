@@ -77,7 +77,8 @@ class MenuSheetTest {
         composeRule.onRoot().performTouchInput {
             click(Offset(with(composeRule.density) { 200.dp.toPx() }, centerY))
         }
-        assertEquals(1, scope.closeCalls)
+        assertEquals(1, scope.closeAllMenusCalls)
+        assertEquals(0, scope.closeCurrentMenuCalls)
     }
 
     @Test
@@ -167,7 +168,7 @@ class MenuSheetTest {
     fun menuSheetIsCappedAtSixtyPercentOnCompactPlayer() {
         val scope = TestMenuScope()
         composeRule.setContent {
-            MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+            MenuSheet(onDismiss = { scope.closeAllMenus() }) {
                 scope.Menu(title = { Text("Menu") }) {
                     Box(Modifier.fillMaxWidth().height(2000.dp).testTag("menu-content"))
                 }
@@ -211,7 +212,7 @@ class MenuSheetTest {
         val scope = TestMenuScope()
         composeRule.setContent {
             CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
-                MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+                MenuSheet(onDismiss = { scope.closeAllMenus() }) {
                     scope.Menu(title = { Text("Menu") }) {
                         Box(Modifier.fillMaxWidth().height(100.dp).testTag("menu-content"))
                     }
@@ -238,7 +239,7 @@ class MenuSheetTest {
                 textTracks = listOf(mockSubtitleTrack()),
             )
         composeRule.setContent {
-            MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+            MenuSheet(onDismiss = { scope.closeAllMenus() }) {
                 scope.LanguageMenu(
                     audioTrackState = rememberAudioTrackState(player),
                     subtitleTrackState = rememberSubtitleTrackState(player),
@@ -572,7 +573,7 @@ class MenuSheetTest {
 
     private fun setMenuContent(scope: TestMenuScope) {
         composeRule.setContent {
-            MenuSheet(onDismiss = { scope.closeCurrentMenu() }) {
+            MenuSheet(onDismiss = { scope.closeAllMenus() }) {
                 scope.Menu(modifier = Modifier.testTag("menu-root"), title = { Text("Menu") }) {
                     Box(Modifier.fillMaxWidth().height(100.dp).testTag("menu-content"))
                 }
@@ -582,16 +583,17 @@ class MenuSheetTest {
 
     @OptIn(InternalUiApi::class)
     private class TestMenuScope : MenuScope {
-        var closeCalls = 0
+        var closeCurrentMenuCalls = 0
+        var closeAllMenusCalls = 0
 
         override fun openMenu(menu: MenuContent) = Unit
 
         override fun closeCurrentMenu() {
-            closeCalls++
+            closeCurrentMenuCalls++
         }
 
         override fun closeAllMenus() {
-            closeCalls++
+            closeAllMenusCalls++
         }
     }
 
