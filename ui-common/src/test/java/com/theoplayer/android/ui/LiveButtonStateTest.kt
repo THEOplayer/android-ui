@@ -66,4 +66,20 @@ class LiveButtonStateTest {
         verify { mock.player.currentTime = Double.POSITIVE_INFINITY }
         verify(exactly = 1) { mock.player.play() }
     }
+
+    @Test
+    fun `disabled during ads`() = runTest {
+        val mock = MockPlayer(adPlaying = true, duration = Double.POSITIVE_INFINITY)
+        val state = LiveButtonState(mock.player, liveThreshold = 10.0)
+        launchObserve { state.observe() }
+        assertFalse(state.enabled)
+
+        state.onClick()
+        verify(exactly = 0) { mock.player.currentTime = any() }
+        verify(exactly = 0) { mock.player.play() }
+
+        mock.adPlaying = false
+        mock.fireAdEvent()
+        assertTrue(state.enabled)
+    }
 }

@@ -13,6 +13,7 @@
 
 * 💅 On Android TV, pressing Center or Enter on the `SeekBar` now toggles play or pause, so viewers don't have to move focus to the play button first. Custom UIs can use the new `SeekBarState.togglePlayPause()` for this. ([#148](https://github.com/THEOplayer/android-ui/pull/148))
 * 💅 While scrubbing the `SeekBar`, the player now only seeks once the viewer stops moving for a moment or lets go, instead of on every position change. `SeekBarState` now extends `PlaybackTimeState`, and `CurrentTimeDisplay` shows the position being scrubbed to. ([#149](https://github.com/THEOplayer/android-ui/pull/149))
+* 🐛 The `LiveButton` is now disabled while an ad is playing, so viewers can no longer seek to the live point during an ad. ([#TBD](https://github.com/THEOplayer/android-ui/pull/TBD))
 
 ## [1.15.0] (2026-10-23)
 

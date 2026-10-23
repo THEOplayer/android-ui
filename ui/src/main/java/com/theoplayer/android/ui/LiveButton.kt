@@ -133,6 +133,7 @@ fun LiveButton(
     if (state.visible) {
         TextButton(
             modifier = modifier,
+            enabled = state.enabled,
             contentPadding = contentPadding,
             colors = colors.toButtonColors(),
             onClick = { state.onClick() },

@@ -102,6 +102,7 @@ fun LiveButton(
         Button(
             onClick = state::onClick,
             modifier = modifier,
+            enabled = state.enabled,
             contentPadding = contentPadding,
             colors = colors,
         ) {
