@@ -11,7 +11,7 @@
 
 ## [Unreleased]
 
-* 💅 On Android TV, pressing Center or Enter on the `SeekBar` now toggles play or pause, so viewers don't have to move focus to the play button first. ([#148](https://github.com/THEOplayer/android-ui/pull/148))
+* 💅 On Android TV, pressing Center or Enter on the `SeekBar` now toggles play or pause, so viewers don't have to move focus to the play button first. Custom UIs can use the new `SeekBarState.togglePlayPause()` for this. ([#148](https://github.com/THEOplayer/android-ui/pull/148))
 
 ## [1.15.0] (2026-10-23)
 

@@ -119,6 +119,21 @@ class SeekBarState internal constructor(private val player: Player?) {
     }
 
     /**
+     * Plays or pauses the player. While the user is scrubbing, this instead changes whether
+     * playback resumes when scrubbing finishes.
+     */
+    fun togglePlayPause() {
+        val player = player ?: return
+        if (seekTime != null) {
+            wasPlayingBeforeSeek = !wasPlayingBeforeSeek
+        } else if (player.isPaused) {
+            player.play()
+        } else {
+            player.pause()
+        }
+    }
+
+    /**
      * Called when the user stops dragging the seek bar. Resumes playback if the player was playing
      * before the drag started.
      */

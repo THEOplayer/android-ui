@@ -13,13 +13,10 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
-import com.theoplayer.android.ui.InternalUiApi
 import com.theoplayer.android.ui.LocalTHEOplayerView
 import com.theoplayer.android.ui.SeekBarState
 import com.theoplayer.android.ui.rememberSeekBarState
-import com.theoplayer.android.ui.togglePlayerPlayPause
 
 /**
  * A seek bar showing the player's current time and allowing D-pad seeking.
@@ -80,7 +77,7 @@ fun SeekBar(
                 state.seekTo(value)
             }
         },
-        modifier = modifier.togglePlayPauseOnCenter(LocalTHEOplayerView.current?.player),
+        modifier = modifier.togglePlayPauseOnCenter(state),
         enabled = state.enabled,
         keyStep = seekOffset.toFloat(),
         keyRepeatStep = (state.valueRange.endInclusive - state.valueRange.start) / 100f,
@@ -111,9 +108,9 @@ fun SeekBar(
  * guide. Only key presses that start on this component toggle playback, so the key press that
  * reveals the controls doesn't toggle twice.
  */
-@OptIn(InternalUiApi::class)
+@OptIn(ExperimentalPlayerStateApi::class)
 @Composable
-private fun Modifier.togglePlayPauseOnCenter(player: Player?): Modifier {
+private fun Modifier.togglePlayPauseOnCenter(state: SeekBarState): Modifier {
     var isKeyPressed by remember { mutableStateOf(false) }
     return onKeyEvent { event ->
         if (!event.isCenterKey()) return@onKeyEvent false
@@ -121,7 +118,7 @@ private fun Modifier.togglePlayPauseOnCenter(player: Player?): Modifier {
             KeyEventType.KeyDown -> {
                 if (event.nativeKeyEvent.repeatCount == 0) {
                     isKeyPressed = true
-                    togglePlayerPlayPause(player)
+                    state.togglePlayPause()
                 }
                 true
             }
