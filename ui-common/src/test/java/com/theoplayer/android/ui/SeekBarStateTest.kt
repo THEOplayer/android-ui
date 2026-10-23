@@ -217,6 +217,38 @@ class SeekBarStateTest {
     }
 
     @Test
+    fun `scrubbing does nothing during ads`() = runTest {
+        val mock = MockPlayer(paused = false, adPlaying = true)
+        val state = SeekBarState(mock.player)
+        launchObserve { state.observe() }
+
+        state.onValueChange(50f)
+        advanceTimeBy(1_000)
+        runCurrent()
+        state.onValueChangeFinished()
+
+        assertNull(state.scrubTime)
+        verify(exactly = 0) { mock.player.pause() }
+        verify(exactly = 0) { mock.player.currentTime = any() }
+    }
+
+    @Test
+    fun `an ad starting while scrubbing cancels the seek`() = runTest {
+        val mock = MockPlayer(paused = false)
+        val state = SeekBarState(mock.player)
+        launchObserve { state.observe() }
+
+        state.onValueChange(50f)
+        mock.adPlaying = true
+        mock.fireAdEvent()
+        advanceTimeBy(1_000)
+        runCurrent()
+        state.onValueChangeFinished()
+
+        verify(exactly = 0) { mock.player.currentTime = any() }
+    }
+
+    @Test
     fun `cancelling removes all listeners`() = runTest {
         val mock = MockPlayer()
         val state = SeekBarState(mock.player)

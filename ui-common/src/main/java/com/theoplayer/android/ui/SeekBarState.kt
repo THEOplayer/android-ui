@@ -113,8 +113,9 @@ class SeekBarState internal constructor(player: Player?) : PlaybackTimeState(pla
         }
     }
 
-    /** Seeks the player to a position within [valueRange]. */
+    /** Seeks the player to a position within [valueRange], unless the seek bar is disabled. */
     private fun seekToValue(value: Float) {
+        if (!enabled) return
         lastSeekValue = value
         player?.currentTime = seekableRange.start + value.toDouble()
         // Re-read the position right away, so the seek bar doesn't jump back to the old position
@@ -127,6 +128,7 @@ class SeekBarState internal constructor(player: Player?) : PlaybackTimeState(pla
      * the given position within [valueRange] once the user stops dragging for a moment.
      */
     fun onValueChange(value: Float) {
+        if (!enabled) return
         seekTime = value
         pendingSeek.value = value
         player?.let {
