@@ -153,4 +153,6 @@ private object PreviewMenuScope : MenuScope {
     override fun openMenu(menu: MenuContent) = Unit
 
     override fun closeCurrentMenu() = Unit
+
+    override fun closeAllMenus() = Unit
 }

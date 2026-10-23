@@ -22,8 +22,8 @@ import com.theoplayer.android.ui.common.R as CommonR
  *
  * The menu has a heading at the top, with a back button and a title text. Inside a [UIController]
  * it is rendered in the shared menu sheet: a bottom sheet on compact players, and a side sheet at
- * the end of the player on wide players (at least 600dp). Clicking outside the sheet closes the
- * menu.
+ * the end of the player on wide players (at least 600dp). Clicking outside the sheet closes all
+ * open menus.
  *
  * @param modifier the [Modifier] to be applied to this menu
  * @param title the title
@@ -56,7 +56,7 @@ fun MenuScope.Menu(
  * The menu has a heading at the top, with a back button and a title text, followed by actions that
  * are aligned to the end of the heading. Inside a [UIController] it is rendered in the shared menu
  * sheet: a bottom sheet on compact players, and a side sheet at the end of the player on wide
- * players (at least 600dp). Clicking outside the sheet closes the menu.
+ * players (at least 600dp). Clicking outside the sheet closes all open menus.
  *
  * @param modifier the [Modifier] to be applied to this menu
  * @param title the title

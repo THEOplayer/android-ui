@@ -86,4 +86,11 @@ class UIControllerScopeImpl(
     override fun closeCurrentMenu() {
         menuStack.removeLastOrNull()?.also { lastWasClosed = true }
     }
+
+    override fun closeAllMenus() {
+        if (menuStack.isNotEmpty()) {
+            menuStack.clear()
+            lastWasClosed = true
+        }
+    }
 }
