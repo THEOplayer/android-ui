@@ -76,6 +76,35 @@ class DefaultUITest {
     }
 
     @Test
+    fun centerOnFocusedSeekBarTogglesPlayback() {
+        val player = mockPlayer(paused = true, played = true)
+        setDefaultUI(player)
+        waitUntil {
+            composeRule
+                .onAllNodes(
+                    seekBar and SemanticsMatcher.expectValue(SemanticsProperties.Focused, true)
+                )
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER)
+            )
+        )
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(
+                KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER)
+            )
+        )
+        composeRule.waitForIdle()
+
+        verify(exactly = 1) { player.play() }
+        composeRule.onNode(seekBar).assertIsFocused()
+    }
+
+    @Test
     fun liveStreamShowsLiveButtonWithoutSeekBar() {
         setDefaultUI(mockPlayer(paused = true, played = true, duration = Double.POSITIVE_INFINITY))
 
@@ -117,6 +146,36 @@ class DefaultUITest {
 
         verify { player.pause() }
         waitUntil { hasText(TITLE) }
+    }
+
+    @Test
+    fun hiddenDpadCenterPressTogglesPlaybackOnce() {
+        val player = mockPlayer(paused = false, played = true)
+        setDefaultUI(player)
+        composeRule.mainClock.advanceTimeBy(100)
+        composeRule.waitForIdle()
+        assertFalse(hasText(TITLE))
+
+        assertTrue(
+            composeRule.activity.dispatchKeyEvent(
+                KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_DPAD_CENTER)
+            )
+        )
+        waitUntil {
+            composeRule
+                .onAllNodes(
+                    seekBar and SemanticsMatcher.expectValue(SemanticsProperties.Focused, true)
+                )
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeRule.activity.dispatchKeyEvent(
+            KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_DPAD_CENTER)
+        )
+        composeRule.waitForIdle()
+
+        verify(exactly = 1) { player.pause() }
+        verify(exactly = 0) { player.play() }
     }
 
     @Test

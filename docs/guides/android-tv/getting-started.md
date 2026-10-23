@@ -98,7 +98,7 @@ Media transport keys work while the controls are hidden or visible:
 | Pause | Pause playback |
 | Fast-forward or Rewind | Seek forward or backward by 10 seconds |
 
-While the controls are visible, the D-pad moves focus between controls. Left and Right on the seek bar seek by 10 seconds. Holding either key scrubs through the timeline and pauses playback while scrubbing.
+While the controls are visible, the D-pad moves focus between controls. Left and Right on the seek bar seek by 10 seconds. Holding either key scrubs through the timeline and pauses playback while scrubbing. Center or Enter on the seek bar toggles play or pause.
 
 Back closes an open menu first. When the controls are visible, Back hides them. When they are hidden, the player leaves Back for the app's own `BackHandler`. Controls hide after 5 seconds without interaction while playing by default. Set `PlayerAnimations.controlsHideDelay` in `THEOplayerTvTheme` to change this delay.
 
