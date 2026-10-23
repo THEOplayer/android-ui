@@ -174,6 +174,6 @@ The TV UI has no Chromecast, fullscreen, picture-in-picture, or mute controls. T
 
 The demo app's [`TvActivity`](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/tv/TvActivity.kt) opens a home screen with a stream carousel and theme chips.
 
-![Android TV demo home screen](../../assets/tv-demo-home.png)
+![Android TV demo home screen](../../assets/tv-demo-home.jpg)
 
 To run it, create a **Television (1080p)** Android Virtual Device, run the `app` module, and open the app from the TV launcher. See the [TV demo source](https://github.com/THEOplayer/android-ui/tree/main/app/src/main/java/com/theoplayer/android/ui/demo/tv) for the full example.

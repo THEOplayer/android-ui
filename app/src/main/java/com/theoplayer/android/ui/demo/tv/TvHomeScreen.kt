@@ -1,5 +1,6 @@
 package com.theoplayer.android.ui.demo.tv
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,8 @@ import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.tv.material3.Button
@@ -99,7 +102,6 @@ private fun StreamCarousel(
     ) { index ->
         StreamSlide(
             stream = streams[index],
-            background = slideBackgrounds[index % slideBackgrounds.size],
             onPlay = { onSelectStream(streams[index]) },
         )
     }
@@ -125,10 +127,19 @@ private fun Modifier.keepHorizontalFocusInside(): Modifier =
         }
         .focusGroup()
 
-/** A single carousel slide, with the stream's title, description and a play button. */
+/**
+ * A single carousel slide, with the stream's background image, title, description and play button.
+ */
 @Composable
-private fun StreamSlide(stream: Stream, background: Brush, onPlay: () -> Unit) {
-    Box(modifier = Modifier.fillMaxSize().background(background)) {
+private fun StreamSlide(stream: Stream, onPlay: () -> Unit) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(stream.image),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.fillMaxSize(),
+        )
+        SlideScrim()
         Column(modifier = Modifier.align(Alignment.BottomStart).padding(32.dp)) {
             SlideText(stream)
             Spacer(Modifier.height(16.dp))
@@ -139,6 +150,26 @@ private fun StreamSlide(stream: Stream, background: Brush, onPlay: () -> Unit) {
             }
         }
     }
+}
+
+/** Dark gradients keep the white slide text readable. */
+@Composable
+private fun SlideScrim() {
+    Box(
+        Modifier.fillMaxSize()
+            .background(
+                Brush.horizontalGradient(
+                    0f to Color.Black.copy(alpha = 0.8f),
+                    0.6f to Color.Transparent,
+                )
+            )
+            .background(
+                Brush.verticalGradient(
+                    0.4f to Color.Transparent,
+                    1f to Color.Black.copy(alpha = 0.6f),
+                )
+            )
+    )
 }
 
 /** The title and description of a carousel slide. */
@@ -176,17 +207,6 @@ private fun ThemeRow(currentTheme: TvPlayerTheme, onSelectTheme: (TvPlayerTheme)
         }
     }
 }
-
-// Dark gradients, so the white slide text stays readable.
-private val slideBackgrounds =
-    listOf(
-            Color(0xFF1A237E) to Color(0xFF4A148C),
-            Color(0xFF004D40) to Color(0xFF01579B),
-            Color(0xFFB71C1C) to Color(0xFF4E342E),
-            Color(0xFF263238) to Color(0xFF1B5E20),
-            Color(0xFF311B92) to Color(0xFF880E4F),
-        )
-        .map { (start, end) -> Brush.linearGradient(listOf(start, end)) }
 
 // Keep content inside the overscan-safe area of TVs.
 private val safeAreaHorizontalPadding = 48.dp
