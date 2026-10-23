@@ -3,9 +3,12 @@ package com.theoplayer.android.ui
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import io.mockk.verify
 import kotlinx.coroutines.cancelAndJoin
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -70,11 +73,65 @@ class SeekBarStateTest {
 
         state.onValueChange(50f)
         verify(exactly = 1) { mock.player.pause() }
-        verify { mock.player.currentTime = 50.0 }
         assertEquals(50f, state.value)
 
         state.onValueChangeFinished()
+        verify(exactly = 1) { mock.player.currentTime = 50.0 }
         verify(exactly = 1) { mock.player.play() }
+    }
+
+    @Test
+    fun `scrubbing seeks once the position stays unchanged`() = runTest {
+        val mock = MockPlayer(paused = false, currentTime = 10.0)
+        val state = SeekBarState(mock.player)
+        launchObserve { state.observe() }
+
+        state.onValueChange(40f)
+        advanceTimeBy(200)
+        state.onValueChange(50f)
+        advanceTimeBy(249)
+        verify(exactly = 0) { mock.player.currentTime = any() }
+
+        advanceTimeBy(1)
+        runCurrent()
+        verify(exactly = 0) { mock.player.currentTime = 40.0 }
+        verify(exactly = 1) { mock.player.currentTime = 50.0 }
+
+        state.onValueChangeFinished()
+        verify(exactly = 1) { mock.player.currentTime = any() }
+    }
+
+    @Test
+    fun `finishing seeks immediately and cancels the pending seek`() = runTest {
+        val mock = MockPlayer(paused = false, currentTime = 10.0)
+        val state = SeekBarState(mock.player)
+        launchObserve { state.observe() }
+
+        state.onValueChange(40f)
+        state.onValueChange(50f)
+        state.onValueChangeFinished()
+        verify(exactly = 1) { mock.player.currentTime = 50.0 }
+
+        advanceTimeBy(1_000)
+        runCurrent()
+        verify(exactly = 1) { mock.player.currentTime = any() }
+    }
+
+    @Test
+    fun `scrubTime is the absolute scrub position`() = runTest {
+        val mock = MockPlayer(seekableRanges = listOf(100.0 to 200.0), currentTime = 110.0)
+        val state = SeekBarState(mock.player)
+        launchObserve { state.observe() }
+        assertNull(state.scrubTime)
+
+        state.onValueChange(50f)
+        assertEquals(150.0, state.scrubTime!!, 0.001)
+        assertEquals(150.0, (state as PlaybackTimeState).currentTime, 0.001)
+        assertEquals(110.0, mock.currentTime, 0.0)
+
+        state.onValueChangeFinished()
+        assertNull(state.scrubTime)
+        assertEquals(150.0, state.currentTime, 0.001)
     }
 
     @Test
