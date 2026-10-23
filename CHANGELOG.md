@@ -11,7 +11,7 @@
 
 ## [Unreleased]
 
-* 🐛 The `LiveButton` is now disabled while an ad is playing, so viewers can no longer seek to the live point during an ad. ([#TBD](https://github.com/THEOplayer/android-ui/pull/TBD))
+* 🐛 The `LiveButton` is now disabled while an ad is playing, so viewers can no longer seek to the live point during an ad. ([#151](https://github.com/THEOplayer/android-ui/pull/151))
 
 ## [1.15.0] (2026-10-23)
 
