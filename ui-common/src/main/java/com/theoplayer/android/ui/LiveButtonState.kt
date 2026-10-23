@@ -6,8 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.theoplayer.android.api.event.ads.AdsEventTypes
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 /**
  * State holder for a "live" button, such as [LiveButton].
@@ -28,7 +32,12 @@ internal constructor(
     val isLive: Boolean
         get() = !paused && ((seekable.lastEnd ?: 0.0) - currentTime) <= liveThreshold
 
+    /** Whether the button can be clicked. Disabled while an ad is playing. */
+    val enabled: Boolean
+        get() = !playingAd
+
     private var paused by mutableStateOf(true)
+    private var playingAd by mutableStateOf(false)
     private var currentTime by mutableStateOf(0.0)
     private var seekable by mutableStateOf(TimeRanges.empty())
     private var duration by mutableStateOf(Double.NaN)
@@ -45,6 +54,7 @@ internal constructor(
         duration = player?.duration ?: Double.NaN
         seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges.empty()
         updatePlaybackState()
+        playingAd = player?.ads?.isPlaying ?: false
     }
 
     init {
@@ -54,24 +64,38 @@ internal constructor(
     internal suspend fun observe() {
         val player = player ?: return
         update()
-        player.listen(
-            PlayerEventTypes.TIMEUPDATE,
-            PlayerEventTypes.PLAY,
-            PlayerEventTypes.PAUSE,
-            PlayerEventTypes.ENDED,
-            PlayerEventTypes.SEEKING,
-            PlayerEventTypes.SEEKED,
-            PlayerEventTypes.READYSTATECHANGE,
-            PlayerEventTypes.DURATIONCHANGE,
-            PlayerEventTypes.SOURCECHANGE,
-            PlayerEventTypes.ERROR,
-        ) {
-            update()
+        coroutineScope {
+            player.ads?.let { ads ->
+                launch(start = CoroutineStart.UNDISPATCHED) {
+                    ads.listen(
+                        AdsEventTypes.AD_BREAK_BEGIN,
+                        AdsEventTypes.AD_SKIP,
+                        AdsEventTypes.AD_BREAK_END,
+                    ) {
+                        update()
+                    }
+                }
+            }
+            player.listen(
+                PlayerEventTypes.TIMEUPDATE,
+                PlayerEventTypes.PLAY,
+                PlayerEventTypes.PAUSE,
+                PlayerEventTypes.ENDED,
+                PlayerEventTypes.SEEKING,
+                PlayerEventTypes.SEEKED,
+                PlayerEventTypes.READYSTATECHANGE,
+                PlayerEventTypes.DURATIONCHANGE,
+                PlayerEventTypes.SOURCECHANGE,
+                PlayerEventTypes.ERROR,
+            ) {
+                update()
+            }
         }
     }
 
-    /** Seeks to the live point and resumes playback. */
+    /** Seeks to the live point and resumes playback, unless the button is disabled. */
     fun onClick() {
+        if (!enabled) return
         player?.let {
             it.currentTime = Double.POSITIVE_INFINITY
             it.play()

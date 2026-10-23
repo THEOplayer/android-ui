@@ -11,6 +11,8 @@
 
 ## [Unreleased]
 
+* 🐛 The `LiveButton` is now disabled while an ad is playing, so viewers can no longer seek to the live point during an ad. ([#TBD](https://github.com/THEOplayer/android-ui/pull/TBD))
+
 ## [1.15.0] (2026-10-23)
 
 * 🚀 Added `android-ui-tv`, an experimental UI library for Android TV built on Compose for TV. It includes a D-pad friendly `DefaultUI`. Code shared with `android-ui` now lives in a new `android-ui-common` artifact; `android-ui` depends on it, so apps don't need any changes. ([#107](https://github.com/THEOplayer/android-ui/pull/107), [#121](https://github.com/THEOplayer/android-ui/pull/121), [#124](https://github.com/THEOplayer/android-ui/pull/124), [#125](https://github.com/THEOplayer/android-ui/pull/125), [#126](https://github.com/THEOplayer/android-ui/pull/126), [#128](https://github.com/THEOplayer/android-ui/pull/128), [#131](https://github.com/THEOplayer/android-ui/pull/131))
