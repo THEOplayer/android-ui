@@ -11,6 +11,8 @@
 
 ## [Unreleased]
 
+## [1.15.0] (2026-10-23)
+
 * 🚀 Added `android-ui-tv`, an experimental UI library for Android TV built on Compose for TV. It includes a D-pad friendly `DefaultUI`. Code shared with `android-ui` now lives in a new `android-ui-common` artifact; `android-ui` depends on it, so apps don't need any changes. ([#107](https://github.com/THEOplayer/android-ui/pull/107), [#121](https://github.com/THEOplayer/android-ui/pull/121), [#124](https://github.com/THEOplayer/android-ui/pull/124), [#125](https://github.com/THEOplayer/android-ui/pull/125), [#126](https://github.com/THEOplayer/android-ui/pull/126), [#128](https://github.com/THEOplayer/android-ui/pull/128), [#131](https://github.com/THEOplayer/android-ui/pull/131))
 * 🚀 Added experimental state holders (such as `rememberPlayButtonState` and `rememberSeekBarState`), so custom UIs can reuse the logic of the built-in components. The components have new overloads that take their state, and `LocalTHEOplayerView` provides the current `THEOplayerView`. `UIController` and `DefaultUI` now use these state holders internally. ([#108](https://github.com/THEOplayer/android-ui/pull/108), [#110](https://github.com/THEOplayer/android-ui/pull/110), [#111](https://github.com/THEOplayer/android-ui/pull/111), [#114](https://github.com/THEOplayer/android-ui/pull/114), [#115](https://github.com/THEOplayer/android-ui/pull/115), [#116](https://github.com/THEOplayer/android-ui/pull/116))
 * 🚀 Added `UIController(theoplayerView)` and `DefaultUI(theoplayerView)`, which don't create a `Player`. Use `rememberTHEOplayerView(config)` to create a `THEOplayerView` that follows the lifecycle of the composition. `UIController(config)` and `DefaultUI(config)` no longer create a `Player` either, and `UIControllerScope.player` is only created when accessed. ([#119](https://github.com/THEOplayer/android-ui/pull/119))
@@ -210,7 +212,8 @@
 
 * 🚀 Initial release.
 
-[Unreleased]: https://github.com/THEOplayer/android-ui/compare/v1.14.2...HEAD
+[Unreleased]: https://github.com/THEOplayer/android-ui/compare/v1.15.0...HEAD
+[1.15.0]: https://github.com/THEOplayer/android-ui/compare/v1.14.2...v1.15.0
 [1.14.2]: https://github.com/THEOplayer/android-ui/compare/v1.14.1...v1.14.2
 [1.14.1]: https://github.com/THEOplayer/android-ui/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/THEOplayer/android-ui/compare/v1.13.4...v1.14.0
