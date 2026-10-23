@@ -113,6 +113,38 @@ class SeekBarStateTest {
     }
 
     @Test
+    fun `togglePlayPause plays and pauses`() = runTest {
+        val mock = MockPlayer(paused = true)
+        val state = SeekBarState(mock.player)
+        launchObserve { state.observe() }
+
+        state.togglePlayPause()
+        verify(exactly = 1) { mock.player.play() }
+        assertFalse(mock.paused)
+
+        state.togglePlayPause()
+        verify(exactly = 1) { mock.player.pause() }
+        assertTrue(mock.paused)
+    }
+
+    @Test
+    fun `togglePlayPause while scrubbing changes whether playback resumes`() = runTest {
+        val mock = MockPlayer(paused = false, currentTime = 10.0)
+        val state = SeekBarState(mock.player)
+        launchObserve { state.observe() }
+
+        state.onValueChange(50f)
+        state.togglePlayPause()
+        state.onValueChangeFinished()
+        verify(exactly = 0) { mock.player.play() }
+
+        state.onValueChange(60f)
+        state.togglePlayPause()
+        state.onValueChangeFinished()
+        verify(exactly = 1) { mock.player.play() }
+    }
+
+    @Test
     fun `disabled during ads and thumb hidden`() = runTest {
         val mock = MockPlayer(adPlaying = true)
         val state = SeekBarState(mock.player)
