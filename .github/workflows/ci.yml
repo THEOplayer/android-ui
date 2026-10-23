@@ -11,6 +11,11 @@ on:
     paths-ignore:
       - '**.md'
 
+# Cancel outdated runs on the same PR, but let runs on main/develop finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -27,6 +32,8 @@ jobs:
         with:
           # https://github.com/gradle/actions/blob/v6.0.0/README.md#licensing-notice
           cache-disabled: true
+      - name: Check formatting
+        run: ./gradlew ktfmtCheck
       - name: Run tests
         run: ./gradlew test
       - name: Assemble

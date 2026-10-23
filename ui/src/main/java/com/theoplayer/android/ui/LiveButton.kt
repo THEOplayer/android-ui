@@ -19,23 +19,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.theoplayer.android.ui.common.R as CommonR
 import com.theoplayer.android.ui.theme.THEOplayerTheme
 
 /**
- * A button that shows whether the player is currently playing at the live point,
- * and seeks to the live point when clicked.
+ * A button that shows whether the player is currently playing at the live point, and seeks to the
+ * live point when clicked.
  *
  * @param modifier the [Modifier] to be applied to this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param colors [ButtonColors] that will be used to resolve the colors for this button in different
- * states. See [IconButtonDefaults.iconButtonColors]
+ *   states. See [IconButtonDefaults.iconButtonColors]
  * @param liveThreshold the maximum distance (in seconds) from the live point that the player's
- * current time can be for it to still be considered "at the live point"
- * @param live button content when the player is playing at the live point,
- * typically a red circle icon followed by the text "LIVE"
- * @param dvr button content when the player is playing behind the live point,
- * typically a gray circle icon followed by the text "LIVE"
+ *   current time can be for it to still be considered "at the live point"
+ * @param live button content when the player is playing at the live point, typically a red circle
+ *   icon followed by the text "LIVE"
+ * @param dvr button content when the player is playing behind the live point, typically a gray
+ *   circle icon followed by the text "LIVE"
  */
 @Composable
 fun LiveButton(
@@ -46,56 +47,97 @@ fun LiveButton(
     live: @Composable RowScope.() -> Unit = {
         Icon(
             Icons.Rounded.Circle,
-            modifier = Modifier
-                .size(12.dp)
-                .align(Alignment.CenterVertically),
+            modifier = Modifier.size(12.dp).align(Alignment.CenterVertically),
             tint = THEOplayerTheme.playerColors.liveButtonLive,
-            contentDescription = null
+            contentDescription = null,
         )
-        Spacer(
-            modifier = Modifier
-                .width(4.dp)
-        )
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
             modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(R.string.theoplayer_ui_btn_live)
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live),
         )
     },
-    dvr: @Composable RowScope. () -> Unit = {
+    dvr: @Composable RowScope.() -> Unit = {
         Icon(
             Icons.Rounded.Circle,
-            modifier = Modifier
-                .size(12.dp)
-                .align(Alignment.CenterVertically),
+            modifier = Modifier.size(12.dp).align(Alignment.CenterVertically),
             tint = THEOplayerTheme.playerColors.liveButtonDvr,
-            contentDescription = null
+            contentDescription = null,
         )
-        Spacer(
-            modifier = Modifier
-                .width(4.dp)
-        )
+        Spacer(modifier = Modifier.width(4.dp))
         Text(
             modifier = Modifier.align(Alignment.CenterVertically),
-            text = stringResource(R.string.theoplayer_ui_btn_live)
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live),
         )
-    }
+    },
 ) {
-    val player = Player.current
-    if (player?.streamType == StreamType.Live || player?.streamType == StreamType.Dvr) {
-        val isLive =
-            !player.paused && ((player.seekable.lastEnd
-                ?: 0.0) - player.currentTime) <= liveThreshold
+    LiveButton(
+        state = rememberLiveButtonState(LocalTHEOplayerView.current?.player, liveThreshold),
+        modifier = modifier,
+        contentPadding = contentPadding,
+        colors = colors,
+        live = live,
+        dvr = dvr,
+    )
+}
+
+/**
+ * A button that shows whether the player is currently playing at the live point, and seeks to the
+ * live point when clicked.
+ *
+ * @param state the [LiveButtonState] to read and control
+ * @param modifier the [Modifier] to be applied to this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ *   content
+ * @param colors [ButtonColors] that will be used to resolve the colors for this button in different
+ *   states. See [IconButtonDefaults.iconButtonColors]
+ * @param live button content when the player is playing at the live point, typically a red circle
+ *   icon followed by the text "LIVE"
+ * @param dvr button content when the player is playing behind the live point, typically a gray
+ *   circle icon followed by the text "LIVE"
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun LiveButton(
+    state: LiveButtonState,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = ButtonDefaults.TextButtonContentPadding,
+    colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
+    live: @Composable RowScope.() -> Unit = {
+        Icon(
+            Icons.Rounded.Circle,
+            modifier = Modifier.size(12.dp).align(Alignment.CenterVertically),
+            tint = THEOplayerTheme.playerColors.liveButtonLive,
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live),
+        )
+    },
+    dvr: @Composable RowScope.() -> Unit = {
+        Icon(
+            Icons.Rounded.Circle,
+            modifier = Modifier.size(12.dp).align(Alignment.CenterVertically),
+            tint = THEOplayerTheme.playerColors.liveButtonDvr,
+            contentDescription = null,
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            text = stringResource(CommonR.string.theoplayer_ui_btn_live),
+        )
+    },
+) {
+    if (state.visible) {
         TextButton(
             modifier = modifier,
             contentPadding = contentPadding,
             colors = colors.toButtonColors(),
-            onClick = {
-                player.player?.let {
-                    it.currentTime = Double.POSITIVE_INFINITY
-                    it.play()
-                }
-            }) {
-            if (isLive) {
+            onClick = { state.onClick() },
+        ) {
+            if (state.isLive) {
                 live()
             } else {
                 dvr()

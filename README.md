@@ -5,6 +5,7 @@ A component library for building a world-class video player experience powered b
 - Use the default UI for a great out-of-the-box experience, or use the individual components to build your own custom UI.
 - Built using [Jetpack Compose](https://developer.android.com/jetpack/compose), for a modern and fast Android UI development experience.
 - Easy to customize: [slot-based layouts](https://developer.android.com/develop/ui/compose/layouts/basics#slot-based-layouts) and [theme-aware components](https://developer.android.com/jetpack/compose/designsystems/custom) empower you to truly make your player UI your own.
+- Works on phones and tablets, with experimental support for [Android TV](#android-tv).
 
 > **Note**
 > This project is under active development. While we believe it's ready for use in production, not all features are available in this first release. If you find a problem or have an idea for a new feature, don't hesitate to [open an issue](https://github.com/THEOplayer/android-ui/issues)!
@@ -128,3 +129,37 @@ setContent {
     )
 }
 ```
+
+### Android TV
+
+Add the TV UI library and TV Material to your module-level `build.gradle` file:
+
+```groovy title="build.gradle"
+dependencies {
+    implementation "com.theoplayer.theoplayer-sdk-android:core:11.+"
+    implementation "com.theoplayer.android-ui:android-ui-tv:1.+"
+    implementation "androidx.tv:tv-material:1.1.0"
+}
+```
+
+Wrap `DefaultUI` in `THEOplayerTvTheme` and a TV Material `Surface`:
+
+```kotlin title="TvPlayer.kt"
+@OptIn(ExperimentalTvUiApi::class)
+@Composable
+fun TvPlayer() {
+    THEOplayerTvTheme {
+        Surface {
+            DefaultUI(
+                config = THEOplayerConfig.Builder().build(),
+                source = SourceDescription.Builder(
+                    "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"
+                ).build(),
+                title = "Big Buck Bunny"
+            )
+        }
+    }
+}
+```
+
+See the [Android TV getting started guide](https://optiview.dolby.com/docs/theoplayer/ui/android/open-video-ui/guides/android-tv/getting-started/) for more details, and [the TV demo app](https://github.com/THEOplayer/android-ui/blob/main/app/src/main/java/com/theoplayer/android/ui/demo/tv/TvActivity.kt) for a complete and working example.

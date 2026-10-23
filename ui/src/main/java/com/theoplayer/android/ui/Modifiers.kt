@@ -2,48 +2,68 @@ package com.theoplayer.android.ui
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.PointerInputScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
-import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
+import androidx.compose.ui.node.LayoutModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
 import androidx.compose.ui.platform.InspectorInfo
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.isSatisfiedBy
+import kotlin.math.roundToInt
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
+@Composable
 internal fun Modifier.toggleControlsOnTap(
     controlsVisible: State<Boolean>,
     showControlsTemporarily: () -> Unit,
-    hideControls: () -> Unit
+    hideControls: () -> Unit,
 ): Modifier {
+    val currentControlsVisible by rememberUpdatedState(controlsVisible)
+    val currentShowControlsTemporarily by rememberUpdatedState(showControlsTemporarily)
+    val currentHideControls by rememberUpdatedState(hideControls)
     return this.pointerInput(Unit) {
         coroutineScope {
             var didHideControls = false
             launch {
-                detectTapGestures(onPress = {
-                    didHideControls = false
-                    // Hide controls immediately when pressed while visible
-                    val controlsWereVisible = controlsVisible.value
-                    awaitRelease()
-                    if (controlsWereVisible) {
-                        didHideControls = true
-                        hideControls()
+                detectTapGestures(
+                    onPress = {
+                        didHideControls = false
+                        // Hide controls immediately when pressed while visible
+                        val controlsWereVisible = currentControlsVisible.value
+                        awaitRelease()
+                        if (controlsWereVisible) {
+                            didHideControls = true
+                            currentHideControls()
+                        }
                     }
-                })
+                )
             }
             launch {
                 detectAnyPointerEvent(pass = PointerEventPass.Final) {
@@ -52,7 +72,7 @@ internal fun Modifier.toggleControlsOnTap(
                     if (didHideControls) {
                         didHideControls = false
                     } else {
-                        showControlsTemporarily()
+                        currentShowControlsTemporarily()
                     }
                 }
             }
@@ -62,7 +82,7 @@ internal fun Modifier.toggleControlsOnTap(
 
 private suspend fun PointerInputScope.detectAnyPointerEvent(
     pass: PointerEventPass = PointerEventPass.Main,
-    onPointer: () -> Unit
+    onPointer: () -> Unit,
 ) {
     val currentContext = currentCoroutineContext()
     awaitPointerEventScope {
@@ -74,25 +94,25 @@ private suspend fun PointerInputScope.detectAnyPointerEvent(
 }
 
 internal fun Modifier.constrainedAspectRatio(
-    @FloatRange(from = 0.0, fromInclusive = false)
-    ratio: Float,
-    matchHeightConstraintsFirst: Boolean = false
-): Modifier = this.then(
-    ConstrainedAspectRatioElement(
-        ratio,
-        matchHeightConstraintsFirst,
-        debugInspectorInfo {
-            name = "constrainedAspectRatio"
-            properties["ratio"] = ratio
-            properties["matchHeightConstraintsFirst"] = matchHeightConstraintsFirst
-        }
+    @FloatRange(from = 0.0, fromInclusive = false) ratio: Float,
+    matchHeightConstraintsFirst: Boolean = false,
+): Modifier =
+    this.then(
+        ConstrainedAspectRatioElement(
+            ratio,
+            matchHeightConstraintsFirst,
+            debugInspectorInfo {
+                name = "constrainedAspectRatio"
+                properties["ratio"] = ratio
+                properties["matchHeightConstraintsFirst"] = matchHeightConstraintsFirst
+            },
+        )
     )
-)
 
 private class ConstrainedAspectRatioElement(
     val aspectRatio: Float,
     val matchHeightConstraintsFirst: Boolean,
-    val inspectorInfo: InspectorInfo.() -> Unit
+    val inspectorInfo: InspectorInfo.() -> Unit,
 ) : ModifierNodeElement<ConstrainedAspectRatioNode>() {
     init {
         require(aspectRatio > 0) { "aspectRatio $aspectRatio must be > 0" }
@@ -101,7 +121,7 @@ private class ConstrainedAspectRatioElement(
     override fun create(): ConstrainedAspectRatioNode {
         return ConstrainedAspectRatioNode(
             aspectRatio,
-            matchHeightConstraintsFirst
+            matchHeightConstraintsFirst,
         )
     }
 
@@ -118,7 +138,7 @@ private class ConstrainedAspectRatioElement(
         if (this === other) return true
         val otherModifier = other as? ConstrainedAspectRatioElement ?: return false
         return aspectRatio == otherModifier.aspectRatio &&
-                matchHeightConstraintsFirst == other.matchHeightConstraintsFirst
+            matchHeightConstraintsFirst == other.matchHeightConstraintsFirst
     }
 
     override fun hashCode(): Int =
@@ -127,63 +147,66 @@ private class ConstrainedAspectRatioElement(
 
 private class ConstrainedAspectRatioNode(
     var aspectRatio: Float,
-    var matchHeightConstraintsFirst: Boolean
-) : LayoutModifier, Modifier.Node() {
+    var matchHeightConstraintsFirst: Boolean,
+) : LayoutModifierNode, Modifier.Node() {
     init {
         require(aspectRatio > 0) { "aspectRatio $aspectRatio must be > 0" }
     }
 
     override fun MeasureScope.measure(
         measurable: Measurable,
-        constraints: Constraints
+        constraints: Constraints,
     ): MeasureResult {
         val size = constraints.findSize()
-        val wrappedConstraints = if (size != IntSize.Zero) {
-            Constraints.fixed(size.width, size.height)
-        } else {
-            constraints
-        }
+        val wrappedConstraints =
+            if (size != IntSize.Zero) {
+                Constraints.fixed(size.width, size.height)
+            } else {
+                constraints
+            }
         val placeable = measurable.measure(wrappedConstraints)
-        return layout(placeable.width, placeable.height) {
-            placeable.placeRelative(0, 0)
-        }
+        return layout(placeable.width, placeable.height) { placeable.placeRelative(0, 0) }
     }
 
     override fun IntrinsicMeasureScope.minIntrinsicWidth(
         measurable: IntrinsicMeasurable,
-        height: Int
-    ) = if (height != Constraints.Infinity) {
-        (height * aspectRatio).roundToInt()
-    } else {
-        measurable.minIntrinsicWidth(height)
-    }
+        height: Int,
+    ) =
+        if (height != Constraints.Infinity) {
+            (height * aspectRatio).roundToInt()
+        } else {
+            measurable.minIntrinsicWidth(height)
+        }
 
     override fun IntrinsicMeasureScope.maxIntrinsicWidth(
         measurable: IntrinsicMeasurable,
-        height: Int
-    ) = if (height != Constraints.Infinity) {
-        (height * aspectRatio).roundToInt()
-    } else {
-        measurable.maxIntrinsicWidth(height)
-    }
+        height: Int,
+    ) =
+        if (height != Constraints.Infinity) {
+            (height * aspectRatio).roundToInt()
+        } else {
+            measurable.maxIntrinsicWidth(height)
+        }
 
     override fun IntrinsicMeasureScope.minIntrinsicHeight(
         measurable: IntrinsicMeasurable,
-        width: Int
-    ) = if (width != Constraints.Infinity) {
-        (width / aspectRatio).roundToInt()
-    } else {
-        measurable.minIntrinsicHeight(width)
-    }
+        width: Int,
+    ) =
+        if (width != Constraints.Infinity) {
+            (width / aspectRatio).roundToInt()
+        } else {
+            measurable.minIntrinsicHeight(width)
+        }
 
     override fun IntrinsicMeasureScope.maxIntrinsicHeight(
         measurable: IntrinsicMeasurable,
-        width: Int
-    ) = if (width != Constraints.Infinity) {
-        (width / aspectRatio).roundToInt()
-    } else {
-        measurable.maxIntrinsicHeight(width)
-    }
+        width: Int,
+    ) =
+        if (width != Constraints.Infinity) {
+            (width / aspectRatio).roundToInt()
+        } else {
+            measurable.maxIntrinsicHeight(width)
+        }
 
     private fun Constraints.findSize(): IntSize {
         if (!matchHeightConstraintsFirst) {
@@ -252,3 +275,51 @@ private class ConstrainedAspectRatioNode(
         return IntSize.Zero
     }
 }
+
+/**
+ * How far a menu list scrolls past the item above the selected item, so it peeks in half above it.
+ * Roughly half of a list item's height.
+ */
+internal val menuListPeekOffset = 28.dp
+
+/**
+ * Fades the edges of a scrollable list to indicate that it can scroll further: at the top while it
+ * can scroll backward, and at the bottom while it can scroll forward.
+ */
+internal fun Modifier.fadingEdges(
+    state: LazyListState,
+    height: Dp = 24.dp,
+): Modifier =
+    this.graphicsLayer { compositingStrategy = CompositingStrategy.Offscreen }
+        .drawWithContent {
+            drawContent()
+            val fadeHeight = height.toPx()
+            if (state.canScrollBackward) {
+                drawRect(
+                    brush =
+                        Brush.verticalGradient(
+                            0f to Color.Transparent,
+                            1f to Color.Black,
+                            startY = 0f,
+                            endY = fadeHeight,
+                        ),
+                    topLeft = Offset.Zero,
+                    size = Size(size.width, fadeHeight),
+                    blendMode = BlendMode.DstIn,
+                )
+            }
+            if (state.canScrollForward) {
+                drawRect(
+                    brush =
+                        Brush.verticalGradient(
+                            0f to Color.Black,
+                            1f to Color.Transparent,
+                            startY = size.height - fadeHeight,
+                            endY = size.height,
+                        ),
+                    topLeft = Offset(0f, size.height - fadeHeight),
+                    size = Size(size.width, fadeHeight),
+                    blendMode = BlendMode.DstIn,
+                )
+            }
+        }

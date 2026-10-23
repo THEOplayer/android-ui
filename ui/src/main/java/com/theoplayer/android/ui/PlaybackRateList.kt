@@ -1,15 +1,18 @@
 package com.theoplayer.android.ui
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import java.text.DecimalFormat
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
 
 /**
  * A list of playback rates, from which the user can choose a desired playback rate.
@@ -18,44 +21,77 @@ import java.text.DecimalFormat
  * @param playbackRates the list of possible playback rates
  * @param onClick called when a playback rate in the list is clicked
  */
+@OptIn(InternalUiApi::class)
 @Composable
 fun PlaybackRateList(
     modifier: Modifier = Modifier,
-    playbackRates: List<Double> = listOf(0.25, 0.5, 1.0, 1.25, 1.5, 2.0),
-    onClick: (() -> Unit)? = null
+    playbackRates: List<Double> = defaultPlaybackRates,
+    onClick: (() -> Unit)? = null,
 ) {
-    val player = Player.current
-    val currentPlaybackRate = player?.playbackRate ?: 1
-    LazyColumn(modifier = modifier) {
+    PlaybackRateList(
+        state = rememberPlaybackRateState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        playbackRates = playbackRates,
+        onClick = onClick,
+    )
+}
+
+/**
+ * A list of playback rates, from which the user can choose a desired playback rate.
+ *
+ * @param state the [PlaybackRateState] to read and control
+ * @param modifier the [Modifier] to be applied to this menu
+ * @param playbackRates the list of possible playback rates
+ * @param onClick called when a playback rate in the list is clicked
+ */
+@ExperimentalPlayerStateApi
+@OptIn(InternalUiApi::class)
+@Composable
+fun PlaybackRateList(
+    state: PlaybackRateState,
+    modifier: Modifier = Modifier,
+    playbackRates: List<Double> = defaultPlaybackRates,
+    onClick: (() -> Unit)? = null,
+) {
+    val selectedIndex = playbackRates.indexOf(state.playbackRate).coerceAtLeast(0)
+    val listState =
+        rememberLazyListState(
+            initialFirstVisibleItemIndex = (selectedIndex - 1).coerceAtLeast(0),
+            initialFirstVisibleItemScrollOffset =
+                if (selectedIndex > 0) {
+                    with(LocalDensity.current) { menuListPeekOffset.toPx() }.toInt()
+                } else {
+                    0
+                },
+        )
+    LazyColumn(
+        modifier = modifier.selectableGroup().fadingEdges(listState),
+        state = listState,
+    ) {
         items(
             count = playbackRates.size,
-            key = { playbackRates[it] }
+            key = { playbackRates[it] },
         ) {
             val playbackRate = playbackRates[it]
             ListItem(
                 headlineContent = { Text(text = formatPlaybackRate(playbackRate)) },
                 leadingContent = {
                     RadioButton(
-                        selected = (currentPlaybackRate == playbackRate),
-                        onClick = null
+                        selected = (state.playbackRate == playbackRate),
+                        onClick = null,
                     )
                 },
-                modifier = Modifier.clickable(onClick = {
-                    player?.playbackRate = playbackRate
-                    onClick?.let { it() }
-                })
+                colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+                modifier =
+                    Modifier.selectable(
+                        selected = state.playbackRate == playbackRate,
+                        onClick = {
+                            state.select(playbackRate)
+                            onClick?.let { it() }
+                        },
+                        role = Role.RadioButton,
+                    ),
             )
         }
-    }
-}
-
-@Composable
-internal fun formatPlaybackRate(rate: Double): String {
-    return if (rate == 1.0) {
-        stringResource(R.string.theoplayer_ui_playback_rate_normal, rate)
-    } else {
-        val format = stringResource(R.string.theoplayer_ui_playback_rate_format)
-        val decimalFormat = remember(format) { DecimalFormat(format) }
-        decimalFormat.format(rate)
     }
 }

@@ -4,7 +4,10 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinVersion
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.ktfmt)
 }
+
+ktfmt { kotlinLangStyle() }
 
 android {
     namespace = "com.theoplayer.android.ui.demo"
@@ -18,9 +21,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        vectorDrawables {
-            useSupportLibrary = true
-        }
+        vectorDrawables { useSupportLibrary = true }
     }
 
     buildTypes {
@@ -28,7 +29,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
         // Build type that uses the latest android-ui from Maven
@@ -57,13 +58,14 @@ android {
         // Required by Google IMA SDK v3.37.0+
         isCoreLibraryDesugaringEnabled = true
     }
-    buildFeatures {
-        compose = true
-    }
-    packaging {
-        resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-        }
+    buildFeatures { compose = true }
+    packaging { resources { excludes += "/META-INF/{AL2.0,LGPL2.1}" } }
+}
+
+androidComponents {
+    // TODO Re-enable once android-ui-tv is published to Maven
+    beforeVariants(selector().withBuildType("maven")) { variantBuilder ->
+        variantBuilder.enable = false
     }
 }
 
@@ -104,6 +106,10 @@ dependencies {
 
     debugImplementation(project(":ui"))
     releaseImplementation(project(":ui"))
+    debugImplementation(project(":ui-tv"))
+    releaseImplementation(project(":ui-tv"))
+    debugImplementation(libs.androidx.tv.material)
+    releaseImplementation(libs.androidx.tv.material)
     mavenImplementation("com.theoplayer.android-ui:android-ui:1.+")
 
     latestPlayerImplementation(libs.theoplayer)

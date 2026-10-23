@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Rational
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -21,6 +20,7 @@ import androidx.compose.material.icons.rounded.Movie
 import androidx.compose.material.icons.rounded.PictureInPicture
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon as Material3Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -54,12 +54,11 @@ import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.pip.PiPType
 import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.ui.DefaultUI
-import com.theoplayer.android.ui.Player
+import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.demo.nitflex.NitflexUI
 import com.theoplayer.android.ui.demo.nitflex.theme.NitflexTheme
-import com.theoplayer.android.ui.rememberPlayer
+import com.theoplayer.android.ui.rememberPictureInPictureState
 import com.theoplayer.android.ui.theme.THEOplayerTheme
-import androidx.compose.material3.Icon as Material3Icon
 
 class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPictureEventListener {
     private lateinit var theoplayerView: THEOplayerView
@@ -72,22 +71,21 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
         CastContext.getSharedInstance(this)
 
         // Initialize THEOplayer
-        val config = THEOplayerConfig.Builder().apply {
-            pipConfiguration(PipConfiguration.Builder().build())
-        }.build()
-        theoplayerView = THEOplayerView(this, config).apply {
-            // Add ads integration through Google IMA
-            player.addIntegration(
-                GoogleImaIntegrationFactory.createGoogleImaIntegration(this)
-            )
-            // Add Chromecast integration
-            val castConfiguration = CastConfiguration.Builder().apply {
-                castStrategy(CastStrategy.AUTO)
-            }.build()
-            player.addIntegration(
-                CastIntegrationFactory.createCastIntegration(this, castConfiguration)
-            )
-        }
+        val config =
+            THEOplayerConfig.Builder()
+                .apply { pipConfiguration(PipConfiguration.Builder().build()) }
+                .build()
+        theoplayerView =
+            THEOplayerView(this, config).apply {
+                // Add ads integration through Google IMA
+                player.addIntegration(GoogleImaIntegrationFactory.createGoogleImaIntegration(this))
+                // Add Chromecast integration
+                val castConfiguration =
+                    CastConfiguration.Builder().apply { castStrategy(CastStrategy.AUTO) }.build()
+                player.addIntegration(
+                    CastIntegrationFactory.createCastIntegration(this, castConfiguration)
+                )
+            }
 
         initializePictureInPicture()
 
@@ -95,7 +93,7 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
             THEOplayerTheme(useDarkTheme = true) {
                 MainContent(
                     theoplayerView = theoplayerView,
-                    onEnterPip = ::enterPictureInPicture
+                    onEnterPip = ::enterPictureInPicture,
                 )
             }
         }
@@ -105,13 +103,15 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
         pip = VideoPlaybackPictureInPicture(this)
         pip.addOnPictureInPictureEventListener(
             ContextCompat.getMainExecutor(this),
-            this
+            this,
         )
         pip.setAspectRatio(Rational(16, 9))
         pip.setPlayerView(theoplayerView)
         pip.setEnabled(true)
 
-        theoplayerView.player.addEventListener(PlayerEventTypes.RESIZE) { updatePictureInPictureAspectRatio() }
+        theoplayerView.player.addEventListener(PlayerEventTypes.RESIZE) {
+            updatePictureInPictureAspectRatio()
+        }
     }
 
     private fun enterPictureInPicture() {
@@ -127,7 +127,7 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
 
     override fun onPictureInPictureEvent(
         event: PictureInPictureDelegate.Event,
-        config: Configuration?
+        config: Configuration?,
     ) {
         val pipManager = theoplayerView.piPManager ?: return
         when (event) {
@@ -145,6 +145,16 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        theoplayerView.onPause()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        theoplayerView.onResume()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         pip.close()
@@ -152,32 +162,29 @@ class MainActivity : ComponentActivity(), PictureInPictureDelegate.OnPictureInPi
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPlayerStateApi::class)
 @Composable
 fun MainContent(
     theoplayerView: THEOplayerView,
-    onEnterPip: () -> Unit = {}
+    onEnterPip: () -> Unit = {},
 ) {
     var stream by rememberSaveable(stateSaver = StreamSaver) { mutableStateOf(streams.first()) }
     var streamMenuOpen by remember { mutableStateOf(false) }
 
-    val player = rememberPlayer(theoplayerView)
-    LaunchedEffect(player, stream) {
-        player.source = stream.source
-    }
+    LaunchedEffect(theoplayerView, stream) { theoplayerView.player.source = stream.source }
 
     var themeMenuOpen by remember { mutableStateOf(false) }
     var theme by rememberSaveable { mutableStateOf(PlayerTheme.Default) }
-    val activity = LocalActivity.current as? ComponentActivity
+    val pictureInPictureState = rememberPictureInPictureState(theoplayerView)
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity?.isInPictureInPictureMode == true) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && pictureInPictureState.pictureInPicture) {
         // Only show player while in picture-in-picture mode
         Surface(modifier = Modifier.fillMaxSize()) {
             PlayerContent(
                 modifier = Modifier.fillMaxSize(),
-                player = player,
+                theoplayerView = theoplayerView,
                 stream = stream,
-                theme = theme
+                theme = theme,
             )
         }
         return
@@ -188,22 +195,22 @@ fun MainContent(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = {
-                    Text(text = "Demo")
-                },
+                title = { Text(text = "Demo") },
                 actions = {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         IconButton(onClick = onEnterPip) {
                             Material3Icon(
                                 Icons.Rounded.PictureInPicture,
-                                contentDescription = "Enter picture-in-picture"
+                                contentDescription = "Enter picture-in-picture",
                             )
                         }
                     }
-                    IconButton(onClick = {
-                        player.source = stream.source
-                        player.play()
-                    }) {
+                    IconButton(
+                        onClick = {
+                            theoplayerView.player.source = stream.source
+                            theoplayerView.player.play()
+                        }
+                    ) {
                         Material3Icon(Icons.Rounded.Refresh, contentDescription = "Reload")
                     }
                     IconButton(onClick = { streamMenuOpen = true }) {
@@ -212,17 +219,15 @@ fun MainContent(
                     IconButton(onClick = { themeMenuOpen = true }) {
                         Material3Icon(Icons.Rounded.Brush, contentDescription = "Theme")
                     }
-                }
+                },
             )
-        }
+        },
     ) { padding ->
         PlayerContent(
-            modifier = Modifier
-                .padding(padding)
-                .fillMaxSize(1f),
-            player = player,
+            modifier = Modifier.padding(padding).fillMaxSize(1f),
+            theoplayerView = theoplayerView,
             stream = stream,
-            theme = theme
+            theme = theme,
         )
 
         if (streamMenuOpen) {
@@ -233,7 +238,7 @@ fun MainContent(
                     stream = it
                     streamMenuOpen = false
                 },
-                onDismissRequest = { streamMenuOpen = false }
+                onDismissRequest = { streamMenuOpen = false },
             )
         }
         if (themeMenuOpen) {
@@ -243,7 +248,7 @@ fun MainContent(
                     theme = it
                     themeMenuOpen = false
                 },
-                onDismissRequest = { themeMenuOpen = false }
+                onDismissRequest = { themeMenuOpen = false },
             )
         }
     }
@@ -252,16 +257,16 @@ fun MainContent(
 @Composable
 fun PlayerContent(
     modifier: Modifier = Modifier,
-    player: Player,
+    theoplayerView: THEOplayerView,
     stream: Stream,
-    theme: PlayerTheme
+    theme: PlayerTheme,
 ) {
     when (theme) {
         PlayerTheme.Default -> {
             DefaultUI(
                 modifier = modifier,
-                player = player,
-                title = stream.title
+                theoplayerView = theoplayerView,
+                title = stream.title,
             )
         }
 
@@ -269,8 +274,8 @@ fun PlayerContent(
             NitflexTheme(useDarkTheme = true) {
                 NitflexUI(
                     modifier = modifier,
-                    player = player,
-                    title = stream.title
+                    theoplayerView = theoplayerView,
+                    title = stream.title,
                 )
             }
         }
@@ -279,7 +284,7 @@ fun PlayerContent(
 
 enum class PlayerTheme(val title: String) {
     Default(title = "Default theme"),
-    Nitflex(title = "Nitflex theme")
+    Nitflex(title = "Nitflex theme"),
 }
 
 @Composable
@@ -297,7 +302,7 @@ fun SelectStreamDialog(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = "Select a stream",
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
                 )
                 LazyColumn {
                     items(items = streams) {
@@ -306,12 +311,10 @@ fun SelectStreamDialog(
                             leadingContent = {
                                 RadioButton(
                                     selected = (it == currentStream),
-                                    onClick = null
+                                    onClick = null,
                                 )
                             },
-                            modifier = Modifier.clickable(onClick = {
-                                onSelectStream(it)
-                            })
+                            modifier = Modifier.clickable(onClick = { onSelectStream(it) }),
                         )
                     }
                 }
@@ -334,7 +337,7 @@ fun SelectThemeDialog(
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = "Select a theme",
-                    style = MaterialTheme.typography.headlineSmall
+                    style = MaterialTheme.typography.headlineSmall,
                 )
                 LazyColumn {
                     items(items = PlayerTheme.entries) {
@@ -343,12 +346,10 @@ fun SelectThemeDialog(
                             leadingContent = {
                                 RadioButton(
                                     selected = (it == currentTheme),
-                                    onClick = null
+                                    onClick = null,
                                 )
                             },
-                            modifier = Modifier.clickable(onClick = {
-                                onSelectTheme(it)
-                            })
+                            modifier = Modifier.clickable(onClick = { onSelectTheme(it) }),
                         )
                     }
                 }
@@ -360,7 +361,5 @@ fun SelectThemeDialog(
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MaterialTheme {
-        DefaultUI(config = THEOplayerConfig.Builder().build())
-    }
+    MaterialTheme { DefaultUI(config = THEOplayerConfig.Builder().build()) }
 }

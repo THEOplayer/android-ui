@@ -10,11 +10,24 @@ import androidx.compose.ui.Modifier
  * @param modifier the [Modifier] to be applied to this text
  */
 @Composable
-fun DurationDisplay(
-    modifier: Modifier = Modifier
-) {
-    val player = Player.current
-    val duration = player?.seekable?.lastEnd ?: player?.duration ?: Double.NaN
+fun DurationDisplay(modifier: Modifier = Modifier) {
+    DurationDisplay(
+        state = rememberPlaybackTimeState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+    )
+}
 
-    Text(modifier = modifier, text = formatTime(duration))
+/**
+ * A text display that shows the player's duration.
+ *
+ * @param state the [PlaybackTimeState] to read
+ * @param modifier the [Modifier] to be applied to this text
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun DurationDisplay(
+    state: PlaybackTimeState,
+    modifier: Modifier = Modifier,
+) {
+    Text(modifier = modifier, text = formatTime(state.duration))
 }

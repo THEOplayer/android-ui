@@ -1,6 +1,4 @@
-plugins {
-    `maven-publish`
-}
+plugins { `maven-publish` }
 
 publishing {
     repositories {

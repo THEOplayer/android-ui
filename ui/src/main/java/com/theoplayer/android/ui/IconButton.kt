@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.IconButtonColors
@@ -27,23 +26,24 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
 /**
- * <a href="https://m3.material.io/components/icon-button/overview" class="external" target="_blank">Material Design standard icon button</a>.
+ * <a href="https://m3.material.io/components/icon-button/overview" class="external"
+ * target="_blank">Material Design standard icon button</a>.
  *
- * Equivalent to [androidx.compose.material3.IconButton],
- * but uses [Modifier.defaultMinSize] instead of [Modifier.size] to allow for larger icons.
+ * Equivalent to [androidx.compose.material3.IconButton], but uses [Modifier.defaultMinSize] instead
+ * of [Modifier.size] to allow for larger icons.
  *
  * @param onClick called when this button is clicked
  * @param modifier the [Modifier] to be applied to this button
  * @param enabled controls the enabled state of this button. When `false`, this component will not
- * respond to user input, and it will appear visually disabled and disabled to accessibility
- * services.
+ *   respond to user input, and it will appear visually disabled and disabled to accessibility
+ *   services.
  * @param colors [ButtonColors] that will be used to resolve the colors for this button in different
- * states. See [IconButtonDefaults.iconButtonColors].
+ *   states. See [IconButtonDefaults.iconButtonColors].
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param interactionSource the [MutableInteractionSource] representing the stream of [Interaction]s
- * for this button. You can create and pass in your own `remember`ed instance to observe
- * [Interaction]s and customize the appearance / behavior of this button in different states.
+ *   for this button. You can create and pass in your own `remember`ed instance to observe
+ *   [Interaction]s and customize the appearance / behavior of this button in different states.
  */
 @Composable
 fun IconButton(
@@ -53,26 +53,27 @@ fun IconButton(
     colors: IconButtonColors = IconButtonDefaults.iconButtonColors(),
     contentPadding: PaddingValues = PaddingValues(0.dp),
     interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Box(
-        modifier = modifier
-            .minimumInteractiveComponentSize()
-            .defaultMinSize(
-                minWidth = IconButtonSize,
-                minHeight = IconButtonSize
-            )
-            .padding(contentPadding)
-            .clip(CircleShape)
-            .background(color = colors.containerColor(enabled))
-            .clickable(
-                onClick = onClick,
-                enabled = enabled,
-                role = Role.Button,
-                interactionSource = interactionSource,
-                indication = ripple(bounded = false)
-            ),
-        contentAlignment = Alignment.Center
+        modifier =
+            modifier
+                .minimumInteractiveComponentSize()
+                .defaultMinSize(
+                    minWidth = IconButtonSize,
+                    minHeight = IconButtonSize,
+                )
+                .padding(contentPadding)
+                .clip(CircleShape)
+                .background(color = colors.containerColor(enabled))
+                .clickable(
+                    onClick = onClick,
+                    enabled = enabled,
+                    role = Role.Button,
+                    interactionSource = interactionSource,
+                    indication = ripple(bounded = false),
+                ),
+        contentAlignment = Alignment.Center,
     ) {
         val contentColor = colors.contentColor(enabled)
         CompositionLocalProvider(LocalContentColor provides contentColor, content = content)
@@ -87,9 +88,10 @@ private fun IconButtonColors.containerColor(enabled: Boolean): Color =
 private fun IconButtonColors.contentColor(enabled: Boolean): Color =
     if (enabled) contentColor else disabledContentColor
 
-internal fun IconButtonColors.toButtonColors() = ButtonColors(
-    containerColor = containerColor,
-    contentColor = contentColor,
-    disabledContainerColor = disabledContainerColor,
-    disabledContentColor = disabledContentColor
-)
+internal fun IconButtonColors.toButtonColors() =
+    ButtonColors(
+        containerColor = containerColor,
+        contentColor = contentColor,
+        disabledContainerColor = disabledContainerColor,
+        disabledContentColor = disabledContentColor,
+    )

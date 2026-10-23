@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
+import com.theoplayer.android.ui.common.R as CommonR
 
 /**
  * A [Menu] to change the settings of the player, such as the video quality or the playback rate.
@@ -24,65 +24,80 @@ import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
  */
 @Composable
 fun MenuScope.SettingsMenu() {
+    SettingsMenu(
+        videoQualityState = rememberVideoQualityState(LocalTHEOplayerView.current?.player),
+        playbackRateState = rememberPlaybackRateState(LocalTHEOplayerView.current?.player),
+    )
+}
+
+/**
+ * A [Menu] to change the settings of the player, such as the video quality or the playback rate.
+ *
+ * Remember the states inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
+ *
+ * @param videoQualityState the [VideoQualityState] to read
+ * @param playbackRateState the [PlaybackRateState] to read
+ * @see QualityMenu
+ * @see PlaybackRateMenu
+ */
+@ExperimentalPlayerStateApi
+@OptIn(InternalUiApi::class)
+@Composable
+fun MenuScope.SettingsMenu(
+    videoQualityState: VideoQualityState,
+    playbackRateState: PlaybackRateState,
+) {
     Menu(
-        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_settings)) },
+        title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_settings)) },
         backIcon = {
             Icon(
                 Icons.Rounded.Close,
-                contentDescription = stringResource(R.string.theoplayer_ui_btn_menu_close)
+                contentDescription = stringResource(CommonR.string.theoplayer_ui_btn_menu_close),
             )
         },
     ) {
-        val player = Player.current
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+        Column(modifier = Modifier.padding(start = 16.dp, end = 4.dp)) {
             Row {
                 Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    text = stringResource(R.string.theoplayer_ui_menu_quality)
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    text = stringResource(CommonR.string.theoplayer_ui_menu_quality),
                 )
                 TextButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    onClick = { openMenu { QualityMenu() } }
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    onClick = { openMenu { QualityMenu() } },
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = formatActiveQualityLabel(
-                            player?.targetVideoQuality,
-                            player?.activeVideoQuality
-                        ),
-                        textAlign = TextAlign.Center
+                        text =
+                            formatActiveQualityLabel(
+                                videoQualityState.targetVideoQuality,
+                                videoQualityState.activeVideoQuality,
+                            ),
+                        textAlign = TextAlign.Center,
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
             }
             Row {
                 Text(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    text = stringResource(R.string.theoplayer_ui_menu_playback_rate)
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate),
                 )
                 TextButton(
-                    modifier = Modifier
-                        .weight(1f)
-                        .alignByBaseline(),
-                    onClick = { openMenu { PlaybackRateMenu() } }
+                    modifier = Modifier.weight(1f).alignByBaseline(),
+                    onClick = { openMenu { PlaybackRateMenu() } },
                 ) {
                     Text(
                         modifier = Modifier.weight(1f),
-                        text = formatPlaybackRate(player?.playbackRate ?: 1.0),
-                        textAlign = TextAlign.Center
+                        text = formatPlaybackRate(playbackRateState.playbackRate),
+                        textAlign = TextAlign.Center,
                     )
                     Icon(
                         Icons.Rounded.ChevronRight,
-                        contentDescription = null
+                        contentDescription = null,
                     )
                 }
             }
@@ -97,10 +112,22 @@ fun MenuScope.SettingsMenu() {
  */
 @Composable
 fun MenuScope.QualityMenu() {
-    Menu(
-        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_quality)) }
-    ) {
-        QualityList(onClick = { closeCurrentMenu() })
+    QualityMenu(state = rememberVideoQualityState(LocalTHEOplayerView.current?.player))
+}
+
+/**
+ * A [Menu] to change the video quality of the stream.
+ *
+ * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
+ *
+ * @param state the [VideoQualityState] to read and control
+ * @see QualityList
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun MenuScope.QualityMenu(state: VideoQualityState) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_quality)) }) {
+        QualityList(state, onClick = { closeCurrentMenu() })
     }
 }
 
@@ -111,29 +138,21 @@ fun MenuScope.QualityMenu() {
  */
 @Composable
 fun MenuScope.PlaybackRateMenu() {
-    Menu(
-        title = { Text(text = stringResource(R.string.theoplayer_ui_menu_playback_rate)) }
-    ) {
-        PlaybackRateList(onClick = { closeCurrentMenu() })
-    }
+    PlaybackRateMenu(state = rememberPlaybackRateState(LocalTHEOplayerView.current?.player))
 }
 
+/**
+ * A [Menu] to change the playback rate of the player.
+ *
+ * Remember the state inside the `openMenu` block that opens this menu, see [MenuScope.openMenu].
+ *
+ * @param state the [PlaybackRateState] to read and control
+ * @see PlaybackRateList
+ */
+@ExperimentalPlayerStateApi
 @Composable
-internal fun formatActiveQualityLabel(
-    targetVideoQuality: VideoQuality?,
-    activeVideoQuality: VideoQuality?
-): String {
-    return if (targetVideoQuality != null) {
-        stringResource(
-            R.string.theoplayer_ui_quality_with_height,
-            targetVideoQuality.height
-        )
-    } else if (activeVideoQuality != null) {
-        stringResource(
-            R.string.theoplayer_ui_quality_automatic_with_height,
-            activeVideoQuality.height
-        )
-    } else {
-        stringResource(R.string.theoplayer_ui_quality_automatic)
+fun MenuScope.PlaybackRateMenu(state: PlaybackRateState) {
+    Menu(title = { Text(text = stringResource(CommonR.string.theoplayer_ui_menu_playback_rate)) }) {
+        PlaybackRateList(state, onClick = { closeCurrentMenu() })
     }
 }

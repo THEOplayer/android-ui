@@ -5,9 +5,9 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
+
+plugins { id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0" }
+
 dependencyResolutionManagement {
     repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
     repositories {
@@ -16,6 +16,13 @@ dependencyResolutionManagement {
         maven { url = uri("https://maven.theoplayer.com/releases") }
     }
 }
+
 rootProject.name = "THEOplayer Open Video UI for Android"
+
 include(":app")
+
 include(":ui")
+
+include(":ui-common")
+
+include(":ui-tv")

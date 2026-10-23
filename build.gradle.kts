@@ -1,3 +1,7 @@
+import com.ncorti.ktfmt.gradle.tasks.KtfmtCheckTask
+import com.ncorti.ktfmt.gradle.tasks.KtfmtFormatTask
+import java.time.Year
+import kotlin.text.Typography.copyright
 import org.jetbrains.changelog.date
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
@@ -12,12 +16,50 @@ buildscript {
         classpath(libs.kotlin.gradle.plugin)
     }
 }
+
 plugins {
     alias(libs.plugins.android.application) apply false
     alias(libs.plugins.android.library) apply false
     alias(libs.plugins.compose.compiler) apply false
-    alias(libs.plugins.dokka) apply false
+    alias(libs.plugins.dokka)
     alias(libs.plugins.changelog)
+    alias(libs.plugins.ktfmt)
+}
+
+ktfmt { kotlinLangStyle() }
+
+val ktfmtCheckBuildSrc =
+    tasks.register<KtfmtCheckTask>("ktfmtCheckBuildSrc") {
+        source = project.fileTree("buildSrc") { exclude("build/**") }
+        include("**/*.kts")
+    }
+
+val ktfmtFormatBuildSrc =
+    tasks.register<KtfmtFormatTask>("ktfmtFormatBuildSrc") {
+        source = project.fileTree("buildSrc") { exclude("build/**") }
+        include("**/*.kts")
+    }
+
+tasks.named("ktfmtCheck") { dependsOn(ktfmtCheckBuildSrc) }
+
+tasks.named("ktfmtFormat") { dependsOn(ktfmtFormatBuildSrc) }
+
+dependencies {
+    dokka(project(":ui"))
+    dokka(project(":ui-common"))
+    dokka(project(":ui-tv"))
+}
+
+dokka {
+    moduleName = rootProject.name
+
+    pluginsConfiguration.html {
+        customAssets.from("ui/assets/logo-icon.svg")
+        footerMessage =
+            "$copyright ${Year.now().value} Dolby Laboratories, Inc. All rights reserved."
+    }
+
+    dokkaPublications.html { outputDirectory = rootDir.resolve("site/api") }
 }
 
 changelog {
@@ -35,7 +77,8 @@ changelog {
         > - 📝 Documentation
         > - 🏠 Internal
         > - 💅 Polish
-        """.trimIndent()
+        """
+            .trimIndent()
     itemPrefix = "*"
     keepUnreleasedSection = true
     unreleasedTerm = "Unreleased"

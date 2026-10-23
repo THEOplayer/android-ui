@@ -11,6 +11,22 @@
 
 ## [Unreleased]
 
+## [1.15.0] (2026-10-23)
+
+* 🚀 Added `android-ui-tv`, an experimental UI library for Android TV built on Compose for TV. It includes a D-pad friendly `DefaultUI`. Code shared with `android-ui` now lives in a new `android-ui-common` artifact; `android-ui` depends on it, so apps don't need any changes. ([#107](https://github.com/THEOplayer/android-ui/pull/107), [#121](https://github.com/THEOplayer/android-ui/pull/121), [#124](https://github.com/THEOplayer/android-ui/pull/124), [#125](https://github.com/THEOplayer/android-ui/pull/125), [#126](https://github.com/THEOplayer/android-ui/pull/126), [#128](https://github.com/THEOplayer/android-ui/pull/128), [#131](https://github.com/THEOplayer/android-ui/pull/131))
+* 🚀 Added experimental state holders (such as `rememberPlayButtonState` and `rememberSeekBarState`), so custom UIs can reuse the logic of the built-in components. The components have new overloads that take their state, and `LocalTHEOplayerView` provides the current `THEOplayerView`. `UIController` and `DefaultUI` now use these state holders internally. ([#108](https://github.com/THEOplayer/android-ui/pull/108), [#110](https://github.com/THEOplayer/android-ui/pull/110), [#111](https://github.com/THEOplayer/android-ui/pull/111), [#114](https://github.com/THEOplayer/android-ui/pull/114), [#115](https://github.com/THEOplayer/android-ui/pull/115), [#116](https://github.com/THEOplayer/android-ui/pull/116))
+* 🚀 Added `UIController(theoplayerView)` and `DefaultUI(theoplayerView)`, which don't create a `Player`. Use `rememberTHEOplayerView(config)` to create a `THEOplayerView` that follows the lifecycle of the composition. `UIController(config)` and `DefaultUI(config)` no longer create a `Player` either, and `UIControllerScope.player` is only created when accessed. ([#119](https://github.com/THEOplayer/android-ui/pull/119))
+* 🚀 `UIController` now handles keys: pressing any key shows the controls (which helps on tablets with a keyboard), media keys (play/pause, fast-forward and rewind) control playback even while the controls are hidden, and Back closes an open menu. Use the new `PlayerAnimations.controlsHideDelay` to configure how long the controls stay visible after user interaction. ([#122](https://github.com/THEOplayer/android-ui/pull/122), [#124](https://github.com/THEOplayer/android-ui/pull/124))
+* 🚀 `UIController` now moves subtitles up or down while the controls are visible, so they don't render behind the top or bottom chrome. Moving subtitles up requires THEOplayer 9.5.0 or higher. ([#129](https://github.com/THEOplayer/android-ui/pull/129))
+* 🚀 Added `TextTrackStyleMenu` to change the style of subtitles, such as the font family, font color and background color. In `DefaultUI`, open it from the subtitles menu. Use `rememberTextTrackStyleState` to build a custom menu. Changing the font family requires THEOplayer 9.9.0 or higher. ([#130](https://github.com/THEOplayer/android-ui/issues/130), [#143](https://github.com/THEOplayer/android-ui/pull/143))
+* 🚀 Added `MenuScope.closeAllMenus()` to close all open menus at once. On mobile, tapping outside the menu sheet now closes all open menus, instead of only going back to the previous menu. ([#144](https://github.com/THEOplayer/android-ui/pull/144))
+* 🐛 Fixed `AudioTrackList`, `SubtitleTrackList`, `QualityList` and `PlaybackRateList` not scrolling to the selected item, and not announcing it to accessibility services. ([#127](https://github.com/THEOplayer/android-ui/pull/127))
+* 🐛 Fixed `UIController` and `DefaultUI` not keeping the player at the aspect ratio of the video (or 16:9 before the video is loaded). ([#140](https://github.com/THEOplayer/android-ui/pull/140))
+* 🐛 Fixed menus losing their scroll position (and on Android TV, their focused item) when returning from a submenu. ([#143](https://github.com/THEOplayer/android-ui/pull/143))
+* 💅 Menus on mobile now open in a sheet with a translucent background, so they're easier to read on top of the video: a bottom sheet on narrow players, and a side sheet at the end of the player on wide players. ([#141](https://github.com/THEOplayer/android-ui/pull/141))
+* 💅 Opening a submenu or going back to the previous menu now only animates the menu's contents, with a short slide and a fade, on both mobile and TV. Use the new `PlayerAnimations.menuTransitionDuration` to change how long this takes. ([#141](https://github.com/THEOplayer/android-ui/pull/141))
+* 📝 The API documentation now has a separate section for each module (`android-ui`, `android-ui-common` and `android-ui-tv`). ([#128](https://github.com/THEOplayer/android-ui/pull/128))
+
 ## [1.14.2] (2026-10-13)
 
 * 🐛 Fixed a listener leak in picture-in-picture mode detection on Android 15 and higher. ([#113](https://github.com/THEOplayer/android-ui/pull/113))
@@ -196,7 +212,8 @@
 
 * 🚀 Initial release.
 
-[Unreleased]: https://github.com/THEOplayer/android-ui/compare/v1.14.2...HEAD
+[Unreleased]: https://github.com/THEOplayer/android-ui/compare/v1.15.0...HEAD
+[1.15.0]: https://github.com/THEOplayer/android-ui/compare/v1.14.2...v1.15.0
 [1.14.2]: https://github.com/THEOplayer/android-ui/compare/v1.14.1...v1.14.2
 [1.14.1]: https://github.com/THEOplayer/android-ui/compare/v1.14.0...v1.14.1
 [1.14.0]: https://github.com/THEOplayer/android-ui/compare/v1.13.4...v1.14.0

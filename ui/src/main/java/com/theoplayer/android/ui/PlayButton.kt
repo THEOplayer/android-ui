@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.theoplayer.android.ui.common.R as CommonR
 
 /**
  * A button that toggles whether the player is playing or paused.
@@ -16,7 +17,7 @@ import androidx.compose.ui.unit.dp
  * @param modifier the [Modifier] to be applied to this button
  * @param iconModifier the [Modifier] to be applied to the [Icon]s inside this button
  * @param contentPadding the spacing values to apply internally between the container and the
- * content
+ *   content
  * @param play button content when the player is paused but not ended, typically a "play" icon
  * @param pause button content when the player is playing, typically a "pause" icon
  * @param replay button content when the player is paused and ended, typically a "replay" icon
@@ -28,44 +29,86 @@ fun PlayButton(
     contentPadding: PaddingValues = PaddingValues(0.dp),
     play: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.play),
+            painter = painterResource(id = CommonR.drawable.play),
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_play)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_play),
         )
     },
     pause: @Composable () -> Unit = {
         Icon(
-            painter = painterResource(id = R.drawable.pause),
+            painter = painterResource(id = CommonR.drawable.pause),
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_pause)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_pause),
         )
     },
     replay: @Composable () -> Unit = {
         Icon(
             Icons.Rounded.Replay,
             modifier = iconModifier,
-            contentDescription = stringResource(id = R.string.theoplayer_ui_btn_replay)
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_replay),
         )
-    }
+    },
 ) {
-    val player = Player.current
+    PlayButton(
+        state = rememberPlayButtonState(LocalTHEOplayerView.current?.player),
+        modifier = modifier,
+        iconModifier = iconModifier,
+        contentPadding = contentPadding,
+        play = play,
+        pause = pause,
+        replay = replay,
+    )
+}
+
+/**
+ * A button that toggles whether the player is playing or paused.
+ *
+ * @param state the [PlayButtonState] to read and control
+ * @param modifier the [Modifier] to be applied to this button
+ * @param iconModifier the [Modifier] to be applied to the [Icon]s inside this button
+ * @param contentPadding the spacing values to apply internally between the container and the
+ *   content
+ * @param play button content when the player is paused but not ended, typically a "play" icon
+ * @param pause button content when the player is playing, typically a "pause" icon
+ * @param replay button content when the player is paused and ended, typically a "replay" icon
+ */
+@ExperimentalPlayerStateApi
+@Composable
+fun PlayButton(
+    state: PlayButtonState,
+    modifier: Modifier = Modifier,
+    iconModifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    play: @Composable () -> Unit = {
+        Icon(
+            painter = painterResource(id = CommonR.drawable.play),
+            modifier = iconModifier,
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_play),
+        )
+    },
+    pause: @Composable () -> Unit = {
+        Icon(
+            painter = painterResource(id = CommonR.drawable.pause),
+            modifier = iconModifier,
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_pause),
+        )
+    },
+    replay: @Composable () -> Unit = {
+        Icon(
+            Icons.Rounded.Replay,
+            modifier = iconModifier,
+            contentDescription = stringResource(id = CommonR.string.theoplayer_ui_btn_replay),
+        )
+    },
+) {
     IconButton(
         modifier = modifier,
         contentPadding = contentPadding,
-        onClick = {
-            player?.let {
-                if (it.paused) {
-                    it.play()
-                } else {
-                    it.pause()
-                }
-            }
-        }) {
-        if (player == null) {
-            play()
-        } else if (!player.paused) {
+        onClick = { state.onClick() },
+    ) {
+        if (!state.paused) {
             pause()
-        } else if (player.ended) {
+        } else if (state.ended) {
             replay()
         } else {
             play()
