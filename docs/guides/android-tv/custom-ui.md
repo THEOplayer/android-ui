@@ -62,7 +62,7 @@ fun TvPlayerWithControls() {
 }
 ```
 
-- `SeekBar` lets viewers seek with the D-pad. Holding Left or Right scrubs through the timeline.
+- `SeekBar` lets viewers seek with the D-pad. Holding Left or Right scrubs through the timeline, and Center toggles play or pause.
 - `CurrentTimeDisplay` shows the current time. Set `showRemaining = true` to show the remaining time.
 - `DurationDisplay` shows the stream duration.
 - `LiveButton` shows whether the player is at the live point and returns to it when selected.
