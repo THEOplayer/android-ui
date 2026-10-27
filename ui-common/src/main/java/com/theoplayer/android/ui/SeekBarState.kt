@@ -7,30 +7,52 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.theoplayer.android.api.event.ads.AdsEventTypes
-import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.player.Player
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 /**
  * State holder for a seek bar, such as [SeekBar].
  *
  * While the user drags the seek bar (see [onValueChange]), the player is temporarily paused, and
- * resumed on [onValueChangeFinished] if it was playing.
+ * resumed on [onValueChangeFinished] if it was playing. To avoid loading media for positions that
+ * are scrubbed past, the player only seeks once the user stops moving for a moment, or when they
+ * finish.
+ *
+ * This is also a [PlaybackTimeState], whose [currentTime] is the scrub position while scrubbing.
  *
  * Create an instance with [rememberSeekBarState].
  */
 @ExperimentalPlayerStateApi
-class SeekBarState internal constructor(private val player: Player?) {
+class SeekBarState internal constructor(player: Player?) : PlaybackTimeState(player) {
 
     /** The current scrub position of the seek bar, relative to the start of [seekableRange]. */
     val value: Float
-        get() = seekTime ?: (currentTime - seekableRange.start).toFloat()
+        get() = seekTime ?: (playerTime - seekableRange.start).toFloat()
 
     /** The range of [value]. Always starts at zero. */
     val valueRange: ClosedFloatingPointRange<Float>
         get() = 0f..(seekableRange.endInclusive - seekableRange.start).toFloat()
+
+    /**
+     * The position the user is scrubbing to, in seconds, or `null` if the user is not scrubbing.
+     *
+     * The player may not have seeked to this position yet.
+     */
+    val scrubTime: Double?
+        get() = seekTime?.let { seekableRange.start + it.toDouble() }
+
+    /**
+     * The current playback position of the media, in seconds. While the user is scrubbing, this is
+     * the [scrubTime].
+     */
+    override val currentTime: Double
+        get() = scrubTime ?: playerTime
 
     /** Whether the seek bar can be interacted with. */
     val enabled: Boolean
@@ -40,12 +62,11 @@ class SeekBarState internal constructor(private val player: Player?) {
     val showThumb: Boolean
         get() = !playingAd
 
-    private var currentTime by mutableStateOf(0.0)
-    private var seekable by mutableStateOf(TimeRanges.empty())
-    private var duration by mutableStateOf(Double.NaN)
     private var playingAd by mutableStateOf(false)
     private var seekTime by mutableStateOf<Float?>(null)
     private var wasPlayingBeforeSeek by mutableStateOf(false)
+    private val pendingSeek = MutableStateFlow<Float?>(null)
+    private var lastSeekValue: Float? = null
 
     // Seekable start can be very large (e.g. a Unix timestamp), which can lead to precision loss
     // when converted to a float. Instead, make the slider always start at zero.
@@ -54,10 +75,8 @@ class SeekBarState internal constructor(private val player: Player?) {
             seekable.bounds
                 ?: run { 0.0..(if (duration.isFinite()) duration.coerceAtLeast(0.0) else 0.0) }
 
-    private fun update() {
-        currentTime = player?.currentTime ?: 0.0
-        seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges.empty()
-        duration = player?.duration ?: Double.NaN
+    override fun update() {
+        super.update()
         playingAd = player?.ads?.isPlaying ?: false
     }
 
@@ -65,10 +84,10 @@ class SeekBarState internal constructor(private val player: Player?) {
         update()
     }
 
-    internal suspend fun observe() {
+    override suspend fun observe() {
         val player = player ?: return
-        update()
         coroutineScope {
+            launch(start = CoroutineStart.UNDISPATCHED) { seekWhenIdle() }
             player.ads?.let { ads ->
                 launch(start = CoroutineStart.UNDISPATCHED) {
                     ads.listen(
@@ -80,35 +99,43 @@ class SeekBarState internal constructor(private val player: Player?) {
                     }
                 }
             }
-            player.listen(
-                PlayerEventTypes.TIMEUPDATE,
-                PlayerEventTypes.PLAY,
-                PlayerEventTypes.PAUSE,
-                PlayerEventTypes.ENDED,
-                PlayerEventTypes.SEEKING,
-                PlayerEventTypes.SEEKED,
-                PlayerEventTypes.READYSTATECHANGE,
-                PlayerEventTypes.DURATIONCHANGE,
-                PlayerEventTypes.SOURCECHANGE,
-                PlayerEventTypes.ERROR,
-            ) {
-                update()
+            super.observe()
+        }
+    }
+
+    /** Seeks to the pending scrub position once it hasn't changed for [SeekDebounce]. */
+    private suspend fun seekWhenIdle() {
+        pendingSeek.collectLatest { value ->
+            if (value != null) {
+                delay(SeekDebounce)
+                seekToValue(value)
             }
         }
     }
 
+    /** Seeks the player to a position within [valueRange], unless the seek bar is disabled. */
+    private fun seekToValue(value: Float) {
+        if (!enabled) return
+        lastSeekValue = value
+        player?.currentTime = seekableRange.start + value.toDouble()
+        // Re-read the position right away, so the seek bar doesn't jump back to the old position
+        // when scrubbing finishes before the player fires its seeking event.
+        update()
+    }
+
     /**
-     * Called while the user drags the seek bar. Temporarily pauses a playing player and seeks to
-     * the given position within [valueRange].
+     * Called while the user drags the seek bar. Temporarily pauses a playing player, and seeks to
+     * the given position within [valueRange] once the user stops dragging for a moment.
      */
     fun onValueChange(value: Float) {
+        if (!enabled) return
         seekTime = value
+        pendingSeek.value = value
         player?.let {
             if (!it.isPaused) {
                 wasPlayingBeforeSeek = true
                 it.pause()
             }
-            it.currentTime = seekableRange.start + value.toDouble()
         }
     }
 
@@ -134,17 +161,23 @@ class SeekBarState internal constructor(private val player: Player?) {
     }
 
     /**
-     * Called when the user stops dragging the seek bar. Resumes playback if the player was playing
-     * before the drag started.
+     * Called when the user stops dragging the seek bar. Seeks to the final position, and resumes
+     * playback if the player was playing before the drag started.
      */
     fun onValueChangeFinished() {
+        seekTime?.let { if (it != lastSeekValue) seekToValue(it) }
         seekTime = null
+        pendingSeek.value = null
+        lastSeekValue = null
         if (wasPlayingBeforeSeek) {
             player?.play()
             wasPlayingBeforeSeek = false
         }
     }
 }
+
+/** How long the scrub position must stay unchanged before the player seeks to it. */
+private val SeekDebounce = 250.milliseconds
 
 /** Creates a [SeekBarState] that's remembered across compositions. */
 @ExperimentalPlayerStateApi
@@ -154,3 +187,20 @@ fun rememberSeekBarState(player: Player?): SeekBarState {
     LaunchedEffect(state) { state.observe() }
     return state
 }
+
+/**
+ * Returns the [SeekBarState] of the enclosing UI controller if it belongs to [player], or remembers
+ * a new one otherwise.
+ */
+@InternalUiApi
+@ExperimentalPlayerStateApi
+@Composable
+fun rememberUIControllerSeekBarState(player: Player?): SeekBarState =
+    uiControllerSeekBarState(player) ?: rememberSeekBarState(player)
+
+/** Returns the [SeekBarState] of the enclosing UI controller if it belongs to [player]. */
+@OptIn(InternalUiApi::class)
+@ExperimentalPlayerStateApi
+@Composable
+internal fun uiControllerSeekBarState(player: Player?): SeekBarState? =
+    LocalUIControllerSeekBarState.current?.takeIf { it.player == player }

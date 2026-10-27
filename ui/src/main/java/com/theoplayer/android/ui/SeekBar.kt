@@ -43,7 +43,7 @@ fun SeekBar(
     colors: SliderColors = SliderDefaults.colors(),
 ) {
     SeekBar(
-        state = rememberSeekBarState(LocalTHEOplayerView.current?.player),
+        state = rememberUIControllerSeekBarState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         colors = colors,
     )

@@ -87,7 +87,7 @@ class SeekBarTest {
             player.dispatch(PlayerEventTypes.TIMEUPDATE, mockk<TimeUpdateEvent>())
         }
         composeRule.waitForIdle()
-        val positions = mutableListOf(player.currentTime)
+        val start = player.currentTime
         for (repeat in 1..3) {
             assertTrue(
                 dispatchKey(
@@ -96,11 +96,10 @@ class SeekBarTest {
                     repeat = repeat,
                 )
             )
-            positions += player.currentTime
         }
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.ACTION_UP))
 
-        assertTrue(positions.zipWithNext().all { (previous, next) -> next > previous })
+        assertTrue(player.currentTime > start)
         verify(exactly = 1) { player.player.pause() }
         verify(exactly = 1) { player.player.play() }
     }

@@ -16,7 +16,7 @@ import androidx.compose.ui.input.key.type
 import com.theoplayer.android.ui.ExperimentalPlayerStateApi
 import com.theoplayer.android.ui.LocalTHEOplayerView
 import com.theoplayer.android.ui.SeekBarState
-import com.theoplayer.android.ui.rememberSeekBarState
+import com.theoplayer.android.ui.rememberUIControllerSeekBarState
 
 /**
  * A seek bar showing the player's current time and allowing D-pad seeking.
@@ -38,7 +38,7 @@ fun SeekBar(
     seekOffset: Int = 10,
 ) {
     SeekBar(
-        state = rememberSeekBarState(LocalTHEOplayerView.current?.player),
+        state = rememberUIControllerSeekBarState(LocalTHEOplayerView.current?.player),
         modifier = modifier,
         colors = colors,
         seekOffset = seekOffset,
