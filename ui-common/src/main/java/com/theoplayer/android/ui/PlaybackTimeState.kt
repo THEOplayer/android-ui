@@ -12,12 +12,19 @@ import com.theoplayer.android.api.player.Player
 /**
  * State holder for a playback time display, such as [CurrentTimeDisplay] or [DurationDisplay].
  *
+ * A [SeekBarState] is also a [PlaybackTimeState], whose [currentTime] follows the seek bar while
+ * the user is scrubbing. Pass it to a time display to show the position the user is scrubbing to.
+ *
  * Create an instance with [rememberPlaybackTimeState].
  */
 @ExperimentalPlayerStateApi
-class PlaybackTimeState internal constructor(private val player: Player?) {
+open class PlaybackTimeState internal constructor(internal val player: Player?) {
     /** The current playback position of the media, in seconds. */
-    var currentTime by mutableStateOf(0.0)
+    open val currentTime: Double
+        get() = playerTime
+
+    /** The current playback position reported by the player, in seconds. */
+    internal var playerTime by mutableStateOf(0.0)
         private set
 
     /**
@@ -28,25 +35,32 @@ class PlaybackTimeState internal constructor(private val player: Player?) {
     var duration by mutableStateOf(Double.NaN)
         private set
 
-    private var seekable by mutableStateOf(TimeRanges.empty())
+    internal var seekable by mutableStateOf(TimeRanges.empty())
+        private set
+
     private var rawDuration by mutableStateOf(Double.NaN)
 
     /** The [StreamType] of the media. */
     val streamType: StreamType
         get() = streamTypeOf(rawDuration, seekable)
 
-    private fun update() {
-        currentTime = player?.currentTime ?: 0.0
+    /** Re-reads the state from the player. */
+    internal open fun update() {
+        updateTime()
+    }
+
+    private fun updateTime() {
+        playerTime = player?.currentTime ?: 0.0
         rawDuration = player?.duration ?: Double.NaN
         seekable = player?.seekable?.let { TimeRanges.fromTHEOplayer(it) } ?: TimeRanges.empty()
         duration = seekable.lastEnd ?: rawDuration
     }
 
     init {
-        update()
+        updateTime()
     }
 
-    internal suspend fun observe() {
+    internal open suspend fun observe() {
         val player = player ?: return
         update()
         player.listen(
@@ -66,10 +80,18 @@ class PlaybackTimeState internal constructor(private val player: Player?) {
     }
 }
 
-/** Creates a [PlaybackTimeState] that's remembered across compositions. */
+/**
+ * Creates a [PlaybackTimeState] that's remembered across compositions.
+ *
+ * Inside a `UIController` for the same [player], this returns the controller's [SeekBarState], so
+ * time displays follow its seek bar while the user is scrubbing.
+ */
 @ExperimentalPlayerStateApi
 @Composable
 fun rememberPlaybackTimeState(player: Player?): PlaybackTimeState {
+    uiControllerSeekBarState(player)?.let {
+        return it
+    }
     val state = remember(player) { PlaybackTimeState(player) }
     LaunchedEffect(state) { state.observe() }
     return state

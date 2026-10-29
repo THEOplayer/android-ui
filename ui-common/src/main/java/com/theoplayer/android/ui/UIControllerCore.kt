@@ -69,6 +69,7 @@ fun UIControllerCore(
 ) {
     val nativePlayer = theoplayerView?.player
     val adState = rememberAdState(nativePlayer)
+    val seekBarState = rememberSeekBarState(nativePlayer)
     val playerAnimations = LocalPlayerAnimations.current
     val backgroundVisible = uiState.value.isVisible(controls.visible.value)
     val animatedBackground by
@@ -113,6 +114,7 @@ fun UIControllerCore(
             scope = scope,
             uiState = uiState.value,
             errorState = errorState,
+            seekBarState = seekBarState,
             controls = controls,
             adPlaying = adState.playingAd,
             background = animatedBackground,
@@ -137,6 +139,7 @@ private fun UIControllerContent(
     scope: UIControllerScopeImpl,
     uiState: UIState,
     errorState: ErrorState,
+    seekBarState: SeekBarState,
     controls: ControlsVisibility,
     adPlaying: Boolean,
     background: Color,
@@ -166,6 +169,7 @@ private fun UIControllerContent(
         LocalPlayer provides player,
         LocalTHEOplayerView provides theoplayerView,
         LocalUIControllerErrorState provides errorState,
+        LocalUIControllerSeekBarState provides seekBarState,
     ) {
         AnimatedContent(
             label = "ContentAnimation",
@@ -329,3 +333,8 @@ private fun InnerMenus(
 
 /** The current error state provided by a UI controller. */
 @InternalUiApi val LocalUIControllerErrorState = staticCompositionLocalOf<ErrorState?> { null }
+
+/** The seek bar state provided by a UI controller, shared by its seek bar and time displays. */
+@InternalUiApi
+@ExperimentalPlayerStateApi
+val LocalUIControllerSeekBarState = staticCompositionLocalOf<SeekBarState?> { null }

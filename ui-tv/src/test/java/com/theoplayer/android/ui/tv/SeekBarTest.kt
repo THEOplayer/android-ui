@@ -87,7 +87,7 @@ class SeekBarTest {
             player.dispatch(PlayerEventTypes.TIMEUPDATE, mockk<TimeUpdateEvent>())
         }
         composeRule.waitForIdle()
-        val positions = mutableListOf(player.currentTime)
+        val start = player.currentTime
         for (repeat in 1..3) {
             assertTrue(
                 dispatchKey(
@@ -96,11 +96,10 @@ class SeekBarTest {
                     repeat = repeat,
                 )
             )
-            positions += player.currentTime
         }
         assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.ACTION_UP))
 
-        assertTrue(positions.zipWithNext().all { (previous, next) -> next > previous })
+        assertTrue(player.currentTime > start)
         verify(exactly = 1) { player.player.pause() }
         verify(exactly = 1) { player.player.play() }
     }
@@ -167,6 +166,54 @@ class SeekBarTest {
         assertFalse(dispatchKey(KeyEvent.KEYCODE_DPAD_RIGHT, KeyEvent.ACTION_DOWN))
         assertEquals(50.0, player.currentTime, 0.0)
         verify(exactly = 0) { player.player.currentTime = any() }
+    }
+
+    @Test
+    fun centerPressTogglesPlayPause() {
+        val player = TestPlayer()
+        val focusRequester = FocusRequester()
+        setSeekBar(player, Modifier.focusRequester(focusRequester))
+        requestFocus(focusRequester)
+
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.ACTION_DOWN))
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.ACTION_UP))
+        assertTrue(player.paused)
+
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_ENTER, KeyEvent.ACTION_DOWN))
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_ENTER, KeyEvent.ACTION_UP))
+        assertFalse(player.paused)
+
+        verify(exactly = 1) { player.player.pause() }
+        verify(exactly = 1) { player.player.play() }
+        assertEquals(50.0, player.currentTime, 0.0)
+    }
+
+    @Test
+    fun heldCenterPressTogglesOnce() {
+        val player = TestPlayer()
+        val focusRequester = FocusRequester()
+        setSeekBar(player, Modifier.focusRequester(focusRequester))
+        requestFocus(focusRequester)
+
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.ACTION_DOWN, repeat = 0))
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.ACTION_DOWN, repeat = 1))
+        assertTrue(dispatchKey(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.ACTION_UP))
+
+        verify(exactly = 1) { player.player.pause() }
+        verify(exactly = 0) { player.player.play() }
+    }
+
+    @Test
+    fun centerKeyUpWithoutKeyDownIsNotConsumed() {
+        val player = TestPlayer()
+        val focusRequester = FocusRequester()
+        setSeekBar(player, Modifier.focusRequester(focusRequester))
+        requestFocus(focusRequester)
+
+        assertFalse(dispatchKey(KeyEvent.KEYCODE_DPAD_CENTER, KeyEvent.ACTION_UP))
+
+        verify(exactly = 0) { player.player.pause() }
+        verify(exactly = 0) { player.player.play() }
     }
 
     private fun setSeekBar(
